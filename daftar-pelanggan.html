@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prince Games - Daftar Pelanggan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="p-6">
+    <div class="w-full max-w-sm mx-auto mt-10">
+        <h2 class="text-4xl font-bold leading-none">Lewati antrean.<br><span class="text-pink-500">Pesan kursi Anda.</span></h2>
+        
+        <div class="glass-card p-6 mt-8">
+            <h3 class="text-xl font-bold mb-4">Buat akun</h3>
+            
+            <div id="error-box" style="display:none; color: #ff4d4d; background: rgba(255, 77, 77, 0.1); padding: 10px; border-radius: 8px; font-size: 11px; margin-bottom: 15px; border: 1px solid rgba(255, 77, 77, 0.3);"></div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-400">Nama Lengkap</label>
+                    <input type="text" id="reg-nama" placeholder="Masukkan nama anda" class="input-field mt-1">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400">Username</label>
+                    <input type="text" id="reg-username" placeholder="Buat username unik" class="input-field mt-1"> 
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400">Kata Sandi</label>
+                    <input type="password" id="reg-password" placeholder="Minimal 8 karakter" class="input-field mt-1">
+                </div>
+                
+                <button onclick="handleRegisterUser()" class="btn-cyan mt-4 w-full">
+                    Buat akun sekarang <i class="fas fa-arrow-right text-[10px] ml-2"></i>
+                </button>
+            </div>
+
+            <p class="text-center text-[11px] text-gray-500 mt-6">
+                Sudah punya akun? <a href="index.html" class="text-cyan-400 font-bold hover:underline">Masuk di sini</a>
+            </p>
+        </div>
+    </div>
+
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>
