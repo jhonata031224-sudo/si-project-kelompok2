@@ -3,32 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prince Games - Login</title>
+    <title>Prince Games - Masuk Pelanggan</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { background-color: #06090f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-        .glass-card { background: rgba(17, 23, 31, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(0, 217, 255, 0.1); }
+        .password-wrapper { position: relative; display: flex; align-items: center; }
+        .toggle-password {
+            position: absolute; right: 15px; cursor: pointer; color: #4b5563;
+            z-index: 10; height: 100%; display: flex; align-items: center;
+        }
+        .toggle-password:hover { color: #00d9ff; }
+        .input-field-custom {
+            width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px; border-radius: 12px; outline: none; color: white; font-size: 14px;
+            transition: 0.3s;
+        }
+        .input-field-custom:focus { border-color: #22d3ee; }
     </style>
 </head>
-<body class="px-6">
-    <div class="glass-card p-8 rounded-3xl w-full max-w-sm shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-        <div class="text-center mb-8">
-            <i class="fas fa-gamepad text-4xl text-cyan-400 mb-3"></i>
-            <h1 class="text-xl font-black uppercase tracking-tighter">Prince<span class="text-cyan-400">Games</span></h1>
-            <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Portal Masuk Pelanggan</p>
-        </div>
+<body class="p-6 bg-[#06090f] text-white">
+    <div class="w-full max-w-sm mx-auto mt-10">
+        <h2 class="text-4xl font-bold leading-none text-cyan-400">Selamat<br><span class="text-white">Datang Kembali.</span></h2>
+        
+        <div class="glass-card p-6 mt-8 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-lg">
+            <h3 class="text-xl font-bold mb-4">Masuk Pelanggan</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-1">Username</label>
+                    <input type="text" id="username-cust" placeholder="Masukkan username" class="input-field-custom mt-1"> 
+                </div>
 
-        <div class="space-y-4">
-            <input type="text" placeholder="Nomor WhatsApp" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-xs focus:border-cyan-400 outline-none transition-all">
-            <input type="password" placeholder="Kata Sandi" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-xs focus:border-cyan-400 outline-none transition-all">
-            <button onclick="location.href='dashboard-customer.html'" class="w-full bg-cyan-500 text-black font-black py-4 rounded-xl shadow-[0_0_20px_rgba(0,217,255,0.3)] active:scale-95 transition-all text-xs uppercase tracking-widest">Masuk Sekarang</button>
-        </div>
+                <div>
+                    <label class="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-1">Kata Sandi</label>
+                    <div class="password-wrapper mt-1">
+                        <input type="password" id="pass-cust" placeholder="********" class="input-field-custom">
+                        <span class="toggle-password" onclick="togglePass('pass-cust', 'eyeLogin')">
+                            <i class="fas fa-eye" id="eyeLogin"></i>
+                        </span>
+                    </div>
+                </div>
+                
+                <button onclick="validatedLoginPelanggan()" class="bg-cyan-400 text-black font-black py-4 rounded-2xl mt-4 w-full uppercase tracking-widest text-sm shadow-[0_0_20px_rgba(34,211,238,0.3)]">
+                    Masuk Sekarang <i class="fas fa-sign-in-alt ml-2"></i>
+                </button>
+            </div>
 
-        <p class="text-center text-[10px] text-gray-500 mt-8 uppercase">Belum punya akun? <a href="register.html" class="text-cyan-400 font-bold">Daftar</a></p>
-        <div class="mt-4 text-center">
-            <a href="staff-access.html" class="text-[9px] text-gray-600 uppercase hover:text-cyan-400 transition-all">Akses Staf & Owner</a>
+            <p class="text-center text-[11px] text-gray-500 mt-8">
+                Belum punya akun? <a href="daftar-pelanggan.html" class="text-cyan-400 font-bold hover:underline">Daftar di sini</a>
+            </p>
         </div>
     </div>
+
+    <script>
+        let loginAttempts = 0;
+
+        function togglePass(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        function validatedLoginPelanggan() {
+            loginAttempts++;
+            if (loginAttempts >= 5) {
+                document.getElementById('username-cust').value = "";
+                document.getElementById('pass-cust').value = "";
+                loginAttempts = 0;
+                Swal.fire({
+                    icon: 'warning', title: 'Keamanan Aktif',
+                    text: 'Terlalu banyak percobaan masuk. Form dikosongkan.',
+                    background: '#11171f', color: '#fff'
+                });
+                return;
+            }
+            if (typeof window.handleLoginPelanggan === "function") {
+                window.handleLoginPelanggan();
+            }
+        }
+    </script>
+    <script type="module" src="js/auth.js"></script>
 </body>
 </html>
