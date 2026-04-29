@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prince Games - Owner Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .password-wrapper { position: relative; display: flex; align-items: center; }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            cursor: pointer;
+            color: #4b5563;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .toggle-password:hover { color: #00d9ff; }
+        .input-field { width: 100%; }
+    </style>
+</head>
+<body class="p-6">
+    <div class="w-full max-w-[380px] mx-auto mt-10">
+        <div class="text-center mb-8">
+            <i class="fas fa-crown text-4xl text-yellow-500 mb-3"></i>
+            <h2 class="text-2xl font-black tracking-tighter uppercase leading-none">Owner <span class="text-cyan-400">Portal</span></h2>
+            <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Akses eksklusif laporan bisnis</p>
+        </div>
+
+        <div class="glass-card p-8">
+            <h3 class="text-xl font-bold mb-6 text-center text-white">Akses Masuk</h3>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="text-[10px] text-gray-400 uppercase tracking-widest ml-1 font-bold">Email Administrasi</label>
+                    <input type="email" id="owner-email" placeholder="admin@princegames.com" class="input-field mt-1">
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-400 uppercase tracking-widest ml-1 font-bold">Kata Sandi</label>
+                    <div class="password-wrapper mt-1">
+                        <input type="password" id="owner-pass" placeholder="********" class="input-field !mt-0">
+                        <span class="toggle-password" onclick="togglePass('owner-pass', 'eyeOwnerLogin')">
+                            <i class="fas fa-eye" id="eyeOwnerLogin"></i>
+                        </span>
+                    </div>
+                </div>
+                
+                <button onclick="validatedOwnerLogin()" class="btn-cyan w-full py-4 mt-4 shadow-[0_0_20px_rgba(0,217,255,0.2)]">
+                    MASUK SEKARANG <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
+                </button>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-white/5 text-center">
+                <p class="text-[11px] text-gray-500">
+                    Belum punya akses owner? 
+                    <a href="daftar-owner.html" class="text-cyan-400 font-bold ml-1">Daftar Akun</a>
+                </p>
+                <a href="index.html" class="block mt-4 text-[10px] text-gray-600 underline">Kembali ke Beranda</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ownerLoginAttempts = 0;
+
+        function togglePass(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        function validatedOwnerLogin() {
+            ownerLoginAttempts++;
+            if (ownerLoginAttempts >= 5) {
+                document.getElementById('owner-email').value = "";
+                document.getElementById('owner-pass').value = "";
+                ownerLoginAttempts = 0;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Keamanan Owner',
+                    text: 'Terlalu banyak percobaan. Form dikosongkan.',
+                    background: '#11171f', color: '#fff'
+                });
+                return;
+            }
+            if (typeof handleLoginOwner === "function") handleLoginOwner();
+        }
+    </script>
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>

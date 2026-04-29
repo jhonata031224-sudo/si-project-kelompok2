@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prince Games - Owner Dashboard Executive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        
+        body { 
+            background-color: #06090f; 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            padding-bottom: 80px; 
+        }
+
+        .glass-card { 
+            background: rgba(17, 23, 31, 0.9); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            border-radius: 20px; 
+        }
+
+        .btn-logout {
+            width: 40px; height: 40px; display: flex; align-items: center; 
+            justify-content: center; color: #ff4d4d; transition: 0.3s;
+            cursor: pointer; border: 1px solid rgba(255, 77, 77, 0.2); border-radius: 12px;
+        }
+        .btn-logout:hover { background: rgba(255, 77, 77, 0.1); transform: scale(1.05); }
+    </style>
+</head>
+<body class="p-5">
+    <div class="max-w-[400px] mx-auto">
+        
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <p class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest">Executive Overview</p>
+                <h1 class="text-2xl font-black">OWNER PORTAL</h1>
+            </div>
+            <div onclick="window.location.href='login-owner.html'" class="btn-logout glass-card">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-5">
+            <div class="glass-card p-4">
+                <p class="text-[9px] text-gray-400 uppercase font-bold">Pemasukan Hari Ini</p>
+                <h3 class="text-lg font-black text-green-400">Rp 0</h3>
+            </div>
+            <div class="glass-card p-4">
+                <p class="text-[9px] text-gray-400 uppercase font-bold">Total Biaya/Cost</p>
+                <h3 class="text-lg font-black text-red-400">Rp 0</h3>
+            </div>
+        </div>
+
+        <div class="glass-card p-5 mb-5">
+            <h3 class="text-xs font-bold text-gray-400 uppercase mb-4 tracking-widest">Penggunaan Unit & Selesai</h3>
+            <div class="flex justify-between items-center text-center">
+                <div>
+                    <p class="text-2xl font-black text-cyan-400">0</p>
+                    <p class="text-[9px] text-gray-500 uppercase font-bold">Sesi Selesai</p>
+                </div>
+                <div class="h-10 w-[1px] bg-white/10"></div>
+                <div>
+                    <p class="text-2xl font-black text-purple-400">0</p>
+                    <p class="text-[9px] text-gray-500 uppercase font-bold">Unit Terpakai</p>
+                </div>
+                <div class="h-10 w-[1px] bg-white/10"></div>
+                <div>
+                    <p class="text-2xl font-black text-yellow-400">0</p>
+                    <p class="text-[9px] text-gray-500 uppercase font-bold">Booking App</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest px-2 mb-3">Live Monitoring (Timer)</h3>
+            <div class="glass-card p-8 text-center">
+                <i class="fas fa-clock text-gray-600 text-3xl mb-2"></i>
+                <p class="text-[10px] text-gray-500 uppercase font-bold">Belum Ada Sesi Aktif</p>
+            </div>
+        </div>
+
+        <div class="glass-card p-5">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Ringkasan Pesanan</h3>
+            </div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <p class="text-[11px] font-bold"><i class="fas fa-mobile-alt mr-2 text-cyan-400"></i>Booking dari Aplikasi</p>
+                    <p class="text-[11px] font-black text-white">0 Orang</p>
+                </div>
+                <div class="flex justify-between items-center">
+                    <p class="text-[11px] font-bold"><i class="fas fa-check-circle mr-2 text-green-400"></i>Sesi Masuk Dashboard</p>
+                    <p class="text-[11px] font-black text-white">0 Sesi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 glass-card !rounded-t-3xl !rounded-b-none border-t border-white/10 p-4 flex justify-around items-center z-50">
+        <div class="flex flex-col items-center text-cyan-400 cursor-pointer">
+            <i class="fas fa-th-large text-lg"></i>
+            <span class="text-[9px] font-bold uppercase mt-1">Dashboard</span>
+        </div>
+        <div onclick="window.location.href='manage-owner.html'" class="flex flex-col items-center text-gray-500 cursor-pointer hover:text-cyan-400 transition-colors">
+            <i class="fas fa-tasks text-lg"></i>
+            <span class="text-[9px] font-bold uppercase mt-1">Manage</span>
+        </div>
+        <div onclick="window.location.href='history-owner.html'" class="flex flex-col items-center text-gray-500 cursor-pointer hover:text-cyan-400 transition-colors">
+            <i class="fas fa-history text-lg"></i>
+            <span class="text-[9px] font-bold uppercase mt-1">History</span>
+        </div>
+        <div onclick="showExportInfo()" class="flex flex-col items-center text-gray-500 cursor-pointer hover:text-cyan-400 transition-colors">
+            <i class="fas fa-file-export text-lg"></i>
+            <span class="text-[9px] font-bold uppercase mt-1">Export</span>
+        </div>
+    </div>
+
+    <script>
+        function showExportInfo() {
+            Swal.fire({
+                icon: 'info',
+                title: 'Data Masih Kosong',
+                text: 'PDF dan Excel belum bisa diunduh karena laporan keuangan dan sesi masih bernilai 0.',
+                background: '#11171f',
+                color: '#fff',
+                confirmButtonColor: '#22d3ee'
+            });
+        }
+    </script>
+</body>
+</html>
