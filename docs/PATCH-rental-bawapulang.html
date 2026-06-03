@@ -1,0 +1,83 @@
+<!-- 
+  ════════════════════════════════════════════════════════
+  PATCH untuk rental-bawapulang.html
+  Ganti fungsi confirmRental() yang lama dengan ini,
+  dan hapus pilihan metode bayar di Step 3 (tidak perlu lagi
+  karena pembayaran ditangani di payment-rental.html)
+  ════════════════════════════════════════════════════════
+
+  1. Di STEP 3, HAPUS blok berikut (pilihan Cash/Ewallet):
+  ────────────────────────────────────────────────────────
+  <div>
+    <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-4">Metode pembayaran</label>
+    <div class="grid grid-cols-2 gap-2">
+      <button onclick="setPay('Cash', this)" ...>Cash</button>
+      <button onclick="setPay('Ewallet', this)" ...>Ewallet</button>
+    </div>
+  </div>
+
+  Pilihan bayar sekarang ada di halaman payment-rental.html.
+
+  2. GANTI tombol konfirmasi di Step 3 dari:
+  ────────────────────────────────────────────────────────
+  <button onclick="confirmRental()" class="flex-[2] btn-cyan py-5 rounded-2xl uppercase text-xs font-black">
+    <i class="fas fa-check mr-2"></i> Konfirmasi
+  </button>
+
+  Menjadi:
+  ────────────────────────────────────────────────────────
+  <button onclick="goToPayment()" class="flex-[2] btn-cyan py-5 rounded-2xl uppercase text-xs font-black">
+    Lanjut ke Pembayaran <i class="fas fa-arrow-right ml-2"></i>
+  </button>
+
+  3. GANTI seluruh fungsi confirmRental() dengan fungsi goToPayment() berikut:
+  ────────────────────────────────────────────────────────
+-->
+
+<script>
+// Fungsi pengganti confirmRental() — simpan ke sessionStorage lalu redirect
+function goToPayment() {
+    const custName  = document.getElementById('cust-name').value.trim();
+    const custPhone = document.getElementById('cust-phone').value.trim();
+    const custAddr  = document.getElementById('cust-address').value.trim();
+    const dateVal   = document.getElementById('book-date').value;
+    const timeVal   = document.getElementById('book-time').value;
+
+    // Validasi final
+    if (!dateVal || !timeVal) {
+        Swal.fire({ icon:'warning', title:'Tanggal/Jam belum diisi', text:'Harap isi tanggal dan jam rental.', background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff' });
+        return;
+    }
+
+    const start     = new Date(dateVal + 'T' + timeVal);
+    const endMillis = start.getTime() + rentalData.duration * 60 * 60 * 1000;
+
+    // Validasi waktu tidak boleh lewat
+    if (start < new Date()) {
+        Swal.fire({ icon:'warning', title:'Waktu sudah lewat', text:'Pilih tanggal/jam yang belum berlalu.', background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff' });
+        return;
+    }
+
+    const pendingRental = {
+        console         : rentalData.console,
+        rate            : rentalData.rate,
+        duration        : rentalData.duration,
+        total           : rentalData.rate * rentalData.duration,
+        customerName    : custName,
+        customerPhone   : custPhone,
+        customerAddress : custAddr,
+        startTime       : start.toISOString(),
+        endTime         : new Date(endMillis).toISOString(),
+    };
+
+    sessionStorage.setItem('pendingRental', JSON.stringify(pendingRental));
+    location.href = 'payment-rental.html';
+}
+</script>
+
+<!-- 
+  CATATAN TAMBAHAN:
+  - Fungsi setPay() di rental-bawapulang.html bisa dihapus, tidak dipakai lagi.
+  - rentalData.payment tidak perlu diset, karena payment dipilih di halaman berikutnya.
+  - Jangan lupa tambahkan window.goToPayment = goToPayment; di dalam script module.
+-->

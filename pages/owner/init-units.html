@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Init Units – Prince Games</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#080c12;--card:rgba(17,23,31,.9);--cyan:#00d9ff;--border:rgba(255,255,255,.07);--green:#22c55e;--red:#ef4444;}
+    body{background:var(--bg);color:#e8eaf0;font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,217,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,255,.018) 1px,transparent 1px);background-size:42px 42px;pointer-events:none;z-index:0;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;max-width:480px;width:100%;position:relative;z-index:1;}
+    h1{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px;}
+    h1 span{color:var(--cyan);}
+    .sub{font-size:12px;color:#6b7280;margin-bottom:24px;line-height:1.6;}
+    .unit-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:24px;}
+    .u{background:rgba(0,217,255,.06);border:1px solid rgba(0,217,255,.15);border-radius:9px;padding:8px 6px;text-align:center;font-size:10px;font-weight:700;color:var(--cyan);}
+    .u.ps4{background:rgba(94,32,240,.1);border-color:rgba(94,32,240,.3);color:#a78bfa;}
+    .u.ps5{background:rgba(255,191,0,.08);border-color:rgba(255,191,0,.25);color:#fbbf24;}
+    .u.done{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:var(--green);}
+    .u.err{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:var(--red);}
+    .log{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:11px;font-family:monospace;height:160px;overflow-y:auto;margin-bottom:20px;line-height:1.7;}
+    .log-line{color:#6b7280;}
+    .log-line.ok{color:var(--green);}
+    .log-line.er{color:var(--red);}
+    .log-line.inf{color:var(--cyan);}
+    .btn{width:100%;padding:15px;border-radius:13px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .btn-run{background:var(--cyan);color:#000;}
+    .btn-run:disabled{background:#1f2937;color:#4b5563;cursor:not-allowed;}
+    .btn-run:not(:disabled):active{filter:brightness(.88);}
+    .btn-back{background:transparent;border:1px solid var(--border);color:#9ca3af;margin-top:10px;}
+    .progress{width:100%;height:6px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;margin-bottom:20px;}
+    .progress-bar{height:100%;background:var(--cyan);border-radius:99px;width:0%;transition:width .3s;}
+    .warning-box{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:12px 14px;margin-bottom:20px;font-size:11px;color:#fbbf24;line-height:1.6;}
+    .warning-box b{font-weight:800;}
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Init <span>Units</span> Firebase</h1>
+  <p class="sub">Tool ini akan menulis <strong>16 unit</strong> ke koleksi <code>units</code> di Firestore.<br>Jalankan hanya sekali. Unit yang sudah ada tidak akan ditimpa.</p>
+
+  <div class="warning-box">
+    ⚠️ <b>Hanya jalankan sebagai Owner.</b> Pastikan kamu sudah login sebelum menjalankan ini. Proses ini bersifat idempotent — aman dijalankan ulang.
+  </div>
+
+  <!-- Preview unit yang akan dibuat -->
+  <div class="unit-preview" id="unit-preview">
+    <!-- PS3 ×12 -->
+    <div class="u" id="chip-PS3-01">PS3-01</div>
+    <div class="u" id="chip-PS3-02">PS3-02</div>
+    <div class="u" id="chip-PS3-03">PS3-03</div>
+    <div class="u" id="chip-PS3-04">PS3-04</div>
+    <div class="u" id="chip-PS3-05">PS3-05</div>
+    <div class="u" id="chip-PS3-06">PS3-06</div>
+    <div class="u" id="chip-PS3-07">PS3-07</div>
+    <div class="u" id="chip-PS3-08">PS3-08</div>
+    <div class="u" id="chip-PS3-09">PS3-09</div>
+    <div class="u" id="chip-PS3-10">PS3-10</div>
+    <div class="u" id="chip-PS3-11">PS3-11</div>
+    <div class="u" id="chip-PS3-12">PS3-12</div>
+    <!-- PS4 ×3 -->
+    <div class="u ps4" id="chip-PS4-01">PS4-01</div>
+    <div class="u ps4" id="chip-PS4-02">PS4-02</div>
+    <div class="u ps4" id="chip-PS4-03">PS4-03</div>
+    <!-- PS5 ×1 -->
+    <div class="u ps5" id="chip-PS5-01">PS5-01</div>
+  </div>
+
+  <div class="progress"><div class="progress-bar" id="prog"></div></div>
+  <div class="log" id="log"><div class="log-line inf">Siap — klik tombol di bawah untuk mulai.</div></div>
+
+  <button class="btn btn-run" id="btn-run" onclick="runInit()">
+    Mulai Inisialisasi (16 unit)
+  </button>
+  <button class="btn btn-back" onclick="history.back()">← Kembali</button>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAqa9FTlNuVXGHnINFN1qz8-aoGTrn-0g4",
+    authDomain: "prince-games-f170a.firebaseapp.com",
+    projectId: "prince-games-f170a",
+    storageBucket: "prince-games-f170a.firebasestorage.app",
+    messagingSenderId: "245728198046",
+    appId: "1:245728198046:web:b6136e05459f23a96677f5"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // Definisi 16 unit
+  const UNITS = [
+    // PS3 × 12
+    ...Array.from({length:12}, (_,i) => ({
+      id:     `PS3-${String(i+1).padStart(2,'0')}`,
+      type:   'PS3',
+      status: 'Tersedia',
+      price:  5000,    // per jam
+      customerName: null,
+      startTime: null,
+      endTime: null,
+      price_total: 0
+    })),
+    // PS4 × 3
+    ...Array.from({length:3}, (_,i) => ({
+      id:     `PS4-${String(i+1).padStart(2,'0')}`,
+      type:   'PS4',
+      status: 'Tersedia',
+      price:  10000,
+      customerName: null,
+      startTime: null,
+      endTime: null,
+      price_total: 0
+    })),
+    // PS5 × 1
+    {
+      id:     'PS5-01',
+      type:   'PS5',
+      status: 'Tersedia',
+      price:  15000,
+      customerName: null,
+      startTime: null,
+      endTime: null,
+      price_total: 0
+    }
+  ];
+
+  const logEl  = document.getElementById('log');
+  const progEl = document.getElementById('prog');
+
+  function addLog(msg, cls='') {
+    const d = document.createElement('div');
+    d.className = 'log-line ' + cls;
+    d.textContent = msg;
+    logEl.appendChild(d);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function setProgress(pct) {
+    progEl.style.width = pct + '%';
+  }
+
+  // Cek auth state
+  onAuthStateChanged(auth, user => {
+    if (!user) {
+      addLog('⚠ Kamu belum login. Silakan login sebagai Owner dulu.', 'er');
+      document.getElementById('btn-run').disabled = true;
+    } else {
+      addLog(`✓ Login sebagai: ${user.email}`, 'ok');
+    }
+  });
+
+  window.runInit = async () => {
+    const btn = document.getElementById('btn-run');
+    btn.disabled = true;
+    btn.textContent = '⏳ Sedang berjalan...';
+    addLog('', '');
+    addLog('── Memulai inisialisasi unit ──', 'inf');
+
+    let ok = 0, skip = 0, fail = 0;
+
+    for (let i = 0; i < UNITS.length; i++) {
+      const u = UNITS[i];
+      const pct = Math.round(((i+1) / UNITS.length) * 100);
+      const chipEl = document.getElementById('chip-' + u.id);
+
+      try {
+        const ref  = doc(db, 'units', u.id);
+        const snap = await getDoc(ref);
+
+        if (snap.exists()) {
+          addLog(`↷ ${u.id} sudah ada — dilewati`, '');
+          skip++;
+          if (chipEl) chipEl.className = 'u done';
+        } else {
+          await setDoc(ref, {
+            type:        u.type,
+            status:      u.status,
+            price:       u.price,
+            customerName: u.customerName,
+            startTime:   u.startTime,
+            endTime:     u.endTime,
+            price_total: u.price_total,
+            createdAt:   new Date().toISOString()
+          });
+          addLog(`✓ ${u.id} (${u.type}) → Tersedia`, 'ok');
+          ok++;
+          if (chipEl) chipEl.className = 'u done';
+        }
+      } catch (e) {
+        addLog(`✗ ${u.id} gagal: ${e.message}`, 'er');
+        fail++;
+        if (chipEl) chipEl.className = 'u err';
+      }
+
+      setProgress(pct);
+      await new Promise(r => setTimeout(r, 80)); // sedikit delay supaya progress keliatan
+    }
+
+    addLog('', '');
+    addLog(`── Selesai: ${ok} ditulis · ${skip} dilewati · ${fail} gagal ──`, fail > 0 ? 'er' : 'ok');
+    setProgress(100);
+
+    if (fail === 0) {
+      btn.textContent = '✓ Selesai!';
+      btn.style.background = '#22c55e';
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        html: `<b>${ok}</b> unit baru ditulis ke Firestore.<br>${skip} unit sudah ada sebelumnya.<br><br>Semua role kini akan sinkron otomatis.`,
+        background: '#11171f',
+        color: '#fff',
+        confirmButtonColor: '#00d9ff',
+        confirmButtonText: 'Ke Dashboard'
+      }).then(() => window.location.href = '../owner/dashboard-owner.html');
+    } else {
+      btn.textContent = `⚠ ${fail} unit gagal — coba lagi`;
+      btn.disabled = false;
+      btn.style.background = '#ef4444';
+    }
+  };
+</script>
+</body>
+</html>

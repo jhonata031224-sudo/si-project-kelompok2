@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Prince Games – Login Owner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{--cyan:#00d9ff;--cyan-dim:rgba(0,217,255,0.15);--accent:#00d9ff;--accent2:#00b8d9;--accent-dim:rgba(0,217,255,0.12);--bg:#070d14;--card:#0d1520;--border:rgba(255,255,255,0.08);--text:#e8edf5;--muted:#5a6a80;--success:#00e676;--danger:#ff5252}
+        html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden}
+        body{min-height:100vh;display:flex;flex-direction:column;
+            background:
+                radial-gradient(ellipse 100% 60% at 0% 0%,rgba(0,200,220,0.35) 0%,transparent 55%),
+                radial-gradient(ellipse 80% 60% at 100% 100%,rgba(180,0,180,0.28) 0%,transparent 55%),
+                radial-gradient(ellipse 60% 40% at 50% 50%,rgba(0,100,140,0.10) 0%,transparent 70%),
+                #070d14;}
+        .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 0}
+        .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;letter-spacing:-.3px}
+        .logo-icon{width:32px;height:32px;background:var(--cyan-dim);border:1px solid rgba(0,217,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:13px}
+        .logo span{color:var(--cyan)}
+        .badge-role{display:flex;align-items:center;gap:6px;background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2);border-radius:20px;padding:5px 10px;font-size:10px;color:var(--cyan);font-weight:600;letter-spacing:.3px}
+        .hero{padding:28px 20px 0}
+        .hero h1{font-size:30px;font-weight:800;line-height:1.15;letter-spacing:-1px}
+        .hero h1 span{color:var(--cyan)}
+        .hero p{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
+        .chips{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
+        .chip{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:11px;color:#8899aa;font-weight:500}
+        .chip i{color:var(--cyan);font-size:11px}
+        .card{margin:24px 16px 30px;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:24px 20px;position:relative;overflow:hidden}
+        .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,217,255,0.4),transparent)}
+        .card-title{font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px}
+        .card-sub{font-size:11px;color:var(--muted);margin-bottom:22px}
+        .field{margin-bottom:16px}
+        .field label{display:block;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+        .input-wrap{position:relative;display:flex;align-items:center}
+        .input-wrap .icon-left{position:absolute;left:14px;color:var(--muted);font-size:13px;pointer-events:none}
+        .input-wrap input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:13px 14px 13px 38px;color:var(--text);font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s}
+        .input-wrap input::placeholder{color:var(--muted)}
+        .input-wrap input:focus{border-color:rgba(0,217,255,0.5);box-shadow:0 0 0 3px rgba(0,217,255,0.08)}
+        .input-wrap input.error{border-color:rgba(255,82,82,0.5);box-shadow:0 0 0 3px rgba(255,82,82,0.08)}
+        .eye-btn{position:absolute;right:12px;background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;font-size:14px;transition:color .2s;display:flex;align-items:center}
+        .eye-btn:hover{color:var(--cyan)}
+        .field-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+        .field-row label{margin-bottom:0;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+        .forgot-link{font-size:11px;color:var(--cyan);text-decoration:none;font-weight:600}
+        .remember{display:flex;align-items:center;gap:10px;margin-top:4px;margin-bottom:20px}
+        .custom-check{width:18px;height:18px;border:2px solid var(--border);border-radius:6px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+        .custom-check.checked{background:var(--cyan);border-color:var(--cyan)}
+        .custom-check i{font-size:10px;color:#000;display:none}
+        .custom-check.checked i{display:block}
+        .remember span{font-size:12px;color:#8899aa;cursor:pointer}
+        .btn-primary{width:100%;background:var(--cyan);color:#000;border:none;border-radius:14px;padding:15px;font-size:14px;font-weight:800;font-family:'Space Grotesk',sans-serif;letter-spacing:.3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;box-shadow:0 0 24px rgba(0,217,255,0.25)}
+        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 32px rgba(0,217,255,0.4)}
+        .btn-primary:active{transform:scale(.98)}
+        .btn-primary.loading{opacity:.7;pointer-events:none}
+        .divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--muted);font-size:11px}
+        .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+        .link-text{text-align:center;font-size:12px;color:var(--muted)}
+        .link-text a{color:var(--cyan);font-weight:700;text-decoration:none}
+        .version-bar{text-align:center;padding:0 0 20px;font-size:10px;color:#1a2535;letter-spacing:1px}
+        .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;z-index:9999;transition:transform .35s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 32px rgba(0,0,0,.4);min-width:240px;max-width:90vw;white-space:normal}
+        .toast.show{transform:translateX(-50%) translateY(0)}
+        .toast.success{border-color:rgba(0,230,118,.3)}.toast.success .toast-icon{color:var(--success)}
+        .toast.error{border-color:rgba(255,82,82,.3)}.toast.error .toast-icon{color:var(--danger)}
+        .toast.warning{border-color:rgba(255,180,0,.3)}.toast.warning .toast-icon{color:#ffb400}
+        .toast-icon{font-size:16px;flex-shrink:0}
+    </style>
+</head>
+<body>
+    <div class="toast" id="toast"><i class="toast-icon fas fa-check-circle"></i><span id="toast-msg">Berhasil!</span></div>
+
+    <div class="topbar">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
+            PRINCE<span>GAMES</span>
+        </div>
+        <div class="badge-role"><i class="fas fa-shield-halved"></i> Owner Portal</div>
+    </div>
+
+    <div class="hero">
+        <h1>Akses<br><span>Owner Panel.</span></h1>
+        <p>Kontrol penuh laporan bisnis,<br>manajemen staff & pendapatan.</p>
+        <div class="chips">
+            <div class="chip"><i class="fas fa-chart-line"></i> Laporan bisnis</div>
+            <div class="chip"><i class="fas fa-users-cog"></i> Manajemen staff</div>
+            <div class="chip"><i class="fas fa-coins"></i> Pendapatan</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Sign in – Owner</div>
+        <div class="card-sub">Akses eksklusif untuk pemilik Prince Games.</div>
+
+        <div class="field">
+            <label>Email Administrasi</label>
+            <div class="input-wrap">
+                <i class="icon-left fas fa-envelope"></i>
+                <input type="email" id="owner-email" placeholder="Masukan Email" autocomplete="email" maxlength="50">
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="field-row">
+                <label>Kata Sandi</label>
+                <a href="#" class="forgot-link">Lupa password?</a>
+            </div>
+            <div class="input-wrap">
+                <i class="icon-left fas fa-lock"></i>
+                <input type="password" id="owner-pass" placeholder="••••••••" autocomplete="current-password">
+                <button class="eye-btn" type="button" onclick="togglePass('owner-pass','eye1')">
+                    <i class="fas fa-eye" id="eye1"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="remember">
+            <div class="custom-check" id="rememberCheck" onclick="toggleRemember()"><i class="fas fa-check"></i></div>
+            <span onclick="toggleRemember()">Tetap masuk di perangkat ini</span>
+        </div>
+
+        <button class="btn-primary" id="loginBtn" onclick="doLogin()">
+            Sign in <i class="fas fa-arrow-right"></i>
+        </button>
+
+        <div class="divider">atau</div>
+        <div class="link-text">Belum punya akun owner? <a href="../auth/daftar-owner.html">Daftar di sini</a></div>
+    </div>
+
+    <div class="version-bar">v0.1 · Prince Games</div>
+
+<script>
+    let loginAttempts = 0, rememberMe = false;
+    function showToast(type, msg) {
+        const t = document.getElementById('toast');
+        const icons = {success:'fa-check-circle',error:'fa-times-circle',warning:'fa-exclamation-triangle'};
+        t.querySelector('.toast-icon').className = 'toast-icon fas ' + (icons[type]||'fa-info-circle');
+        document.getElementById('toast-msg').textContent = msg;
+        t.className = 'toast ' + type + ' show';
+        setTimeout(() => t.classList.remove('show'), 3200);
+    }
+    function togglePass(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        input.type = input.type === 'password' ? 'text' : 'password';
+        icon.className = input.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    }
+    function toggleRemember() {
+        rememberMe = !rememberMe;
+        document.getElementById('rememberCheck').classList.toggle('checked', rememberMe);
+    }
+    function setLoading(on) {
+        const btn = document.getElementById('loginBtn');
+        btn.classList.toggle('loading', on);
+        btn.innerHTML = on ? '<i class="fas fa-spinner fa-spin"></i> Memproses...' : 'Sign in <i class="fas fa-arrow-right"></i>';
+    }
+    async function doLogin() {
+        const email = document.getElementById('owner-email').value.trim();
+        const pass = document.getElementById('owner-pass').value;
+        document.getElementById('owner-email').classList.remove('error');
+        document.getElementById('owner-pass').classList.remove('error');
+        if (!email) { document.getElementById('owner-email').classList.add('error'); showToast('error','Email tidak boleh kosong!'); return; }
+        if (email.length > 50) { document.getElementById('owner-email').classList.add('error'); showToast('error','Email maksimal 50 karakter!'); return; }
+        if (!pass) { document.getElementById('owner-pass').classList.add('error'); showToast('error','Password tidak boleh kosong!'); return; }
+        loginAttempts++;
+        if (loginAttempts >= 5) {
+            document.getElementById('owner-email').value = '';
+            document.getElementById('owner-pass').value = '';
+            loginAttempts = 0;
+            showToast('warning','Terlalu banyak percobaan. Form dikosongkan.');
+            return;
+        }
+        setLoading(true);
+        if (typeof validatedOwnerLogin === 'function') { validatedOwnerLogin(); }
+        else if (typeof handleLoginOwner === 'function') { await handleLoginOwner(); }
+        else { setTimeout(() => { setLoading(false); showToast('error','Fungsi login belum tersedia.'); }, 1000); }
+    }
+    window.showToast = showToast;
+</script>
+<script type="module" src="../../assets/js/auth.js"></script>
+</body>
+</html>

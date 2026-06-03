@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Prince Games – Daftar Pelanggan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{--cyan:#00d9ff;--pink:#e040fb;--cyan-dim:rgba(0,217,255,0.12);--bg:#070d14;--card:#0d1520;--border:rgba(255,255,255,0.08);--text:#e8edf5;--muted:#5a6a80;--success:#00e676;--danger:#ff5252}
+        html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden}
+        body{min-height:100vh;display:flex;flex-direction:column;
+            background:
+                radial-gradient(ellipse 100% 60% at 0% 0%,rgba(0,200,220,0.35) 0%,transparent 55%),
+                radial-gradient(ellipse 80% 60% at 100% 100%,rgba(180,0,180,0.28) 0%,transparent 55%),
+                radial-gradient(ellipse 60% 40% at 50% 50%,rgba(0,100,140,0.10) 0%,transparent 70%),
+                #070d14;}
+
+        .topbar{display:flex;align-items:center;padding:18px 20px 0}
+        .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;letter-spacing:-.3px}
+        .logo-icon{width:32px;height:32px;background:var(--cyan-dim);border:1px solid rgba(0,217,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:14px}
+        .logo span{color:var(--cyan)}
+
+        .hero{padding:28px 20px 8px}
+        .hero h1{font-size:32px;font-weight:800;line-height:1.1;letter-spacing:-1.5px}
+        .hero h1 .pink{color:var(--pink)}
+
+        .card{margin:16px 16px 16px;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:22px 20px;position:relative;overflow:hidden}
+        .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(224,64,251,0.5),transparent)}
+
+        .field{margin-bottom:14px}
+        .field label{display:block;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+        .input-wrap{position:relative;display:flex;align-items:center}
+        .input-wrap .icon-left{position:absolute;left:14px;color:var(--muted);font-size:13px;pointer-events:none}
+        .input-wrap input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:12px 14px 12px 38px;color:var(--text);font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s}
+        .input-wrap input::placeholder{color:var(--muted)}
+        .input-wrap input:focus{border-color:rgba(0,217,255,0.5);box-shadow:0 0 0 3px rgba(0,217,255,0.08)}
+        .input-wrap input.error{border-color:rgba(255,82,82,0.5);box-shadow:0 0 0 3px rgba(255,82,82,0.08)}
+        .eye-btn{position:absolute;right:12px;background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;font-size:14px;transition:color .2s;display:flex;align-items:center}
+        .eye-btn:hover{color:var(--cyan)}
+
+        .strength-bar{display:flex;gap:4px;margin-top:8px}
+        .strength-seg{height:3px;flex:1;border-radius:3px;background:var(--border);transition:background .3s}
+        .strength-seg.weak{background:#ff5252}
+        .strength-seg.medium{background:#ffb400}
+        .strength-seg.strong{background:var(--success)}
+        .strength-label{font-size:10px;color:var(--muted);margin-top:4px}
+
+        .agree-row{display:flex;align-items:flex-start;gap:10px;margin:14px 0 18px}
+        .custom-check{width:18px;height:18px;border:2px solid var(--border);border-radius:6px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;margin-top:1px}
+        .custom-check.checked{background:var(--cyan);border-color:var(--cyan)}
+        .custom-check i{font-size:10px;color:#000;display:none}
+        .custom-check.checked i{display:block}
+        .agree-text{font-size:12px;color:#8899aa;line-height:1.5}
+        .agree-text a{color:var(--cyan);text-decoration:none;font-weight:600}
+
+        .btn-primary{width:100%;background:var(--cyan);color:#000;border:none;border-radius:14px;padding:15px;font-size:14px;font-weight:800;font-family:'Space Grotesk',sans-serif;letter-spacing:.3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;box-shadow:0 0 24px rgba(0,217,255,0.25)}
+        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 32px rgba(0,217,255,0.4)}
+        .btn-primary:active{transform:scale(.98)}
+        .btn-primary.loading{opacity:.7;pointer-events:none}
+        .btn-primary:disabled{opacity:.4;pointer-events:none;cursor:not-allowed}
+
+        .link-text{text-align:center;font-size:12px;color:var(--muted);margin-top:14px}
+        .link-text a{color:var(--cyan);font-weight:700;text-decoration:none}
+
+        .perks{margin:0 16px 20px;padding:18px 20px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:18px}
+        .perks-title{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:12px}
+        .perk{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px;color:#8899aa}
+        .perk:last-child{margin-bottom:0}
+        .perk-check{width:18px;height:18px;background:var(--cyan);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .perk-check i{font-size:9px;color:#000}
+
+        .version-bar{text-align:center;padding:0 0 24px;font-size:10px;color:#2a3545;letter-spacing:1px}
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
+            PRINCE<span>GAMES</span>
+        </div>
+    </div>
+
+    <div class="hero">
+        <h1>Lewati antrean.<br><span class="pink">Pesan kursi Anda.</span></h1>
+    </div>
+
+    <div class="card">
+        <div class="field">
+            <label>Username</label>
+            <div class="input-wrap">
+                <i class="fas fa-user icon-left"></i>
+                <input type="text" id="reg-username" placeholder="Masukkan username" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Nomor WhatsApp</label>
+            <div class="input-wrap">
+                <i class="fas fa-phone icon-left"></i>
+                <input type="tel" id="reg-nowa" placeholder="Contoh: 08123456789" autocomplete="off" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Password</label>
+            <div class="input-wrap">
+                <i class="icon-left fas fa-lock"></i>
+                                    <input type="password" id="reg-password" placeholder="Minimal 8 karakter" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" oninput="checkStrength(this.value)">
+                <button class="eye-btn" type="button" onclick="togglePass('reg-password','eyeReg')">
+                    <i class="fas fa-eye" id="eyeReg"></i>
+                </button>
+            </div>
+            <div class="strength-bar">
+                <div class="strength-seg" id="s1"></div>
+                <div class="strength-seg" id="s2"></div>
+                <div class="strength-seg" id="s3"></div>
+                <div class="strength-seg" id="s4"></div>
+            </div>
+            <div class="strength-label" id="strength-label">Minimal 8 karakter</div>
+        </div>
+
+        <div class="agree-row">
+            <div class="custom-check" id="agreeCheck" onclick="toggleAgree()"><i class="fas fa-check"></i></div>
+            <div class="agree-text">Saya setuju dengan <a href="#">Syarat & Ketentuan</a> dan <a href="#">Kebijakan Privasi</a>.</div>
+        </div>
+
+        <button class="btn-primary" id="regBtn" onclick="doRegister()" disabled>
+            Buat Akun <i class="fas fa-arrow-right"></i>
+        </button>
+
+        <div class="link-text">
+            Sudah punya akun? <a href="../auth/login-pelanggan.html">Masuk di sini</a>
+        </div>
+    </div>
+
+    <div class="perks">
+        <div class="perks-title">Keuntungan akun</div>
+        <div class="perk"><div class="perk-check"><i class="fas fa-check"></i></div>Booking PS3, PS4 & PS5 dalam hitungan detik</div>
+        <div class="perk"><div class="perk-check"><i class="fas fa-check"></i></div>Notifikasi sebelum sesi berakhir</div>
+        <div class="perk"><div class="perk-check"><i class="fas fa-check"></i></div>Pantau pengeluaran & poin loyalitas</div>
+        <div class="perk"><div class="perk-check"><i class="fas fa-check"></i></div>Diskon eksklusif happy-hour</div>
+    </div>
+
+    <div class="version-bar">v0.1 · Prince Games</div>
+
+<script>
+    let agreed = false, regAttempts = 0;
+
+    function togglePass(inputId, iconId) {
+        const inp = document.getElementById(inputId);
+        const ico = document.getElementById(iconId);
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        ico.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    }
+
+    function toggleAgree() {
+        agreed = !agreed;
+        document.getElementById('agreeCheck').classList.toggle('checked', agreed);
+        document.getElementById('regBtn').disabled = !agreed;
+    }
+
+    function checkStrength(val) {
+        const segs = ['s1','s2','s3','s4'].map(id => document.getElementById(id));
+        const label = document.getElementById('strength-label');
+        let score = 0;
+        if (val.length >= 8) score++;
+        if (/[A-Z]/.test(val)) score++;
+        if (/[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        segs.forEach((s, i) => {
+            s.className = 'strength-seg';
+            if (i < score) s.classList.add(score <= 1 ? 'weak' : score <= 2 ? 'medium' : 'strong');
+        });
+        if (!val) label.textContent = 'Minimal 8 karakter';
+        else if (score <= 1) label.textContent = 'Lemah – tambah angka atau huruf besar';
+        else if (score <= 2) label.textContent = 'Sedang – tambah simbol untuk lebih kuat';
+        else if (score <= 3) label.textContent = 'Kuat';
+        else label.textContent = '✓ Sangat kuat!';
+    }
+
+    function setLoading(on) {
+        const btn = document.getElementById('regBtn');
+        btn.classList.toggle('loading', on);
+        btn.innerHTML = on ? '<i class="fas fa-spinner fa-spin"></i> Mendaftar...' : 'Buat Akun <i class="fas fa-arrow-right"></i>';
+    }
+
+    async function doRegister() {
+        const username = document.getElementById('reg-username').value.trim().toLowerCase();
+        const pass = document.getElementById('reg-password').value;
+
+        document.getElementById('reg-username').classList.remove('error');
+        document.getElementById('reg-password').classList.remove('error');
+
+        if (!username) {
+            document.getElementById('reg-username').classList.add('error');
+            Swal.fire({icon:'error',title:'Username kosong',text:'Username tidak boleh kosong!',background:'#11171f',color:'#fff',confirmButtonColor:'#00d9ff',timer:2500});
+            return;
+        }
+        if (!/^[a-z0-9_.]+$/.test(username)) {
+            document.getElementById('reg-username').classList.add('error');
+            Swal.fire({icon:'error',title:'Username tidak valid',text:'Hanya huruf kecil, angka, titik & underscore!',background:'#11171f',color:'#fff',confirmButtonColor:'#00d9ff',timer:2500});
+            return;
+        }
+        const nowa = document.getElementById('reg-nowa').value.trim();
+        if (!nowa || nowa.length < 9) {
+            document.getElementById('reg-nowa').classList.add('error');
+            Swal.fire({icon:'error',title:'No. WA tidak valid',text:'Masukkan nomor WhatsApp yang valid!',background:'#11171f',color:'#fff',confirmButtonColor:'#00d9ff',timer:2500});
+            return;
+        }
+        if (!/^0[0-9]{8,14}$/.test(nowa)) {
+            document.getElementById('reg-nowa').classList.add('error');
+            Swal.fire({icon:'error',title:'Format No. WA salah',text:'Nomor harus diawali 0, contoh: 08123456789',background:'#11171f',color:'#fff',confirmButtonColor:'#00d9ff',timer:2500});
+            return;
+        }
+
+        if (pass.length < 8) {
+            document.getElementById('reg-password').classList.add('error');
+            Swal.fire({icon:'error',title:'Password terlalu pendek',text:'Password minimal 8 karakter!',background:'#11171f',color:'#fff',confirmButtonColor:'#00d9ff',timer:2500});
+            return;
+        }
+        if (!agreed) {
+            Swal.fire({icon:'warning',title:'Persetujuan dibutuhkan',text:'Centang syarat & ketentuan terlebih dahulu!',background:'#11171f',color:'#fff',confirmButtonColor:'#00d9ff',timer:2500});
+            return;
+        }
+
+        regAttempts++;
+        if (regAttempts >= 5) {
+            document.getElementById('reg-username').value = '';
+            document.getElementById('reg-password').value = '';
+            regAttempts = 0;
+            Swal.fire({icon:'warning',title:'Terlalu banyak percobaan',text:'Form dikosongkan, coba lagi.',background:'#11171f',color:'#fff',confirmButtonColor:'#00d9ff'});
+            return;
+        }
+
+        setLoading(true);
+        if (typeof handleRegisterPelanggan === 'function') {
+            await handleRegisterPelanggan();
+            // Reset loading jika gagal (sukses akan redirect)
+            setLoading(false);
+        } else {
+            setTimeout(() => {
+                setLoading(false);
+                Swal.fire({icon:'error',title:'Error',text:'Fungsi daftar belum tersedia.',background:'#11171f',color:'#fff',confirmButtonColor:'#00d9ff'});
+            }, 1000);
+        }
+    }
+</script>
+<script type="module" src="../../assets/js/auth.js"></script>
+</body>
+</html>

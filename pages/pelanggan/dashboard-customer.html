@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Prince Games – Dashboard Pelanggan</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+    :root{
+      --bg:#080c12;--card:rgba(17,23,31,.9);--cyan:#00d9ff;
+      --border:rgba(255,255,255,.07);--green:#22c55e;--red:#ef4444;--amber:#f59e0b;
+    }
+    body{background:var(--bg);color:#e8eaf0;font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding-bottom:76px;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,217,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,255,.018) 1px,transparent 1px);background-size:42px 42px;pointer-events:none;z-index:0;}
+
+    header{position:sticky;top:0;z-index:50;background:rgba(8,12,18,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:13px 16px;display:flex;justify-content:space-between;align-items:center;}
+    .logo{font-size:14px;font-weight:800;letter-spacing:-.3px;text-transform:uppercase;}
+    .logo span{color:var(--cyan);}
+    .badge-role{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border:1px solid var(--border);border-radius:4px;color:#6b7280;margin-left:8px;}
+    .btn-out-hdr{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;background:rgba(247,129,102,0.08);color:#f78166;border:1px solid rgba(247,129,102,0.2);cursor:pointer;font-family:inherit;transition:all .2s;}
+    .btn-out-hdr:hover{background:rgba(247,129,102,0.18);}
+
+    main{padding:20px 16px 8px;position:relative;z-index:1;}
+
+    .greeting h2{font-size:26px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;}
+    .greeting p{font-size:12px;color:#6b7280;line-height:1.5;}
+
+    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:18px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px 11px;position:relative;}
+    .stat-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);position:absolute;top:12px;right:12px;animation:blink 2s infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+    .stat-lbl{font-size:11px;font-weight:700;color:#9ca3af;margin-bottom:5px;}
+    .stat-val{font-size:13px;font-weight:800;color:var(--green);}
+    .stat-price{font-size:10px;color:#374151;margin-top:3px;}
+    .stat-section-label{font-size:9px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#4b5563;margin-top:14px;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+    .stat-section-label i{font-size:9px;}
+    .stat-dot-amber{background:#f59e0b;box-shadow:0 0 5px #f59e0b;}
+
+    .sec-box{background:rgba(13,18,26,.8);border:1px solid var(--border);border-radius:16px;padding:16px 14px;margin-top:14px;}
+    .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+    .sec-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;}
+    .sec-title i{color:var(--cyan);font-size:12px;}
+
+    .pills{display:flex;gap:5px;}
+    .pill{font-size:10px;font-weight:700;padding:5px 9px;border-radius:7px;border:1px solid var(--border);background:transparent;color:#6b7280;cursor:pointer;font-family:inherit;transition:all .15s;}
+    .pill.on{background:var(--cyan);color:#000;border-color:var(--cyan);}
+
+    .legend{display:flex;gap:12px;margin-bottom:12px;}
+    .leg{display:flex;align-items:center;gap:5px;font-size:10px;color:#6b7280;}
+    .leg-dot{width:7px;height:7px;border-radius:50%;}
+
+    .unit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+    .unit-card{background:rgba(17,23,31,.65);border:1px solid var(--border);border-radius:11px;padding:12px;animation:fadeUp .3s ease both;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+    .unit-top{display:flex;justify-content:space-between;align-items:flex-start;}
+    .unit-name{font-size:13px;font-weight:800;letter-spacing:-.2px;}
+    .unit-type{font-size:9px;color:#4b5563;font-weight:600;margin-top:2px;}
+    .u-dot{width:8px;height:8px;border-radius:50%;margin-top:3px;}
+    .dg{background:var(--green);box-shadow:0 0 5px var(--green);}
+    .dr{background:var(--red);box-shadow:0 0 5px var(--red);}
+    .db{background:#f97316;box-shadow:0 0 4px #f97316;}
+    .da{background:var(--amber);box-shadow:0 0 4px var(--amber);}
+    .unit-status{font-size:10px;font-weight:700;margin-top:7px;}
+    .st-t{color:var(--green);}
+    .st-d{color:var(--red);}
+    .st-b{color:#f97316;display:flex;align-items:center;gap:4px;}
+    .st-m{color:var(--amber);display:flex;align-items:center;gap:4px;}
+
+    .btn-wrap{display:flex;flex-direction:column;gap:10px;margin-top:13px;}
+    .btn-booking-big{width:100%;background:var(--cyan);color:#000;font-size:13px;font-weight:800;padding:15px;border-radius:13px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;}
+    .btn-booking-big:active{filter:brightness(.88);}
+    .btn-booking-outline{width:100%;background:transparent;color:var(--cyan);border:1px solid var(--cyan);box-shadow:0 0 16px rgba(0,217,255,0.08);font-size:13px;font-weight:800;padding:15px;border-radius:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;}
+    .btn-booking-outline:active{filter:brightness(.88);}
+
+    .bk-empty{text-align:center;padding:20px 0 6px;color:#4b5563;font-size:12px;line-height:1.6;}
+
+    .rent-card{background:rgba(17,23,31,.65);border:1px solid var(--border);border-radius:11px;padding:12px;margin-bottom:8px;animation:fadeUp .3s ease both;position:relative;transition:border-color .15s;}
+    .btn-batal-card{display:flex;align-items:center;gap:5px;margin-top:10px;padding:7px 12px;border-radius:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;width:100%;justify-content:center;}
+    .btn-batal-card:hover{background:rgba(239,68,68,0.18);border-color:rgba(239,68,68,0.4);}
+    .rent-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+    .rent-console{font-size:13px;font-weight:800;}
+    .rent-type{font-size:9px;color:#4b5563;font-weight:600;margin-top:2px;}
+    .rent-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:.05em;text-transform:uppercase;}
+    .rb-aktif{background:rgba(0,217,255,.12);color:var(--cyan);border:1px solid rgba(0,217,255,.25);}
+    .rb-lunas{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);}
+    .rb-pending{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.25);}
+    .rent-row{display:flex;justify-content:space-between;margin-bottom:4px;}
+    .rent-lbl{font-size:10px;color:#6b7280;}
+    .rent-val{font-size:10px;font-weight:700;color:#d1d5db;}
+    .rent-total{font-size:13px;font-weight:800;color:var(--cyan);}
+
+    /* Tombol hapus di header section */
+    .btn-hapus-all{font-size:10px;font-weight:700;padding:5px 9px;border-radius:7px;border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.08);color:var(--red);cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:4px;}
+    .btn-hapus-all:active{filter:brightness(.85);}
+
+    /* Checkbox seleksi di tiap card */
+    .card-select-wrap{position:absolute;top:10px;left:10px;display:none;z-index:2;}
+    .card-select-wrap input[type=checkbox]{width:17px;height:17px;accent-color:var(--red);cursor:pointer;}
+    .select-mode .card-select-wrap{display:flex;}
+    .select-mode .rent-card{padding-left:38px;border-color:rgba(255,255,255,.12);}
+    .select-mode .rent-card.selected{border-color:var(--red);background:rgba(239,68,68,.07);}
+
+    /* Bar bawah saat mode seleksi aktif */
+    .select-bar{display:none;position:fixed;bottom:76px;left:0;right:0;z-index:200;background:rgba(8,12,18,.97);border-top:1px solid rgba(239,68,68,.25);padding:12px 16px;gap:10px;align-items:center;}
+    .select-bar.show{display:flex;}
+    .select-bar-info{flex:1;font-size:12px;font-weight:700;color:#9ca3af;}
+    .btn-batal-sel{font-size:11px;font-weight:700;padding:9px 14px;border-radius:10px;border:1px solid var(--border);background:transparent;color:#6b7280;cursor:pointer;font-family:inherit;}
+    .btn-hapus-sel{font-size:11px;font-weight:700;padding:9px 16px;border-radius:10px;border:none;background:var(--red);color:#fff;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;}
+    .btn-hapus-sel:active{filter:brightness(.85);}
+
+    nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,12,18,.98);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:10px 0 18px;display:flex;justify-content:space-around;align-items:center;z-index:100;}
+    .nav-it{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 20px;}
+    .nav-it i{font-size:18px;color:#374151;}
+    .nav-it span{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#374151;}
+    .nav-it.on i,.nav-it.on span{color:var(--cyan);}
+
+    /* ── History Modal ── */
+    .hist-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;opacity:0;pointer-events:none;transition:opacity .25s;}
+    .hist-overlay.show{opacity:1;pointer-events:all;}
+    .hist-drawer{position:fixed;bottom:0;left:0;right:0;z-index:301;background:#0d1219;border-top:1px solid var(--border);border-radius:20px 20px 0 0;padding:0 0 90px;max-height:92vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.4,1);}
+    .hist-drawer.show{transform:translateY(0);}
+    .hist-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin:10px auto 0;}
+    .hist-head{padding:14px 16px 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+    .hist-title{font-size:15px;font-weight:800;letter-spacing:-.3px;}
+    .hist-title span{color:var(--cyan);}
+    .hist-close{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:#9ca3af;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .hist-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:12px 16px 0;flex-shrink:0;}
+    .hstat{background:rgba(17,23,31,.8);border:1px solid var(--border);border-radius:10px;padding:9px 6px;text-align:center;}
+    .hstat-val{font-size:15px;font-weight:800;}
+    .hstat-lbl{font-size:8px;font-weight:700;color:#6b7280;margin-top:2px;text-transform:uppercase;letter-spacing:.05em;}
+    .hstat-total .hstat-val{color:#e8eaf0;}
+    .hstat-selesai .hstat-val{color:var(--green);}
+    .hstat-aktif .hstat-val{color:var(--cyan);}
+    .hstat-batal .hstat-val{color:var(--red);}
+    .hist-total-paid{margin:10px 16px 0;background:linear-gradient(135deg,rgba(0,217,255,.08),rgba(0,217,255,.03));border:1px solid rgba(0,217,255,.15);border-radius:11px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+    .hist-total-paid-lbl{font-size:11px;color:#6b7280;font-weight:600;}
+    .hist-total-paid-sub{font-size:9px;color:#4b5563;margin-top:2px;}
+    .hist-total-paid-val{font-size:16px;font-weight:800;color:var(--cyan);}
+    .hist-filters{display:flex;gap:6px;padding:12px 16px 0;overflow-x:auto;flex-shrink:0;scrollbar-width:none;}
+    .hist-filters::-webkit-scrollbar{display:none;}
+    .hfil{font-size:10px;font-weight:700;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:#6b7280;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:5px;}
+    .hfil.on{background:var(--cyan);color:#000;border-color:var(--cyan);}
+    .hfil .hfil-dot{width:6px;height:6px;border-radius:50%;}
+    .hfil-semua .hfil-dot{background:var(--cyan);}
+    .hfil-selesai .hfil-dot{background:var(--green);}
+    .hfil-batal .hfil-dot{background:var(--red);}
+    .hfil-pending .hfil-dot{background:var(--amber);}
+    .hfil.on .hfil-dot{background:#000;}
+    .hist-date-group{font-size:9px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:#4b5563;padding:12px 16px 6px;display:flex;align-items:center;gap:6px;}
+    .hist-date-group i{font-size:9px;}
+    .hist-body{flex:1;overflow-y:auto;padding:0 16px;scrollbar-width:none;}
+    .hist-body::-webkit-scrollbar{display:none;}
+    .hist-empty{text-align:center;padding:40px 16px;color:#4b5563;font-size:12px;line-height:1.7;}
+    .hist-empty i{font-size:28px;margin-bottom:10px;display:block;opacity:.4;}
+    .hcard{background:rgba(17,23,31,.65);border:1px solid var(--border);border-radius:11px;padding:12px;margin-bottom:8px;animation:fadeUp .25s ease both;}
+    .hcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+    .hcard-name{font-size:13px;font-weight:800;}
+    .hcard-sub{font-size:9px;color:#4b5563;margin-top:2px;}
+    .hcard-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:.05em;text-transform:uppercase;}
+    .hb-selesai{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);}
+    .hb-aktif{background:rgba(0,217,255,.12);color:var(--cyan);border:1px solid rgba(0,217,255,.25);}
+    .hb-batal{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25);}
+    .hb-pending{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.25);}
+    .hcard-row{display:flex;justify-content:space-between;margin-bottom:3px;}
+    .hcard-lbl{font-size:10px;color:#6b7280;}
+    .hcard-val{font-size:10px;font-weight:700;color:#d1d5db;}
+    .hcard-total{font-size:13px;font-weight:800;color:var(--cyan);}
+    .hcard-type-tag{font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:#6b7280;border:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em;}
+  </style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;">
+    <span class="logo">Prince<span>Games</span></span>
+    <span class="badge-role">Customer</span>
+  </div>
+  <button class="btn-out-hdr" onclick="doLogout()">
+    <i class="fas fa-right-from-bracket"></i>
+    <span>Keluar</span>
+  </button>
+</header>
+
+<main>
+  <div class="greeting">
+    <h2>Halo, pelanggan 👋</h2>
+    <p>Lengkapi nomor WhatsApp saat booking<br>agar pesanan tertaut otomatis.</p>
+  </div>
+
+  <div class="stat-section-label"><i class="fas fa-calendar-check"></i> Unit Booking</div>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-dot"></div>
+      <div class="stat-lbl">PS3</div>
+      <div class="stat-val" id="sv3">—</div>
+      <div class="stat-price">Rp 5.000/jam</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-dot"></div>
+      <div class="stat-lbl">PS4</div>
+      <div class="stat-val" id="sv4">—</div>
+      <div class="stat-price">Rp 10.000/jam</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-dot"></div>
+      <div class="stat-lbl">PS5</div>
+      <div class="stat-val" id="sv5">—</div>
+      <div class="stat-price">Rp 15.000/jam</div>
+    </div>
+  </div>
+
+  <div class="stat-section-label"><i class="fas fa-box"></i> Unit Rental</div>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-dot stat-dot-amber"></div>
+      <div class="stat-lbl">PS3</div>
+      <div class="stat-val" id="rv3">—</div>
+      <div class="stat-price">Rp 5.000/jam</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-dot stat-dot-amber"></div>
+      <div class="stat-lbl">PS4</div>
+      <div class="stat-val" id="rv4">—</div>
+      <div class="stat-price">Rp 10.000/jam</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-dot stat-dot-amber"></div>
+      <div class="stat-lbl">PS5</div>
+      <div class="stat-val" id="rv5">—</div>
+      <div class="stat-price">Rp 15.000/jam</div>
+    </div>
+  </div>
+
+  <div class="sec-box">
+    <div class="sec-head">
+      <div class="sec-title"><i class="fas fa-bolt"></i> Status unit live</div>
+      <div class="pills">
+        <button class="pill on" onclick="doFilter('Semua',this)">Semua</button>
+        <button class="pill" onclick="doFilter('PS3',this)">PS3</button>
+        <button class="pill" onclick="doFilter('PS4',this)">PS4</button>
+        <button class="pill" onclick="doFilter('PS5',this)">PS5</button>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Tersedia</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--red)"></div>Dipakai</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>Maintenance</div>
+    </div>
+    <div class="unit-grid" id="unit-grid"></div>
+
+    <!-- Unit Rental Bawa Pulang -->
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05)">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#a78bfa;margin-bottom:10px">
+        <i class="fas fa-box" style="margin-right:6px"></i>Unit Rental Bawa Pulang
+      </div>
+      <div class="unit-grid" id="rental-unit-grid"></div>
+    </div>
+
+    <div class="btn-wrap">
+      <button class="btn-booking-big" onclick="location.href='../pelanggan/booking.html'">
+        <i class="fas fa-calendar-check"></i> Booking sekarang
+      </button>
+      <button class="btn-booking-outline" onclick="location.href='../pelanggan/rental-bawapulang.html'">
+        <i class="fas fa-house"></i> Rental bawa pulang
+      </button>
+    </div>
+  </div>
+
+  <div class="sec-box" style="margin-bottom:16px;">
+    <div class="sec-head">
+      <div class="sec-title"><i class="fas fa-check-circle"></i> Booking (<span id="bk-count">0</span>)</div>
+      <button class="btn-hapus-all" id="bk-hapus-btn" style="display:none" onclick="masukModeSeleksi('bk')">
+        <i class="fas fa-trash-can"></i> Hapus
+      </button>
+    </div>
+    <div class="bk-empty" id="bk-empty">
+      Belum ada booking. Yuk booking sesi pertamamu!
+    </div>
+    <div id="bk-list" style="display:none;"></div>
+  </div>
+
+  <!-- RIWAYAT RENTAL BAWA PULANG -->
+  <div class="sec-box" style="margin-bottom:16px;">
+    <div class="sec-head">
+      <div class="sec-title"><i class="fas fa-house"></i> Rental Bawa Pulang (<span id="rent-count">0</span>)</div>
+      <button class="btn-hapus-all" id="rent-hapus-btn" style="display:none" onclick="masukModeSeleksi('rent')">
+        <i class="fas fa-trash-can"></i> Hapus
+      </button>
+    </div>
+    <div class="bk-empty" id="rent-empty">Belum ada riwayat rental bawa pulang.</div>
+    <div id="rent-list"></div>
+  </div>
+
+  <!-- SELECT BAR (muncul saat mode seleksi) -->
+  <div class="select-bar" id="select-bar">
+    <span class="select-bar-info" id="select-info">0 dipilih</span>
+    <button class="btn-batal-sel" onclick="batalModeSeleksi()">Batal</button>
+    <button class="btn-hapus-sel" onclick="hapusYangDipilih()">
+      <i class="fas fa-trash-can"></i> <span id="select-hapus-label">Hapus</span>
+    </button>
+  </div>
+</main>
+
+<nav>
+  <div class="nav-it on">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </div>
+  <div class="nav-it" onclick="bukaHistory()">
+    <i class="fas fa-clock-rotate-left"></i>
+    <span>Riwayat</span>
+  </div>
+  <div class="nav-it" onclick="location.href='https://wa.me/6285769033135'">
+    <i class="ti ti-brand-whatsapp" style="font-size:18px;"></i>
+    <span>Bantuan</span>
+  </div>
+</nav>
+
+<!-- ── History Modal Drawer ── -->
+<div class="hist-overlay" id="hist-overlay" onclick="tutupHistory()"></div>
+<div class="hist-drawer" id="hist-drawer">
+  <div class="hist-handle"></div>
+  <div class="hist-head">
+    <div class="hist-title"><i class="fas fa-clock-rotate-left" style="color:var(--cyan);margin-right:7px;font-size:13px;"></i>Riwayat <span>Saya</span></div>
+    <button class="hist-close" onclick="tutupHistory()"><i class="fas fa-xmark"></i></button>
+  </div>
+  <div class="hist-stats">
+    <div class="hstat hstat-total"><div class="hstat-val" id="hs-total">0</div><div class="hstat-lbl">Total</div></div>
+    <div class="hstat hstat-selesai"><div class="hstat-val" id="hs-selesai">0</div><div class="hstat-lbl">Selesai</div></div>
+    <div class="hstat hstat-aktif"><div class="hstat-val" id="hs-aktif">0</div><div class="hstat-lbl">Aktif</div></div>
+    <div class="hstat hstat-batal"><div class="hstat-val" id="hs-batal">0</div><div class="hstat-lbl">Batal</div></div>
+  </div>
+  <div class="hist-total-paid">
+    <div>
+      <div class="hist-total-paid-lbl">Total Yang Sudah Dibayar</div>
+      <div class="hist-total-paid-sub" id="hs-selesai-count">0 transaksi selesai</div>
+    </div>
+    <div class="hist-total-paid-val" id="hs-total-paid">Rp 0</div>
+  </div>
+  <div class="hist-filters">
+    <button class="hfil hfil-semua on" onclick="filterHistory('Semua',this)"><span class="hfil-dot"></span> Semua</button>
+    <button class="hfil hfil-selesai" onclick="filterHistory('Selesai',this)"><span class="hfil-dot"></span> Selesai</button>
+    <button class="hfil hfil-batal" onclick="filterHistory('Batal',this)"><span class="hfil-dot"></span> Batal</button>
+    <button class="hfil hfil-pending" onclick="filterHistory('Pending',this)"><span class="hfil-dot"></span> Pending</button>
+  </div>
+  <div class="hist-body" id="hist-body">
+    <div class="hist-empty"><i class="fas fa-box-open"></i>Belum ada riwayat.</div>
+  </div>
+</div>
+
+<script type="module">
+  import { auth, db, collection, onSnapshot, handleLogout, doc } from '../../assets/js/auth.js';
+  import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+  import { query, where, orderBy, limit, deleteDoc, getDocs, updateDoc, addDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+  let unsubBookings = null;
+  let unsubRentals  = null;
+  let currentUid    = null;
+
+  // State seleksi
+  let modeSeleksi   = null; // 'bk' | 'rent'
+  let allBookingDocs = [];  // array {id, ...data} untuk booking
+  let allRentalDocs  = [];  // array {id, ...data} untuk rental
+
+  // ── Limit extend — baca dari Firestore (diset oleh staff) ───────────
+  let extendLimit = 2; // default
+  (async function loadExtendLimit() {
+    try {
+      const snap = await getDoc(doc(db, 'settings', 'extend'));
+      if (snap.exists() && snap.data().limit >= 1) {
+        extendLimit = snap.data().limit;
+      }
+    } catch(e) {}
+  })();
+
+  onAuthStateChanged(auth, user => {
+    if (!user) { window.location.href = '../auth/login-pelanggan.html'; return; }
+    currentUid = user.uid;
+    loadBookings(user.uid);
+    loadRentals(user.uid);
+    // Auto-buka riwayat jika diarahkan dari halaman lain (?history=1)
+    if (new URLSearchParams(window.location.search).get('history') === '1') {
+      setTimeout(() => bukaHistory(), 600);
+    }
+  });
+
+  window.doLogout = () => handleLogout('../auth/login-pelanggan.html');
+
+  // ── Helper badge ────────────────────────────────────────────────────
+  const statusBadge = s => {
+    if (!s) return 'rb-pending';
+    const sl = s.toLowerCase();
+    if (sl.includes('aktif')) return 'rb-aktif';
+    if (sl.includes('lunas') || sl.includes('selesai') || sl.includes('dikembalikan')) return 'rb-lunas';
+    return 'rb-pending';
+  };
+  const statusIcon = s => {
+    if (!s) return 'fa-clock';
+    const sl = s.toLowerCase();
+    if (sl.includes('aktif'))   return 'fa-gamepad';
+    if (sl.includes('selesai')) return 'fa-check-circle';
+    return 'fa-clock';
+  };
+
+  // ── Render card (booking atau rental) ──────────────────────────────
+  function renderCard(item, tipe, i) {
+    const isBooking = tipe === 'bk';
+    const col    = isBooking ? 'bookings' : 'rentals';
+    const tgl    = item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID', {day:'numeric',month:'short',year:'numeric'}) : '—';
+    const total  = (item.grandTotal || item.total) ? 'Rp ' + Number(item.grandTotal || item.total).toLocaleString('id-ID') : '—';
+    const status = item.status || item.paymentStatus || 'Diproses';
+    const sl     = status.toLowerCase();
+    const bisaDibatalkan = !sl.includes('aktif') && !sl.includes('selesai') && !sl.includes('dikembalikan') && !sl.includes('dibatalkan') && !sl.includes('ditolak');
+    const btnBatal = bisaDibatalkan
+      ? `<button class="btn-batal-card" onclick="batalkanReservasi('${col}','${item.id}','${tipe}')"><i class="fas fa-ban" style="font-size:9px"></i> Batalkan ${isBooking ? 'Booking' : 'Rental'}</button>`
+      : '';
+    const body   = isBooking
+      ? `<div class="rent-top">
+           <div>
+             <div class="rent-console"><i class="fas ${statusIcon(status)}" style="font-size:10px;margin-right:5px;color:var(--cyan)"></i>${item.console || '—'}</div>
+             <div class="rent-type">${item.paymentMethod || 'Booking'} · ${item.duration || '—'} Jam</div>
+           </div>
+           <span class="rent-badge ${statusBadge(status)}">${status}</span>
+         </div>
+         <div class="rent-row"><span class="rent-lbl"><i class="fas fa-calendar" style="font-size:9px;margin-right:4px"></i>Jadwal</span><span class="rent-val">${(item.date||'—')} · ${(item.time||'—')} WIB</span></div>
+         <div class="rent-row"><span class="rent-lbl"><i class="fas fa-calendar-alt" style="font-size:9px;margin-right:4px"></i>Dibuat</span><span class="rent-val">${tgl}</span></div>
+         <div class="rent-row"><span class="rent-lbl"><i class="fas fa-wallet" style="font-size:9px;margin-right:4px"></i>Total</span><span class="rent-total">${total}</span></div>
+         ${btnBatal}`
+      : `<div class="rent-top">
+           <div>
+             <div class="rent-console">${item.console || '—'}</div>
+             <div class="rent-type">${item.paymentMethod || item.payment || 'Rental'} · ${item.duration || '—'} Jam</div>
+           </div>
+           <span class="rent-badge ${statusBadge(status)}">${status}</span>
+         </div>
+         <div class="rent-row"><span class="rent-lbl"><i class="fas fa-calendar" style="font-size:9px;margin-right:4px"></i>Tanggal</span><span class="rent-val">${tgl}</span></div>
+         <div class="rent-row"><span class="rent-lbl"><i class="fas fa-clock-rotate-left" style="font-size:9px;margin-right:4px"></i>Batas Kembali</span><span class="rent-val" style="color:var(--amber)">${item.endTime ? new Date(item.endTime).toLocaleString('id-ID',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '—'}</span></div>
+         <div class="rent-row"><span class="rent-lbl"><i class="fas fa-hourglass-half" style="font-size:9px;margin-right:4px"></i>Durasi</span><span class="rent-val">${item.duration || '—'} Jam</span></div>
+         <div class="rent-row"><span class="rent-lbl"><i class="fas fa-wallet" style="font-size:9px;margin-right:4px"></i>Total</span><span class="rent-total">${total}</span></div>
+         ${btnBatal}`;
+    return `<div class="rent-card" id="card-${item.id}" data-id="${item.id}" style="animation-delay:${i*.05}s">
+      <div class="card-select-wrap">
+        <input type="checkbox" id="chk-${item.id}" onchange="togglePilih('${item.id}')">
+      </div>
+      ${body}
+    </div>`;
+  }
+  // ── Load booking milik user ─────────────────────────────────────────
+  function loadBookings(uid) {
+    if (unsubBookings) unsubBookings();
+    const bkQ = query(collection(db, 'bookings'), where('userId', '==', uid));
+    unsubBookings = onSnapshot(bkQ, snap => {
+      allBookingDocs = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+      document.getElementById('bk-count').textContent = allBookingDocs.length;
+      const listEl  = document.getElementById('bk-list');
+      const emptyEl = document.getElementById('bk-empty');
+      const hapusBtn = document.getElementById('bk-hapus-btn');
+      if (!allBookingDocs.length) {
+        emptyEl.style.display = 'block';
+        emptyEl.textContent   = 'Belum ada booking. Yuk booking sesi pertamamu!';
+        listEl.style.display  = 'none';
+        listEl.innerHTML      = '';
+        hapusBtn.style.display = 'none';
+        return;
+      }
+      emptyEl.style.display  = 'none';
+      listEl.style.display   = 'block';
+      hapusBtn.style.display = 'flex';
+      listEl.innerHTML = allBookingDocs.map((b, i) => renderCard(b, 'bk', i)).join('');
+      if (document.getElementById('hist-drawer').classList.contains('show')) { renderHistoryStats(); renderHistoryList(); }
+    }, () => { document.getElementById('bk-empty').textContent = 'Gagal memuat booking.'; });
+  }
+
+  // ── Load rental milik user ──────────────────────────────────────────
+  function loadRentals(uid) {
+    if (unsubRentals) unsubRentals();
+    const rentQ = query(collection(db, 'rentals'), where('userId', '==', uid));
+    unsubRentals = onSnapshot(rentQ, snap => {
+      allRentalDocs = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+      document.getElementById('rent-count').textContent = allRentalDocs.length;
+      const listEl  = document.getElementById('rent-list');
+      const emptyEl = document.getElementById('rent-empty');
+      const hapusBtn = document.getElementById('rent-hapus-btn');
+      if (!allRentalDocs.length) {
+        emptyEl.style.display  = 'block';
+        listEl.innerHTML       = '';
+        hapusBtn.style.display = 'none';
+        return;
+      }
+      emptyEl.style.display  = 'none';
+      hapusBtn.style.display = 'flex';
+      listEl.innerHTML = allRentalDocs.map((r, i) => renderCard(r, 'rent', i)).join('');
+      if (document.getElementById('hist-drawer').classList.contains('show')) { renderHistoryStats(); renderHistoryList(); }
+    }, () => { document.getElementById('rent-empty').textContent = 'Gagal memuat riwayat.'; });
+  }
+
+  // ── MODE SELEKSI ────────────────────────────────────────────────────
+  const selectedIds = new Set();
+
+  window.masukModeSeleksi = function(tipe) {
+    modeSeleksi = tipe;
+    selectedIds.clear();
+    const listEl = document.getElementById(tipe === 'bk' ? 'bk-list' : 'rent-list');
+    listEl.classList.add('select-mode');
+    updateSelectBar();
+    document.getElementById('select-bar').classList.add('show');
+    // Pilih semua by default supaya lebih praktis, user bisa uncheck yang tidak mau dihapus
+    const items = tipe === 'bk' ? allBookingDocs : allRentalDocs;
+    items.forEach(item => {
+      selectedIds.add(item.id);
+      const chk = document.getElementById('chk-' + item.id);
+      const card = document.getElementById('card-' + item.id);
+      if (chk) chk.checked = true;
+      if (card) card.classList.add('selected');
+    });
+    updateSelectBar();
+  };
+
+  window.batalModeSeleksi = function() {
+    if (!modeSeleksi) return;
+    const listEl = document.getElementById(modeSeleksi === 'bk' ? 'bk-list' : 'rent-list');
+    listEl.classList.remove('select-mode');
+    selectedIds.clear();
+    modeSeleksi = null;
+    document.getElementById('select-bar').classList.remove('show');
+  };
+
+  window.togglePilih = function(id) {
+    const card = document.getElementById('card-' + id);
+    if (selectedIds.has(id)) {
+      selectedIds.delete(id);
+      if (card) card.classList.remove('selected');
+    } else {
+      selectedIds.add(id);
+      if (card) card.classList.add('selected');
+    }
+    updateSelectBar();
+  };
+
+  function updateSelectBar() {
+    const n = selectedIds.size;
+    document.getElementById('select-info').textContent = n + ' item dipilih';
+    document.getElementById('select-hapus-label').textContent = n > 0 ? 'Hapus (' + n + ')' : 'Hapus';
+  }
+
+  window.hapusYangDipilih = async function() {
+    if (!selectedIds.size) {
+      Swal.fire({ toast:true, position:'top', icon:'info', title:'Pilih item dulu', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+      return;
+    }
+    const col = modeSeleksi === 'bk' ? 'bookings' : 'rentals';
+    const n   = selectedIds.size;
+    const res = await Swal.fire({
+      title: 'Hapus ' + n + ' item?',
+      html: 'Data yang dihapus <strong>tidak bisa dikembalikan</strong>.<br><span style="color:#9ca3af;font-size:12px">Hanya data riwayat yang dihapus, bukan sesi aktif.</span>',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fas fa-trash-can"></i> Ya, Hapus',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#374151',
+      background: '#11171f', color: '#fff'
+    });
+    if (!res.isConfirmed) return;
+
+    Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#11171f', color: '#fff' });
+    try {
+      await Promise.all([...selectedIds].map(id => deleteDoc(doc(db, col, id))));
+      batalModeSeleksi();
+      Swal.fire({ toast:true, position:'top', icon:'success', title: n + ' item berhasil dihapus', showConfirmButton:false, timer:2500, background:'#11171f', color:'#fff' });
+    } catch(e) {
+      Swal.fire({ icon:'error', title:'Gagal', text:e.message, background:'#11171f', color:'#fff' });
+    }
+  };
+
+  // ── BATALKAN RESERVASI oleh Pelanggan ──────────────────────────────
+  window.batalkanReservasi = async function(col, docId, tipe) {
+    const items = tipe === 'bk' ? allBookingDocs : allRentalDocs;
+    const item  = items.find(x => x.id === docId);
+    if (!item) return;
+
+    const isBooking   = col === 'bookings';
+    const namaKonsol  = item.console || '-';
+    const jadwal      = isBooking
+      ? ((item.date || '-') + ' · ' + (item.time || '-') + ' · ' + (item.duration || '?') + ' Jam')
+      : ((item.duration || '?') + ' Jam Rental');
+    const total = (item.grandTotal || item.total || 0).toLocaleString('id-ID');
+
+    const res = await Swal.fire({
+      title: isBooking ? '❌ Batalkan Booking?' : '❌ Batalkan Rental?',
+      html:
+        '<div style="text-align:left;font-size:12px;line-height:2;margin-bottom:10px">' +
+        '<div style="display:flex;justify-content:space-between"><span style="color:#9ca3af">Konsol</span><strong style="color:#fff">' + namaKonsol + '</strong></div>' +
+        '<div style="display:flex;justify-content:space-between"><span style="color:#9ca3af">' + (isBooking ? 'Jadwal' : 'Durasi') + '</span><strong style="color:#fff">' + jadwal + '</strong></div>' +
+        '<div style="display:flex;justify-content:space-between"><span style="color:#9ca3af">Total</span><strong style="color:#00d9ff">Rp ' + total + '</strong></div>' +
+        '</div>' +
+        '<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:10px;font-size:11px;color:#fca5a5;text-align:center">' +
+        '<i class="fas fa-triangle-exclamation" style="margin-right:6px"></i>' +
+        'Pembatalan tidak dapat diurungkan. Staff akan diberitahu otomatis.' +
+        '</div>',
+      input: 'text',
+      inputPlaceholder: 'Alasan pembatalan (opsional)...',
+      inputAttributes: { style: 'background:#1a2030;border:1px solid rgba(255,255,255,0.1);color:white;border-radius:8px;padding:10px;font-size:13px;font-family:inherit;margin-top:10px' },
+      showCancelButton: true,
+      confirmButtonText: '<i class="fas fa-ban"></i> Ya, Batalkan',
+      cancelButtonText: 'Kembali',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#374151',
+      background: '#11171f', color: '#fff'
+    });
+    if (!res.isConfirmed) return;
+
+    Swal.fire({ title: 'Membatalkan...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#11171f', color: '#fff' });
+
+    try {
+      const now    = new Date().toISOString();
+      const alasan = res.value && res.value.trim() ? res.value.trim() : 'Dibatalkan oleh pelanggan';
+
+      // 1. Update status booking/rental
+      await updateDoc(doc(db, col, docId), {
+        status:        'Dibatalkan Pelanggan',
+        cancelReason:  alasan,
+        cancelledBy:   'customer',
+        cancelledAt:   now
+      });
+
+      // 2. Bebaskan unit gaming jika ada
+      const assignedUnit = item.assignedUnit || null;
+      if (assignedUnit) {
+        try {
+          await updateDoc(doc(db, 'units', assignedUnit), {
+            status: 'Tersedia', startTime: null, endTime: null,
+            price: 0, customerName: '-', customerId: null, bookingId: null
+          });
+        } catch(e2) { console.warn('unit release failed', e2); }
+      }
+
+      // 3. Bebaskan unit rental jika ada
+      const assignedRentalUnit = item.assignedRentalUnit || null;
+      if (assignedRentalUnit) {
+        try {
+          await updateDoc(doc(db, 'rentalUnits', assignedRentalUnit), {
+            status: 'Tersedia', borrower: null, borrowerId: null,
+            rentalId: null, startTime: null, endTime: null
+          });
+        } catch(e3) { console.warn('rentalUnit release failed', e3); }
+      }
+
+      // 4. Tulis ke cancellations → staff & owner langsung dapat notif real-time
+      await addDoc(collection(db, 'cancellations'), {
+        sourceCol:           col,
+        sourceId:            docId,
+        type:                isBooking ? 'booking' : 'rental',
+        cancelReason:        alasan,
+        cancelledBy:         'customer',
+        cancelledByName:     item.customerName || 'Pelanggan',
+        cancelledAt:         now,
+        customerName:        item.customerName || '-',
+        console:             namaKonsol,
+        assignedUnit:        assignedUnit  || null,
+        assignedRentalUnit:  assignedRentalUnit || null,
+        grandTotal:          item.grandTotal || item.total || 0,
+        createdAt:           now
+      });
+
+      Swal.fire({
+        toast: true, position: 'top', icon: 'success',
+        title: 'Reservasi berhasil dibatalkan',
+        showConfirmButton: false, timer: 3000,
+        background: '#11171f', color: '#fff'
+      });
+    } catch(e) {
+      Swal.fire({ icon: 'error', title: 'Gagal membatalkan', text: e.message, background: '#11171f', color: '#fff' });
+    }
+  };
+
+  let allUnits = [];
+  let activeFilter = 'Semua';
+
+  onSnapshot(collection(db, 'units'), snap => {
+    allUnits = [];
+    snap.forEach(d => allUnits.push({ id: d.id, ...d.data() }));
+    allUnits.sort((a, b) => a.id.localeCompare(b.id));
+    updateSummary();
+    renderUnits(activeFilter);
+  });
+
+  // ── Rental units summary + grid ────────────────────────────────────
+  let allRentalUnitsGlobal = [];
+  onSnapshot(collection(db, 'rentalUnits'), snap => {
+    allRentalUnitsGlobal = [];
+    snap.forEach(d => allRentalUnitsGlobal.push({ id: d.id, ...d.data() }));
+    ['PS3','PS4','PS5'].forEach(t => {
+      const arr    = allRentalUnitsGlobal.filter(u => u.type === t);
+      const kosong = arr.filter(u => u.status === 'Tersedia').length;
+      const el = document.getElementById('rv' + t.slice(-1));
+      if (el) el.textContent = `${kosong}/${arr.length} kosong`;
+    });
+    renderRentalUnits();
+  });
+
+  function renderRentalUnits() {
+    const grid = document.getElementById('rental-unit-grid');
+    if (!grid) return;
+    const list = allRentalUnitsGlobal;
+    if (!list.length) {
+      grid.innerHTML = `<div style="grid-column:span 2;text-align:center;padding:20px;color:#4b5563;font-size:12px;">Tidak ada unit rental</div>`;
+      return;
+    }
+    grid.innerHTML = list.map((u, i) => {
+      const isMine = u.status === 'Dipinjam' && u.borrowerId && u.borrowerId === currentUid;
+      const dot = u.status === 'Maintenance' ? 'da' : u.status === 'Dipinjam' ? 'dr' : 'dg';
+      const stHtml = u.status === 'Maintenance'
+        ? `<div class="unit-status st-m"><i class="fas fa-key" style="font-size:9px"></i> Maintenance</div>`
+        : isMine
+          ? `<div class="unit-status st-d" style="color:#a78bfa;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2)"><i class="fas fa-house" style="font-size:9px;margin-right:3px"></i>Kamu pinjam</div>`
+          : u.status === 'Dipinjam'
+            ? `<div class="unit-status st-d">Dipinjam</div>`
+            : `<div class="unit-status st-t">Tersedia</div>`;
+
+      let deadlineHtml = '';
+      if (isMine && u.endTime) {
+        const sisaMs  = new Date(u.endTime).getTime() - Date.now();
+        const sisaMnt = Math.max(0, Math.floor(sisaMs / 60000));
+        const sisaJam = Math.floor(sisaMnt / 60);
+        const sisaMin = sisaMnt % 60;
+        const sisaStr = sisaMs <= 0 ? '⏰ Lewat deadline!' : `${sisaJam > 0 ? sisaJam + 'j ' : ''}${sisaMin}m lagi`;
+        const sisaColor = sisaMs <= 0 ? '#ef4444' : sisaMs <= 3600000 ? '#f59e0b' : '#a78bfa';
+        deadlineHtml = `<div style="font-size:10px;font-weight:700;color:${sisaColor};margin-top:5px"><i class="fas fa-clock" style="font-size:9px;margin-right:3px"></i>Kembali: ${sisaStr}</div>`;
+      }
+
+      return `
+      <div class="unit-card" style="animation-delay:${i*0.05}s">
+        <div class="unit-top">
+          <div>
+            <div class="unit-name">${u.id}</div>
+            <div class="unit-type">${u.type || '-'}</div>
+          </div>
+          <div class="dot ${dot}"></div>
+        </div>
+        ${stHtml}
+        ${deadlineHtml}
+      </div>`;
+    }).join('');
+  }
+
+  function updateSummary() {
+    ['PS3','PS4','PS5'].forEach(t => {
+      const arr    = allUnits.filter(u => u.type === t);
+      const kosong = arr.filter(u => u.status === 'Tersedia').length;
+      const el = document.getElementById('sv' + t.slice(-1));
+      if (el) el.textContent = `${kosong}/${arr.length} kosong`;
+    });
+  }
+
+  window.doFilter = (f, btn) => {
+    activeFilter = f;
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('on'));
+    btn.classList.add('on');
+    renderUnits(f);
+  };
+
+  // ── HISTORY MODAL ────────────────────────────────────────────────────
+  let histFilter = 'Semua';
+
+  window.bukaHistory = function() {
+    document.getElementById('hist-overlay').classList.add('show');
+    document.getElementById('hist-drawer').classList.add('show');
+    renderHistoryStats();
+    renderHistoryList();
+  };
+
+  window.tutupHistory = function() {
+    document.getElementById('hist-overlay').classList.remove('show');
+    document.getElementById('hist-drawer').classList.remove('show');
+  };
+
+  window.filterHistory = function(f, btn) {
+    histFilter = f;
+    document.querySelectorAll('.hfil').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    renderHistoryList();
+  };
+
+  function getHistStatus(item) {
+    const s = (item.status || item.paymentStatus || '').toLowerCase();
+    if (s.includes('selesai') || s.includes('lunas') || s.includes('dikembalikan')) return 'Selesai';
+    if (s.includes('batal') || s.includes('ditolak')) return 'Batal';
+    if (s.includes('aktif') || s.includes('digunakan') || s.includes('dipakai')) return 'Aktif';
+    return 'Pending';
+  }
+
+  function getHistBadgeClass(cat) {
+    if (cat === 'Selesai') return 'hb-selesai';
+    if (cat === 'Batal')   return 'hb-batal';
+    if (cat === 'Aktif')   return 'hb-aktif';
+    return 'hb-pending';
+  }
+
+  function renderHistoryStats() {
+    const all = [
+      ...allBookingDocs.map(d => ({ ...d, _tipe: 'Booking' })),
+      ...allRentalDocs.map(d => ({ ...d, _tipe: 'Rental' }))
+    ];
+    const selesai = all.filter(d => getHistStatus(d) === 'Selesai');
+    const aktif   = all.filter(d => getHistStatus(d) === 'Aktif');
+    const batal   = all.filter(d => getHistStatus(d) === 'Batal');
+    const totalPaid = selesai.reduce((s, d) => s + Number(d.grandTotal || d.total || 0), 0);
+
+    document.getElementById('hs-total').textContent   = all.length;
+    document.getElementById('hs-selesai').textContent = selesai.length;
+    document.getElementById('hs-aktif').textContent   = aktif.length;
+    document.getElementById('hs-batal').textContent   = batal.length;
+    document.getElementById('hs-selesai-count').textContent = `${selesai.length} transaksi selesai`;
+    document.getElementById('hs-total-paid').textContent = 'Rp ' + totalPaid.toLocaleString('id-ID');
+  }
+
+  function renderHistoryList() {
+    const body = document.getElementById('hist-body');
+    const all = [
+      ...allBookingDocs.map(d => ({ ...d, _tipe: 'Booking' })),
+      ...allRentalDocs.map(d => ({ ...d, _tipe: 'Rental' }))
+    ].sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+
+    const filtered = histFilter === 'Semua'
+      ? all
+      : all.filter(d => {
+          const cat = getHistStatus(d);
+          if (histFilter === 'Selesai') return cat === 'Selesai';
+          if (histFilter === 'Batal')   return cat === 'Batal';
+          if (histFilter === 'Pending') return cat === 'Pending' || cat === 'Aktif';
+          return true;
+        });
+
+    if (!filtered.length) {
+      body.innerHTML = `<div class="hist-empty"><i class="fas fa-box-open"></i>Tidak ada riwayat untuk filter ini.</div>`;
+      return;
+    }
+
+    // Group by date
+    const groups = {};
+    filtered.forEach(d => {
+      const tgl = d.date || (d.createdAt ? new Date(d.createdAt).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '—');
+      if (!groups[tgl]) groups[tgl] = [];
+      groups[tgl].push(d);
+    });
+
+    let html = '';
+    Object.entries(groups).forEach(([tgl, items], gi) => {
+      html += `<div class="hist-date-group"><i class="fas fa-calendar-day"></i>${tgl.toUpperCase()}</div>`;
+      items.forEach((item, i) => {
+        const cat    = getHistStatus(item);
+        const status = item.status || item.paymentStatus || 'Diproses';
+        const total  = (item.grandTotal || item.total)
+          ? 'Rp ' + Number(item.grandTotal || item.total).toLocaleString('id-ID') : '—';
+        const jam    = item.time ? item.time + ' WIB' : '—';
+        const durasi = item.duration ? item.duration + ' Jam' : '—';
+        // Info extend jika ada (field extendCount disimpan di booking/rental setelah extend)
+        const ec = item.extendCount || 0;
+        const extendBadge = ec > 0
+          ? `<div class="hcard-row" style="margin-top:2px"><span class="hcard-lbl"><i class="fas fa-plus-circle" style="font-size:8px;margin-right:3px;color:#00d9ff"></i>Extend</span><span class="hcard-val" style="color:#00d9ff;font-weight:800">${ec}x tambah waktu</span></div>`
+          : '';
+        html += `<div class="hcard" style="animation-delay:${(gi + i) * .04}s">
+          <div class="hcard-top">
+            <div>
+              <div class="hcard-name"><i class="fas fa-gamepad" style="font-size:10px;color:var(--cyan);margin-right:5px;"></i>${item.console || '—'} <span class="hcard-type-tag">${item._tipe}</span></div>
+              <div class="hcard-sub">${item.paymentMethod || item.payment || 'Cash'} · ${durasi}</div>
+            </div>
+            <span class="hcard-badge ${getHistBadgeClass(cat)}">${status}</span>
+          </div>
+          <div class="hcard-row"><span class="hcard-lbl"><i class="fas fa-clock" style="font-size:8px;margin-right:3px;"></i>Jam Bermain</span><span class="hcard-val">${jam}</span></div>
+          <div class="hcard-row"><span class="hcard-lbl"><i class="fas fa-hourglass-half" style="font-size:8px;margin-right:3px;"></i>Durasi</span><span class="hcard-val">${durasi}</span></div>
+          ${extendBadge}
+          <div class="hcard-row"><span class="hcard-lbl"><i class="fas fa-wallet" style="font-size:8px;margin-right:3px;"></i>Total Bayar</span><span class="hcard-total">${total}</span></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button onclick='cetakStruk(${JSON.stringify(item)}, "${cat}")' style="flex:1;background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2);color:#00d9ff;border-radius:12px;padding:9px 0;font-size:10px;font-weight:700;letter-spacing:.08em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;font-family:inherit;" onmouseover="this.style.background='rgba(0,217,255,0.18)'" onmouseout="this.style.background='rgba(0,217,255,0.08)'"><i class="fas fa-file-pdf" style="font-size:11px;"></i> Struk</button>
+        
+            <button onclick='hapusRiwayat("${item._tipe}","${item.id}")' style="width:42px;flex-shrink:0;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#ef4444;border-radius:12px;padding:9px 0;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:inherit;" onmouseover="this.style.background='rgba(239,68,68,0.18)'" onmouseout="this.style.background='rgba(239,68,68,0.08)'" title='Hapus riwayat ini'><i class="fas fa-trash-alt"></i></button>
+          </div>
+        </div>`;
+      });
+    });
+    body.innerHTML = html;
+  }
+  // ── END HISTORY MODAL ────────────────────────────────────────────────
+
+  // ── HAPUS RIWAYAT ───────────────────────────────────────────────────
+  window.hapusRiwayat = async function(tipe, id) {
+    const result = await Swal.fire({
+      title: 'Hapus riwayat ini?',
+      html: '<p style="font-size:13px;color:#9ca3af;margin-top:4px">Item ini akan dihapus dari riwayat kamu.<br>Tindakan ini tidak bisa dibatalkan.</p>',
+      icon: 'warning',
+      background: '#11171f',
+      color: '#fff',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fas fa-trash-alt" style="margin-right:6px"></i>Ya, Hapus',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#374151'
+    });
+    if (!result.isConfirmed) return;
+    try {
+      const colName = tipe === 'Booking' ? 'bookings' : 'rentals';
+      const { deleteDoc, doc: fsDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const { db: fireDb } = await import('../../assets/js/auth.js');
+      await deleteDoc(fsDoc(fireDb, colName, id));
+      Swal.fire({ toast:true, position:'top', icon:'success', title:'Riwayat dihapus', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+    } catch(e) {
+      Swal.fire({ icon:'error', title:'Gagal menghapus', text: e.message, background:'#11171f', color:'#fff' });
+    }
+  };
+
+  // ── CETAK STRUK PDF ──────────────────────────────────────────────────
+  window.cetakStruk = async function(item, cat) {
+    // ── Cek status: hanya Selesai & Aktif yang boleh cetak ──
+    const statusBoleh = ['Selesai', 'Aktif'];
+    const statusItem  = cat || 'Pending';
+    if (!statusBoleh.includes(statusItem)) {
+      const pesanMap = {
+        'Batal'  : 'Pesanan ini sudah dibatalkan.',
+        'Pending': 'Pesanan belum dikonfirmasi oleh staff.',
+      };
+      Swal.fire({
+        icon: 'warning',
+        title: 'Struk tidak tersedia',
+        html: `<div style="font-size:13px;color:#9ca3af;margin-top:4px">${pesanMap[statusItem] || 'Status pesanan tidak memungkinkan untuk cetak struk.'}<br><br><span style="font-size:11px;opacity:.6">Struk hanya bisa dicetak untuk pesanan yang <b style="color:#fff">diterima</b> oleh staff.</span></div>`,
+        showConfirmButton: true,
+        confirmButtonText: 'Mengerti',
+        confirmButtonColor: '#1c2128',
+        background: '#11171f',
+        color: '#fff',
+      });
+      return;
+    }
+    // Fetch F&B orders terkait transaksi ini
+    let fnbItems = [];
+    try {
+      const { getDocs: gd, collection: col, query: q, where: wh } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const { db: fireDb } = await import('../../assets/js/auth.js');
+      // Cari via bookingId (field unitId di fnb_orders) atau customerId
+      const cid = item.userId || item.customerId || null;
+      if (cid) {
+        // Ambil fnb_orders milik customer ini yang mendekati waktu transaksi
+        const snap = await gd(q(col(fireDb, 'fnb_orders'), wh('customerId', '==', cid)));
+        snap.forEach(d => {
+          const o = d.data();
+          // Filter: waktu order harus dalam rentang transaksi (atau fallback ambil semua)
+          const trxDate = (item.createdAt || item.date || '').slice(0, 10);
+          const orderDate = (o.createdAt || '').slice(0, 10);
+          if (!trxDate || trxDate === orderDate) {
+            if (o.items && o.items.length) {
+              o.items.forEach(i => fnbItems.push({ name: i.name, qty: i.qty, price: i.price || 0, status: o.status }));
+            }
+          }
+        });
+      }
+    } catch(e) { /* Firestore tidak tersedia, lanjut tanpa F&B */ }
+
+    // Fetch extend log terkait transaksi ini
+    let extendItems = [];
+    try {
+      const { getDocs: gd2, collection: col2, query: q2, where: wh2 } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const { db: fireDb2 } = await import('../../assets/js/auth.js');
+      const cid      = item.userId || item.customerId || currentUid || null;
+      const bid      = item.id || null; // bookingId = doc id di collection bookings
+      const unitId   = item.assignedUnit || item.unitId || null;
+      const trxDate  = (item.createdAt || item.date || '').slice(0, 10);
+
+      // Coba query by bookingId dulu (paling presisi)
+      if (bid) {
+        const snap2 = await gd2(q2(col2(fireDb2, 'extendLog'), wh2('bookingId', '==', bid)));
+        snap2.forEach(d => extendItems.push(Object.assign({ id: d.id }, d.data())));
+      }
+      // Fallback: query by customerId + unitId + tanggal (untuk data lama tanpa bookingId)
+      if (extendItems.length === 0 && cid && unitId) {
+        const snap3 = await gd2(q2(col2(fireDb2, 'extendLog'),
+          wh2('customerId', '==', cid),
+          wh2('unitId',     '==', unitId)
+        ));
+        snap3.forEach(d => {
+          const o = d.data();
+          const orderDate = (o.createdAt || '').slice(0, 10);
+          if (!trxDate || orderDate === trxDate) extendItems.push(Object.assign({ id: d.id }, o));
+        });
+      }
+      extendItems.sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+    } catch(e) { /* lanjut tanpa extend */ }
+
+    const { jsPDF } = window.jspdf;
+    const fnbTotal    = fnbItems.reduce((s, i) => s + (i.price * i.qty), 0);
+    const extendTotal = extendItems.reduce((s, e) => s + (e.biaya || 0), 0);
+    const totalNum    = (item.grandTotal || item.total || 0) + fnbTotal;
+
+    // Hitung tinggi dinamis berdasarkan jumlah item F&B + extend
+    const extraHeight = (fnbItems.length > 0 ? (fnbItems.length * 6 + 20) : 14)
+                      + (extendItems.length > 0 ? (extendItems.length * 6 + 18) : 0);
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [80, 165 + extraHeight] });
+
+    const W = 80;
+    let y = 0;
+
+    const cx  = (text, size, bold) => { doc.setFontSize(size); doc.setFont('helvetica', bold ? 'bold' : 'normal'); doc.text(text, W/2, y, { align:'center' }); };
+    const lx  = (text, size, bold) => { doc.setFontSize(size); doc.setFont('helvetica', bold ? 'bold' : 'normal'); doc.text(text, 5, y); };
+    const rx  = (text, size, bold) => { doc.setFontSize(size); doc.setFont('helvetica', bold ? 'bold' : 'normal'); doc.text(text, W-5, y, { align:'right' }); };
+    const row = (label, val, size) => { doc.setFontSize(size||7); doc.setFont('helvetica','normal'); doc.text(label,5,y); doc.setFont('helvetica','bold'); doc.text(val,W-5,y,{align:'right'}); };
+    const line = (dashed) => { doc.setLineDashPattern(dashed?[1,1]:[], 0); doc.setDrawColor(180,180,180); doc.line(5,y,W-5,y); };
+    const gap  = (n) => { y += n||4; };
+
+    // Header
+    gap(8);
+    doc.setTextColor(0,0,0);
+    cx('PRINCE GAMES', 11, true);
+    gap(5);
+    cx('Struk Transaksi', 7, false);
+    gap(3.5);
+    const now = new Date();
+    cx('Dicetak: ' + now.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) + ' ' + now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}), 6, false);
+    gap(4); line(false); gap(4);
+
+    // Info Transaksi
+    const tipe  = item._tipe || 'Transaksi';
+    const idTrx = item.id ? item.id.slice(-8).toUpperCase() : '\u2014';
+    row('No. Transaksi', '#' + idTrx, 6.5); gap(4);
+    row('Tipe', tipe, 6.5); gap(4);
+    const tglDibuat = item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) : (item.date || '\u2014');
+    row('Tanggal', tglDibuat, 6.5); gap(4);
+    line(true); gap(4);
+
+    // Detail Sesi
+    lx('DETAIL SESI', 6.5, true); gap(4);
+    row('Konsol / Unit', item.console || item.unitId || '\u2014', 6.5); gap(4);
+    if (item.time)     { row('Jam Bermain', item.time + ' WIB', 6.5); gap(4); }
+    if (item.duration) { row('Durasi', item.duration + ' Jam', 6.5); gap(4); }
+    if (item.date && tipe === 'Booking') { row('Jadwal', item.date, 6.5); gap(4); }
+    if (item.endTime)  {
+      const batas = new Date(item.endTime).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      row('Batas Kembali', batas, 6.5); gap(4);
+    }
+    row('Metode Bayar', item.paymentMethod || item.payment || 'Cash', 6.5); gap(4);
+    row('Status', item.status || item.paymentStatus || 'Diproses', 6.5); gap(4);
+    line(true); gap(4);
+
+    // F&B Section
+    lx('PESANAN F&B', 6.5, true); gap(4);
+    if (fnbItems.length === 0) {
+      doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
+      doc.setTextColor(150, 150, 150);
+      cx('Tidak ada pesanan F&B', 6.5, false);
+      doc.setTextColor(0, 0, 0);
+      gap(4);
+    } else {
+      fnbItems.forEach(fi => {
+        doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
+        doc.text(fi.name + ' x' + fi.qty, 5, y);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Rp ' + (fi.price * fi.qty).toLocaleString('id-ID'), W-5, y, { align:'right' });
+        gap(5.5);
+      });
+      doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
+      doc.text('Subtotal F&B', 5, y);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Rp ' + fnbTotal.toLocaleString('id-ID'), W-5, y, { align:'right' });
+      gap(4);
+    }
+    line(false); gap(4);
+
+    // Extend Section
+    if (extendItems.length > 0) {
+      lx('RIWAYAT EXTEND', 6.5, true); gap(4);
+      extendItems.forEach((ex, idx) => {
+        doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
+        doc.text('Extend #' + (idx + 1) + ' (+' + (ex.extendJam || 1) + ' Jam) · ' + (ex.payMethod || 'Cash'), 5, y);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Rp ' + (ex.biaya || 0).toLocaleString('id-ID'), W-5, y, { align:'right' });
+        gap(5.5);
+      });
+      doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
+      doc.text('Subtotal Extend (' + extendItems.length + 'x)', 5, y);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Rp ' + extendTotal.toLocaleString('id-ID'), W-5, y, { align:'right' });
+      gap(4);
+      line(false); gap(4);
+    }
+
+    // Total
+    const sesiNum = item.grandTotal || item.total || 0;
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+    const adaRincian = fnbItems.length > 0 || extendItems.length > 0;
+    if (adaRincian) {
+      lx('Sesi', 7, false);
+      rx('Rp ' + Number(sesiNum).toLocaleString('id-ID'), 7, false);
+      gap(4.5);
+      if (extendItems.length > 0) {
+        lx('Extend (' + extendItems.length + 'x)', 7, false);
+        rx('Rp ' + extendTotal.toLocaleString('id-ID'), 7, false);
+        gap(4.5);
+      }
+      if (fnbItems.length > 0) {
+        lx('F&B', 7, false);
+        rx('Rp ' + fnbTotal.toLocaleString('id-ID'), 7, false);
+        gap(4.5);
+      }
+      line(true); gap(3.5);
+    }
+    lx('TOTAL BAYAR', 9, true);
+    rx('Rp ' + Number(totalNum + extendTotal).toLocaleString('id-ID'), 10, true);
+    gap(5); line(true); gap(5);
+
+    // Footer
+    doc.setTextColor(120,120,120);
+    cx('Terima kasih telah bermain di', 6, false); gap(4);
+    cx('Prince Games!', 7, true); gap(4);
+    cx('Simpan struk ini sebagai bukti transaksi.', 5.5, false); gap(5);
+
+    // Simpan + Notifikasi
+    try {
+      const nama = (item.console || item.unitId || 'transaksi').replace(/\s+/g, '-');
+      doc.save('struk-princegames-' + nama + '-' + idTrx + '.pdf');
+      Swal.fire({
+        toast: true, position: 'top', icon: 'success',
+        title: 'Struk berhasil diunduh!',
+        html: '<span style="font-size:11px;color:#9ca3af">struk-princegames-' + nama + '-' + idTrx + '.pdf</span>',
+        showConfirmButton: false, timer: 3500, timerProgressBar: true,
+        background: '#11171f', color: '#fff', iconColor: '#3fb950'
+      });
+    } catch(err) {
+      Swal.fire({
+        toast: true, position: 'top', icon: 'error',
+        title: 'Gagal mencetak struk',
+        html: '<span style="font-size:11px;color:#9ca3af">' + (err.message || 'Terjadi kesalahan') + '</span>',
+        showConfirmButton: false, timer: 4000, timerProgressBar: true,
+        background: '#11171f', color: '#fff', iconColor: '#ef4444'
+      });
+    }
+  };
+  // ── END CETAK STRUK ───────────────────────────────────────
+
+  function renderUnits(filter) {
+    const grid = document.getElementById('unit-grid');
+    const list = filter === 'Semua' ? allUnits : allUnits.filter(u => u.type === filter);
+    if (!list.length) {
+      grid.innerHTML = `<div style="grid-column:span 2;text-align:center;padding:28px;color:#4b5563;font-size:12px;">Tidak ada unit</div>`;
+      return;
+    }
+    grid.innerHTML = list.map((u, i) => {
+      const m  = u.status === 'Maintenance';
+      const d  = u.status === 'Digunakan' || u.status === 'Dipakai';
+      const b  = u.status === 'Dipesan';
+      const isMine = d && u.customerId && u.customerId === currentUid;
+      const dot = m ? 'da' : b ? 'db' : d ? 'dr' : 'dg';
+      const jadwalStr = b && u.startTime ? new Date(u.startTime).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) : null;
+
+      // Hitung sisa waktu untuk unit milik pelanggan ini
+      let countdownHtml = '';
+      let extendBtnHtml = '';
+      if (isMine && u.endTime) {
+        const sisaMs  = u.endTime - Date.now();
+        const sisaMnt = Math.max(0, Math.floor(sisaMs / 60000));
+        const sisaJam = Math.floor(sisaMnt / 60);
+        const sisaMin = sisaMnt % 60;
+        const sisaStr = sisaMs <= 0 ? '⏰ Waktu habis!' : `${sisaJam > 0 ? sisaJam + 'j ' : ''}${sisaMin}m`;
+        const sisaWarna = sisaMs <= 0 ? '#ef4444' : sisaMs <= 600000 ? '#f59e0b' : '#00d9ff';
+        const extendCount = u.extendCount || 0;
+        const rate = u.type === 'PS5' ? 15000 : (u.type === 'PS4' ? 10000 : 5000);
+
+        countdownHtml = `<div style="font-size:10px;font-weight:700;color:${sisaWarna};margin:5px 0 2px">
+          <i class="fas fa-clock" style="font-size:9px;margin-right:3px"></i>Sisa: ${sisaStr}
+        </div>`;
+
+        if (extendCount >= extendLimit) {
+          extendBtnHtml = `<div style="margin-top:6px;padding:7px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);text-align:center;font-size:9px;color:#4b5563;font-weight:700">
+            <i class="fas fa-lock" style="margin-right:3px"></i>Limit extend (${extendCount}/${extendLimit})
+          </div>`;
+        } else {
+          extendBtnHtml = `<button onclick="requestExtend('${u.id}','${u.type}',${rate},${extendCount})" style="margin-top:6px;width:100%;padding:8px;border-radius:8px;background:rgba(0,217,255,0.06);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;font-size:9px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px">
+            <i class="fas fa-plus" style="font-size:9px"></i> Minta Extend +1 Jam · Rp ${rate.toLocaleString('id-ID')} (${extendCount}/${extendLimit})
+          </button>`;
+        }
+      }
+
+      const stHtml = m
+        ? `<div class="unit-status st-m"><i class="fas fa-key" style="font-size:9px"></i> Maintenance</div>`
+        : b ? `<div class="unit-status st-b"><i class="fas fa-lock" style="font-size:9px"></i> Sudah Dibooking${jadwalStr ? `<span style="margin-left:4px;font-size:8px;opacity:.8">· mulai ${jadwalStr}</span>` : ''}</div>`
+        : isMine ? `<div class="unit-status st-d" style="color:#00d9ff;background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2)"><i class="fas fa-gamepad" style="font-size:9px;margin-right:3px"></i>Sesi kamu</div>`
+        : d ? `<div class="unit-status st-d">Dipakai</div>`
+        : `<div class="unit-status st-t">Tersedia</div>`;
+
+      return `<div class="unit-card" style="animation-delay:${i * .04}s${isMine ? ';border-color:rgba(0,217,255,0.3)' : b ? ';border-color:rgba(249,115,22,0.3)' : ''}">
+        <div class="unit-top">
+          <div><div class="unit-name">${u.id}</div><div class="unit-type">${u.type}</div></div>
+          <div class="u-dot ${dot}"></div>
+        </div>
+        ${stHtml}
+        ${countdownHtml}
+        ${extendBtnHtml}
+      </div>`;
+    }).join('');
+  }
+
+  // ── Request Extend oleh Pelanggan ────────────────────────────────────
+  window.requestExtend = async (unitId, unitType, rate, extendCount) => {
+    if (extendCount >= extendLimit) {
+      Swal.fire({ icon:'warning', title:'Limit Extend', text:`Maksimal ${extendLimit}x extend per sesi.`, background:'#11171f', color:'#fff' });
+      return;
+    }
+
+    // Cek apakah sudah ada request pending untuk unit ini
+    const existing = await getDocs(query(
+      collection(db, 'extendRequests'),
+      where('unitId', '==', unitId),
+      where('status', '==', 'Pending')
+    ));
+    if (!existing.empty) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Request Sudah Terkirim',
+        text: 'Permintaan extend-mu sedang diproses staff. Mohon tunggu sebentar.',
+        background: '#11171f', color: '#fff', confirmButtonColor: '#00d9ff'
+      });
+      return;
+    }
+
+    const { isConfirmed } = await Swal.fire({
+      title: `Minta Extend +1 Jam?`,
+      html: `<p style="color:#9ca3af;font-size:13px;margin-bottom:8px">
+               Unit: <strong style="color:#fff">${unitId} (${unitType})</strong>
+             </p>
+             <p style="color:#9ca3af;font-size:13px;margin-bottom:14px">
+               Biaya: <strong style="color:#00d9ff;font-size:16px">Rp ${rate.toLocaleString('id-ID')}</strong>
+             </p>
+             <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:10px;font-size:11px;color:#f59e0b;text-align:left">
+               <i class="fas fa-triangle-exclamation" style="margin-right:5px"></i>
+               Setelah request dikirim, <strong>siapkan pembayaran</strong> untuk diserahkan ke staff saat dikonfirmasi.
+             </div>`,
+      showCancelButton: true,
+      confirmButtonText: '📨 Kirim Request Extend',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#00d9ff',
+      cancelButtonColor: '#374151',
+      background: '#11171f', color: '#fff'
+    });
+
+    if (!isConfirmed) return;
+
+    try {
+      await addDoc(collection(db, 'extendRequests'), {
+        unitId,
+        unitType,
+        rate,
+        customerId:   currentUid,
+        customerName: (await getDoc(doc(db, 'pelanggan', currentUid))).data()?.username || 'Pelanggan',
+        status:       'Pending',
+        createdAt:    new Date().toISOString()
+      });
+      Swal.fire({
+        icon: 'success',
+        title: 'Request Terkirim!',
+        html: `<p style="color:#9ca3af;font-size:12px">Staff akan segera memproses requestmu.</p>
+               <p style="color:#f59e0b;font-size:11px;margin-top:8px">⚠️ Siapkan pembayaran <strong>Rp ${rate.toLocaleString('id-ID')}</strong> untuk diserahkan ke staff.</p>`,
+        confirmButtonColor: '#00d9ff',
+        background: '#11171f', color: '#fff'
+      });
+    } catch(e) {
+      Swal.fire({ icon:'error', title:'Gagal', text:'Coba lagi.', background:'#11171f', color:'#fff' });
+    }
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prince Games - Laporan Ekspor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        * { font-style: normal !important; box-sizing: border-box; }
+        body { background-color: #06090f; color: white; font-family: 'Plus Jakarta Sans', sans-serif; padding-bottom: 120px; }
+        .topbar { position: sticky; top: 0; z-index: 100; background: #0d1117; border-bottom: 1px solid rgba(255,255,255,0.07); padding: 0 16px; height: 56px; display: flex; align-items: center; }
+        .logo-icon { width: 28px; height: 28px; background: #00d9ff; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: #000; }
+        .logo-text { font-size: 13px; font-weight: 900; letter-spacing: .3px; margin-left: 7px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0d1117; border-top: 1px solid rgba(255,255,255,0.07); padding: 10px 8px 24px; display: flex; justify-content: space-around; z-index: 200; border-radius: 22px 22px 0 0; }
+        .bnav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 14px; border-radius: 12px; text-decoration: none; }
+        .bnav-item i { font-size: 18px; }
+        .bnav-item span { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .3px; }
+        .bnav-item.inactive { color: #4b5563; }
+        .bnav-item.active { color: #00d9ff; }
+        .glass-card { background: rgba(17, 23, 31, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; }
+        .filter-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; padding: 6px 16px; border-radius: 10px; font-size: 11px; font-weight: 700; transition: all 0.2s; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .filter-btn.active { background: #00d9ff; color: #000; border-color: #00d9ff; }
+        .kpi-card { background: rgba(17,23,31,0.9); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; }
+        .btn-action { width: 100%; padding: 16px; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 700; font-size: 13px; transition: 0.2s; border: none; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .bg-pdf { background: #e63946; color: white; }
+        .bg-excel { background: #2a9d8f; color: white; }
+        .bg-share { background: #00d9ff; color: #000; }
+        .btn-action:active { transform: scale(0.98); opacity: 0.9; }
+        .table-header { color: #475569; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 10px 8px; }
+        .table-cell { font-size: 11px; font-weight: 600; padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .tab-btn { flex: 1; padding: 10px; font-size: 11px; font-weight: 700; border: none; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.2s; border-radius: 12px; }
+        .tab-btn.active { background: rgba(0,217,255,0.1); color: #00d9ff; }
+        .tab-btn.inactive { background: transparent; color: #4b5563; }
+        .empty-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 16px; gap: 8px; }
+        .empty-box i { font-size: 28px; color: #1e293b; }
+        .empty-box p { font-size: 11px; color: #374151; font-weight: 700; text-align: center; }
+        .loading-pulse { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        input[type="date"] { color-scheme: dark; }
+        .topbar-right { margin-left: auto; }
+        .topbar-logout-btn { background: rgba(247,129,102,0.1); border: 1px solid rgba(247,129,102,0.2); color: #f78166; padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; }
+        .topbar-logout-btn:hover { background: rgba(247,129,102,0.2); }
+        @media (min-width: 768px) { #topbar-logout-btn { display: none !important; } }
+
+        /* ═══════════════════════════════════════════════════════════════
+           RESPONSIVE DESKTOP — Prince Games Owner Panel
+           Sidebar di ≥768px, bottom nav di <768px
+        ═══════════════════════════════════════════════════════════════ */
+        @media (min-width: 768px) {
+            .bottom-nav, .bnav-item span { display: none !important; }
+            body { padding-bottom: 0 !important; display: flex; flex-direction: column; min-height: 100vh; }
+            .owner-layout { display: flex; min-height: 100vh; }
+            .owner-sidebar {
+                display: flex !important;
+                flex-direction: column;
+                width: 220px;
+                min-width: 220px;
+                background: #0d1117;
+                border-right: 1px solid rgba(255,255,255,0.07);
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                padding: 20px 12px 20px;
+                z-index: 50;
+                gap: 4px;
+            }
+            .sidebar-logo {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 800;
+                font-size: 14px;
+                padding: 0 8px 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+                margin-bottom: 8px;
+            }
+            .sidebar-logo .logo-icon {
+                width: 30px; height: 30px;
+                background: #00d9ff;
+                border-radius: 8px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 11px; font-weight: 900; color: #000;
+            }
+            .sidebar-logo .logo-cyan { color: #00d9ff; }
+            .sidebar-nav-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 700;
+                color: #4b5563;
+                text-decoration: none;
+                transition: all 0.15s;
+                cursor: pointer;
+            }
+            .sidebar-nav-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .sidebar-nav-item.active { background: rgba(0,217,255,0.08); color: #00d9ff; }
+            .sidebar-nav-item i { width: 16px; text-align: center; font-size: 13px; }
+            .sidebar-spacer { flex: 1; }
+            .sidebar-logout {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 700;
+                color: #f78166;
+                cursor: pointer;
+                border: none;
+                background: rgba(247,129,102,0.06);
+                border: 1px solid rgba(247,129,102,0.15);
+                font-family: inherit;
+                transition: all 0.15s;
+                width: 100%;
+            }
+            .sidebar-logout:hover { background: rgba(247,129,102,0.14); }
+            .owner-main-content { flex: 1; min-width: 0; overflow-y: auto; }
+            .topbar { max-width: 100% !important; }
+            /* Widen content area on desktop */
+            .p-5 > .max-w-\[450px\],
+            .p-5 > .max-w-\[480px\],
+            .p-5 > .max-w-\[500px\] { max-width: 900px !important; }
+        }
+        @media (max-width: 767px) {
+            .owner-sidebar { display: none !important; }
+            .owner-layout { display: block; }
+            .owner-main-content { display: block; }
+        }
+    </style>
+</head>
+<body>
+<div class="owner-layout">
+    <aside class="owner-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">PG</div>
+            PRINCE<span class="logo-cyan">GAMES</span>
+        </div>
+            <a href="../owner/dashboard-owner.html" class="sidebar-nav-item"><i class="fas fa-th-large"></i> Beranda</a>
+            <a href="../owner/manage-owner.html" class="sidebar-nav-item"><i class="fas fa-tools"></i> Kelola</a>
+            <a href="../owner/history-owner.html" class="sidebar-nav-item"><i class="fas fa-history"></i> Riwayat</a>
+            <a href="../owner/export-owner.html" class="sidebar-nav-item active"><i class="fas fa-file-export"></i> Laporan</a>
+        <div class="sidebar-spacer"></div>
+        <button class="sidebar-logout" onclick="doLogout()">
+            <i class="fas fa-right-from-bracket"></i> Logout
+        </button>
+    </aside>
+<div class="owner-main-content">
+
+<div class="topbar">
+    <div class="logo-icon">PG</div>
+    <div class="logo-text">PRINCEGAMES</div>
+
+</div>
+
+<div class="p-5 max-w-[480px] mx-auto">
+
+    <div class="mb-6">
+        <h1 class="text-2xl font-black uppercase tracking-tight text-cyan-400">Ekspor Laporan</h1>
+        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Data real-time dari Firebase</p>
+    </div>
+
+    <!-- Filter Tanggal & Unit -->
+    <div class="glass-card p-4 mb-4">
+        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-3">Rentang Waktu & Unit</p>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div>
+                <label class="text-[9px] text-gray-500 font-bold uppercase ml-1">Dari</label>
+                <input type="date" id="date-from" class="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-xs text-white outline-none mt-1">
+            </div>
+            <div>
+                <label class="text-[9px] text-gray-500 font-bold uppercase ml-1">Sampai</label>
+                <input type="date" id="date-to" class="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-xs text-white outline-none mt-1">
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button class="filter-btn active" onclick="setUnitFilter('semua', this)">Semua</button>
+            <button class="filter-btn" onclick="setUnitFilter('PS3', this)">PS3</button>
+            <button class="filter-btn" onclick="setUnitFilter('PS4', this)">PS4</button>
+            <button class="filter-btn" onclick="setUnitFilter('PS5', this)">PS5</button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="kpi-card">
+            <div class="flex justify-between items-start mb-2">
+                <p class="text-[9px] text-gray-500 font-black uppercase">Sesi Gaming</p>
+                <i class="fas fa-gamepad text-cyan-400 text-[10px]"></i>
+            </div>
+            <h2 class="text-lg font-black loading-pulse" id="kpi-sesi">Rp 0</h2>
+            <p class="text-[9px] text-gray-600 mt-1" id="kpi-sesi-sub">Memuat...</p>
+        </div>
+        <div class="kpi-card">
+            <div class="flex justify-between items-start mb-2">
+                <p class="text-[9px] text-gray-500 font-black uppercase">F&amp;B</p>
+                <i class="fas fa-utensils text-yellow-400 text-[10px]"></i>
+            </div>
+            <h2 class="text-lg font-black loading-pulse" id="kpi-fnb">Rp 0</h2>
+            <p class="text-[9px] text-gray-600 mt-1" id="kpi-fnb-sub">Memuat...</p>
+        </div>
+    </div>
+
+    <!-- Total Gabungan -->
+    <div class="glass-card p-5 mb-6 text-center border-t-4 border-t-cyan-400">
+        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2">Total Pendapatan</p>
+        <h1 id="kpi-total" class="text-4xl font-black text-white loading-pulse">Rp 0</h1>
+        <div class="mt-3 flex justify-center">
+            <div class="inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                <p id="kpi-total-sub" class="text-[10px] text-cyan-400 font-bold uppercase">0 Transaksi</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Tabel dengan Tab -->
+    <div class="glass-card mb-6 overflow-hidden">
+        <div class="p-4 border-b border-white/5">
+            <h3 class="text-xs font-black uppercase tracking-widest mb-3">Preview Data</h3>
+            <div class="flex gap-2 bg-white/5 p-1 rounded-xl">
+                <button class="tab-btn active" id="tab-sesi-btn" onclick="switchTab('sesi')">
+                    <i class="fas fa-gamepad mr-1"></i> Sesi Gaming
+                </button>
+                <button class="tab-btn inactive" id="tab-fnb-btn" onclick="switchTab('fnb')">
+                    <i class="fas fa-utensils mr-1"></i> F&amp;B
+                </button>
+            </div>
+        </div>
+        <div id="tab-sesi" class="overflow-x-auto">
+            <div class="empty-box"><i class="fas fa-spinner fa-spin"></i><p>Memuat data...</p></div>
+        </div>
+        <div id="tab-fnb" class="overflow-x-auto hidden">
+            <div class="empty-box"><i class="fas fa-spinner fa-spin"></i><p>Memuat data...</p></div>
+        </div>
+    </div>
+
+    <!-- Tombol Aksi -->
+    <div class="space-y-3">
+        <button onclick="unduhPDF()" class="btn-action bg-pdf">
+            <i class="fas fa-file-pdf text-lg"></i> EKSPOR PDF
+        </button>
+        <button onclick="unduhExcel()" class="btn-action bg-excel">
+            <i class="fas fa-file-excel text-lg"></i> EKSPOR EXCEL
+        </button>
+    </div>
+
+</div>
+
+<nav class="bottom-nav">
+    <a href="../owner/dashboard-owner.html" class="bnav-item inactive"><i class="fas fa-th-large"></i><span>Beranda</span></a>
+    <a href="../owner/manage-owner.html" class="bnav-item inactive"><i class="fas fa-tools"></i><span>Kelola</span></a>
+    <a href="../owner/history-owner.html" class="bnav-item inactive"><i class="fas fa-history"></i><span>Riwayat</span></a>
+    <div class="bnav-item active"><i class="fas fa-file-export"></i><span>Laporan</span></div>
+</nav>
+
+<script type="module">
+    import { db, collection, onSnapshot, query, orderBy, handleLogout} from '../../assets/js/auth.js';
+
+    let allSesi = [], allFnb = [];
+    let unitFilter = 'semua';
+    let filteredSesi = [], filteredFnb = [];
+
+    const fmt = n => 'Rp ' + (n || 0).toLocaleString('id-ID');
+
+    // Default: 30 hari terakhir
+    const today = new Date();
+    const from30 = new Date(); from30.setDate(today.getDate() - 30);
+    document.getElementById('date-from').value = from30.toISOString().slice(0, 10);
+    document.getElementById('date-to').value   = today.toISOString().slice(0, 10);
+
+    function applyFilter() {
+        const from = document.getElementById('date-from').value;
+        const to   = document.getElementById('date-to').value;
+
+        filteredSesi = allSesi.filter(d => {
+            const tgl    = d.tanggal || (d.createdAt || '').slice(0, 10) || '';
+            const unitOk = unitFilter === 'semua' || (d.unitType || '').toUpperCase() === unitFilter;
+            const dateOk = (!from || tgl >= from) && (!to || tgl <= to);
+            return unitOk && dateOk;
+        });
+
+        filteredFnb = allFnb.filter(d => {
+            const tgl    = (d.createdAt || d.tanggal || '').slice(0, 10);
+            const dateOk = (!from || tgl >= from) && (!to || tgl <= to);
+            return dateOk;
+        });
+
+        updateKPI();
+        renderTabelSesi();
+        renderTabelFnb();
+    }
+
+    function updateKPI() {
+        const totalSesi  = filteredSesi.reduce((s, d) => s + (d.price || 0), 0);
+        const totalFnb   = filteredFnb.reduce((s, d) => s + (d.totalHarga || d.total || d.grandTotal || 0), 0);
+        const grandTotal = totalSesi + totalFnb;
+
+        document.getElementById('kpi-sesi').textContent      = fmt(totalSesi);
+        document.getElementById('kpi-sesi-sub').textContent  = filteredSesi.length ? filteredSesi.length + ' sesi' : 'Belum ada data';
+        document.getElementById('kpi-fnb').textContent       = fmt(totalFnb);
+        document.getElementById('kpi-fnb-sub').textContent   = filteredFnb.length ? filteredFnb.length + ' pesanan' : 'Belum ada data';
+        document.getElementById('kpi-total').textContent     = fmt(grandTotal);
+        document.getElementById('kpi-total-sub').textContent = (filteredSesi.length + filteredFnb.length) + ' Total Transaksi';
+
+        document.getElementById('kpi-sesi').classList.remove('loading-pulse');
+        document.getElementById('kpi-fnb').classList.remove('loading-pulse');
+        document.getElementById('kpi-total').classList.remove('loading-pulse');
+    }
+
+    function renderTabelSesi() {
+        const wrap = document.getElementById('tab-sesi');
+        if (!filteredSesi.length) {
+            wrap.innerHTML = '<div class="empty-box"><i class="fas fa-inbox"></i><p>Tidak ada data sesi<br>untuk filter ini.</p></div>';
+            return;
+        }
+        let rows = filteredSesi.slice(0, 50).map(d =>
+            '<tr class="hover:bg-white/[0.02]">' +
+            '<td class="table-cell text-gray-400 text-[10px]">' + (d.tanggal || (d.createdAt||'').slice(0,10) || '-') + '</td>' +
+            '<td class="table-cell"><span class="font-bold text-cyan-400">' + (d.unitId||'-') + '</span> <span class="text-gray-600 text-[10px]">' + (d.unitType||'') + '</span></td>' +
+            '<td class="table-cell text-[11px]">' + (d.customerName || d.namaCustomer || '-') + '</td>' +
+            '<td class="table-cell text-gray-400 text-[10px]">' + (d.stopTime || '-') + '</td>' +
+            '<td class="table-cell font-black text-green-400">' + fmt(d.price) + '</td>' +
+            '</tr>'
+        ).join('');
+        wrap.innerHTML = '<table class="w-full text-left">' +
+            '<thead><tr>' +
+            '<th class="table-header">Tanggal</th><th class="table-header">Unit</th><th class="table-header">Customer</th><th class="table-header">Stop</th><th class="table-header">Total</th>' +
+            '</tr></thead><tbody>' + rows + '</tbody></table>' +
+            (filteredSesi.length > 50 ? '<p class="text-center text-[10px] text-gray-600 py-3">+' + (filteredSesi.length-50) + ' baris lainnya di ekspor</p>' : '');
+    }
+
+    function renderTabelFnb() {
+        const wrap = document.getElementById('tab-fnb');
+        if (!filteredFnb.length) {
+            wrap.innerHTML = '<div class="empty-box"><i class="fas fa-utensils"></i><p>Tidak ada data F&B<br>untuk filter ini.</p></div>';
+            return;
+        }
+        let rows = filteredFnb.slice(0, 50).map(d =>
+            '<tr class="hover:bg-white/[0.02]">' +
+            '<td class="table-cell text-gray-400 text-[10px]">' + ((d.createdAt||d.tanggal||'').slice(0,10)||'-') + '</td>' +
+            '<td class="table-cell text-[11px]">' + (d.namaItem||d.itemName||d.nama||'-') + '</td>' +
+            '<td class="table-cell text-gray-400">' + (d.qty||d.jumlah||'-') + '</td>' +
+            '<td class="table-cell font-black text-yellow-400">' + fmt(d.totalHarga||d.total||d.grandTotal||0) + '</td>' +
+            '</tr>'
+        ).join('');
+        wrap.innerHTML = '<table class="w-full text-left">' +
+            '<thead><tr>' +
+            '<th class="table-header">Tanggal</th><th class="table-header">Item</th><th class="table-header">Qty</th><th class="table-header">Total</th>' +
+            '</tr></thead><tbody>' + rows + '</tbody></table>' +
+            (filteredFnb.length > 50 ? '<p class="text-center text-[10px] text-gray-600 py-3">+' + (filteredFnb.length-50) + ' baris lainnya di ekspor</p>' : '');
+    }
+
+    window.switchTab = (tab) => {
+        document.getElementById('tab-sesi').classList.toggle('hidden', tab !== 'sesi');
+        document.getElementById('tab-fnb').classList.toggle('hidden', tab !== 'fnb');
+        document.getElementById('tab-sesi-btn').className = 'tab-btn ' + (tab === 'sesi' ? 'active' : 'inactive');
+        document.getElementById('tab-fnb-btn').className  = 'tab-btn ' + (tab === 'fnb'  ? 'active' : 'inactive');
+    };
+
+    window.setUnitFilter = (val, el) => {
+        unitFilter = val;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        applyFilter();
+    };
+
+    document.getElementById('date-from').addEventListener('change', applyFilter);
+    document.getElementById('date-to').addEventListener('change', applyFilter);
+
+    // Firebase listeners
+    onSnapshot(query(collection(db, 'pendapatan'), orderBy('createdAt', 'desc')),
+        snap => { allSesi = snap.docs.map(d => ({ id: d.id, ...d.data() })); applyFilter(); });
+
+    onSnapshot(query(collection(db, 'orders'), orderBy('createdAt', 'desc')),
+        snap => { allFnb = snap.docs.map(d => ({ id: d.id, ...d.data() })); applyFilter(); });
+
+    function getLabelFilter() {
+        const from = document.getElementById('date-from').value;
+        const to   = document.getElementById('date-to').value;
+        return (unitFilter === 'semua' ? 'Semua Unit' : unitFilter) + ' | ' + (from||'...') + ' s/d ' + (to||'...');
+    }
+
+    function toast(icon, title) {
+        Swal.fire({ toast: true, position: 'top', showConfirmButton: false, timer: 2500, icon, title, background: '#11171f', color: '#fff' });
+    }
+    function warn(title, text) {
+        Swal.fire({ icon: 'warning', title, text, background: '#11171f', color: '#fff', confirmButtonColor: '#00d9ff' });
+    }
+
+    // ── EKSPOR PDF PROFESIONAL ────────────────────────────────────────────────
+    window.unduhPDF = () => {
+        if (!filteredSesi.length && !filteredFnb.length) return warn('Data Kosong', 'Tidak ada data untuk diunduh.');
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const W = 210;
+        const totalSesi  = filteredSesi.reduce((s,d) => s+(d.price||0), 0);
+        const totalFnb   = filteredFnb.reduce((s,d) => s+(d.totalHarga||d.total||d.grandTotal||0), 0);
+        const grandTotal = totalSesi + totalFnb;
+        const tglCetak   = new Date().toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' });
+        const noLaporan  = 'PG-' + new Date().getFullYear() + '-' + String(new Date().getMonth()+1).padStart(2,'0') + '-' + String(new Date().getDate()).padStart(2,'0');
+
+        /* ── HEADER ─────────────────────────────── */
+        // Strip biru gelap penuh
+        doc.setFillColor(10, 15, 28);
+        doc.rect(0, 0, W, 42, 'F');
+        // Aksen cyan kiri
+        doc.setFillColor(0, 217, 255);
+        doc.rect(0, 0, 5, 42, 'F');
+        // Logo box
+        doc.setFillColor(0, 217, 255);
+        doc.roundedRect(12, 8, 22, 22, 3, 3, 'F');
+        doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 0, 0);
+        doc.text('PG', 23, 21, { align: 'center' });
+        // Nama perusahaan
+        doc.setFontSize(16); doc.setFont('helvetica', 'bold'); doc.setTextColor(255, 255, 255);
+        doc.text('PRINCE GAMES', 40, 16);
+        doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(0, 217, 255);
+        doc.text('LAPORAN RESMI PENDAPATAN', 40, 22);
+        doc.setFontSize(7); doc.setTextColor(120, 140, 160);
+        doc.text('Jl. Contoh No. 1, Kota Anda  |  Prince Games Management System', 40, 28);
+        // Nomor laporan kanan atas
+        doc.setFontSize(7); doc.setFont('helvetica', 'bold'); doc.setTextColor(150, 150, 150);
+        doc.text('No. Laporan:', W-14, 13, { align: 'right' });
+        doc.setTextColor(0, 217, 255);
+        doc.text(noLaporan, W-14, 18, { align: 'right' });
+        doc.setTextColor(120, 140, 160); doc.setFont('helvetica', 'normal');
+        doc.text('Dicetak: ' + tglCetak, W-14, 23, { align: 'right' });
+
+        /* ── INFO FILTER ────────────────────────── */
+        doc.setFillColor(16, 22, 38);
+        doc.rect(0, 42, W, 14, 'F');
+        doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 120, 140);
+        doc.text('PERIODE & FILTER:', 14, 48);
+        doc.setFont('helvetica', 'bold'); doc.setTextColor(200, 220, 240);
+        doc.text(getLabelFilter(), 46, 48);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 120, 140);
+        doc.text('TOTAL TRANSAKSI:', 14, 54);
+        doc.setFont('helvetica', 'bold'); doc.setTextColor(200, 220, 240);
+        doc.text(String(filteredSesi.length + filteredFnb.length) + ' transaksi', 46, 54);
+
+        /* ── KPI CARDS ──────────────────────────── */
+        const cardY = 60;
+        const cards = [
+            { label: 'PENDAPATAN SESI', val: fmt(totalSesi), sub: filteredSesi.length + ' sesi', bg: [0,40,55],    border: [0,150,190],  valClr: [0,217,255]  },
+            { label: 'PENDAPATAN F&B',  val: fmt(totalFnb),  sub: filteredFnb.length + ' pesanan', bg: [35,28,0], border: [200,140,0],  valClr: [251,191,36] },
+            { label: 'TOTAL GABUNGAN',  val: fmt(grandTotal),sub: filteredSesi.length+filteredFnb.length + ' transaksi', bg: [0,30,10], border: [0,180,80], valClr: [52,211,153] },
+        ];
+        const cw = 58, cg = 5, cx0 = 14;
+        cards.forEach((c, i) => {
+            const cx = cx0 + i * (cw + cg);
+            doc.setFillColor(...c.bg);
+            doc.roundedRect(cx, cardY, cw, 22, 3, 3, 'F');
+            doc.setDrawColor(...c.border); doc.setLineWidth(0.4);
+            doc.roundedRect(cx, cardY, cw, 22, 3, 3, 'S');
+            doc.setFontSize(6); doc.setFont('helvetica', 'bold'); doc.setTextColor(140, 160, 180);
+            doc.text(c.label, cx+4, cardY+6);
+            doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(...c.valClr);
+            doc.text(c.val, cx+4, cardY+14);
+            doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 120, 140);
+            doc.text(c.sub, cx+4, cardY+20);
+        });
+
+        /* ── GARIS PEMISAH ──────────────────────── */
+        let curY = cardY + 28;
+        doc.setDrawColor(30, 40, 60); doc.setLineWidth(0.3);
+        doc.line(14, curY, W-14, curY);
+        curY += 6;
+
+        /* ── TABEL SESI GAMING ──────────────────── */
+        if (filteredSesi.length) {
+            // Label bagian
+            doc.setFillColor(0, 35, 50);
+            doc.roundedRect(14, curY, W-28, 9, 2, 2, 'F');
+            doc.setDrawColor(0, 150, 190); doc.setLineWidth(0.3);
+            doc.line(14, curY, 14, curY+9);
+            doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 217, 255);
+            doc.text('🕹  DETAIL SESI GAMING', 20, curY+6);
+            doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 140, 160);
+            doc.text(filteredSesi.length + ' baris data', W-14, curY+6, { align: 'right' });
+            curY += 13;
+
+            doc.autoTable({
+                startY: curY,
+                head: [['No', 'Tanggal', 'Unit ID', 'Tipe', 'Nama Pelanggan', 'Jam Selesai', 'Total Bayar']],
+                body: filteredSesi.map((d, i) => [
+                    i+1,
+                    d.tanggal || (d.createdAt||'').slice(0,10) || '-',
+                    d.unitId || '-',
+                    d.unitType || '-',
+                    d.customerName || d.namaCustomer || '-',
+                    d.stopTime || '-',
+                    fmt(d.price || 0)
+                ]),
+                foot: [['', '', '', '', '', 'SUBTOTAL SESI', fmt(totalSesi)]],
+                styles: {
+                    fontSize: 7.5,
+                    cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
+                    textColor: [210, 220, 235],
+                    fillColor: [14, 20, 34],
+                    lineColor: [35, 50, 75],
+                    lineWidth: 0.25,
+                    valign: 'middle',
+                },
+                headStyles: {
+                    fillColor: [0, 55, 80],
+                    textColor: [0, 230, 255],
+                    fontStyle: 'bold',
+                    fontSize: 7,
+                    lineColor: [0, 130, 180],
+                    lineWidth: 0.3,
+                    cellPadding: { top: 4, bottom: 4, left: 4, right: 4 },
+                },
+                alternateRowStyles: { fillColor: [18, 26, 45] },
+                footStyles: {
+                    fillColor: [0, 40, 60],
+                    textColor: [0, 217, 255],
+                    fontStyle: 'bold',
+                    fontSize: 8,
+                    lineColor: [0, 130, 180],
+                    lineWidth: 0.3,
+                },
+                columnStyles: {
+                    0: { cellWidth: 8,  halign: 'center', textColor: [80, 100, 130] },
+                    1: { cellWidth: 24, textColor: [140, 160, 190] },
+                    2: { cellWidth: 18, halign: 'center', textColor: [0, 200, 240], fontStyle: 'bold' },
+                    3: { cellWidth: 15, halign: 'center' },
+                    4: { cellWidth: 40 },
+                    5: { cellWidth: 22, halign: 'center', textColor: [140, 160, 190] },
+                    6: { cellWidth: 31, halign: 'right', textColor: [52, 211, 153], fontStyle: 'bold' },
+                },
+                margin: { left: 14, right: 14 },
+            });
+            curY = doc.lastAutoTable.finalY + 10;
+        }
+
+        /* ── TABEL F&B ──────────────────────────── */
+        if (filteredFnb.length) {
+            if (curY > 230) { doc.addPage(); curY = 20; }
+            doc.setFillColor(40, 30, 0);
+            doc.roundedRect(14, curY, W-28, 9, 2, 2, 'F');
+            doc.setDrawColor(180, 120, 0); doc.setLineWidth(0.3);
+            doc.line(14, curY, 14, curY+9);
+            doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(251, 191, 36);
+            doc.text('🍔  DETAIL PESANAN F&B', 20, curY+6);
+            doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(140, 110, 60);
+            doc.text(filteredFnb.length + ' baris data', W-14, curY+6, { align: 'right' });
+            curY += 13;
+
+            doc.autoTable({
+                startY: curY,
+                head: [['No', 'Tanggal', 'Nama Item', 'Qty', 'Total Bayar']],
+                body: filteredFnb.map((d, i) => [
+                    i+1,
+                    (d.createdAt||d.tanggal||'').slice(0,10)||'-',
+                    d.namaItem||d.itemName||d.nama||'-',
+                    d.qty||d.jumlah||'-',
+                    fmt(d.totalHarga||d.total||d.grandTotal||0)
+                ]),
+                foot: [['', '', '', 'SUBTOTAL F&B', fmt(totalFnb)]],
+                styles: {
+                    fontSize: 7.5,
+                    cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
+                    textColor: [210, 220, 235],
+                    fillColor: [20, 16, 5],
+                    lineColor: [60, 45, 10],
+                    lineWidth: 0.25,
+                    valign: 'middle',
+                },
+                headStyles: {
+                    fillColor: [60, 45, 0],
+                    textColor: [255, 210, 60],
+                    fontStyle: 'bold',
+                    fontSize: 7,
+                    lineColor: [160, 120, 0],
+                    lineWidth: 0.3,
+                    cellPadding: { top: 4, bottom: 4, left: 4, right: 4 },
+                },
+                alternateRowStyles: { fillColor: [26, 20, 5] },
+                footStyles: {
+                    fillColor: [45, 32, 0],
+                    textColor: [251, 191, 36],
+                    fontStyle: 'bold',
+                    fontSize: 8,
+                    lineColor: [160, 120, 0],
+                    lineWidth: 0.3,
+                },
+                columnStyles: {
+                    0: { cellWidth: 10, halign: 'center', textColor: [100, 80, 30] },
+                    1: { cellWidth: 28, textColor: [160, 130, 70] },
+                    2: { cellWidth: 80 },
+                    3: { cellWidth: 20, halign: 'center', textColor: [251, 191, 36] },
+                    4: { cellWidth: 30, halign: 'right', textColor: [252, 211, 77], fontStyle: 'bold' },
+                },
+                margin: { left: 14, right: 14 },
+            });
+            curY = doc.lastAutoTable.finalY + 10;
+        }
+
+        /* ── KOTAK GRAND TOTAL ──────────────────── */
+        if (curY > 265) { doc.addPage(); curY = 20; }
+        doc.setFillColor(0, 25, 15);
+        doc.roundedRect(14, curY, W-28, 22, 4, 4, 'F');
+        doc.setDrawColor(52, 211, 153); doc.setLineWidth(0.5);
+        doc.roundedRect(14, curY, W-28, 22, 4, 4, 'S');
+        doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(100, 170, 130);
+        doc.text('TOTAL PENDAPATAN KESELURUHAN', 22, curY+8);
+        doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(80, 130, 100);
+        doc.text('Sesi Gaming: ' + fmt(totalSesi) + '   +   F&B: ' + fmt(totalFnb), 22, curY+14);
+        doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.setTextColor(52, 211, 153);
+        doc.text(fmt(grandTotal), W-18, curY+14, { align: 'right' });
+
+        /* ── FOOTER HALAMAN ─────────────────────── */
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let p = 1; p <= pageCount; p++) {
+            doc.setPage(p);
+            const py = 295;
+            doc.setFillColor(10, 15, 28);
+            doc.rect(0, py-7, W, 12, 'F');
+            doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(80, 100, 130);
+            doc.text('Prince Games Management System  |  Laporan ini dicetak secara otomatis', 14, py);
+            doc.text('Halaman ' + p + ' dari ' + pageCount, W-14, py, { align: 'right' });
+            doc.setDrawColor(0, 80, 100); doc.setLineWidth(0.2);
+            doc.line(14, py-6, W-14, py-6);
+        }
+
+        doc.save('Laporan_PrinceGames_' + new Date().toLocaleDateString('id-ID').replace(/\//g,'-') + '.pdf');
+        toast('success', 'PDF profesional berhasil diunduh!');
+    };
+
+    // ── EKSPOR EXCEL PROFESIONAL ──────────────────────────────────────────────
+    window.unduhExcel = () => {
+        if (!filteredSesi.length && !filteredFnb.length) return warn('Data Kosong', 'Tidak ada data untuk diunduh.');
+        const totalSesi  = filteredSesi.reduce((s,d) => s+(d.price||0), 0);
+        const totalFnb   = filteredFnb.reduce((s,d) => s+(d.totalHarga||d.total||d.grandTotal||0), 0);
+        const grandTotal = totalSesi + totalFnb;
+        const wb = XLSX.utils.book_new();
+        const tglCetak   = new Date().toLocaleString('id-ID');
+        const noLaporan  = 'PG-' + new Date().getFullYear() + '-' + String(new Date().getMonth()+1).padStart(2,'0') + '-' + String(new Date().getDate()).padStart(2,'0');
+
+        // Warna tema
+        const CYAN    = '00D9FF'; const CYAN_BG   = '002530';
+        const YELLOW  = 'FBBF24'; const YELLOW_BG = '2A1C00';
+        const GREEN   = '34D399'; const GREEN_BG  = '002010';
+        const DARK    = '0A0F1C'; const DARK2     = '0E1422';
+        const DARK3   = '121A2D'; const BORDER    = '1E3050';
+        const WHITE   = 'D2DCF0'; const GRAY      = '647A9B';
+        const RED_BG  = '2A0A0A'; const RED_TXT   = 'F87171';
+
+        function cell(v, opts = {}) {
+            const c = { v, t: opts.t || (typeof v === 'number' ? 'n' : 's') };
+            const s = {};
+            if (opts.bold)    s.font = { ...(s.font||{}), bold: true };
+            if (opts.color)   s.font = { ...(s.font||{}), color: { rgb: opts.color } };
+            if (opts.sz)      s.font = { ...(s.font||{}), sz: opts.sz };
+            if (opts.bg)      s.fill = { fgColor: { rgb: opts.bg } };
+            if (opts.center)  s.alignment = { horizontal: 'center', vertical: 'center', wrapText: true };
+            if (opts.right)   s.alignment = { horizontal: 'right', vertical: 'center' };
+            if (opts.vcenter) s.alignment = { ...(s.alignment||{}), vertical: 'center' };
+            if (opts.border)  s.border = {
+                top:    { style: 'thin', color: { rgb: BORDER } },
+                bottom: { style: 'thin', color: { rgb: BORDER } },
+                left:   { style: 'thin', color: { rgb: BORDER } },
+                right:  { style: 'thin', color: { rgb: BORDER } },
+            };
+            if (opts.borderB) s.border = { ...(s.border||{}), bottom: { style: 'medium', color: { rgb: opts.borderB } } };
+            if (opts.numFmt)  c.z = opts.numFmt;
+            c.s = s;
+            return c;
+        }
+
+        function borderedRow(cells) {
+            return cells.map(c => ({ ...c, s: { ...(c.s||{}), border: {
+                top:    { style: 'thin', color: { rgb: BORDER } },
+                bottom: { style: 'thin', color: { rgb: BORDER } },
+                left:   { style: 'thin', color: { rgb: BORDER } },
+                right:  { style: 'thin', color: { rgb: BORDER } },
+            }}}));
+        }
+
+        /* ════════════════════════════════════
+           SHEET 1: SESI GAMING
+        ════════════════════════════════════ */
+        if (filteredSesi.length) {
+            const rows = [];
+            // Baris judul utama
+            rows.push([cell('PRINCE GAMES', { bold:true, color:CYAN, sz:14, bg:DARK }), cell(''), cell(''), cell(''), cell(''), cell(''), cell('')]);
+            rows.push([cell('LAPORAN SESI GAMING', { bold:true, color:WHITE, sz:11, bg:DARK }), cell(''), cell(''), cell(''), cell(''), cell(''), cell('')]);
+            rows.push([cell('No. Laporan: ' + noLaporan, { color:GRAY, sz:9, bg:DARK }), cell(''), cell(''), cell(''), cell(''), cell(''), cell('')]);
+            rows.push([cell('Filter: ' + getLabelFilter(), { color:GRAY, sz:9, bg:DARK }), cell(''), cell(''), cell(''), cell(''), cell(''), cell('')]);
+            rows.push([cell('Dicetak: ' + tglCetak, { color:GRAY, sz:9, bg:DARK }), cell(''), cell(''), cell(''), cell(''), cell(''), cell('')]);
+            rows.push([cell(''), cell(''), cell(''), cell(''), cell(''), cell(''), cell('')]);
+            // Header kolom
+            rows.push(borderedRow([
+                cell('NO',            { bold:true, color:CYAN, bg:'003545', center:true, sz:9 }),
+                cell('TANGGAL',       { bold:true, color:CYAN, bg:'003545', center:true, sz:9 }),
+                cell('UNIT ID',       { bold:true, color:CYAN, bg:'003545', center:true, sz:9 }),
+                cell('TIPE',          { bold:true, color:CYAN, bg:'003545', center:true, sz:9 }),
+                cell('NAMA PELANGGAN',{ bold:true, color:CYAN, bg:'003545', center:true, sz:9 }),
+                cell('JAM SELESAI',   { bold:true, color:CYAN, bg:'003545', center:true, sz:9 }),
+                cell('TOTAL BAYAR',   { bold:true, color:CYAN, bg:'003545', center:true, sz:9 }),
+            ]));
+            // Data
+            filteredSesi.forEach((d, i) => {
+                const bg = i % 2 === 0 ? DARK2 : DARK3;
+                rows.push(borderedRow([
+                    cell(i+1,                                               { bg, center:true, color:GRAY, sz:9 }),
+                    cell(d.tanggal||(d.createdAt||'').slice(0,10)||'-',    { bg, color:GRAY, sz:9 }),
+                    cell(d.unitId||'-',                                    { bg, center:true, color:CYAN, bold:true, sz:9 }),
+                    cell(d.unitType||'-',                                  { bg, center:true, color:WHITE, sz:9 }),
+                    cell(d.customerName||d.namaCustomer||'-',              { bg, color:WHITE, sz:9 }),
+                    cell(d.stopTime||'-',                                  { bg, center:true, color:GRAY, sz:9 }),
+                    cell(d.price||0,                                       { bg, right:true,  color:GREEN, bold:true, sz:9, numFmt:'"Rp "#,##0' }),
+                ]));
+            });
+            // Subtotal
+            rows.push([cell(''), cell(''), cell(''), cell(''), cell(''), 
+                cell('SUBTOTAL SESI', { bold:true, color:CYAN, bg:CYAN_BG, right:true, sz:9, border: { bottom: { style:'medium', color:{ rgb:CYAN } } } }),
+                cell(totalSesi,       { bold:true, color:CYAN, bg:CYAN_BG, right:true, sz:10, numFmt:'"Rp "#,##0' }),
+            ]);
+            rows.push([cell(''), cell(''), cell(''), cell(''), cell(''), cell(''), cell('')]);
+
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            ws['!cols'] = [{ wch:6 },{ wch:14 },{ wch:10 },{ wch:10 },{ wch:24 },{ wch:14 },{ wch:18 }];
+            ws['!rows'] = [{ hpt:18 },{ hpt:16 },{ hpt:12 },{ hpt:12 },{ hpt:12 },{},{ hpt:16 }];
+            ws['!merges'] = [
+                { s:{r:0,c:0}, e:{r:0,c:6} }, { s:{r:1,c:0}, e:{r:1,c:6} },
+                { s:{r:2,c:0}, e:{r:2,c:6} }, { s:{r:3,c:0}, e:{r:3,c:6} },
+                { s:{r:4,c:0}, e:{r:4,c:6} },
+            ];
+            XLSX.utils.book_append_sheet(wb, ws, 'Sesi Gaming');
+        }
+
+        /* ════════════════════════════════════
+           SHEET 2: F&B
+        ════════════════════════════════════ */
+        if (filteredFnb.length) {
+            const rows = [];
+            rows.push([cell('PRINCE GAMES', { bold:true, color:YELLOW, sz:14, bg:DARK }), cell(''), cell(''), cell(''), cell('')]);
+            rows.push([cell('LAPORAN PESANAN F&B', { bold:true, color:WHITE, sz:11, bg:DARK }), cell(''), cell(''), cell(''), cell('')]);
+            rows.push([cell('No. Laporan: ' + noLaporan, { color:GRAY, sz:9, bg:DARK }), cell(''), cell(''), cell(''), cell('')]);
+            rows.push([cell('Filter: ' + getLabelFilter(), { color:GRAY, sz:9, bg:DARK }), cell(''), cell(''), cell(''), cell('')]);
+            rows.push([cell('Dicetak: ' + tglCetak, { color:GRAY, sz:9, bg:DARK }), cell(''), cell(''), cell(''), cell('')]);
+            rows.push([cell(''), cell(''), cell(''), cell(''), cell('')]);
+            rows.push(borderedRow([
+                cell('NO',         { bold:true, color:YELLOW, bg:'3D2800', center:true, sz:9 }),
+                cell('TANGGAL',    { bold:true, color:YELLOW, bg:'3D2800', center:true, sz:9 }),
+                cell('NAMA ITEM',  { bold:true, color:YELLOW, bg:'3D2800', center:true, sz:9 }),
+                cell('QTY',        { bold:true, color:YELLOW, bg:'3D2800', center:true, sz:9 }),
+                cell('TOTAL BAYAR',{ bold:true, color:YELLOW, bg:'3D2800', center:true, sz:9 }),
+            ]));
+            filteredFnb.forEach((d, i) => {
+                const bg = i % 2 === 0 ? '14100A' : '1A1408';
+                rows.push(borderedRow([
+                    cell(i+1,                                                { bg, center:true, color:GRAY, sz:9 }),
+                    cell((d.createdAt||d.tanggal||'').slice(0,10)||'-',      { bg, color:GRAY, sz:9 }),
+                    cell(d.namaItem||d.itemName||d.nama||'-',               { bg, color:WHITE, sz:9 }),
+                    cell(d.qty||d.jumlah||'-',                              { bg, center:true, color:YELLOW, bold:true, sz:9 }),
+                    cell(d.totalHarga||d.total||d.grandTotal||0,            { bg, right:true, color:YELLOW, bold:true, sz:9, numFmt:'"Rp "#,##0' }),
+                ]));
+            });
+            rows.push([cell(''), cell(''), cell(''),
+                cell('SUBTOTAL F&B', { bold:true, color:YELLOW, bg:YELLOW_BG, right:true, sz:9 }),
+                cell(totalFnb,        { bold:true, color:YELLOW, bg:YELLOW_BG, right:true, sz:10, numFmt:'"Rp "#,##0' }),
+            ]);
+            rows.push([cell(''), cell(''), cell(''), cell(''), cell('')]);
+
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            ws['!cols'] = [{ wch:6 },{ wch:14 },{ wch:30 },{ wch:8 },{ wch:18 }];
+            ws['!rows'] = [{ hpt:18 },{ hpt:16 },{ hpt:12 },{ hpt:12 },{ hpt:12 },{},{ hpt:16 }];
+            ws['!merges'] = [
+                { s:{r:0,c:0}, e:{r:0,c:4} }, { s:{r:1,c:0}, e:{r:1,c:4} },
+                { s:{r:2,c:0}, e:{r:2,c:4} }, { s:{r:3,c:0}, e:{r:3,c:4} },
+                { s:{r:4,c:0}, e:{r:4,c:4} },
+            ];
+            XLSX.utils.book_append_sheet(wb, ws, 'Pesanan FnB');
+        }
+
+        /* ════════════════════════════════════
+           SHEET 3: RINGKASAN EKSEKUTIF
+        ════════════════════════════════════ */
+        {
+            const rows = [];
+            rows.push([cell('PRINCE GAMES', { bold:true, color:CYAN, sz:16, bg:DARK }), cell(''), cell('')]);
+            rows.push([cell('RINGKASAN EKSEKUTIF LAPORAN KEUANGAN', { bold:true, color:WHITE, sz:12, bg:DARK }), cell(''), cell('')]);
+            rows.push([cell(''), cell(''), cell('')]);
+            rows.push([cell('No. Laporan',   { bold:true, color:GRAY, bg:DARK2, sz:9 }), cell(noLaporan,   { color:WHITE, bg:DARK2, sz:9 }), cell('')]);
+            rows.push([cell('Periode',        { bold:true, color:GRAY, bg:DARK2, sz:9 }), cell(getLabelFilter(), { color:WHITE, bg:DARK2, sz:9 }), cell('')]);
+            rows.push([cell('Tanggal Cetak',  { bold:true, color:GRAY, bg:DARK2, sz:9 }), cell(tglCetak,   { color:WHITE, bg:DARK2, sz:9 }), cell('')]);
+            rows.push([cell(''), cell(''), cell('')]);
+            // Header tabel ringkasan
+            rows.push(borderedRow([
+                cell('KATEGORI',            { bold:true, color:WHITE, bg:'1A2540', center:true, sz:10 }),
+                cell('JUMLAH TRANSAKSI',    { bold:true, color:WHITE, bg:'1A2540', center:true, sz:10 }),
+                cell('TOTAL PENDAPATAN',    { bold:true, color:WHITE, bg:'1A2540', center:true, sz:10 }),
+            ]));
+            rows.push(borderedRow([
+                cell('Sesi Gaming',   { color:CYAN,   bg:CYAN_BG,   sz:10 }),
+                cell(filteredSesi.length, { color:WHITE, bg:CYAN_BG, center:true, sz:10 }),
+                cell(totalSesi,       { color:CYAN,   bg:CYAN_BG,   right:true, bold:true, sz:10, numFmt:'"Rp "#,##0' }),
+            ]));
+            rows.push(borderedRow([
+                cell('Pesanan F&B',   { color:YELLOW, bg:YELLOW_BG, sz:10 }),
+                cell(filteredFnb.length, { color:WHITE, bg:YELLOW_BG, center:true, sz:10 }),
+                cell(totalFnb,        { color:YELLOW, bg:YELLOW_BG, right:true, bold:true, sz:10, numFmt:'"Rp "#,##0' }),
+            ]));
+            rows.push([cell(''), cell(''), cell('')]);
+            rows.push(borderedRow([
+                cell('GRAND TOTAL',   { bold:true, color:GREEN, bg:GREEN_BG, sz:12 }),
+                cell(filteredSesi.length + filteredFnb.length, { bold:true, color:GREEN, bg:GREEN_BG, center:true, sz:12 }),
+                cell(grandTotal,      { bold:true, color:GREEN, bg:GREEN_BG, right:true, sz:13, numFmt:'"Rp "#,##0' }),
+            ]));
+            rows.push([cell(''), cell(''), cell('')]);
+            rows.push([cell('Prince Games Management System  |  Laporan ini dicetak otomatis oleh sistem', { color:GRAY, sz:8 }), cell(''), cell('')]);
+
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            ws['!cols'] = [{ wch:28 },{ wch:22 },{ wch:24 }];
+            ws['!rows'] = [{ hpt:22 },{ hpt:18 },{},{ hpt:14 },{ hpt:14 },{ hpt:14 },{},{ hpt:16 },{ hpt:18 },{ hpt:18 },{},{ hpt:20 }];
+            ws['!merges'] = [
+                { s:{r:0,c:0}, e:{r:0,c:2} }, { s:{r:1,c:0}, e:{r:1,c:2} },
+                { s:{r:2,c:0}, e:{r:2,c:2} }, { s:{r:13,c:0}, e:{r:13,c:2} },
+            ];
+            XLSX.utils.book_append_sheet(wb, ws, 'Ringkasan');
+        }
+
+        XLSX.writeFile(wb, 'Laporan_PrinceGames_' + new Date().toLocaleDateString('id-ID').replace(/\//g,'-') + '.xlsx');
+        toast('success', 'Excel profesional berhasil diunduh!');
+    };
+
+    // ── BAGIKAN RINGKASAN ─────────────────────────────────────────────────────
+    window.bagikanRingkasan = async () => {
+        const totalSesi  = filteredSesi.reduce((s,d) => s+(d.price||0), 0);
+        const totalFnb   = filteredFnb.reduce((s,d) => s+(d.totalHarga||d.total||d.grandTotal||0), 0);
+        const grandTotal = totalSesi + totalFnb;
+        if (!filteredSesi.length && !filteredFnb.length) return toast('info', 'Tidak ada data untuk dibagikan.');
+
+        const from = document.getElementById('date-from').value;
+        const to   = document.getElementById('date-to').value;
+        const unit = unitFilter === 'semua' ? 'Semua Unit' : unitFilter;
+
+        const pesan =
+'🎮 *LAPORAN PRINCE GAMES*\n' +
+'━━━━━━━━━━━━━━━━━━━━\n' +
+'📅 Periode : ' + (from||'...') + ' s/d ' + (to||'...') + '\n' +
+'🕹️ Unit     : ' + unit + '\n' +
+'━━━━━━━━━━━━━━━━━━━━\n' +
+'🎮 Sesi Gaming\n' +
+'   • ' + filteredSesi.length + ' transaksi\n' +
+'   • ' + fmt(totalSesi) + '\n\n' +
+'🍔 Pesanan F&B\n' +
+'   • ' + filteredFnb.length + ' pesanan\n' +
+'   • ' + fmt(totalFnb) + '\n' +
+'━━━━━━━━━━━━━━━━━━━━\n' +
+'💰 *TOTAL : ' + fmt(grandTotal) + '*\n' +
+'   (' + (filteredSesi.length + filteredFnb.length) + ' transaksi)\n' +
+'━━━━━━━━━━━━━━━━━━━━\n' +
+'📊 Prince Games Management';
+
+        if (navigator.share) {
+            try { await navigator.share({ title: 'Laporan Prince Games', text: pesan }); }
+            catch(e) {}
+        } else {
+            try { await navigator.clipboard.writeText(pesan); } catch(e) {}
+            Swal.fire({
+                title: '📊 Ringkasan Laporan',
+                html: '<pre style="text-align:left;font-size:12px;white-space:pre-wrap;font-family:\'Plus Jakarta Sans\',sans-serif;line-height:1.6">' + pesan + '</pre>' +
+                      '<p style="font-size:10px;color:#4b5563;margin-top:8px">Teks telah disalin ke clipboard</p>',
+                background: '#11171f', color: '#fff',
+                confirmButtonColor: '#00d9ff', confirmButtonText: 'Tutup'
+            });
+        }
+    };
+
+    window.doLogout = () => handleLogout('../auth/login-owner.html');
+</script>
+</div></div>
+</body>
+</html>

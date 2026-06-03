@@ -1,0 +1,141 @@
+/* style.css */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+
+:root{
+  --cyan:#00d9ff;
+  --cyan-soft:#67ecff;
+
+  --purple:#b026ff;
+  --purple-glow:#d14dff;
+
+  --bg:#070d14;
+  --card:#0d1520;
+
+  --border:rgba(255,255,255,.08);
+
+  --text:#edf4ff;
+  --muted:#7f93aa;
+
+  --danger:#ff4b5c;
+  --success:#00ffb3;
+
+  --shadow-cyan:
+    0 0 18px rgba(0,217,255,.25),
+    0 0 38px rgba(0,217,255,.12);
+
+  --shadow-purple:
+    0 0 15px rgba(176,38,255,.35),
+    0 0 35px rgba(176,38,255,.18);
+
+  --radius:18px;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-dark);
+    min-height: 100vh;
+    margin: 0;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Efek Cahaya Pojok sesuai permintaan */
+body::before {
+    content: "";
+    position: fixed;
+    top: -100px;
+    left: -100px;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(0, 217, 255, 0.2) 0%, transparent 70%);
+    z-index: -1;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    bottom: -100px;
+    right: -100px;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(217, 70, 239, 0.15) 0%, transparent 70%);
+    z-index: -1;
+}
+
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 380px;
+    padding: 2.5rem 2rem;
+}
+
+.input-field {
+    background: rgba(8, 12, 18, 0.9);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    color: white;
+    padding: 14px 16px;
+    width: 100%;
+    margin-top: 8px;
+    transition: 0.3s;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--cyan);
+}
+
+/* Tombol Blok Biru Cyan - Konsisten di semua halaman */
+.btn-cyan {
+    background: var(--cyan);
+    color: #000;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 12px;
+    padding: 16px;
+    width: 100%;
+    margin-top: 1.5rem;
+    transition: 0.3s;
+    box-shadow: 0 8px 20px -6px rgba(0, 217, 255, 0.4);
+}
+
+.btn-cyan:active {
+    transform: scale(0.97);
+}
+
+.error-container {
+    display: none;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid #ef4444;
+    color: #f87171;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.link-text{
+    margin-top:18px;
+    text-align:center;
+    color:#8da2bb;
+    font-size:14px;
+}
+
+.link-text a{
+    color:#00d9ff;
+    text-decoration:none;
+    font-weight:700;
+}
+
+.link-text a:hover{
+    text-decoration:underline;
+}
