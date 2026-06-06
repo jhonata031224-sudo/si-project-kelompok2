@@ -11,11 +11,13 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { background-color: #06090f; color: white; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; }
         .glass-card { background: rgba(17, 23, 31, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .progress-bar { height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; flex: 1; }
-        .progress-active { background: #00d9ff; box-shadow: 0 0 10px #00d9ff; }
+        .progress-bar { height: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 6px; flex: 1; }
+        .progress-active { background: #00d9ff; box-shadow: none; }
         .console-card { border: 1px solid rgba(255, 255, 255, 0.1); transition: 0.3s; cursor: pointer; }
-        .console-active { border-color: #00d9ff; background: rgba(0, 217, 255, 0.05); box-shadow: 0 0 15px rgba(0, 217, 255, 0.1); }
+        .console-active { border-color: #00d9ff; background: #00d9ff; box-shadow: none; color: #000 !important; }
+        .console-active p { color: #000 !important; }
         .btn-cyan { background: #00d9ff; color: #000; font-weight: 800; box-shadow: 0 0 20px rgba(0, 217, 255, 0.3); }
+        .dur-active { background: #00d9ff !important; color: #000 !important; border: none !important; box-shadow: none !important; }
         input { background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: white !important; }
         input:focus { border-color: #00d9ff !important; outline: none; }
         .cat-btn { padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
@@ -31,9 +33,50 @@
         .tambah-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 6px 14px; font-size: 11px; font-weight: 700; color: #9ca3af; transition: 0.2s; cursor: pointer; }
         .tambah-btn:hover { border-color: rgba(0,217,255,0.4); color: #00d9ff; }
         .subtotal-bar { background: rgba(17,23,31,0.97); border: 1px solid rgba(255,255,255,0.07); backdrop-filter: blur(10px); }
+
+        /* ── LIGHT MODE ── */
+        body.light-mode { background-color: #f1f5f9 !important; color: #1a202c !important; }
+        body.light-mode .glass-card { background: #ffffff !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .progress-bar { background: rgba(0,0,0,0.1) !important; }
+        body.light-mode .console-card { border-color: rgba(0,0,0,0.1) !important; background: #ffffff !important; color: #1a202c !important; }
+        body.light-mode .console-active { border-color: #0284c7 !important; background: #0284c7 !important; box-shadow: none !important; color: #fff !important; }
+        body.light-mode .console-active p { color: #fff !important; }
+        body.light-mode .progress-active { background: #0284c7 !important; }
+        body.light-mode .btn-cyan { background: #0284c7 !important; color: #fff !important; box-shadow: 0 0 20px rgba(2,132,199,0.3) !important; }
+        body.light-mode input { background: #ffffff !important; border-color: rgba(0,0,0,0.15) !important; color: #1a202c !important; }
+        body.light-mode input:focus { border-color: #0284c7 !important; }
+        body.light-mode .cat-active { background: #0284c7 !important; color: #fff !important; border-color: #0284c7 !important; }
+        body.light-mode .cat-inactive { color: #64748b !important; background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.1) !important; }
+        body.light-mode .menu-item { border-color: rgba(0,0,0,0.08) !important; background: #ffffff !important; color: #1a202c !important; }
+        body.light-mode .menu-item:hover { border-color: rgba(2,132,199,0.3) !important; }
+        body.light-mode .qty-minus { background: rgba(0,0,0,0.08) !important; color: #374151 !important; }
+        body.light-mode .qty-plus { background: #0284c7 !important; color: #fff !important; }
+        body.light-mode .tambah-btn { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
+        body.light-mode .tambah-btn:hover { border-color: rgba(2,132,199,0.4) !important; color: #0284c7 !important; }
+        body.light-mode .subtotal-bar { background: rgba(248,250,252,0.97) !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .text-gray-400 { color: #64748b !important; }
+        body.light-mode .text-gray-500 { color: #94a3b8 !important; }
+        body.light-mode .text-gray-600 { color: #475569 !important; }
+        body.light-mode .dur-btn { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.1) !important; color: #374151 !important; }
+        body.light-mode .dur-active { border-color: #0284c7 !important; background: #0284c7 !important; color: #fff !important; }
+        body.light-mode .bg-white\/5 { background: rgba(0,0,0,0.04) !important; }
+        body.light-mode .bg-white\/\[0\.02\] { background: rgba(0,0,0,0.02) !important; }
+        body.light-mode .border-white\/10 { border-color: rgba(0,0,0,0.1) !important; }
+        body.light-mode .border-white\/5 { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode .text-white { color: #1a202c !important; }
+        body.light-mode .bg-white\/5.border.border-white\/10.py-5 { color: #374151 !important; }
+        body.light-mode h1,body.light-mode h2,body.light-mode h3 { color: #1a202c !important; }
+        body.light-mode p { color: #374151; }
+        body.light-mode .h-px { background-color: rgba(0,0,0,0.07) !important; }
     </style>
 </head>
 <body class="p-6">
+<script>
+  (function(){
+    const t = localStorage.getItem('pg_theme') || 'dark';
+    if(t === 'light') document.body.classList.add('light-mode');
+  })();
+</script>
 
 <div class="max-w-xl mx-auto">
     <h1 class="text-3xl font-black mb-2 tracking-tighter">Booking sesi</h1>
@@ -81,7 +124,7 @@
                 <button onclick="setDuration(1, this)" class="dur-btn py-3 rounded-xl bg-white/5 border border-white/10 text-xs hover:border-cyan-400">1j</button>
                 <button onclick="setDuration(2, this)" class="dur-btn py-3 rounded-xl bg-white/5 border border-white/10 text-xs hover:border-cyan-400">2j</button>
                 <button onclick="setDuration(3, this)" class="dur-btn py-3 rounded-xl bg-white/5 border border-white/10 text-xs hover:border-cyan-400">3j</button>
-                <button onclick="setDuration(5, this)" class="dur-btn py-3 rounded-xl btn-cyan text-xs">5j</button>
+                <button onclick="setDuration(5, this)" class="dur-btn dur-active py-3 rounded-xl text-xs font-bold">5j</button>
             </div>
             <div class="flex items-center gap-3">
                 <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 whitespace-nowrap">Custom jam</label>
@@ -335,7 +378,7 @@
         document.querySelectorAll('.dur-btn').forEach(b => {
             b.className = "dur-btn py-3 rounded-xl bg-white/5 border border-white/10 text-xs hover:border-cyan-400";
         });
-        if (el) el.className = "dur-btn py-3 rounded-xl btn-cyan text-xs";
+        if (el) el.className = "dur-btn dur-active py-3 rounded-xl text-xs font-bold";
         const inp = document.getElementById('custom-dur-booking');
         if (inp) inp.value = '';
     }

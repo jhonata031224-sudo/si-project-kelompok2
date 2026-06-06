@@ -20,10 +20,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const swalBg = () => localStorage.getItem('pg_theme') === 'light'
+    ? { background: '#ffffff', color: '#1a202c' }
+    : { background: '#11171f', color: '#fff' };
+
 const notify = (icon, title, text = "") => {
     Swal.fire({
         icon, title, text,
-        background: '#11171f', color: '#fff',
+        ...swalBg(),
         confirmButtonColor: '#00d9ff', timer: 2500
     });
 };
@@ -38,8 +42,7 @@ export const handleLogout = async (targetUrl = '../../pages/auth/login-pelanggan
         confirmButtonColor: '#00d9ff',
         cancelButtonColor: '#ef4444',
         confirmButtonText: 'Ya, Keluar',
-        background: '#11171f',
-        color: '#fff'
+        ...swalBg()
     });
     if (result.isConfirmed) {
         try {

@@ -207,9 +207,43 @@
     .btn-row button{flex:1;padding:14px;border-radius:12px;border:none;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;}
     .btn-hist{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);}
     .btn-dash{background:linear-gradient(90deg,var(--cyan),var(--purple));color:#fff;box-shadow:0 0 18px var(--cyan-glow);}
+
+    /* ── LIGHT MODE ── */
+    body.light-mode{
+      --bg:#f1f5f9;
+      --card:#ffffff;
+      --card2:#f8f0ff;
+      --border:rgba(0,0,0,.08);
+      --border-c:rgba(2,132,199,.25);
+      --border-p:rgba(124,58,237,.22);
+      --border-g:rgba(21,128,61,.2);
+      --border-o:rgba(194,65,12,.2);
+      --text:#1a202c;
+      --muted:#64748b;
+      --cyan:#0284c7;
+      --cyan-dim:rgba(2,132,199,.08);
+      --cyan-mid:rgba(2,132,199,.18);
+      --cyan-glow:rgba(2,132,199,.25);
+      --purple:#7c3aed;
+      --purple-dim:rgba(124,58,237,.08);
+      --purple-mid:rgba(124,58,237,.18);
+      --purple-glow:rgba(124,58,237,.25);
+      --green:#16a34a;
+      --green-dim:rgba(21,128,61,.08);
+      --green-glow:rgba(21,128,61,.2);
+      --orange:#ea580c;
+      --orange-dim:rgba(234,88,12,.08);
+      --orange-glow:rgba(234,88,12,.2);
+    }
+    body.light-mode header{background:rgba(248,250,252,.97)!important;}
+    body.light-mode body::before{background-image:linear-gradient(rgba(2,132,199,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(2,132,199,.025) 1px,transparent 1px)!important;}
+    body.light-mode .btn-hist{background:rgba(0,0,0,.04)!important;}
+    body.light-mode .info-ewallet{color:#0369a1!important;}
+    body.light-mode .info-cash{color:#6d28d9!important;}
   </style>
 </head>
 <body>
+<script>(function(){if(localStorage.getItem('pg_theme')==='light')document.body.classList.add('light-mode');})();</script>
 
 <header>
   <button class="btn-back" onclick="history.back()"><i class="fas fa-chevron-left"></i></button>

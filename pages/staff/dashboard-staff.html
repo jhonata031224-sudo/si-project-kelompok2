@@ -6,6 +6,7 @@
     <title>Prince Games - Staff Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
@@ -219,6 +220,173 @@
             .staff-kpi-value { font-size:18px; }
             .staff-two-col { grid-template-columns:1fr; }
         }
+
+        /* ══════════════════════════════════════════
+           LIGHT MODE — override semua token warna
+        ══════════════════════════════════════════ */
+        body.light-mode {
+            background-color: #f0f4f8 !important;
+            color: #1a202c !important;
+        }
+        body.light-mode :root,
+        body.light-mode {
+            --bg:#f0f4f8; --surface:#ffffff; --surface2:#e8edf5;
+            --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.05);
+            --text:#1a202c; --muted:#64748b;
+            --cyan:#0284c7; --green:#16a34a; --orange:#ea580c;
+            --purple:#7c3aed; --yellow:#d97706; --red:#dc2626;
+        }
+        /* Glass card */
+        body.light-mode .glass-card {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        /* KPI / SKPI cards */
+        body.light-mode .skpi-card,
+        body.light-mode .staff-kpi-card,
+        body.light-mode .srev-card,
+        body.light-mode .staff-section-card,
+        body.light-mode .staff-rev-card,
+        body.light-mode .req-card,
+        body.light-mode .hdcard,
+        body.light-mode .hstat-box {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        /* Tab switcher row */
+        body.light-mode .staff-tab-row {
+            background: rgba(0,0,0,0.04) !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .staff-tab { color: #64748b !important; }
+        body.light-mode .staff-tab-active { background: #0284c7 !important; color: #fff !important; box-shadow: 0 2px 12px rgba(2,132,199,.25) !important; }
+        /* Tab buttons */
+        body.light-mode .tab-inactive { color: #64748b !important; background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.1) !important; }
+        body.light-mode .tab-active   { background: #0284c7 !important; color: #fff !important; border-color: #0284c7 !important; }
+        /* Bottom nav bar */
+        body.light-mode .fixed.bottom-0 {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        /* Text overrides */
+        body.light-mode .text-white,
+        body.light-mode [style*="color:#e6edf3"],
+        body.light-mode [style*="color: #e6edf3"] { color: #1a202c !important; }
+        body.light-mode [style*="color:#9ca3af"],
+        body.light-mode .text-gray-400 { color: #64748b !important; }
+        body.light-mode [style*="color:#6b7280"],
+        body.light-mode .text-gray-500 { color: #94a3b8 !important; }
+        body.light-mode [style*="color:#4b5563"],
+        body.light-mode .skpi-label,
+        body.light-mode .skpi-sub { color: #94a3b8 !important; }
+        body.light-mode [style*="color:#7d8590"],
+        body.light-mode .staff-session-price,
+        body.light-mode .staff-empty,
+        body.light-mode .srev-sublabel,
+        body.light-mode .srev-row-left,
+        body.light-mode .srev-row-unit { color: #64748b !important; }
+        /* Backgrounds used inline */
+        body.light-mode [style*="background:#11171f"],
+        body.light-mode [style*="background: #11171f"] { background: #ffffff !important; }
+        body.light-mode [style*="background:#1a2030"],
+        body.light-mode [style*="background: #1a2030"] { background: #f1f5f9 !important; }
+        body.light-mode [style*="background:#1c2128"],
+        body.light-mode [style*="background: #1c2128"] { background: #f1f5f9 !important; }
+        body.light-mode [style*="background:#0b0e14"] { background: #f0f4f8 !important; }
+        body.light-mode [style*="background:#0d1219"],
+        body.light-mode [style*="background:#0d1520"] { background: #f0f4f8 !important; }
+        /* Cyan accent → biru lebih dalam di light */
+        body.light-mode [style*="color:#00d9ff"] { color: #0284c7 !important; }
+        body.light-mode [style*="color:#3fb950"] { color: #16a34a !important; }
+        body.light-mode [style*="color:#a855f7"] { color: #7c3aed !important; }
+        body.light-mode [style*="color:#f59e0b"] { color: #d97706 !important; }
+        body.light-mode [style*="color:#ef4444"] { color: #dc2626 !important; }
+        body.light-mode .skpi-value-rev,
+        body.light-mode .srev-amount,
+        body.light-mode .staff-completed-price { color: #16a34a !important; }
+        body.light-mode .staff-session-timer { color: #0284c7 !important; }
+        body.light-mode .srev-row-price { color: #1a202c !important; }
+        /* Notif panel */
+        body.light-mode #notif-panel { background: #fff !important; border-color: rgba(0,0,0,0.08) !important; }
+        /* History drawer */
+        body.light-mode .hist-drawer { background: #f8fafc !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .hist-handle { background: rgba(0,0,0,0.12) !important; }
+        body.light-mode .hdcard-header.selesai { background: rgba(22,163,74,0.06) !important; border-color: rgba(22,163,74,0.15) !important; }
+        body.light-mode .hdcard-header.batal   { background: rgba(220,38,38,0.05) !important; border-color: rgba(220,38,38,0.12) !important; }
+        body.light-mode .hdcard-cell { background: rgba(0,0,0,0.04) !important; }
+        body.light-mode .hdcard-reason { background: rgba(220,38,38,0.04) !important; border-color: rgba(220,38,38,0.12) !important; }
+        body.light-mode .hist-search input { background: #f1f5f9 !important; border-color: rgba(0,0,0,0.1) !important; color: #1a202c !important; }
+        body.light-mode .hfil { background: rgba(0,0,0,0.05) !important; color: #64748b !important; }
+        body.light-mode .hfil.on { background: #0284c7 !important; color: #fff !important; }
+        /* Badges */
+        body.light-mode .badge-booking { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; border-color: rgba(2,132,199,0.2) !important; }
+        body.light-mode .badge-rental  { background: rgba(124,58,237,0.08) !important; color: #7c3aed !important; border-color: rgba(124,58,237,0.2) !important; }
+        body.light-mode .badge-pending { background: rgba(217,119,6,0.08) !important; color: #d97706 !important; border-color: rgba(217,119,6,0.2) !important; }
+        body.light-mode .badge-waiting { background: rgba(217,119,6,0.08) !important; color: #d97706 !important; border-color: rgba(217,119,6,0.2) !important; }
+        /* Buttons */
+        body.light-mode .btn-approve { background: #16a34a !important; }
+        body.light-mode .btn-reject  { background: rgba(220,38,38,0.08) !important; color: #dc2626 !important; border-color: rgba(220,38,38,0.25) !important; }
+        body.light-mode .btn-activate { background: #d97706 !important; }
+        body.light-mode .btn-logout-staff { background: rgba(234,88,12,0.07) !important; border-color: rgba(234,88,12,0.2) !important; color: #ea580c !important; }
+        body.light-mode .btn-owner-back { border-color: rgba(0,0,0,0.12) !important; color: #64748b !important; }
+        body.light-mode .auto-del-pill { background: rgba(0,0,0,0.05) !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
+        body.light-mode .auto-del-pill.active { background: rgba(220,38,38,0.08) !important; border-color: rgba(220,38,38,0.25) !important; color: #dc2626 !important; }
+        body.light-mode .srev-pill { border-color: rgba(0,0,0,0.1) !important; color: #94a3b8 !important; }
+        body.light-mode .srev-pill-active { background: rgba(2,132,199,0.1) !important; border-color: rgba(2,132,199,0.3) !important; color: #0284c7 !important; }
+
+        /* ── Staff Charts ── */
+        .staff-chart-section{background:#11171f;border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+        .staff-chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px}
+        .staff-chart-title{font-size:12px;font-weight:800;color:#e6edf3}
+        .staff-chart-subtitle{font-size:9px;color:#4b5563;margin-bottom:12px}
+        .staff-chart-wrap{position:relative;width:100%;height:180px}
+        .staff-chart-pills{display:flex;gap:4px}
+        .staff-chart-pill{padding:3px 9px;border-radius:20px;font-size:9px;font-weight:800;cursor:pointer;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#4b5563;transition:all .2s;font-family:inherit}
+        .staff-chart-pill.active{background:rgba(0,217,255,0.1);border-color:rgba(0,217,255,0.3);color:#00d9ff}
+        .staff-chart-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+        .staff-chart-leg{display:flex;align-items:center;gap:4px;font-size:9px;color:#4b5563}
+        .staff-chart-leg-dot{width:7px;height:7px;border-radius:50%}
+        body.light-mode .staff-chart-section{background:#f8fafc;border-color:rgba(0,0,0,0.07)}
+        body.light-mode .staff-chart-title{color:#1e293b}
+        body.light-mode .staff-chart-pill{border-color:rgba(0,0,0,0.1);color:#94a3b8}
+        /* Wait pos badge */
+        body.light-mode .wait-pos-badge { background: rgba(217,119,6,0.1) !important; border-color: rgba(217,119,6,0.25) !important; color: #d97706 !important; }
+        /* Unit cards (inline rendered) */
+        body.light-mode #unit-grid > div,
+        body.light-mode [style*="background:#11171f;border:1px solid"] { background: #ffffff !important; }
+        /* FnB panel inputs/selects */
+        body.light-mode select,
+        body.light-mode input[type="number"],
+        body.light-mode input[type="time"],
+        body.light-mode input[type="text"],
+        body.light-mode textarea {
+            background: #f1f5f9 !important;
+            color: #1a202c !important;
+            border-color: rgba(0,0,0,0.12) !important;
+        }
+        /* Separator lines */
+        body.light-mode .srev-row { border-color: rgba(0,0,0,0.05) !important; }
+        body.light-mode .staff-session-row { border-color: rgba(0,0,0,0.05) !important; }
+        /* Theme toggle button */
+        .btn-theme-toggle {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            color: #9ca3af; cursor: pointer; transition: all .2s;
+            font-size: 15px; flex-shrink: 0;
+        }
+        .btn-theme-toggle:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        body.light-mode .btn-theme-toggle {
+            border-color: rgba(0,0,0,0.1) !important;
+            background: rgba(0,0,0,0.04) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .btn-theme-toggle:hover { background: rgba(0,0,0,0.08) !important; color: #1a202c !important; }
+        /* Transition smooth */
+        body, body * { transition: background-color .2s, color .15s, border-color .2s; }
     </style>
     <link rel="stylesheet" href="../../assets/css/mobile-fix.css">
 </head>
@@ -240,6 +408,9 @@
             <button onclick="toggleNotif()" class="w-11 h-11 glass-card flex items-center justify-center text-gray-400 relative">
                 <i class="fas fa-bell text-sm"></i>
                 <span id="notif-dot" class="hidden absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <button id="btn-theme" onclick="toggleTheme()" class="btn-theme-toggle" title="Ganti tema">
+                <i id="theme-icon" class="fas fa-sun"></i>
             </button>
             <button id="exit-btn" class="btn-logout-staff" onclick="doLogout()">
                 <i class="fas fa-right-from-bracket"></i>
@@ -347,6 +518,44 @@
         </div>
     </div>
 
+    <!-- ══ GRAFIK STATISTIK STAFF ══ -->
+    <div class="staff-chart-section">
+        <div class="staff-chart-header">
+            <div>
+                <div class="staff-chart-title"><i class="fas fa-chart-line" style="color:#00d9ff;margin-right:6px;font-size:11px"></i>Grafik Pendapatan</div>
+                <div class="staff-chart-subtitle" id="staff-chart-rev-subtitle">Pendapatan per hari (7 hari terakhir)</div>
+            </div>
+            <div class="staff-chart-pills">
+                <button class="staff-chart-pill active" onclick="switchStaffChartPeriod('7d',this)">7H</button>
+                <button class="staff-chart-pill" onclick="switchStaffChartPeriod('30d',this)">30H</button>
+                <button class="staff-chart-pill" onclick="switchStaffChartPeriod('bulan',this)">Bln</button>
+            </div>
+        </div>
+        <div class="staff-chart-wrap"><canvas id="staff-chart-revenue"></canvas></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div class="staff-chart-section" style="margin-bottom:0">
+            <div class="staff-chart-title" style="font-size:11px;margin-bottom:2px"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:5px;font-size:10px"></i>Booking vs Rental</div>
+            <div class="staff-chart-subtitle">Jumlah transaksi</div>
+            <div class="staff-chart-wrap" style="height:150px"><canvas id="staff-chart-bvr"></canvas></div>
+            <div class="staff-chart-legend">
+                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>Booking</div>
+                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#a855f7"></div>Rental</div>
+            </div>
+        </div>
+        <div class="staff-chart-section" style="margin-bottom:0">
+            <div class="staff-chart-title" style="font-size:11px;margin-bottom:2px"><i class="fas fa-chart-line" style="color:#3fb950;margin-right:5px;font-size:10px"></i>Per Tipe PS</div>
+            <div class="staff-chart-subtitle">Kontribusi PS3/PS4/PS5</div>
+            <div class="staff-chart-wrap" style="height:150px"><canvas id="staff-chart-ps"></canvas></div>
+            <div class="staff-chart-legend">
+                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#3fb950"></div>PS3</div>
+                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>PS4</div>
+                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#e3b341"></div>PS5</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Sesi Aktif & Selesai -->
     <div class="staff-two-col">
         <div class="staff-section-card">
@@ -361,7 +570,71 @@
 </div>
 
 <!-- ══ PANEL STATISTIK (tab baru) ══ -->
-<div id="stats-panel" class="hidden mb-20">
+<div id="stats-panel" class="hidden" style="position:fixed;top:0;left:0;right:0;bottom:72px;z-index:40;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 20px;background:var(--bg,#080c12);">
+
+    <!-- ══ HEADER RINGKASAN ══ -->
+    <div style="margin-bottom:14px;">
+        <div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:2px;letter-spacing:-.3px"><i class="fas fa-chart-bar" style="color:#00d9ff;margin-right:8px;font-size:15px"></i>Statistik</div>
+        <div style="font-size:11px;color:#6b7280" id="stats-header-time"></div>
+    </div>
+
+    <!-- Mini KPI strip -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
+        <div class="skpi-card" style="padding:12px 10px;margin:0;">
+            <div class="skpi-label" style="font-size:9px;">Pendapatan<span class="skpi-icon cyan" style="font-size:9px"><i class="fas fa-coins"></i></span></div>
+            <div class="skpi-value" id="stats-mini-rev" style="font-size:14px;">Rp 0</div>
+            <div class="skpi-sub" style="font-size:9px;">hari ini</div>
+        </div>
+        <div class="skpi-card" style="padding:12px 10px;margin:0;">
+            <div class="skpi-label" style="font-size:9px;">Aktif<span class="skpi-icon green" style="font-size:9px"><i class="fas fa-gamepad"></i></span></div>
+            <div class="skpi-value" id="stats-mini-active" style="font-size:14px;">0</div>
+            <div class="skpi-sub" style="font-size:9px;">sesi berjalan</div>
+        </div>
+        <div class="skpi-card" style="padding:12px 10px;margin:0;">
+            <div class="skpi-label" style="font-size:9px;">Selesai<span class="skpi-icon" style="font-size:9px;color:#a855f7"><i class="fas fa-check"></i></span></div>
+            <div class="skpi-value" id="stats-mini-done" style="font-size:14px;">0</div>
+            <div class="skpi-sub" style="font-size:9px;">hari ini</div>
+        </div>
+    </div>
+
+    <!-- ══ GRAFIK STATISTIK ══ -->
+    <div class="staff-chart-section">
+        <div class="staff-chart-header">
+            <div>
+                <div class="staff-chart-title"><i class="fas fa-chart-line" style="color:#00d9ff;margin-right:6px;font-size:11px"></i>Grafik Pendapatan</div>
+                <div class="staff-chart-subtitle" id="sp-chart-subtitle">7 hari terakhir</div>
+            </div>
+            <div class="staff-chart-pills">
+                <button class="staff-chart-pill sp-pill active" onclick="switchSPChart('7d',this)">7H</button>
+                <button class="staff-chart-pill sp-pill" onclick="switchSPChart('30d',this)">30H</button>
+                <button class="staff-chart-pill sp-pill" onclick="switchSPChart('bulan',this)">Bln</button>
+            </div>
+        </div>
+        <div class="staff-chart-wrap"><canvas id="sp-chart-revenue"></canvas></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div class="staff-chart-section" style="margin-bottom:0">
+            <div class="staff-chart-title" style="font-size:11px;margin-bottom:2px"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:5px;font-size:10px"></i>Booking vs Rental</div>
+            <div class="staff-chart-subtitle">Jumlah transaksi</div>
+            <div class="staff-chart-wrap" style="height:150px"><canvas id="sp-chart-bvr"></canvas></div>
+            <div class="staff-chart-legend">
+                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>Booking</div>
+                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#a855f7"></div>Rental</div>
+            </div>
+        </div>
+        <div class="staff-chart-section" style="margin-bottom:0">
+            <div class="staff-chart-title" style="font-size:11px;margin-bottom:2px"><i class="fas fa-chart-line" style="color:#3fb950;margin-right:5px;font-size:10px"></i>Per Tipe PS</div>
+            <div class="staff-chart-subtitle">PS3 / PS4 / PS5</div>
+            <div class="staff-chart-wrap" style="height:150px"><canvas id="sp-chart-ps"></canvas></div>
+            <div class="staff-chart-legend">
+                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#3fb950"></div>PS3</div>
+                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>PS4</div>
+                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#e3b341"></div>PS5</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Revenue Card -->
     <div class="srev-card">
         <div class="srev-header">
@@ -536,7 +809,7 @@
 </div>
 
 <!-- PANEL SETTING -->
-<div id="setting-panel" class="hidden mb-20">
+<div id="setting-panel" class="hidden" style="position:fixed;inset:0;bottom:72px;top:0;z-index:40;overflow-y:auto;padding:16px 16px 16px;background:var(--bg, #080c12);">
 
     <!-- ══ KETERANGAN SHIFT ══ -->
     <div class="glass-card p-5 mb-4">
@@ -563,19 +836,19 @@
         <!-- Shift 1 -->
         <div class="bg-white/[0.03] rounded-2xl p-4 mb-3">
             <p class="text-sm font-black mb-3" style="color:#ffd54f">☀️ Shift 1 – Pagi/Sore</p>
-            <div class="flex items-center gap-3 mb-2">
-                <div class="flex-1">
+            <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:8px">
+                <div style="flex:1;min-width:0">
                     <p class="text-[10px] text-gray-500 mb-1 uppercase font-bold tracking-wider">Mulai</p>
                     <input id="shift1-start" type="time" value="10:00"
-                        class="w-full rounded-xl px-3 py-2 text-sm font-black border border-white/10"
-                        style="background:#1a2030;color:white;font-family:inherit">
+                        class="rounded-xl px-2 py-2 text-sm font-black border border-white/10"
+                        style="background:#1a2030;color:white;font-family:inherit;width:100%;min-width:0;box-sizing:border-box">
                 </div>
-                <div style="color:#5a6a80;padding-top:18px">→</div>
-                <div class="flex-1">
+                <div style="color:#5a6a80;flex-shrink:0;line-height:1;padding-bottom:10px">→</div>
+                <div style="flex:1;min-width:0">
                     <p class="text-[10px] text-gray-500 mb-1 uppercase font-bold tracking-wider">Selesai</p>
                     <input id="shift1-end" type="time" value="16:00"
-                        class="w-full rounded-xl px-3 py-2 text-sm font-black border border-white/10"
-                        style="background:#1a2030;color:white;font-family:inherit">
+                        class="rounded-xl px-2 py-2 text-sm font-black border border-white/10"
+                        style="background:#1a2030;color:white;font-family:inherit;width:100%;min-width:0;box-sizing:border-box">
                 </div>
             </div>
         </div>
@@ -583,19 +856,19 @@
         <!-- Shift 2 -->
         <div class="bg-white/[0.03] rounded-2xl p-4 mb-3">
             <p class="text-sm font-black mb-3" style="color:#818cf8">🌙 Shift 2 – Sore/Malam</p>
-            <div class="flex items-center gap-3 mb-2">
-                <div class="flex-1">
+            <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:8px">
+                <div style="flex:1;min-width:0">
                     <p class="text-[10px] text-gray-500 mb-1 uppercase font-bold tracking-wider">Mulai</p>
                     <input id="shift2-start" type="time" value="16:00"
-                        class="w-full rounded-xl px-3 py-2 text-sm font-black border border-white/10"
-                        style="background:#1a2030;color:white;font-family:inherit">
+                        class="rounded-xl px-2 py-2 text-sm font-black border border-white/10"
+                        style="background:#1a2030;color:white;font-family:inherit;width:100%;min-width:0;box-sizing:border-box">
                 </div>
-                <div style="color:#5a6a80;padding-top:18px">→</div>
-                <div class="flex-1">
+                <div style="color:#5a6a80;flex-shrink:0;line-height:1;padding-bottom:10px">→</div>
+                <div style="flex:1;min-width:0">
                     <p class="text-[10px] text-gray-500 mb-1 uppercase font-bold tracking-wider">Selesai</p>
                     <input id="shift2-end" type="time" value="22:00"
-                        class="w-full rounded-xl px-3 py-2 text-sm font-black border border-white/10"
-                        style="background:#1a2030;color:white;font-family:inherit">
+                        class="rounded-xl px-2 py-2 text-sm font-black border border-white/10"
+                        style="background:#1a2030;color:white;font-family:inherit;width:100%;min-width:0;box-sizing:border-box">
                 </div>
             </div>
         </div>
@@ -1754,6 +2027,34 @@
             handleLogout('../auth/login-staff.html');
         }
     };
+
+    // ── THEME TOGGLE ──────────────────────────────────────────────────
+    (function initTheme() {
+        const saved = localStorage.getItem('pg_theme') || 'dark';
+        if (saved === 'light') {
+            document.body.classList.add('light-mode');
+            const icon = document.getElementById('theme-icon');
+            if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+        }
+    })();
+
+    window.toggleTheme = function() {
+        const isLight = document.body.classList.toggle('light-mode');
+        localStorage.setItem('pg_theme', isLight ? 'light' : 'dark');
+        const icon = document.getElementById('theme-icon');
+        if (icon) {
+            icon.classList.toggle('fa-sun',  !isLight);
+            icon.classList.toggle('fa-moon',  isLight);
+        }
+        // Toast ringkas
+        Swal.fire({
+            toast: true, position: 'top', icon: 'success',
+            title: isLight ? '☀️ Light mode aktif' : '🌙 Dark mode aktif',
+            showConfirmButton: false, timer: 1500,
+            background: isLight ? '#fff' : '#11171f',
+            color:      isLight ? '#1a202c' : '#fff'
+        });
+    };
     window.hapusNotifSatuan = (i) => { historyNotif.splice(i, 1); updateNotifList(); };
 
     // ── TAB SWITCHER ──────────────────────────────────────────────────
@@ -1800,6 +2101,24 @@
             var lbl = document.getElementById('srev-filter-label');
             var lbl2 = document.getElementById('srev-filter-label2');
             if (lbl && lbl2) lbl2.textContent = lbl.textContent;
+
+            // Sync mini KPI strip
+            var revEl = document.getElementById('srev-amount');
+            if (revEl) { var m = document.getElementById('stats-mini-rev'); if(m) m.textContent = revEl.textContent; }
+            var activeItems = document.querySelectorAll('#skpi-active-list .skpi-session-item');
+            var doneItems   = document.querySelectorAll('#skpi-completed-list .skpi-session-item');
+            var mA = document.getElementById('stats-mini-active'); if(mA) mA.textContent = activeItems.length || document.getElementById('strip-active')?.textContent || '0';
+            var mD = document.getElementById('stats-mini-done');   if(mD) mD.textContent = doneItems.length;
+
+            // Header time
+            var ht = document.getElementById('stats-header-time');
+            if (ht) { var now = new Date(); ht.textContent = now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }
+
+            // Render charts setelah panel visible + trigger resize agar canvas sizing benar
+            setTimeout(() => {
+                buildSPCharts(_allPendapatan);
+                window.dispatchEvent(new Event('resize'));
+            }, 80);
         }
     };
 
@@ -2169,41 +2488,117 @@
         if (!unitId) { Swal.fire({ toast:true, position:'top', icon:'warning', title:'Pilih unit dulu', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' }); return; }
         if (!Object.keys(fnbCart).length) { Swal.fire({ toast:true, position:'top', icon:'warning', title:'Keranjang kosong', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' }); return; }
 
-        const unit = currentUnits.find(u => u.id === unitId);
+        const unit  = currentUnits.find(u => u.id === unitId);
         const items = Object.entries(fnbCart).map(([id, qty]) => {
             const item = allMenuItems.find(m => m.id === id);
             return item ? { id, name: item.name, price: item.price, qty, subtotal: item.price * qty } : null;
         }).filter(Boolean);
         const total = items.reduce((s, i) => s + i.subtotal, 0);
 
-        const { isConfirmed } = await Swal.fire({
-            title: '🍜 Kirim Pesanan F&B?',
-            html: '<strong>' + (unit?.customerName||'-') + '</strong> — ' + unitId + '<br>' +
-                '<p style="color:#9ca3af;font-size:12px;margin-top:6px">' + items.map(i=>i.name+' x'+i.qty).join(', ') + '</p>' +
-                '<p style="color:#00d9ff;font-weight:800;margin-top:8px">Total: Rp ' + total.toLocaleString('id-ID') + '</p>',
-            showCancelButton: true, confirmButtonText: '📤 Kirim', cancelButtonText: 'Batal',
-            confirmButtonColor: '#a855f7', cancelButtonColor: '#374151',
-            background: '#11171f', color: '#fff'
+        // ── Ringkasan item untuk ditampilkan di dialog ────────────────
+        const itemsHtmlDialog = items.map(i =>
+            '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05)">' +
+                '<span style="font-size:12px;color:#e6edf3">' + i.name + ' <span style="color:#6b7280">x' + i.qty + '</span></span>' +
+                '<span style="font-size:11px;font-weight:800;color:#a855f7">Rp ' + (i.subtotal||0).toLocaleString('id-ID') + '</span>' +
+            '</div>'
+        ).join('');
+
+        // ── STEP 1: Konfirmasi pembayaran — SAMA PERSIS seperti extend ─
+        window._fnbPay = null;
+        const { isConfirmed: okPay } = await Swal.fire({
+            title: '🍜 F&B — ' + (unit?.customerName||'-') + ' · ' + unitId,
+            html:
+                '<div style="text-align:left;margin-bottom:14px">' + itemsHtmlDialog + '</div>' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">' +
+                    '<span style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase">Total</span>' +
+                    '<span style="font-size:18px;font-weight:900;color:#a855f7">Rp ' + total.toLocaleString('id-ID') + '</span>' +
+                '</div>' +
+                '<div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:9px 12px;font-size:11px;color:#f59e0b;margin-bottom:14px">' +
+                    '<i class="fas fa-triangle-exclamation" style="margin-right:5px"></i>' +
+                    'Pastikan pelanggan sudah membayar sebelum menekan tombol di bawah.' +
+                '</div>' +
+                '<div style="display:flex;flex-direction:column;gap:8px">' +
+                    '<button id="btn-fnb-cash" type="button" ' +
+                        'style="padding:12px;border-radius:10px;background:#1c2128;border:1px solid rgba(255,255,255,0.1);color:#e6edf3;font-weight:800;cursor:pointer;font-size:12px;font-family:inherit;transition:border-color 0.2s" ' +
+                        'onclick="document.getElementById(\'btn-fnb-cash\').style.borderColor=\'#a855f7\';document.getElementById(\'btn-fnb-ew\').style.borderColor=\'rgba(255,255,255,0.1)\';window._fnbPay=\'Cash\'">' +
+                        '💵 Sudah Bayar — Cash' +
+                    '</button>' +
+                    '<button id="btn-fnb-ew" type="button" ' +
+                        'style="padding:12px;border-radius:10px;background:#1c2128;border:1px solid rgba(255,255,255,0.1);color:#a855f7;font-weight:800;cursor:pointer;font-size:12px;font-family:inherit;transition:border-color 0.2s" ' +
+                        'onclick="document.getElementById(\'btn-fnb-ew\').style.borderColor=\'#a855f7\';document.getElementById(\'btn-fnb-cash\').style.borderColor=\'rgba(255,255,255,0.1)\';window._fnbPay=\'Ewallet\'">' +
+                        '📱 Sudah Bayar — Ewallet' +
+                    '</button>' +
+                '</div>',
+            showConfirmButton: true,
+            confirmButtonText: '✅ Konfirmasi & Kirim Pesanan',
+            confirmButtonColor: '#a855f7',
+            showCancelButton: true,
+            cancelButtonText: '❌ Belum Bayar — Batalkan',
+            cancelButtonColor: '#374151',
+            background: '#11171f',
+            color: '#fff',
+            preConfirm: () => {
+                if (!window._fnbPay) {
+                    Swal.showValidationMessage('Pilih metode pembayaran terlebih dahulu');
+                    return false;
+                }
+                return window._fnbPay;
+            }
         });
-        if (!isConfirmed) return;
+
+        window._fnbPay = null; // reset global
+        if (!okPay) {
+            Swal.fire({ toast:true, position:'top', icon:'info', title:'Pesanan dibatalkan', showConfirmButton:false, timer:1500, background:'#11171f', color:'#fff' });
+            return;
+        }
+
+        const payMethod = okPay; // 'Cash' atau 'Ewallet'
 
         try {
+            // ── STEP 2: Simpan ke Firestore ───────────────────────────
             await addDoc(collection(db, 'fnb_orders'), {
                 unitId,
-                customerName: unit?.customerName || '-',
-                customerId: unit?.customerId || null,
+                customerName:   unit?.customerName || '-',
+                customerId:     unit?.customerId   || null,
                 items,
                 total,
-                status: 'Diproses',
-                orderedBy: 'staff',
-                note: '',
-                createdAt: new Date().toISOString()
+                payMethod,
+                status:         'Diproses',
+                orderedBy:      'staff',
+                staffName:      staffNama || 'Staff',
+                notifyCustomer: true,
+                note:           '',
+                createdAt:      new Date().toISOString()
             });
+
             fnbCart = {};
             renderFnbMenu();
             updateFnbCart();
-            tambahNotif('🍜 F&B dipesan: ' + (unit?.customerName||'-') + ' (' + unitId + ') — Rp ' + total.toLocaleString('id-ID'));
-            Swal.fire({ toast:true, position:'top', icon:'success', title:'Pesanan terkirim!', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+
+            // ── Suara konfirmasi F&B ──────────────────────────────────
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                [[600,80],[750,80],[900,150]].reduce((t,[f,d]) => {
+                    const o = ctx.createOscillator(), g = ctx.createGain();
+                    o.connect(g); g.connect(ctx.destination);
+                    o.frequency.value = f; o.type = 'sine';
+                    g.gain.setValueAtTime(0.3, t);
+                    g.gain.exponentialRampToValueAtTime(0.001, t + d/1000);
+                    o.start(t); o.stop(t + d/1000);
+                    return t + d/1000 + 0.04;
+                }, ctx.currentTime + 0.05);
+            } catch(e) {}
+
+            tambahNotif('🍜 F&B ' + payMethod + ': ' + (unit?.customerName||'-') + ' (' + unitId + ') — ' + items.map(i=>i.name+' x'+i.qty).join(', ') + ' — Rp ' + total.toLocaleString('id-ID'));
+
+            // ── Toast sukses ──────────────────────────────────────────
+            Swal.fire({
+                toast: true, position: 'top', icon: 'success',
+                title: '🍜 F&B terkirim · ' + payMethod,
+                html: '<span style="font-size:11px;color:#a855f7">' + items.map(i=>i.name+' x'+i.qty).join(' · ') + '</span>',
+                showConfirmButton: false, timer: 3000, timerProgressBar: true,
+                background: '#11171f', color: '#fff'
+            });
         } catch(e) { Swal.fire({ icon:'error', title:'Gagal', text:e.message, background:'#11171f', color:'#fff' }); }
     };
 
@@ -3669,8 +4064,134 @@
         snap => {
             _allPendapatan = snap.docs.map(d => d.data());
             renderStaffRevenue();
+            buildStaffCharts(_allPendapatan);
         }
     );
+
+    // ══════════════════════════════════════════════════════════════════
+    // STAFF CHARTS
+    // ══════════════════════════════════════════════════════════════════
+    let _sChartRevenue = null, _sChartBvR = null, _sChartPS = null;
+    let _sChartPeriod = '7d';
+
+    const _sChartDefaults = {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: {
+            backgroundColor: '#1c2128', titleColor: '#e6edf3', bodyColor: '#7d8590',
+            borderColor: 'rgba(255,255,255,0.08)', borderWidth: 1, padding: 8,
+            callbacks: { label: ctx => ' Rp ' + (ctx.raw||0).toLocaleString('id-ID') }
+        }},
+        scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#4b5563', font: { size: 8, family: 'inherit' }, maxRotation: 45 } },
+            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#4b5563', font: { size: 8, family: 'inherit' }, callback: v => v>=1000000 ? (v/1000000).toFixed(1)+'jt' : v>=1000 ? (v/1000).toFixed(0)+'k' : v }, beginAtZero: true }
+        }
+    };
+
+    function _sLineDs(label, data, color) {
+        return { label, data, borderColor: color, backgroundColor: color + '22', borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, fill: true, tension: 0.4 };
+    }
+
+    function _sDateLabels(n) {
+        const l = [];
+        for (let i = n-1; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate()-i); l.push(d.toISOString().slice(0,10)); }
+        return l;
+    }
+
+    function _sMonthLabels(n) {
+        const l = [];
+        for (let i = n-1; i >= 0; i--) { const d = new Date(); d.setMonth(d.getMonth()-i); l.push(d.toISOString().slice(0,7)); }
+        return l;
+    }
+
+    function _sLabelShort(str) {
+        if (str.length === 10) { const [,m,d] = str.split('-'); return `${d}/${m}`; }
+        const [,m] = str.split('-');
+        return ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][parseInt(m)-1];
+    }
+
+    function buildStaffCharts(data) {
+        const n = _sChartPeriod === 'bulan' ? 12 : _sChartPeriod === '30d' ? 30 : 7;
+        const labels = _sChartPeriod === 'bulan' ? _sMonthLabels(n) : _sDateLabels(n);
+        const keyF = _sChartPeriod === 'bulan' ? 'bulan' : 'tanggal';
+        const shortL = labels.map(_sLabelShort);
+
+        const sub = document.getElementById('staff-chart-rev-subtitle');
+        if (sub) sub.textContent = `Pendapatan per ${_sChartPeriod === 'bulan' ? 'bulan' : 'hari'} (${_sChartPeriod === '7d' ? '7 hari' : _sChartPeriod === '30d' ? '30 hari' : '12 bulan'} terakhir)`;
+
+        // Chart 1: Revenue
+        const totals = labels.map(l => data.filter(d => (d[keyF]||'') === l).reduce((s,d)=>s+(d.price||0),0));
+        const ctx1 = document.getElementById('staff-chart-revenue');
+        if (ctx1) {
+            if (_sChartRevenue) _sChartRevenue.destroy();
+            _sChartRevenue = new Chart(ctx1.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('Pendapatan',totals,'#00d9ff')] }, options:{..._sChartDefaults} });
+        }
+
+        // Chart 2: Booking vs Rental
+        const bk  = labels.map(l => data.filter(d => (d[keyF]||'') === l && !(d.unitId||'').startsWith('R-')).length);
+        const rnt = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitId||'').startsWith('R-')).length);
+        const ctx2 = document.getElementById('staff-chart-bvr');
+        if (ctx2) {
+            if (_sChartBvR) _sChartBvR.destroy();
+            _sChartBvR = new Chart(ctx2.getContext('2d'), {
+                type:'line', data:{ labels:shortL, datasets:[_sLineDs('Booking',bk,'#00d9ff'),_sLineDs('Rental',rnt,'#a855f7')] },
+                options: { ..._sChartDefaults, plugins:{ ..._sChartDefaults.plugins, tooltip:{ ..._sChartDefaults.plugins.tooltip, callbacks:{ label:ctx=>`${ctx.dataset.label}: ${ctx.raw} trx` } } } }
+            });
+        }
+
+        // Chart 3: Per tipe PS
+        const ps3 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS3')).reduce((s,d)=>s+(d.price||0),0));
+        const ps4 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS4')).reduce((s,d)=>s+(d.price||0),0));
+        const ps5 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS5')).reduce((s,d)=>s+(d.price||0),0));
+        const ctx3 = document.getElementById('staff-chart-ps');
+        if (ctx3) {
+            if (_sChartPS) _sChartPS.destroy();
+            _sChartPS = new Chart(ctx3.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('PS3',ps3,'#3fb950'),_sLineDs('PS4',ps4,'#00d9ff'),_sLineDs('PS5',ps5,'#e3b341')] }, options:{..._sChartDefaults} });
+        }
+    }
+
+    window.switchStaffChartPeriod = (period, btn) => {
+        _sChartPeriod = period;
+        document.querySelectorAll('.staff-chart-pill').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        buildStaffCharts(_allPendapatan);
+    };
+
+    // ── SP Charts (stats-panel, canvas sp-chart-*) ────────────────────
+    let _spChartRevenue = null, _spChartBvR = null, _spChartPS = null;
+    let _spPeriod = '7d';
+
+    function buildSPCharts(data) {
+        const n = _spPeriod === 'bulan' ? 12 : _spPeriod === '30d' ? 30 : 7;
+        const labels = _spPeriod === 'bulan' ? _sMonthLabels(n) : _sDateLabels(n);
+        const keyF = _spPeriod === 'bulan' ? 'bulan' : 'tanggal';
+        const shortL = labels.map(_sLabelShort);
+
+        const sub = document.getElementById('sp-chart-subtitle');
+        if (sub) sub.textContent = _spPeriod === '7d' ? '7 hari terakhir' : _spPeriod === '30d' ? '30 hari terakhir' : '12 bulan terakhir';
+
+        const totals = labels.map(l => data.filter(d => (d[keyF]||'') === l).reduce((s,d)=>s+(d.price||0),0));
+        const ctx1 = document.getElementById('sp-chart-revenue');
+        if (ctx1) { if (_spChartRevenue) _spChartRevenue.destroy(); _spChartRevenue = new Chart(ctx1.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('Pendapatan',totals,'#00d9ff')] }, options:{..._sChartDefaults} }); }
+
+        const bk  = labels.map(l => data.filter(d => (d[keyF]||'') === l && !(d.unitId||'').startsWith('R-')).length);
+        const rnt = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitId||'').startsWith('R-')).length);
+        const ctx2 = document.getElementById('sp-chart-bvr');
+        if (ctx2) { if (_spChartBvR) _spChartBvR.destroy(); _spChartBvR = new Chart(ctx2.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('Booking',bk,'#00d9ff'),_sLineDs('Rental',rnt,'#a855f7')] }, options:{..._sChartDefaults, plugins:{..._sChartDefaults.plugins, tooltip:{..._sChartDefaults.plugins.tooltip, callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} trx`}}}} }); }
+
+        const ps3 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS3')).reduce((s,d)=>s+(d.price||0),0));
+        const ps4 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS4')).reduce((s,d)=>s+(d.price||0),0));
+        const ps5 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS5')).reduce((s,d)=>s+(d.price||0),0));
+        const ctx3 = document.getElementById('sp-chart-ps');
+        if (ctx3) { if (_spChartPS) _spChartPS.destroy(); _spChartPS = new Chart(ctx3.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('PS3',ps3,'#3fb950'),_sLineDs('PS4',ps4,'#00d9ff'),_sLineDs('PS5',ps5,'#e3b341')] }, options:{..._sChartDefaults} }); }
+    }
+
+    window.switchSPChart = (period, btn) => {
+        _spPeriod = period;
+        document.querySelectorAll('.sp-pill').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        buildSPCharts(_allPendapatan);
+    };
+
     // ════════════════════════════════════════════════════
     // END STAFF KPI DASHBOARD
     // ════════════════════════════════════════════════════

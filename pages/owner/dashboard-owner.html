@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         :root{
@@ -21,7 +22,7 @@
         /* ── Topbar ── */
         .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border2);background:var(--bg);position:sticky;top:0;z-index:100}
         .logo{display:flex;align-items:center;gap:7px;font-weight:800;font-size:14px;letter-spacing:-.3px}
-        .logo-icon{width:26px;height:26px;background:rgba(0,217,255,0.12);border:1px solid rgba(0,217,255,0.3);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:11px}
+        .logo-icon{width:32px;height:32px;background:rgba(0,217,255,0.12);border:1px solid rgba(0,217,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:14px}
         .logo span{color:var(--cyan)}
         .role-badge{background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2);border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:.5px}
         .nav-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none;font-family:'Space Grotesk',sans-serif}
@@ -36,6 +37,20 @@
         .page-header{margin-bottom:24px}
         .page-header h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
         .page-header p{font-size:13px;color:var(--muted);margin-top:3px}
+
+        /* ── Charts ── */
+        .chart-section{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+        .chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px}
+        .chart-title{font-size:13px;font-weight:700}
+        .chart-subtitle{font-size:10px;color:var(--muted);margin-bottom:14px}
+        .chart-wrap{position:relative;width:100%;height:200px}
+        .chart-pills{display:flex;gap:5px;flex-wrap:wrap}
+        .chart-pill{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;font-family:'Space Grotesk',sans-serif}
+        .chart-pill.active{background:rgba(0,217,255,0.12);border-color:rgba(0,217,255,0.4);color:var(--cyan)}
+        .chart-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+        .chart-leg{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+        .chart-leg-dot{width:8px;height:8px;border-radius:50%}
+        body.light-mode .chart-section{background:#fff;border-color:rgba(0,0,0,0.07)}
 
         /* ── KPI ── */
         .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
@@ -104,6 +119,34 @@
             .page-header h1{font-size:22px}
             .revenue-amount{font-size:24px}
             .revenue-header{flex-direction:column;align-items:flex-start}
+            .btn-label-hide{display:none}
+            #topbar-actions{gap:6px}
+            .nav-btn{padding:7px 10px}
+            #revenue-shift-grid{grid-template-columns:1fr !important}
+
+            /* Tabel scroll horizontal */
+            .income-table { font-size:10px; min-width:480px; }
+            .income-table th, .income-table td { padding:7px 6px; white-space:nowrap; }
+            [style*="overflow-x:auto"] { overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:8px; }
+
+            /* Shift grid 2 kolom tetap tapi teks lebih kecil */
+            #shift-summary-grid > div { padding:10px !important; }
+            #shift-summary-grid [style*="font-size:20px"] { font-size:16px !important; }
+            #shift-summary-grid [style*="font-size:10px"] { font-size:9px !important; }
+
+            /* KPI card lebih compact */
+            .kpi-card { padding:12px 10px; }
+            .kpi-value { font-size:18px; }
+            .kpi-sub { font-size:10px; }
+            .kpi-label { font-size:9px; }
+
+            /* Filter pills scroll horizontal */
+            .filter-pills { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; }
+            .pill { flex-shrink:0; }
+
+            /* Section cards */
+            .section-card { padding:14px 14px; }
+            .chart-section { padding:14px 14px; }
         }
 
         /* ═══════════════════════════════════════════════════════════════
@@ -140,11 +183,12 @@
                 margin-bottom: 8px;
             }
             .sidebar-logo .logo-icon {
-                width: 30px; height: 30px;
-                background: #00d9ff;
+                width: 32px; height: 32px;
+                background: rgba(0,217,255,0.12);
+                border: 1px solid rgba(0,217,255,0.3);
                 border-radius: 8px;
                 display: flex; align-items: center; justify-content: center;
-                font-size: 11px; font-weight: 900; color: #000;
+                font-size: 14px; color: #00d9ff;
             }
             .sidebar-logo .logo-cyan { color: #00d9ff; }
             .sidebar-nav-item {
@@ -213,13 +257,148 @@
             .owner-layout { display: block; }
             .owner-main-content { display: block; }
         }
+    
+        /* ══ LIGHT MODE ══════════════════════════════════════════════ */
+        body.light-mode {
+            background-color: #f0f4f8 !important;
+            color: #1a202c !important;
+        }
+        body.light-mode :root,
+        body.light-mode {
+            --bg:#f0f4f8; --surface:#ffffff; --surface2:#e8edf5;
+            --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.05);
+            --text:#1a202c; --muted:#64748b;
+            --cyan:#0284c7; --green:#16a34a; --orange:#ea580c;
+            --purple:#7c3aed; --yellow:#d97706; --red:#dc2626;
+        }
+        body.light-mode .glass-card {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        /* Cards */
+        body.light-mode .skpi-card,
+        body.light-mode .kpi-card,
+        body.light-mode .stat-card,
+        body.light-mode .card,
+        body.light-mode .section-card,
+        body.light-mode .rev-card,
+        body.light-mode .hdcard,
+        body.light-mode .hstat-box {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        /* Bottom nav */
+        body.light-mode .fixed.bottom-0 {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        /* Topbar / Header */
+        body.light-mode .topbar,
+        body.light-mode header {
+            background: rgba(248,250,252,0.97) !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        /* Sidebar */
+        body.light-mode .owner-sidebar {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .sidebar-nav-item {
+            color: #64748b !important;
+        }
+        body.light-mode .sidebar-nav-item:hover,
+        body.light-mode .sidebar-nav-item.active {
+            background: rgba(2,132,199,0.08) !important;
+            color: #0284c7 !important;
+        }
+        /* Text overrides */
+        body.light-mode .text-white,
+        body.light-mode [style*="color:#e6edf3"],
+        body.light-mode [style*="color: #e6edf3"] { color: #1a202c !important; }
+        body.light-mode [style*="color:#9ca3af"],
+        body.light-mode .text-gray-400 { color: #64748b !important; }
+        body.light-mode [style*="color:#6b7280"],
+        body.light-mode .text-gray-500 { color: #94a3b8 !important; }
+        body.light-mode [style*="color:#4b5563"] { color: #94a3b8 !important; }
+        body.light-mode [style*="color:#7d8590"] { color: #64748b !important; }
+        /* Inline background overrides */
+        body.light-mode [style*="background:#11171f"],
+        body.light-mode [style*="background: #11171f"] { background: #ffffff !important; }
+        body.light-mode [style*="background:#1a2030"],
+        body.light-mode [style*="background: #1a2030"] { background: #f1f5f9 !important; }
+        body.light-mode [style*="background:#1c2128"],
+        body.light-mode [style*="background: #1c2128"] { background: #f1f5f9 !important; }
+        body.light-mode [style*="background:#0b0e14"] { background: #f0f4f8 !important; }
+        body.light-mode [style*="background:#0d1117"] { background: #f0f4f8 !important; }
+        body.light-mode [style*="background:#0d1219"],
+        body.light-mode [style*="background:#0d1520"] { background: #f0f4f8 !important; }
+        body.light-mode [style*="background:rgba(8,12,18"] { background: rgba(248,250,252,0.97) !important; }
+        body.light-mode [style*="background:rgba(7,9,15"] { background: rgba(248,250,252,0.97) !important; }
+        /* Accent colours */
+        body.light-mode [style*="color:#00d9ff"] { color: #0284c7 !important; }
+        body.light-mode [style*="color:#3fb950"] { color: #16a34a !important; }
+        body.light-mode [style*="color:#a855f7"] { color: #7c3aed !important; }
+        body.light-mode [style*="color:#f59e0b"] { color: #d97706 !important; }
+        body.light-mode [style*="color:#ef4444"] { color: #dc2626 !important; }
+        /* Inputs / select */
+        body.light-mode select,
+        body.light-mode input[type="date"],
+        body.light-mode input[type="number"],
+        body.light-mode input[type="time"],
+        body.light-mode input[type="text"],
+        body.light-mode textarea {
+            background: #f1f5f9 !important;
+            color: #1a202c !important;
+            border-color: rgba(0,0,0,0.12) !important;
+        }
+        /* Badges */
+        body.light-mode .badge-booking { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; border-color: rgba(2,132,199,0.2) !important; }
+        body.light-mode .badge-rental  { background: rgba(124,58,237,0.08) !important; color: #7c3aed !important; border-color: rgba(124,58,237,0.2) !important; }
+        body.light-mode .badge-pending { background: rgba(217,119,6,0.08) !important; color: #d97706 !important; border-color: rgba(217,119,6,0.2) !important; }
+        /* Logout button */
+        body.light-mode .btn-logout,
+        body.light-mode .btn-out-hdr,
+        body.light-mode .topbar-logout-btn,
+        body.light-mode .sidebar-logout { background: rgba(234,88,12,0.07) !important; border-color: rgba(234,88,12,0.2) !important; color: #ea580c !important; }
+        /* History drawer */
+        body.light-mode .hist-drawer { background: #f8fafc !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .hdcard-header.selesai { background: rgba(22,163,74,0.06) !important; border-color: rgba(22,163,74,0.15) !important; }
+        body.light-mode .hdcard-header.batal   { background: rgba(220,38,38,0.05) !important; border-color: rgba(220,38,38,0.12) !important; }
+        body.light-mode .hdcard-cell { background: rgba(0,0,0,0.04) !important; }
+        /* Pill/filter buttons */
+        body.light-mode .pill { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
+        body.light-mode .pill.active { background: #0284c7 !important; color: #fff !important; border-color: #0284c7 !important; }
+        /* Separator lines */
+        body.light-mode hr,
+        body.light-mode .border-b { border-color: rgba(0,0,0,0.07) !important; }
+        /* Theme toggle button */
+        .btn-theme-toggle {
+            display: flex; align-items: center; justify-content: center;
+            padding: 6px 12px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            color: #9ca3af; cursor: pointer; transition: all .2s;
+            font-size: 11px; font-weight: 600; flex-shrink: 0;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .btn-theme-toggle:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        body.light-mode .btn-theme-toggle {
+            border-color: rgba(0,0,0,0.1) !important;
+            background: rgba(0,0,0,0.04) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .btn-theme-toggle:hover { background: rgba(0,0,0,0.08) !important; color: #1a202c !important; }
+        /* Smooth transition */
+        body, body * { transition: background-color .2s, color .15s, border-color .2s; }
     </style>
 </head>
 <body>
 <div class="owner-layout">
     <aside class="owner-sidebar">
         <div class="sidebar-logo">
-            <div class="logo-icon">PG</div>
+            <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
             PRINCE<span class="logo-cyan">GAMES</span>
         </div>
             <a href="../owner/dashboard-owner.html" class="sidebar-nav-item active"><i class="fas fa-th-large"></i> Beranda</a>
@@ -229,6 +408,9 @@
         <div class="sidebar-spacer"></div>
         <button class="sidebar-staff-view" onclick="goToStaffView()">
             <i class="fas fa-users-gear"></i> Staff View
+        </button>
+        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-nav-item" style="border:none;cursor:pointer;text-align:left;width:100%;margin-bottom:6px">
+            <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
         </button>
         <button class="sidebar-logout" onclick="doLogout()">
             <i class="fas fa-right-from-bracket"></i> Logout
@@ -245,10 +427,10 @@
         <div class="role-badge">OWNER</div>
     </div>
     <div id="topbar-actions" style="display:flex;align-items:center;gap:8px">
-        <button class="nav-btn btn-staff-view" onclick="goToStaffView()"><i class="fas fa-users-gear"></i><span>Staff View</span></button>
-        <button class="nav-btn btn-logout" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i><span>Logout</span></button>
-    </div>
-</div>
+        <button class="nav-btn btn-staff-view" onclick="goToStaffView()"><i class="fas fa-users-gear"></i><span class="btn-label-hide">Staff View</span></button>
+        <button id="btn-theme" onclick="toggleTheme()" class="btn-theme-toggle" title="Ganti tema"><i id="theme-icon" class="fas fa-sun"></i></button>
+        <button class="nav-btn btn-logout" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i><span class="btn-label-hide">Logout</span></button>
+    </div></div>
 
 <div class="main">
 
@@ -276,8 +458,49 @@
         </div>
     </div>
 
+    <!-- ══ GRAFIK STATISTIK ══ -->
+    <div class="chart-section">
+        <div class="chart-header">
+            <div>
+                <div class="chart-title"><i class="fas fa-chart-line" style="color:var(--cyan);margin-right:7px;font-size:12px"></i>Grafik Pendapatan</div>
+                <div class="chart-subtitle" id="chart-rev-subtitle">Pendapatan per hari (7 hari terakhir)</div>
+            </div>
+            <div class="chart-pills">
+                <button class="chart-pill active" onclick="switchChartPeriod('7d',this)">7 Hari</button>
+                <button class="chart-pill" onclick="switchChartPeriod('30d',this)">30 Hari</button>
+                <button class="chart-pill" onclick="switchChartPeriod('bulan',this)">Bulanan</button>
+            </div>
+        </div>
+        <div class="chart-wrap"><canvas id="chart-revenue"></canvas></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="chart-section" style="margin-bottom:0">
+            <div class="chart-title" style="font-size:12px;margin-bottom:3px"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:6px;font-size:11px"></i>Booking vs Rental</div>
+            <div class="chart-subtitle">Jumlah transaksi per tipe</div>
+            <div class="chart-wrap" style="height:170px"><canvas id="chart-bvr"></canvas></div>
+            <div class="chart-legend">
+                <div class="chart-leg"><div class="chart-leg-dot" style="background:#00d9ff"></div>Booking</div>
+                <div class="chart-leg"><div class="chart-leg-dot" style="background:#a855f7"></div>Rental</div>
+            </div>
+        </div>
+        <div class="chart-section" style="margin-bottom:0">
+            <div class="chart-title" style="font-size:12px;margin-bottom:3px"><i class="fas fa-chart-line" style="color:#3fb950;margin-right:6px;font-size:11px"></i>Pendapatan per Tipe PS</div>
+            <div class="chart-subtitle">Kontribusi PS3 / PS4 / PS5</div>
+            <div class="chart-wrap" style="height:170px"><canvas id="chart-ps"></canvas></div>
+            <div class="chart-legend">
+                <div class="chart-leg"><div class="chart-leg-dot" style="background:#3fb950"></div>PS3</div>
+                <div class="chart-leg"><div class="chart-leg-dot" style="background:#00d9ff"></div>PS4</div>
+                <div class="chart-leg"><div class="chart-leg-dot" style="background:#e3b341"></div>PS5</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ Revenue + Shift Grid ══ -->
+    <div id="revenue-shift-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;align-items:start">
+
     <!-- Revenue Card dengan Filter -->
-    <div class="revenue-card">
+    <div class="section-card" style="margin-bottom:0">
         <div class="revenue-header">
             <div>
                 <div class="revenue-title">💰 Total Pendapatan Tercatat</div>
@@ -299,7 +522,7 @@
         <div class="revenue-label" id="rev-label">Memuat data...</div>
 
         <!-- Tabel riwayat pendapatan -->
-        <div style="overflow-x:auto;margin-top:16px">
+        <div style="overflow-x:auto;margin-top:16px;border-radius:8px">
             <table class="income-table">
                 <thead>
                     <tr>
@@ -317,10 +540,10 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </div><!-- end revenue section-card -->
 
     <!-- ══ Pendapatan Per Shift ══ -->
-    <div class="section-card" style="margin-bottom:12px" id="shift-revenue-card">
+    <div class="section-card" style="margin-bottom:0" id="shift-revenue-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
             <div>
                 <div class="section-title" style="margin-bottom:2px">
@@ -352,7 +575,7 @@
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
             <i class="fas fa-user-clock" style="margin-right:6px"></i>Rincian Per Staff
         </div>
-        <div style="overflow-x:auto">
+        <div style="overflow-x:auto;border-radius:8px">
             <table class="income-table" id="staff-shift-table">
                 <thead>
                     <tr>
@@ -368,7 +591,9 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </div><!-- end shift-revenue-card -->
+
+    </div><!-- end revenue-shift-grid -->
 
     <!-- Active & Completed -->
     <div class="two-col">
@@ -598,12 +823,153 @@
         `).join('');
     }
 
+    // ══════════════════════════════════════════════════════════════════
+    // CHART.JS — 3 Grafik: Revenue, Booking vs Rental, Per Tipe PS
+    // ══════════════════════════════════════════════════════════════════
+    let chartRevenue = null, chartBvR = null, chartPS = null;
+    let chartPeriod = '7d';
+    let allBookingsData = [], allRentalsData = [];
+
+    const chartDefaults = {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: {
+            backgroundColor: '#1c2128', titleColor: '#e6edf3', bodyColor: '#7d8590',
+            borderColor: 'rgba(255,255,255,0.08)', borderWidth: 1, padding: 10,
+            callbacks: { label: ctx => ' Rp ' + (ctx.raw||0).toLocaleString('id-ID') }
+        }},
+        scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#7d8590', font: { size: 9, family: 'Space Grotesk' }, maxRotation: 45 } },
+            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#7d8590', font: { size: 9, family: 'Space Grotesk' }, callback: v => 'Rp ' + (v>=1000000 ? (v/1000000).toFixed(1)+'jt' : v>=1000 ? (v/1000).toFixed(0)+'k' : v) }, beginAtZero: true }
+        }
+    };
+
+    const lineDataset = (label, data, color) => ({
+        label, data,
+        borderColor: color, backgroundColor: color + '22',
+        borderWidth: 2, pointRadius: 3, pointHoverRadius: 5,
+        fill: true, tension: 0.4
+    });
+
+    function getDateLabels(n) {
+        const labels = [];
+        for (let i = n-1; i >= 0; i--) {
+            const d = new Date(); d.setDate(d.getDate() - i);
+            labels.push(d.toISOString().slice(0,10));
+        }
+        return labels;
+    }
+
+    function getMonthLabels(n) {
+        const labels = [];
+        for (let i = n-1; i >= 0; i--) {
+            const d = new Date(); d.setMonth(d.getMonth() - i);
+            labels.push(d.toISOString().slice(0,7));
+        }
+        return labels;
+    }
+
+    function labelShort(str) {
+        if (str.length === 10) {
+            const [,m,d] = str.split('-');
+            return `${d}/${m}`;
+        }
+        const [y,m] = str.split('-');
+        const bulanNama = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+        return bulanNama[parseInt(m)-1] + ' ' + y.slice(2);
+    }
+
+    function buildRevenueChart(data) {
+        const n = chartPeriod === '7d' ? 7 : chartPeriod === '30d' ? 30 : 12;
+        const labels = chartPeriod === 'bulan' ? getMonthLabels(n) : getDateLabels(n);
+        const key = chartPeriod === 'bulan' ? 'bulan' : 'tanggal';
+
+        const totals = labels.map(lbl => {
+            return data.filter(d => (chartPeriod === 'bulan' ? d.bulan : d.tanggal) === lbl)
+                       .reduce((s, d) => s + (d.price||0), 0);
+        });
+
+        const subMap = { '7d': '7 hari terakhir', '30d': '30 hari terakhir', 'bulan': '12 bulan terakhir' };
+        const subtitleEl = document.getElementById('chart-rev-subtitle');
+        if (subtitleEl) subtitleEl.textContent = `Pendapatan per ${chartPeriod === 'bulan' ? 'bulan' : 'hari'} (${subMap[chartPeriod]})`;
+
+        const ctx = document.getElementById('chart-revenue').getContext('2d');
+        if (chartRevenue) chartRevenue.destroy();
+        chartRevenue = new Chart(ctx, {
+            type: 'line',
+            data: { labels: labels.map(labelShort), datasets: [lineDataset('Pendapatan', totals, '#00d9ff')] },
+            options: { ...chartDefaults }
+        });
+    }
+
+    function buildBvRChart(pendapatan) {
+        const n = chartPeriod === 'bulan' ? 12 : chartPeriod === '30d' ? 30 : 7;
+        const labels = chartPeriod === 'bulan' ? getMonthLabels(n) : getDateLabels(n);
+        const keyField = chartPeriod === 'bulan' ? 'bulan' : 'tanggal';
+
+        // Booking = unitId tidak diawali R-, Rental = unitId diawali R-
+        const bkTotals  = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && !(d.unitId||'').startsWith('R-')).length);
+        const rntTotals = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && (d.unitId||'').startsWith('R-')).length);
+
+        const ctx = document.getElementById('chart-bvr').getContext('2d');
+        if (chartBvR) chartBvR.destroy();
+        chartBvR = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.map(labelShort),
+                datasets: [
+                    lineDataset('Booking', bkTotals, '#00d9ff'),
+                    lineDataset('Rental',  rntTotals, '#a855f7')
+                ]
+            },
+            options: { ...chartDefaults, plugins: { ...chartDefaults.plugins, tooltip: { ...chartDefaults.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } } }
+        });
+    }
+
+    function buildPSChart(pendapatan) {
+        const n = chartPeriod === 'bulan' ? 12 : chartPeriod === '30d' ? 30 : 7;
+        const labels = chartPeriod === 'bulan' ? getMonthLabels(n) : getDateLabels(n);
+        const keyField = chartPeriod === 'bulan' ? 'bulan' : 'tanggal';
+
+        const ps3 = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && (d.unitType||d.unitId||'').includes('PS3')).reduce((s,d)=>s+(d.price||0),0));
+        const ps4 = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && (d.unitType||d.unitId||'').includes('PS4')).reduce((s,d)=>s+(d.price||0),0));
+        const ps5 = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && (d.unitType||d.unitId||'').includes('PS5')).reduce((s,d)=>s+(d.price||0),0));
+
+        const ctx = document.getElementById('chart-ps').getContext('2d');
+        if (chartPS) chartPS.destroy();
+        chartPS = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.map(labelShort),
+                datasets: [
+                    lineDataset('PS3', ps3, '#3fb950'),
+                    lineDataset('PS4', ps4, '#00d9ff'),
+                    lineDataset('PS5', ps5, '#e3b341')
+                ]
+            },
+            options: { ...chartDefaults }
+        });
+    }
+
+    function buildAllCharts(data) {
+        buildRevenueChart(data);
+        buildBvRChart(data);
+        buildPSChart(data);
+    }
+
+    window.switchChartPeriod = (period, btn) => {
+        chartPeriod = period;
+        document.querySelectorAll('.chart-pill').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        buildAllCharts(allPendapatan);
+    };
+
     // ── Listen pendapatan realtime ─────────────────────────────────────
     onSnapshot(
         query(collection(db, 'pendapatan'), orderBy('createdAt', 'desc')),
         (snap) => {
             allPendapatan = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
             renderPendapatan(allPendapatan);
+            buildAllCharts(allPendapatan);
         }
     );
 
@@ -1156,5 +1522,40 @@
 
 </script>
 </div></div>
+<script>
+    // ── THEME TOGGLE ──────────────────────────────────────────────────
+    (function initTheme() {
+        const saved = localStorage.getItem('pg_theme') || 'dark';
+        if (saved === 'light') {
+            document.body.classList.add('light-mode');
+            ['theme-icon','theme-icon-sidebar'].forEach(id => {
+                const icon = document.getElementById(id);
+                if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+            });
+        }
+    })();
+
+    window.toggleTheme = function() {
+        const isLight = document.body.classList.toggle('light-mode');
+        localStorage.setItem('pg_theme', isLight ? 'light' : 'dark');
+        ['theme-icon','theme-icon-sidebar'].forEach(id => {
+            const icon = document.getElementById(id);
+            if (icon) {
+                icon.classList.toggle('fa-sun',  !isLight);
+                icon.classList.toggle('fa-moon',  isLight);
+            }
+        });
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true, position: 'top', icon: 'success',
+                title: isLight ? '☀️ Light mode aktif' : '🌙 Dark mode aktif',
+                showConfirmButton: false, timer: 1500,
+                background: isLight ? '#fff' : '#11171f',
+                color:      isLight ? '#1a202c' : '#fff'
+            });
+        }
+    };
+
+</script>
 </body>
 </html>
