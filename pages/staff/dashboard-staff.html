@@ -371,12 +371,12 @@
         body.light-mode .staff-session-row { border-color: rgba(0,0,0,0.05) !important; }
         /* Theme toggle button */
         .btn-theme-toggle {
-            width: 44px; height: 44px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
+            padding: 6px 12px; border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.08);
             background: rgba(255,255,255,0.04);
             color: #9ca3af; cursor: pointer; transition: all .2s;
-            font-size: 15px; flex-shrink: 0;
+            font-size: 15px; flex-shrink: 0; height: auto;
         }
         .btn-theme-toggle:hover { background: rgba(255,255,255,0.1); color: #fff; }
         body.light-mode .btn-theme-toggle {
@@ -405,9 +405,9 @@
             <p id="staff-header-time" class="text-[11px] font-bold text-gray-500 mt-0.5"></p>
         </div>
         <div class="flex items-center gap-2">
-            <button onclick="toggleNotif()" class="w-11 h-11 glass-card flex items-center justify-center text-gray-400 relative">
-                <i class="fas fa-bell text-sm"></i>
-                <span id="notif-dot" class="hidden absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full"></span>
+            <button onclick="toggleNotif()" style="display:flex;align-items:center;padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#9ca3af;cursor:pointer;transition:all .2s;font-size:15px;flex-shrink:0;position:relative;" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.color='#9ca3af'">
+                <i class="fas fa-bell"></i>
+                <span id="notif-dot" class="hidden absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" style="position:absolute;top:4px;right:4px;width:8px;height:8px;background:#ef4444;border-radius:50%;display:none;"></span>
             </button>
             <button id="btn-theme" onclick="toggleTheme()" class="btn-theme-toggle" title="Ganti tema">
                 <i id="theme-icon" class="fas fa-sun"></i>

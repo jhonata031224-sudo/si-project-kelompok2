@@ -379,12 +379,12 @@
         body.light-mode .border-b { border-color: rgba(0,0,0,0.07) !important; }
         /* Theme toggle button */
         .btn-theme-toggle {
-            width: 44px; height: 44px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
+            padding: 6px 12px; border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.08);
             background: rgba(255,255,255,0.04);
             color: #9ca3af; cursor: pointer; transition: all .2s;
-            font-size: 15px; flex-shrink: 0;
+            font-size: 15px; flex-shrink: 0; height: auto;
         }
         .btn-theme-toggle:hover { background: rgba(255,255,255,0.1); color: #fff; }
         body.light-mode .btn-theme-toggle {
@@ -455,11 +455,13 @@
     <span class="logo">Prince<span>Games</span></span>
     <span class="badge-role">Customer</span>
   </div>
-  <button id="btn-theme" onclick="toggleTheme()" class="btn-theme-toggle" title="Ganti tema"><i id="theme-icon" class="fas fa-sun"></i></button>
-  <button class="btn-out-hdr" onclick="doLogout()">
-    <i class="fas fa-right-from-bracket"></i>
-    <span>Keluar</span>
-  </button>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button id="btn-theme" onclick="toggleTheme()" class="btn-theme-toggle" title="Ganti tema"><i id="theme-icon" class="fas fa-sun"></i></button>
+    <button class="btn-out-hdr" onclick="doLogout()">
+      <i class="fas fa-right-from-bracket"></i>
+      <span>Keluar</span>
+    </button>
+  </div>
 </header>
 
 <main>
