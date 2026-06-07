@@ -17,7 +17,9 @@
             --text:#e6edf3;--muted:#7d8590;--cyan:#00d9ff;--green:#3fb950;
             --orange:#f78166;--purple:#bc8cff;--yellow:#e3b341;--red:#ff4d4f;
         }
-        html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden}
+        html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif}
+        body{overflow-x:clip}
+        .owner-main-content{overflow-x:hidden}
 
         /* ── Topbar ── */
         .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border2);background:var(--bg);position:sticky;top:0;z-index:100}
@@ -102,7 +104,8 @@
         .btn-reset:hover{background:rgba(255,77,79,0.15)}
 
         /* ── Tabel Riwayat Pendapatan ── */
-        .income-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
+        .table-scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;width:100%}
+        .income-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px;min-width:520px}
         .income-table th{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border2)}
         .income-table td{padding:9px 10px;border-bottom:1px solid var(--border2);vertical-align:middle}
         .income-table tr:last-child td{border-bottom:none}
@@ -112,7 +115,7 @@
 
         /* ── Two-col & section ── */
         .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-        .section-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px}
+        .section-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;overflow:visible}
         .section-title{font-size:13px;font-weight:700;margin-bottom:14px}
         .empty-state{font-size:12px;color:var(--muted)}
         .session-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border2)}
@@ -144,15 +147,15 @@
             .nav-btn{padding:7px 10px}
             #revenue-shift-grid{grid-template-columns:1fr !important}
 
-            /* Tabel scroll horizontal */
-            .income-table { font-size:10px; min-width:480px; }
-            .income-table th, .income-table td { padding:7px 6px; white-space:nowrap; }
-            [style*="overflow-x:auto"] { overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:8px; }
+            /* Grid 2 kolom chart jadi 1 kolom */
+            .chart-two-col { grid-template-columns: 1fr !important; }
 
-            /* Shift grid 2 kolom tetap tapi teks lebih kecil */
-            #shift-summary-grid > div { padding:10px !important; }
-            #shift-summary-grid [style*="font-size:20px"] { font-size:16px !important; }
-            #shift-summary-grid [style*="font-size:10px"] { font-size:9px !important; }
+            /* Tabel scroll horizontal — wrapper wajib ada */
+            .income-table { font-size:10px; }
+            .income-table th, .income-table td { padding:7px 8px; white-space:nowrap; }
+
+            /* Shift summary grid 1 kolom saat semua ditampilkan */
+            #shift-summary-grid > div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
 
             /* KPI card lebih compact */
             .kpi-card { padding:12px 10px; }
@@ -160,13 +163,26 @@
             .kpi-sub { font-size:10px; }
             .kpi-label { font-size:9px; }
 
-            /* Filter pills scroll horizontal */
-            .filter-pills { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; }
+            /* Filter pills scroll horizontal tanpa wrap */
+            .filter-pills { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; scrollbar-width:none; }
+            .filter-pills::-webkit-scrollbar { display:none; }
             .pill { flex-shrink:0; }
+
+            /* Revenue header responsive */
+            .revenue-header > div:last-child { flex-direction:column; align-items:flex-start; width:100%; }
+            .revenue-header .filter-pills { width:100%; }
 
             /* Section cards */
             .section-card { padding:14px 14px; }
             .chart-section { padding:14px 14px; }
+
+            /* Chart date row wrap di mobile */
+            .chart-date-row { flex-wrap:wrap; gap:6px; }
+            .chart-date-input { width:calc(50% - 16px); min-width:0; }
+            .chart-date-sep { display:none; }
+
+            /* Booking/Rental aktif header wrap */
+            #owner-aktif-list > div { flex-wrap:wrap; gap:8px; }
         }
 
         /* ═══════════════════════════════════════════════════════════════
@@ -314,6 +330,12 @@
             background: #ffffff !important;
             border-color: rgba(0,0,0,0.08) !important;
         }
+        body.light-mode .bottom-nav {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .bnav-item.inactive { color: #94a3b8 !important; }
+        body.light-mode .bnav-item.active { color: #0284c7 !important; }
         /* Topbar / Header */
         body.light-mode .topbar,
         body.light-mode header {
@@ -500,7 +522,7 @@
         <div class="chart-wrap"><canvas id="chart-revenue"></canvas></div>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+    <div class="chart-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
         <div class="chart-section" style="margin-bottom:0">
             <div class="chart-title" style="font-size:12px;margin-bottom:3px"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:6px;font-size:11px"></i>Booking vs Rental</div>
             <div class="chart-subtitle">Jumlah transaksi per tipe</div>
@@ -536,15 +558,14 @@
 
     <!-- ══ Revenue + Shift Grid ══ -->
     <div id="revenue-shift-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;align-items:start">
-
     <!-- Revenue Card dengan Filter -->
-    <div class="section-card" style="margin-bottom:0">
+    <div class="section-card" style="margin-bottom:0;min-width:0;overflow:visible">
         <div class="revenue-header">
             <div>
                 <div class="revenue-title">💰 Total Pendapatan Tercatat</div>
                 <div id="filter-label" style="font-size:11px;color:var(--muted);margin-top:3px">Filter: Hari Ini</div>
             </div>
-            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px">
                 <div class="filter-pills">
                     <button class="pill active" onclick="setFilter('harian')">Harian</button>
                     <button class="pill" onclick="setFilter('mingguan')">Mingguan</button>
@@ -560,7 +581,7 @@
         <div class="revenue-label" id="rev-label">Memuat data...</div>
 
         <!-- Tabel riwayat pendapatan -->
-        <div style="overflow-x:auto;margin-top:16px;border-radius:8px">
+        <div class="table-scroll-wrap" style="margin-top:16px">
             <table class="income-table">
                 <thead>
                     <tr>
@@ -581,7 +602,7 @@
     </div><!-- end revenue section-card -->
 
     <!-- ══ Pendapatan Per Shift ══ -->
-    <div class="section-card" style="margin-bottom:0" id="shift-revenue-card">
+    <div class="section-card" style="margin-bottom:0;min-width:0;overflow:visible" id="shift-revenue-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
             <div>
                 <div class="section-title" style="margin-bottom:2px">
@@ -603,7 +624,7 @@
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
             <i class="fas fa-user-clock" style="margin-right:6px"></i>Rincian Per Staff
         </div>
-        <div style="overflow-x:auto;border-radius:8px">
+        <div class="table-scroll-wrap">
             <table class="income-table" id="staff-shift-table">
                 <thead>
                     <tr>

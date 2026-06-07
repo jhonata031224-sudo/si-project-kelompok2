@@ -56,20 +56,56 @@ export const handleLogout = async (targetUrl = '../../pages/auth/login-pelanggan
 
 // --- LOGIKA LOGIN OWNER ---
 window.handleLoginOwner = async () => {
-    const email = document.getElementById('owner-email').value;
+    const email = document.getElementById('owner-email').value.trim();
     const pass = document.getElementById('owner-pass').value;
-    if (email !== "dinarjhonata03@gmail.com" || pass !== "12345678") {
-        if (typeof window.setLoading === 'function') window.setLoading(false);
-        notify('error', 'Akses Ditolak', 'Kredensial Owner salah!');
-        return;
-    }
     try {
         await signInWithEmailAndPassword(auth, email, pass);
         notify('success', 'Selamat Datang Owner!');
         setTimeout(() => window.location.href = '../../pages/owner/dashboard-owner.html', 1500);
     } catch (error) {
         if (typeof window.setLoading === 'function') window.setLoading(false);
-        notify('error', 'Login Gagal', 'Periksa koneksi atau akun Anda.');
+        const msg = {
+            'auth/user-not-found':      'Akun tidak ditemukan!',
+            'auth/wrong-password':      'Password salah!',
+            'auth/invalid-credential':  'Email atau password salah!',
+            'auth/invalid-email':       'Format email tidak valid!',
+            'auth/too-many-requests':   'Terlalu banyak percobaan, coba lagi nanti!',
+            'auth/network-request-failed': 'Gagal terhubung ke internet!',
+        }[error.code] || 'Login gagal, periksa email dan password.';
+        notify('error', 'Login Gagal', msg);
+    }
+};
+
+// --- LOGIKA DAFTAR OWNER ---
+window.handleRegisterOwner = async () => {
+    const email = document.getElementById('owner-email').value.trim();
+    const pass = document.getElementById('owner-pass').value;
+    try {
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        const uid = cred.user.uid;
+
+        await setDoc(doc(db, 'owners', uid), {
+            email,
+            role: 'owner',
+            createdAt: new Date().toISOString()
+        });
+
+        notify('success', 'Akun Owner Dibuat!', 'Silakan masuk.');
+        setTimeout(() => window.location.href = '../../pages/auth/login-owner.html', 1800);
+    } catch (error) {
+        const btn = document.getElementById('regBtn');
+        if (btn) {
+            btn.classList.remove('loading');
+            btn.innerHTML = 'Daftar sebagai Owner <i class="fas fa-arrow-right"></i>';
+        }
+        const msg = {
+            'auth/email-already-in-use':    'Email sudah terdaftar!',
+            'auth/weak-password':           'Password terlalu lemah, minimal 8 karakter!',
+            'auth/invalid-email':           'Format email tidak valid!',
+            'auth/network-request-failed':  'Gagal terhubung ke internet!',
+            'auth/too-many-requests':       'Terlalu banyak percobaan, coba lagi nanti!',
+        }[error.code] || `Pendaftaran gagal: ${error.message}`;
+        notify('error', 'Gagal Daftar', msg);
     }
 };
 
