@@ -519,6 +519,12 @@
     .hfil{background:rgba(255,255,255,0.05);color:#6b7280;border:none;padding:7px 14px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s;}
     .hfil.on{background:#00d9ff;color:#000;}
     .hfil-batal.on{background:#f87171;color:#000;}
+    .hfil-sort-toggle{padding:6px 10px;font-size:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#9ca3af;}
+    .hfil-sort-toggle:hover{border-color:rgba(0,217,255,0.3);color:#00d9ff;}
+    .hd-sort-dropdown{position:absolute;right:0;top:calc(100% + 6px);background:#161d28;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:4px;z-index:500;min-width:110px;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+    .hd-sort-opt{display:block;width:100%;text-align:left;padding:8px 12px;border:none;background:transparent;color:#9ca3af;font-size:10px;font-weight:700;cursor:pointer;border-radius:7px;font-family:inherit;letter-spacing:.04em;transition:all .15s;}
+    .hd-sort-opt:hover{background:rgba(255,255,255,0.06);color:#e5e7eb;}
+    .hd-sort-opt.active{background:rgba(0,217,255,0.1);color:#00d9ff;}
     .hist-body{flex:1;overflow-y:auto;padding:0 20px 100px;}
     .hdcard{background:#11171f;border:1px solid rgba(255,255,255,0.05);border-radius:20px;overflow:hidden;margin-bottom:12px;}
     .hdcard-header{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
@@ -1262,13 +1268,27 @@
             <i class="fas fa-search"></i>
             <input type="text" id="hd-search-sesi" placeholder="Cari nama pelanggan atau unit..." oninput="hdRenderSesi()">
         </div>
-        <div class="hist-filter-row">
+        <div class="hist-filter-row" style="align-items:center;gap:8px;">
             <button class="hfil on" onclick="hdSetFilter('semua',this)">Semua</button>
             <button class="hfil" onclick="hdSetFilter('manual',this)">Manual</button>
             <button class="hfil" onclick="hdSetFilter('otomatis',this)">Otomatis</button>
+            <div style="position:relative;margin-left:auto;flex-shrink:0;">
+                <button class="hfil hfil-sort-toggle" id="hd-sort-toggle-sesi" onclick="hdToggleSortDropdown('sesi')" style="display:flex;align-items:center;gap:5px;">
+                    <i class="fas fa-arrow-down-wide-short" style="font-size:9px;"></i><span id="hd-sort-label-sesi">Terbaru</span> <i class="fas fa-chevron-down" style="font-size:7px;opacity:.6;"></i>
+                </button>
+                <div id="hd-sort-dropdown-sesi" class="hd-sort-dropdown" style="display:none;">
+                    <button onclick="hdSetSortSesi('terbaru')" id="hd-sort-opt-sesi-terbaru" class="hd-sort-opt active">↓ Terbaru</button>
+                    <button onclick="hdSetSortSesi('terlama')" id="hd-sort-opt-sesi-terlama" class="hd-sort-opt">↑ Terlama</button>
+                </div>
+            </div>
         </div>
         <div class="hist-body" id="hd-list-sesi">
             <div class="hist-empty"><i class="fas fa-spinner fa-spin"></i><p>Memuat...</p></div>
+        </div>
+        <div id="hd-expand-sesi" style="display:none;padding:0 20px 14px;">
+            <button onclick="hdToggleExpandSesi()" id="hd-expand-btn-sesi" style="width:100%;padding:10px;border-radius:12px;background:rgba(0,217,255,0.06);border:1px dashed rgba(0,217,255,0.25);color:#00d9ff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;">
+                <i class="fas fa-chevron-down" id="hd-expand-icon-sesi" style="margin-right:6px;transition:transform .2s;"></i><span id="hd-expand-label-sesi">Lihat Semua</span>
+            </button>
         </div>
     </div>
 
@@ -1278,13 +1298,27 @@
             <i class="fas fa-search"></i>
             <input type="text" id="hd-search-batal" placeholder="Cari nama pelanggan atau konsol..." oninput="hdRenderBatal()">
         </div>
-        <div class="hist-filter-row">
+        <div class="hist-filter-row" style="align-items:center;gap:8px;">
             <button class="hfil on" onclick="hdSetBatalFilter('semua',this)">Semua</button>
             <button class="hfil hfil-batal" onclick="hdSetBatalFilter('booking',this)">Booking</button>
             <button class="hfil hfil-batal" onclick="hdSetBatalFilter('rental',this)">Rental</button>
+            <div style="position:relative;margin-left:auto;flex-shrink:0;">
+                <button class="hfil hfil-sort-toggle" id="hd-sort-toggle-batal" onclick="hdToggleSortDropdown('batal')" style="display:flex;align-items:center;gap:5px;">
+                    <i class="fas fa-arrow-down-wide-short" style="font-size:9px;"></i><span id="hd-sort-label-batal">Terbaru</span> <i class="fas fa-chevron-down" style="font-size:7px;opacity:.6;"></i>
+                </button>
+                <div id="hd-sort-dropdown-batal" class="hd-sort-dropdown" style="display:none;">
+                    <button onclick="hdSetSortBatal('terbaru')" id="hd-sort-opt-batal-terbaru" class="hd-sort-opt active">↓ Terbaru</button>
+                    <button onclick="hdSetSortBatal('terlama')" id="hd-sort-opt-batal-terlama" class="hd-sort-opt">↑ Terlama</button>
+                </div>
+            </div>
         </div>
         <div class="hist-body" id="hd-list-batal">
             <div class="hist-empty"><i class="fas fa-spinner fa-spin" style="color:#f87171;"></i><p>Memuat...</p></div>
+        </div>
+        <div id="hd-expand-batal" style="display:none;padding:0 20px 14px;">
+            <button onclick="hdToggleExpandBatal()" id="hd-expand-btn-batal" style="width:100%;padding:10px;border-radius:12px;background:rgba(248,113,113,0.06);border:1px dashed rgba(248,113,113,0.25);color:#f87171;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;">
+                <i class="fas fa-chevron-down" id="hd-expand-icon-batal" style="margin-right:6px;transition:transform .2s;"></i><span id="hd-expand-label-batal">Lihat Semua</span>
+            </button>
         </div>
     </div>
 
@@ -1294,14 +1328,28 @@
             <i class="fas fa-search"></i>
             <input type="text" id="hd-search-rental" placeholder="Cari nama pelanggan atau konsol..." oninput="hdRenderRental()">
         </div>
-        <div class="hist-filter-row">
+        <div class="hist-filter-row" style="align-items:center;gap:8px;">
             <button class="hfil on" onclick="hdSetRentalFilter('semua',this)">Semua</button>
             <button class="hfil" onclick="hdSetRentalFilter('aktif',this)" style="color:#a78bfa;border-color:rgba(168,85,247,0.3)">Aktif</button>
             <button class="hfil" onclick="hdSetRentalFilter('selesai',this)" style="color:#4ade80;border-color:rgba(74,222,128,0.3)">Selesai</button>
             <button class="hfil" onclick="hdSetRentalFilter('menunggu',this)">Menunggu</button>
+            <div style="position:relative;margin-left:auto;flex-shrink:0;">
+                <button class="hfil hfil-sort-toggle" id="hd-sort-toggle-rental" onclick="hdToggleSortDropdown('rental')" style="display:flex;align-items:center;gap:5px;">
+                    <i class="fas fa-arrow-down-wide-short" style="font-size:9px;"></i><span id="hd-sort-label-rental">Terbaru</span> <i class="fas fa-chevron-down" style="font-size:7px;opacity:.6;"></i>
+                </button>
+                <div id="hd-sort-dropdown-rental" class="hd-sort-dropdown" style="display:none;">
+                    <button onclick="hdSetSortRental('terbaru')" id="hd-sort-opt-rental-terbaru" class="hd-sort-opt active">↓ Terbaru</button>
+                    <button onclick="hdSetSortRental('terlama')" id="hd-sort-opt-rental-terlama" class="hd-sort-opt">↑ Terlama</button>
+                </div>
+            </div>
         </div>
         <div class="hist-body" id="hd-list-rental">
             <div class="hist-empty"><i class="fas fa-spinner fa-spin" style="color:#a855f7;"></i><p>Memuat...</p></div>
+        </div>
+        <div id="hd-expand-rental" style="display:none;padding:0 20px 14px;">
+            <button onclick="hdToggleExpandRental()" id="hd-expand-btn-rental" style="width:100%;padding:10px;border-radius:12px;background:rgba(168,85,247,0.06);border:1px dashed rgba(168,85,247,0.25);color:#a855f7;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;">
+                <i class="fas fa-chevron-down" id="hd-expand-icon-rental" style="margin-right:6px;transition:transform .2s;"></i><span id="hd-expand-label-rental">Lihat Semua</span>
+            </button>
         </div>
     </div>
 </div>
@@ -4733,10 +4781,19 @@
     let _hdSesi      = [];
     let _hdBatal     = [];
     let _hdRental    = [];
-    let _hdTab       = 'sesi';
+
     let _hdFSesi     = 'semua';
     let _hdFBatal    = 'semua';
     let _hdFRental   = 'semua';
+
+    let _hdSortSesi   = 'terbaru';
+    let _hdSortBatal  = 'terbaru';
+    let _hdSortRental = 'terbaru';
+
+    let _hdExpandSesi   = false;
+    let _hdExpandBatal  = false;
+    let _hdExpandRental = false;
+    const HD_PREVIEW = 2;
     let _hdListening = false;
 
     const _hdFmtRp  = n => 'Rp ' + (n || 0).toLocaleString('id-ID');
@@ -4793,11 +4850,17 @@
             (d.customerName||'').toLowerCase().includes(keyword) ||
             (d.unitId||'').toLowerCase().includes(keyword)
         );
+        // Sort
+        const getTs = d => { try { return d.createdAt?.seconds ? d.createdAt.seconds : new Date(d.createdAt||d.tanggal||0).getTime()/1000; } catch(e){return 0;} };
+        data.sort((a,b) => _hdSortSesi === 'terlama' ? getTs(a)-getTs(b) : getTs(b)-getTs(a));
+
         if (!data.length) {
             list.innerHTML = `<div class="hist-empty"><div style="width:56px;height:56px;border:2px dashed #374151;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><i class="fas fa-history" style="font-size:20px;"></i></div><p>Belum Ada Riwayat</p></div>`;
+            document.getElementById('hd-expand-sesi').style.display = 'none';
             return;
         }
-        list.innerHTML = data.map((d, i) => {
+        const shown = _hdExpandSesi ? data : data.slice(0, HD_PREVIEW);
+        list.innerHTML = shown.map((d, i) => {
             const durasi = hitungDurasi(d.tanggal, d.startTime, d.stopTime);
             const tgl    = _hdFmtTgl(d.createdAt || d.tanggal);
             const isOto  = d.alasan === 'Otomatis';
@@ -4830,6 +4893,15 @@
                 </div>
             </div>`;
         }).join('');
+        // Tombol expand
+        const expandEl = document.getElementById('hd-expand-sesi');
+        if (data.length > HD_PREVIEW) {
+            expandEl.style.display = '';
+            document.getElementById('hd-expand-icon-sesi').style.transform = _hdExpandSesi ? 'rotate(180deg)' : '';
+            document.getElementById('hd-expand-label-sesi').textContent = _hdExpandSesi ? `Sembunyikan (tampil ${data.length})` : `Lihat Semua (${data.length} riwayat)`;
+        } else {
+            expandEl.style.display = 'none';
+        }
     };
 
     window.hdRenderBatal = function() {
@@ -4842,11 +4914,17 @@
             (d.customerName||'').toLowerCase().includes(keyword) ||
             (d.console||'').toLowerCase().includes(keyword)
         );
+        // Sort
+        const getTs = d => { try { const raw = d.cancelledAt||d.createdAt; return raw?.seconds ? raw.seconds : new Date(raw||0).getTime()/1000; } catch(e){return 0;} };
+        data.sort((a,b) => _hdSortBatal === 'terlama' ? getTs(a)-getTs(b) : getTs(b)-getTs(a));
+
         if (!data.length) {
             list.innerHTML = `<div class="hist-empty"><div style="width:56px;height:56px;border:2px dashed rgba(239,68,68,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><i class="fas fa-ban" style="font-size:20px;color:rgba(239,68,68,0.5);"></i></div><p>Belum Ada Pembatalan</p></div>`;
+            document.getElementById('hd-expand-batal').style.display = 'none';
             return;
         }
-        list.innerHTML = data.map((d, i) => {
+        const shown = _hdExpandBatal ? data : data.slice(0, HD_PREVIEW);
+        list.innerHTML = shown.map((d, i) => {
             const tgl  = _hdFmtTgl(d.cancelledAt || d.createdAt);
             const unit = d.assignedUnit || d.assignedRentalUnit || '-';
             const typeLabel = d.type === 'booking' ? 'Booking' : 'Rental';
@@ -4880,6 +4958,15 @@
                 </div>
             </div>`;
         }).join('');
+        // Tombol expand
+        const expandEl = document.getElementById('hd-expand-batal');
+        if (data.length > HD_PREVIEW) {
+            expandEl.style.display = '';
+            document.getElementById('hd-expand-icon-batal').style.transform = _hdExpandBatal ? 'rotate(180deg)' : '';
+            document.getElementById('hd-expand-label-batal').textContent = _hdExpandBatal ? `Sembunyikan (tampil ${data.length})` : `Lihat Semua (${data.length} pembatalan)`;
+        } else {
+            expandEl.style.display = 'none';
+        }
     };
 
     window.hdRenderRental = function() {
@@ -4893,13 +4980,19 @@
             (d.customerName||'').toLowerCase().includes(keyword) ||
             (d.console||'').toLowerCase().includes(keyword)
         );
+        // Sort
+        const getTs = d => { try { return d.createdAt?.seconds ? d.createdAt.seconds : new Date(d.createdAt||0).getTime()/1000; } catch(e){return 0;} };
+        data.sort((a,b) => _hdSortRental === 'terlama' ? getTs(a)-getTs(b) : getTs(b)-getTs(a));
+
         if (!data.length) {
             list.innerHTML = '<div class="hist-empty"><p>Belum Ada Rental Bawa Pulang</p></div>';
+            document.getElementById('hd-expand-rental').style.display = 'none';
             return;
         }
         const _fR  = (n)  => 'Rp ' + (parseInt(n)||0).toLocaleString('id-ID');
         const _fT  = (ts) => { try { return new Date(ts).toLocaleString('id-ID',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); } catch(e) { return '-'; } };
-        list.innerHTML = data.map((d, i) => {
+        const shown = _hdExpandRental ? data : data.slice(0, HD_PREVIEW);
+        list.innerHTML = shown.map((d, i) => {
             const sc = d.status==='Aktif'?'#a78bfa':d.status==='Selesai'?'#4ade80':d.status==='Menunggu Konfirmasi Staff'?'#f59e0b':'#9ca3af';
             const sb = d.status==='Aktif'?'rgba(168,85,247,0.1)':d.status==='Selesai'?'rgba(74,222,128,0.1)':d.status==='Menunggu Konfirmasi Staff'?'rgba(245,158,11,0.1)':'rgba(255,255,255,0.04)';
             const uL = d.assignedRentalUnit || '—';
@@ -4921,6 +5014,15 @@
                 + '<div class="hdcard-cell"><div class="hdcell-lbl">Kembali</div><div class="hdcell-val" style="font-size:9px;">'+_fT(d.endTime)+'</div></div>'
                 + '</div></div></div>';
         }).join('');
+        // Tombol expand
+        const expandEl = document.getElementById('hd-expand-rental');
+        if (data.length > HD_PREVIEW) {
+            expandEl.style.display = '';
+            document.getElementById('hd-expand-icon-rental').style.transform = _hdExpandRental ? 'rotate(180deg)' : '';
+            document.getElementById('hd-expand-label-rental').textContent = _hdExpandRental ? `Sembunyikan (tampil ${data.length})` : `Lihat Semua (${data.length} rental)`;
+        } else {
+            expandEl.style.display = 'none';
+        }
     };
 
     window.hdSwitchTab = function(tab) {
@@ -4938,6 +5040,7 @@
         _hdFRental = type;
         document.querySelectorAll('#hd-panel-rental .hfil').forEach(b => b.classList.remove('on'));
         btn.classList.add('on');
+        _hdExpandRental = false;
         hdRenderRental();
     };
 
@@ -4945,6 +5048,7 @@
         _hdFSesi = type;
         document.querySelectorAll('#hd-panel-sesi .hfil').forEach(b => b.classList.remove('on'));
         btn.classList.add('on');
+        _hdExpandSesi = false;
         hdRenderSesi();
     };
 
@@ -4952,7 +5056,68 @@
         _hdFBatal = type;
         document.querySelectorAll('#hd-panel-batal .hfil').forEach(b => b.classList.remove('on'));
         btn.classList.add('on');
+        _hdExpandBatal = false;
         hdRenderBatal();
+    };
+
+    // Sort dropdown toggle
+    window.hdToggleSortDropdown = function(tab) {
+        const dd = document.getElementById('hd-sort-dropdown-'+tab);
+        const allDDs = ['sesi','batal','rental'].map(t => document.getElementById('hd-sort-dropdown-'+t));
+        allDDs.forEach(el => { if (el && el !== dd) el.style.display = 'none'; });
+        dd.style.display = dd.style.display === 'none' ? '' : 'none';
+    };
+    // Close dropdowns on outside click
+    document.addEventListener('click', e => {
+        if (!e.target.closest('[id^="hd-sort-toggle-"]') && !e.target.closest('[id^="hd-sort-dropdown-"]')) {
+            ['sesi','batal','rental'].forEach(t => {
+                const dd = document.getElementById('hd-sort-dropdown-'+t);
+                if (dd) dd.style.display = 'none';
+            });
+        }
+    });
+
+    // Sort functions
+    window.hdSetSortSesi = function(sort) {
+        _hdSortSesi = sort;
+        document.getElementById('hd-sort-dropdown-sesi').style.display = 'none';
+        document.getElementById('hd-sort-label-sesi').textContent = sort === 'terbaru' ? 'Terbaru' : 'Terlama';
+        document.getElementById('hd-sort-opt-sesi-terbaru').className = 'hd-sort-opt' + (sort==='terbaru'?' active':'');
+        document.getElementById('hd-sort-opt-sesi-terlama').className = 'hd-sort-opt' + (sort==='terlama'?' active':'');
+        _hdExpandSesi = false;
+        hdRenderSesi();
+    };
+    window.hdSetSortBatal = function(sort) {
+        _hdSortBatal = sort;
+        document.getElementById('hd-sort-dropdown-batal').style.display = 'none';
+        document.getElementById('hd-sort-label-batal').textContent = sort === 'terbaru' ? 'Terbaru' : 'Terlama';
+        document.getElementById('hd-sort-opt-batal-terbaru').className = 'hd-sort-opt' + (sort==='terbaru'?' active':'');
+        document.getElementById('hd-sort-opt-batal-terlama').className = 'hd-sort-opt' + (sort==='terlama'?' active':'');
+        _hdExpandBatal = false;
+        hdRenderBatal();
+    };
+    window.hdSetSortRental = function(sort) {
+        _hdSortRental = sort;
+        document.getElementById('hd-sort-dropdown-rental').style.display = 'none';
+        document.getElementById('hd-sort-label-rental').textContent = sort === 'terbaru' ? 'Terbaru' : 'Terlama';
+        document.getElementById('hd-sort-opt-rental-terbaru').className = 'hd-sort-opt' + (sort==='terbaru'?' active':'');
+        document.getElementById('hd-sort-opt-rental-terlama').className = 'hd-sort-opt' + (sort==='terlama'?' active':'');
+        _hdExpandRental = false;
+        hdRenderRental();
+    };
+
+    // Expand toggle functions
+    window.hdToggleExpandSesi = function() {
+        _hdExpandSesi = !_hdExpandSesi;
+        hdRenderSesi();
+    };
+    window.hdToggleExpandBatal = function() {
+        _hdExpandBatal = !_hdExpandBatal;
+        hdRenderBatal();
+    };
+    window.hdToggleExpandRental = function() {
+        _hdExpandRental = !_hdExpandRental;
+        hdRenderRental();
     };
 
     window.bukaHistoryDrawer = function() {
