@@ -785,6 +785,22 @@
     <div id="notif-list" class="space-y-3 text-[11px]"></div>
 </div>
 
+<!-- Filter tipe unit -->
+<div id="unit-filter-bar" class="flex gap-2 mb-4 px-1 overflow-x-auto pb-1">
+    <button id="uf-semua"  onclick="filterUnit('semua',this)"  class="tab-btn tab-active whitespace-nowrap">
+        <i class="fas fa-th-large mr-1"></i> Semua
+    </button>
+    <button id="uf-ps5" onclick="filterUnit('PS5',this)" class="tab-btn tab-inactive whitespace-nowrap" style="border-color:rgba(255,191,0,0.3);color:#ffbf00">
+        <i class="fas fa-gamepad mr-1"></i> PS5
+    </button>
+    <button id="uf-ps4" onclick="filterUnit('PS4',this)" class="tab-btn tab-inactive whitespace-nowrap" style="border-color:rgba(94,32,240,0.3);color:#a78bfa">
+        <i class="fas fa-gamepad mr-1"></i> PS4
+    </button>
+    <button id="uf-ps3" onclick="filterUnit('PS3',this)" class="tab-btn tab-inactive whitespace-nowrap" style="border-color:rgba(192,192,192,0.3);color:#9ca3af">
+        <i class="fas fa-gamepad mr-1"></i> PS3
+    </button>
+</div>
+
 <div id="unit-grid" class="grid grid-cols-1 gap-4 mb-20" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))">
     <p class="text-center text-gray-500 py-10">Mengkoneksikan ke server...</p>
 </div>
@@ -1312,143 +1328,198 @@
     }
 
     // ── Render UI ─────────────────────────────────────────────────────
+    let _unitDropdownOpen = false;
+
+    window.toggleUnitDropdown = function() {
+        _unitDropdownOpen = !_unitDropdownOpen;
+        const hidden = document.getElementById('unit-grid-hidden');
+        const btn    = document.getElementById('unit-dropdown-btn');
+        const icon   = document.getElementById('unit-dropdown-icon');
+        if (!hidden || !btn) return;
+        if (_unitDropdownOpen) {
+            hidden.style.maxHeight = hidden.scrollHeight + 'px';
+            hidden.style.opacity   = '1';
+            icon.style.transform   = 'rotate(180deg)';
+        } else {
+            hidden.style.maxHeight = '0';
+            hidden.style.opacity   = '0';
+            icon.style.transform   = 'rotate(0deg)';
+        }
+    };
+
+    function buildUnitCard(unit) {
+        const isPlaying   = unit.status === 'Digunakan';
+        const isMaint     = unit.status === 'Maintenance';
+        const isDipesan   = unit.status === 'Dipesan';
+
+        // ── Status badge ──
+        let statusBadge = '';
+        if (isPlaying)       statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(63,185,80,0.12);border:1px solid rgba(63,185,80,0.35);color:#3fb950;letter-spacing:.5px">ACTIVE</span>';
+        else if (isDipesan)  statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(251,146,60,0.12);border:1px solid rgba(251,146,60,0.35);color:#fb923c;letter-spacing:.5px">DIPESAN</span>';
+        else if (isMaint)    statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);color:#f59e0b;letter-spacing:.5px">MAINTENANCE</span>';
+        else                 statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.3);color:#00d9ff;letter-spacing:.5px">TERSEDIA</span>';
+
+        // ── Timer besar ──
+        let timerHTML = '<div style="font-size:42px;font-weight:900;color:#1e2938;letter-spacing:2px;line-height:1;font-variant-numeric:tabular-nums">--:--:--</div>';
+        let timerColor = '#e6edf3';
+        if (isPlaying && unit.endTime) {
+            const { text, cls } = formatSisa(unit.endTime);
+            const danger = cls.includes('timer-danger');
+            const warn   = cls.includes('timer-warning');
+            timerColor = danger ? '#ef4444' : (warn ? '#f59e0b' : '#e6edf3');
+            timerHTML = `<div class="timer-live ${cls}" data-end="${unit.endTime}" data-uid="${unit.id}" style="font-size:42px;font-weight:900;color:${timerColor};letter-spacing:2px;line-height:1;font-variant-numeric:tabular-nums">${text}</div>`;
+        } else if (isDipesan && unit.startTime) {
+            const sisaMs = unit.startTime - Date.now();
+            if (sisaMs > 0) {
+                const hh = Math.floor(sisaMs / 3600000);
+                const mm = Math.floor((sisaMs % 3600000) / 60000);
+                const ss = Math.floor((sisaMs % 60000) / 1000);
+                const txt = `${hh}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+                timerHTML = `<div class="timer-countdown" data-start="${unit.startTime}" data-uid="${unit.id}" style="font-size:42px;font-weight:900;color:#fb923c;letter-spacing:2px;line-height:1;font-variant-numeric:tabular-nums">${txt}</div>`;
+            } else {
+                const lewatMnt = Math.round(Math.abs(sisaMs) / 60000);
+                if (lewatMnt < 1) {
+                    timerHTML = `<div class="timer-countdown" data-start="${unit.startTime}" data-uid="${unit.id}" style="font-size:42px;font-weight:900;color:#22c55e;letter-spacing:2px;line-height:1">SEGERA</div>`;
+                } else {
+                    timerHTML = `<div style="font-size:22px;font-weight:900;color:#ff4d4f;letter-spacing:1px;line-height:1">+${lewatMnt}m terlambat</div>
+                                 <div style="font-size:10px;color:#ff4d4f;margin-top:4px">Jadwal: ${new Date(unit.startTime).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
+                }
+            }
+        }
+
+        // ── FnB info ──
+        const unitFnbOrders = (typeof allFnbOrdersForCard !== 'undefined' ? allFnbOrdersForCard : (typeof allFnbOrders !== 'undefined' ? allFnbOrders : []))
+            .filter(o => o.unitId === unit.id && (o.status === 'Diproses' || o.status === 'Selesai'));
+        const fnbTotal = unitFnbOrders.reduce((s, o) => s + (o.total || 0), 0);
+        const fnbCount = unitFnbOrders.reduce((s, o) => s + (o.items ? o.items.length : 0), 0);
+        const fnbHTML  = isPlaying
+            ? `<div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#9ca3af">
+                  <i class="fas fa-utensils" style="font-size:10px;color:#a855f7"></i>
+                  F&B: <span style="color:#e6edf3">Rp ${fnbTotal.toLocaleString('id-ID')}</span>
+                  ${fnbCount > 0 ? '<span style="font-size:10px;color:#a855f7;font-weight:800">('+fnbCount+')</span>' : ''}
+               </div>`
+            : '';
+
+        // ── Card border ──
+        const borderAccent = isDipesan ? 'rgba(251,146,60,0.35)' : (isPlaying ? 'rgba(63,185,80,0.2)' : 'rgba(255,255,255,0.06)');
+
+        // ── Buttons ──
+        let buttonsHTML = '';
+        if (isDipesan) {
+            buttonsHTML = `
+            <div style="display:flex;gap:8px;width:100%">
+                <button disabled style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:800;color:#fb923c;background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.3);cursor:not-allowed">
+                    <i class="fas fa-lock" style="margin-right:5px"></i>MENUNGGU JADWAL
+                </button>
+                <button onclick="cleanUnit('${unit.id}')" title="Hapus / Reset Unit" style="width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);cursor:pointer;flex-shrink:0">
+                    <i class="fas fa-trash-alt" style="color:#ef4444;font-size:14px"></i>
+                </button>
+            </div>`;
+        } else if (!isPlaying) {
+            buttonsHTML = `
+                <button onclick="startSesi('${unit.id}','${unit.type}')" style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:900;color:#000;background:#00d9ff;border:none;cursor:pointer;letter-spacing:.5px">
+                    START SESI
+                </button>
+                <button onclick="toggleMaint('${unit.id}','${unit.status}')" style="width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#1c2128;border:1px solid rgba(255,255,255,0.08);cursor:pointer;flex-shrink:0">
+                    <i class="fas fa-tools" style="font-size:13px;color:${isMaint ? '#00d9ff' : '#f59e0b'}"></i>
+                </button>`;
+        } else {
+            buttonsHTML = `
+                <button onclick="staffFnbCepat('${unit.id}')" style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:800;background:#1c2128;border:1px solid rgba(168,85,247,0.3);color:#a855f7;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
+                    <i class="fas fa-utensils" style="font-size:11px"></i> F&B
+                </button>
+                ${(unit.extendCount || 0) >= (parseInt(localStorage.getItem('pg_extend_limit')) || 2)
+                    ? `<button disabled style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:800;background:#1c2128;border:1px solid rgba(255,255,255,0.05);color:#4b5563;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:5px" title="Maksimal ${parseInt(localStorage.getItem('pg_extend_limit')) || 2}x extend per sesi">
+                           <i class="fas fa-lock" style="font-size:10px"></i> Limit (${unit.extendCount}/${parseInt(localStorage.getItem('pg_extend_limit')) || 2})
+                       </button>`
+                    : `<button onclick="tambahWaktu('${unit.id}',${unit.endTime},${unit.price})" style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:800;background:#1c2128;border:1px solid rgba(255,255,255,0.1);color:#e6edf3;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
+                           <i class="fas fa-plus" style="font-size:10px"></i> Extend (${unit.extendCount || 0}/${parseInt(localStorage.getItem('pg_extend_limit')) || 2})
+                       </button>`
+                }
+                <button onclick="selesaiSesi('${unit.id}')" style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:900;background:#ef4444;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
+                    <i class="fas fa-pause" style="font-size:11px"></i> Stop
+                </button>`;
+        }
+
+        return `<div style="background:#11171f;border:1px solid ${borderAccent};border-radius:20px;padding:20px;position:relative;overflow:hidden">
+            <!-- Header -->
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+                <div>
+                    <div style="font-size:13px;font-weight:800;color:#00d9ff;letter-spacing:.3px">${unit.type||'-'}</div>
+                    <div style="font-size:11px;color:#6b7280;font-weight:700">${unit.id}</div>
+                </div>
+                ${statusBadge}
+            </div>
+            <!-- Timer besar -->
+            <div style="margin:14px 0 10px">${timerHTML}</div>
+            <!-- Info row -->
+            <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+                <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#9ca3af">
+                    <i class="fas fa-user" style="font-size:10px;width:12px"></i>
+                    Customer: <span style="color:#e6edf3">${unit.customerName||'-'}</span>
+                </div>
+                ${isPlaying || isDipesan ? `
+                <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#9ca3af">
+                    <i class="fas fa-money-bill-wave" style="font-size:10px;width:12px"></i>
+                    Sewa: <span style="color:#e6edf3">Rp ${(unit.price||0).toLocaleString('id-ID')}</span>
+                </div>` : ''}
+                ${fnbHTML}
+            </div>
+            <!-- Buttons -->
+            <div style="display:flex;gap:8px">${buttonsHTML}</div>
+        </div>`;
+    }
+
     function renderUI(units) {
         const container = document.getElementById('unit-grid');
         container.innerHTML = '';
 
-        units.forEach((unit) => {
-            const isPlaying   = unit.status === 'Digunakan';
-            const isMaint     = unit.status === 'Maintenance';
-            const isDipesan   = unit.status === 'Dipesan';
-            const statusColor = isPlaying ? 'text-green-400' : (isMaint ? 'text-yellow-500' : (isDipesan ? 'text-orange-400' : 'text-cyan-400'));
-
-            // ── Status badge ──
-            let statusBadge = '';
-            if (isPlaying)  statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(63,185,80,0.12);border:1px solid rgba(63,185,80,0.35);color:#3fb950;letter-spacing:.5px">ACTIVE</span>';
-            else if (isDipesan) statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(251,146,60,0.12);border:1px solid rgba(251,146,60,0.35);color:#fb923c;letter-spacing:.5px">DIPESAN</span>';
-            else if (isMaint) statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);color:#f59e0b;letter-spacing:.5px">MAINTENANCE</span>';
-            else statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.3);color:#00d9ff;letter-spacing:.5px">TERSEDIA</span>';
-
-            // ── Timer besar ──
-            let timerHTML = '<div style="font-size:42px;font-weight:900;color:#1e2938;letter-spacing:2px;line-height:1;font-variant-numeric:tabular-nums">--:--:--</div>';
-            let timerColor = '#e6edf3';
-            if (isPlaying && unit.endTime) {
-                const { text, cls } = formatSisa(unit.endTime);
-                const danger = cls.includes('timer-danger');
-                const warn   = cls.includes('timer-warning');
-                timerColor = danger ? '#ef4444' : (warn ? '#f59e0b' : '#e6edf3');
-                timerHTML = `<div class="timer-live ${cls}" data-end="${unit.endTime}" data-uid="${unit.id}" style="font-size:42px;font-weight:900;color:${timerColor};letter-spacing:2px;line-height:1;font-variant-numeric:tabular-nums">${text}</div>`;
-            } else if (isDipesan && unit.startTime) {
-                const sisaMs = unit.startTime - Date.now();
-                if (sisaMs > 0) {
-                    const hh = Math.floor(sisaMs / 3600000);
-                    const mm = Math.floor((sisaMs % 3600000) / 60000);
-                    const ss = Math.floor((sisaMs % 60000) / 1000);
-                    const txt = `${hh}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
-                    timerHTML = `<div class="timer-countdown" data-start="${unit.startTime}" data-uid="${unit.id}" style="font-size:42px;font-weight:900;color:#fb923c;letter-spacing:2px;line-height:1;font-variant-numeric:tabular-nums">${txt}</div>`;
-                } else {
-                    const lewatMnt = Math.round(Math.abs(sisaMs) / 60000);
-                    if (lewatMnt < 1) {
-                        timerHTML = `<div class="timer-countdown" data-start="${unit.startTime}" data-uid="${unit.id}" style="font-size:42px;font-weight:900;color:#22c55e;letter-spacing:2px;line-height:1">SEGERA</div>`;
-                    } else {
-                        timerHTML = `<div style="font-size:22px;font-weight:900;color:#ff4d4f;letter-spacing:1px;line-height:1">+${lewatMnt}m terlambat</div>
-                                     <div style="font-size:10px;color:#ff4d4f;margin-top:4px">Jadwal: ${new Date(unit.startTime).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
-                    }
-                }
-            }
-
-            // ── FnB info — hitung dari allFnbOrders ──
-            const unitFnbOrders = (typeof allFnbOrdersForCard !== 'undefined' ? allFnbOrdersForCard : (typeof allFnbOrders !== 'undefined' ? allFnbOrders : []))
-                .filter(o => o.unitId === unit.id && (o.status === 'Diproses' || o.status === 'Selesai'));
-            const fnbTotal = unitFnbOrders.reduce((s, o) => s + (o.total || 0), 0);
-            const fnbCount = unitFnbOrders.reduce((s, o) => s + (o.items ? o.items.length : 0), 0);
-            const fnbHTML  = isPlaying
-                ? `<div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#9ca3af">
-                      <i class="fas fa-utensils" style="font-size:10px;color:#a855f7"></i>
-                      F&B: <span style="color:#e6edf3">Rp ${fnbTotal.toLocaleString('id-ID')}</span>
-                      ${fnbCount > 0 ? '<span style="font-size:10px;color:#a855f7;font-weight:800">('+fnbCount+')</span>' : ''}
-                   </div>`
-                : '';
-
-            // ── Card border color ──
-            const borderAccent = isDipesan ? 'rgba(251,146,60,0.35)' : (isPlaying ? 'rgba(63,185,80,0.2)' : 'rgba(255,255,255,0.06)');
-
-            // ── Buttons ──
-            let buttonsHTML = '';
-            if (isDipesan) {
-                buttonsHTML = `
-                <div style="display:flex;gap:8px;width:100%">
-                    <button disabled style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:800;color:#fb923c;background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.3);cursor:not-allowed">
-                        <i class="fas fa-lock" style="margin-right:5px"></i>MENUNGGU JADWAL
-                    </button>
-                    <button onclick="cleanUnit('${unit.id}')" title="Hapus / Reset Unit" style="width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);cursor:pointer;flex-shrink:0">
-                        <i class="fas fa-trash-alt" style="color:#ef4444;font-size:14px"></i>
-                    </button>
-                </div>`;
-            } else if (!isPlaying) {
-                buttonsHTML = `
-                    <button onclick="startSesi('${unit.id}','${unit.type}')" style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:900;color:#000;background:#00d9ff;border:none;cursor:pointer;letter-spacing:.5px">
-                        START SESI
-                    </button>
-                    <button onclick="toggleMaint('${unit.id}','${unit.status}')" style="width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#1c2128;border:1px solid rgba(255,255,255,0.08);cursor:pointer;flex-shrink:0">
-                        <i class="fas fa-tools" style="font-size:13px;color:${isMaint ? '#00d9ff' : '#f59e0b'}"></i>
-                    </button>`;
-            } else {
-                buttonsHTML = `
-                    <button onclick="staffFnbCepat('${unit.id}')" style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:800;background:#1c2128;border:1px solid rgba(168,85,247,0.3);color:#a855f7;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
-                        <i class="fas fa-utensils" style="font-size:11px"></i> F&B
-                    </button>
-                    ${(unit.extendCount || 0) >= (parseInt(localStorage.getItem('pg_extend_limit')) || 2)
-                        ? `<button disabled style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:800;background:#1c2128;border:1px solid rgba(255,255,255,0.05);color:#4b5563;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:5px" title="Maksimal ${parseInt(localStorage.getItem('pg_extend_limit')) || 2}x extend per sesi">
-                               <i class="fas fa-lock" style="font-size:10px"></i> Limit (${unit.extendCount}/${parseInt(localStorage.getItem('pg_extend_limit')) || 2})
-                           </button>`
-                        : `<button onclick="tambahWaktu('${unit.id}',${unit.endTime},${unit.price})" style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:800;background:#1c2128;border:1px solid rgba(255,255,255,0.1);color:#e6edf3;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
-                               <i class="fas fa-plus" style="font-size:10px"></i> Extend (${unit.extendCount || 0}/${parseInt(localStorage.getItem('pg_extend_limit')) || 2})
-                           </button>`
-                    }
-                    <button onclick="selesaiSesi('${unit.id}')" style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:900;background:#ef4444;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
-                        <i class="fas fa-pause" style="font-size:11px"></i> Stop
-                    </button>`;
-            }
-
-            container.innerHTML += `
-                <div style="background:#11171f;border:1px solid ${borderAccent};border-radius:20px;padding:20px;position:relative;overflow:hidden">
-                    <!-- Header -->
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-                        <div>
-                            <div style="font-size:13px;font-weight:800;color:#00d9ff;letter-spacing:.3px">${unit.type||'-'}</div>
-                            <div style="font-size:11px;color:#6b7280;font-weight:700">${unit.id}</div>
-                        </div>
-                        ${statusBadge}
-                    </div>
-
-                    <!-- Timer besar -->
-                    <div style="margin:14px 0 10px">
-                        ${timerHTML}
-                    </div>
-
-                    <!-- Info row -->
-                    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
-                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#9ca3af">
-                            <i class="fas fa-user" style="font-size:10px;width:12px"></i>
-                            Customer: <span style="color:#e6edf3">${unit.customerName||'-'}</span>
-                        </div>
-                        ${isPlaying || isDipesan ? `
-                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#9ca3af">
-                            <i class="fas fa-money-bill-wave" style="font-size:10px;width:12px"></i>
-                            Sewa: <span style="color:#e6edf3">Rp ${(unit.price||0).toLocaleString('id-ID')}</span>
-                        </div>` : ''}
-                        ${fnbHTML}
-                    </div>
-
-                    <!-- Buttons -->
-                    <div style="display:flex;gap:8px">
-                        ${buttonsHTML}
-                    </div>
-                </div>`;
+        // ── Sort: aktif/dipesan naik ke atas, sisanya urut by id ──
+        const sorted = [...units].sort((a, b) => {
+            const pri = u => (u.status === 'Digunakan' ? 0 : u.status === 'Dipesan' ? 1 : 2);
+            const p = pri(a) - pri(b);
+            if (p !== 0) return p;
+            return a.id.localeCompare(b.id);
         });
 
-        // Cek auto-stop
+        const VISIBLE = 2;
+        const visible = sorted.slice(0, VISIBLE);
+        const hidden  = sorted.slice(VISIBLE);
+
+        // ── Render 2 card pertama ──
+        visible.forEach(unit => {
+            container.innerHTML += buildUnitCard(unit);
+        });
+
+        // ── Dropdown untuk sisanya ──
+        if (hidden.length > 0) {
+            // Reset state buka/tutup saat re-render
+            _unitDropdownOpen = false;
+
+            const hiddenCards = hidden.map(u => buildUnitCard(u)).join('');
+            const idleCount   = hidden.filter(u => u.status !== 'Digunakan' && u.status !== 'Dipesan').length;
+            const activeCount = hidden.filter(u => u.status === 'Digunakan' || u.status === 'Dipesan').length;
+
+            let btnLabel = `${hidden.length} unit lainnya`;
+            if (activeCount > 0) btnLabel = `${hidden.length} unit lainnya <span style="font-size:9px;padding:1px 6px;border-radius:99px;background:rgba(63,185,80,0.15);border:1px solid rgba(63,185,80,0.3);color:#3fb950;margin-left:4px">${activeCount} aktif</span>`;
+
+            container.innerHTML += `
+            <!-- Dropdown toggle button -->
+            <button id="unit-dropdown-btn" onclick="toggleUnitDropdown()"
+                style="width:100%;padding:13px 18px;border-radius:16px;background:#11171f;border:1px dashed rgba(255,255,255,0.1);color:#9ca3af;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;transition:.2s;letter-spacing:.04em"
+                onmouseover="this.style.borderColor='rgba(0,217,255,0.3)';this.style.color='#00d9ff'"
+                onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='#9ca3af'">
+                <i class="fas fa-chevron-down" id="unit-dropdown-icon" style="transition:transform .25s"></i>
+                Lihat ${btnLabel}
+            </button>
+
+            <!-- Hidden cards container -->
+            <div id="unit-grid-hidden" style="display:grid;grid-template-columns:inherit;gap:inherit;max-height:0;overflow:hidden;opacity:0;transition:max-height .35s ease,opacity .25s ease">
+                ${hiddenCards}
+            </div>`;
+        }
+
+        // ── Cek auto-stop ──
         units.forEach(unit => {
             if (unit.status === 'Digunakan' && unit.endTime && unit.endTime - Date.now() <= 0 && !autoStopped.has(unit.id)) {
                 autoStopped.add(unit.id);
@@ -1601,12 +1672,51 @@
         setTimeout(() => autoStopped.delete(unit.id), 8000);
     }
 
+    // ── Unit type filter ──────────────────────────────────────────────
+    let activeUnitFilter = 'semua';
+
+    function updateUnitFilterCounts(units) {
+        const counts = { semua: units.length, PS5: 0, PS4: 0, PS3: 0 };
+        units.forEach(u => {
+            const t = (u.type || '').toUpperCase();
+            if (counts[t] !== undefined) counts[t]++;
+        });
+        const labels = {
+            'uf-semua': `<i class="fas fa-th-large mr-1"></i> Semua <span style="font-size:9px;opacity:.7">(${counts.semua})</span>`,
+            'uf-ps5':   `<i class="fas fa-gamepad mr-1"></i> PS5 <span style="font-size:9px;opacity:.7">(${counts.PS5})</span>`,
+            'uf-ps4':   `<i class="fas fa-gamepad mr-1"></i> PS4 <span style="font-size:9px;opacity:.7">(${counts.PS4})</span>`,
+            'uf-ps3':   `<i class="fas fa-gamepad mr-1"></i> PS3 <span style="font-size:9px;opacity:.7">(${counts.PS3})</span>`,
+        };
+        Object.entries(labels).forEach(([id, html]) => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = html;
+        });
+    }
+
+    window.filterUnit = function(type, btn) {
+        activeUnitFilter = type;
+        document.querySelectorAll('#unit-filter-bar .tab-btn').forEach(b => {
+            b.classList.remove('tab-active');
+            b.classList.add('tab-inactive');
+        });
+        btn.classList.remove('tab-inactive');
+        btn.classList.add('tab-active');
+        const filtered = activeUnitFilter === 'semua'
+            ? currentUnits
+            : currentUnits.filter(u => (u.type || '').toUpperCase() === activeUnitFilter);
+        renderUI(filtered);
+    };
+
     // ── Realtime listener ─────────────────────────────────────────────
     onSnapshot(collection(db, 'units'), (snapshot) => {
         currentUnits = [];
         snapshot.forEach(d => currentUnits.push({ id: d.id, ...d.data() }));
         currentUnits.sort((a,b) => a.id.localeCompare(b.id));
-        renderUI(currentUnits);
+        updateUnitFilterCounts(currentUnits);
+        const filtered = activeUnitFilter === 'semua'
+            ? currentUnits
+            : currentUnits.filter(u => (u.type || '').toUpperCase() === activeUnitFilter);
+        renderUI(filtered);
         startTicker();
         cleanStaleBookings(currentUnits);
     });
@@ -2080,6 +2190,8 @@
         document.getElementById('nav-setting').className = 'flex flex-col items-center cursor-pointer ' + (tab === 'setting' ? 'text-cyan-400' : 'text-gray-500');
 
         unitGrid.style.display = tab === 'unit' ? '' : 'none';
+        var unitFilterBar = document.getElementById('unit-filter-bar');
+        if (unitFilterBar) unitFilterBar.style.display = tab === 'unit' ? '' : 'none';
         reqPanel.classList.toggle('show', tab === 'req');
         waitingPanel.classList.toggle('show', tab === 'waiting');
         fnbPanel.classList.toggle('hidden', tab !== 'fnb');
