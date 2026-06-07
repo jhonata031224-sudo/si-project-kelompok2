@@ -251,6 +251,11 @@
     import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
     import { query, where as fsWhere } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
+    // ── Helper swalBg: ikuti light/dark mode ──────────────────────────
+    const swalBg = () => localStorage.getItem('pg_theme') === 'light'
+        ? { background: '#ffffff', color: '#1a202c' }
+        : { background: '#11171f', color: '#fff' };
+
     window.selectConsole  = selectConsole;
     window.setDuration    = setDuration;
     window.goToStep       = goToStep;
@@ -263,7 +268,7 @@
         const input = document.getElementById('input-nowa-booking');
         const nowa  = (input ? input.value.trim() : '');
         if (!nowa || nowa.length < 9 || !/^0[0-9]{8,14}$/.test(nowa)) {
-            Swal.fire({ icon:'error', title:'No. WA tidak valid', text:'Masukkan nomor yang benar, contoh: 08123456789', background:'#11171f', color:'#fff', timer:2000 });
+            Swal.fire({ icon:'error', title:'No. WA tidak valid', text:'Masukkan nomor yang benar, contoh: 08123456789', ...swalBg(), timer:2000 });
             return;
         }
         if (!currentUser) return;
@@ -272,9 +277,9 @@
             profilPelanggan.noWA = nowa;
             document.getElementById('display-nowa').innerText = nowa;
             document.getElementById('nowa-warning').classList.add('hidden');
-            Swal.fire({ icon:'success', title:'Tersimpan!', text:'No. WA berhasil disimpan ke akun kamu.', background:'#11171f', color:'#fff', timer:1800, showConfirmButton:false });
+            Swal.fire({ icon:'success', title:'Tersimpan!', text:'No. WA berhasil disimpan ke akun kamu.', ...swalBg(), timer:1800, showConfirmButton:false });
         } catch(e) {
-            Swal.fire({ icon:'error', title:'Gagal simpan', text:'Coba lagi.', background:'#11171f', color:'#fff', timer:2000 });
+            Swal.fire({ icon:'error', title:'Gagal simpan', text:'Coba lagi.', ...swalBg(), timer:2000 });
         }
     };
 
@@ -540,19 +545,19 @@
 
         // Validasi: pastikan tanggal & jam diisi
         if (!bookDate || !bookTime) {
-            Swal.fire({ icon:'warning', title:'Tanggal/Jam belum diisi', text:'Harap isi tanggal dan jam booking.', background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff' });
+            Swal.fire({ icon:'warning', title:'Tanggal/Jam belum diisi', text:'Harap isi tanggal dan jam booking.', ...swalBg(), confirmButtonColor: localStorage.getItem('pg_theme')==='light' ? '#0284c7' : '#00d9ff' });
             return;
         }
 
         // Validasi booking masa lalu
         const bookDt = new Date(`${bookDate}T${bookTime}`);
         if (bookDt < new Date()) {
-            Swal.fire({ icon:'warning', title:'Waktu sudah lewat', text:'Pilih tanggal/jam yang belum berlalu.', background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff' });
+            Swal.fire({ icon:'warning', title:'Waktu sudah lewat', text:'Pilih tanggal/jam yang belum berlalu.', ...swalBg(), confirmButtonColor: localStorage.getItem('pg_theme')==='light' ? '#0284c7' : '#00d9ff' });
             return;
         }
 
         // ── Cek ketersediaan unit ──
-        Swal.fire({ title:'Mengecek ketersediaan unit...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), background:'#11171f', color:'#fff' });
+        Swal.fire({ title:'Mengecek ketersediaan unit...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), ...swalBg() });
         const available = await checkUnitAvailable(bookingData.console);
         Swal.close();
 
@@ -570,7 +575,7 @@
                     icon: 'error',
                     title: 'Waiting List Penuh!',
                     html: 'Unit <strong>' + bookingData.console + '</strong> penuh & antrian waiting list sudah maksimal (2 orang).' + saranHtml,
-                    background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff',
+                    ...swalBg(), confirmButtonColor: localStorage.getItem('pg_theme')==='light' ? '#0284c7' : '#00d9ff',
                     confirmButtonText: unitLain.length > 0 ? 'Pilih Konsol Lain' : 'Kembali'
                 });
                 goToStep(1);
@@ -594,7 +599,7 @@
                 cancelButtonText: 'Pilih Konsol Lain',
                 confirmButtonColor: '#f59e0b',
                 cancelButtonColor: '#374151',
-                background:'#11171f', color:'#fff'
+                ...swalBg()
             });
 
             if (!mauWaiting) { goToStep(1); return; }
@@ -608,7 +613,7 @@
             const grandTotal2 = bookingData.rate * duration + fnbTotal2;
 
             const { addDoc: addDocFn, collection: colFn } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-            Swal.fire({ title:'Mendaftar antrian...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), background:'#11171f', color:'#fff' });
+            Swal.fire({ title:'Mendaftar antrian...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), ...swalBg() });
             try {
                 await addDoc(collection(db, 'bookings'), {
                     console:       bookingData.console,
@@ -635,10 +640,10 @@
                     html: 'Kamu di posisi <strong style="color:#f59e0b">#' + posisi + '</strong> waiting list unit <strong>' + bookingData.console + '</strong>.<br><span style="color:#9ca3af;font-size:11px">Staff akan mengkonfirmasi saat unit tersedia. Cek riwayat booking untuk update status.</span>',
                     confirmButtonText: 'Lihat Riwayat',
                     confirmButtonColor: '#f59e0b',
-                    background:'#11171f', color:'#fff'
+                    ...swalBg()
                 }).then(r => { if (r.isConfirmed) location.href = "dashboard-customer.html?history=1"; else location.href = '../pelanggan/dashboard-customer.html'; });
             } catch(e) {
-                Swal.fire({ icon:'error', title:'Gagal', text:e.message, background:'#11171f', color:'#fff' });
+                Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalBg() });
             }
             return;
         }

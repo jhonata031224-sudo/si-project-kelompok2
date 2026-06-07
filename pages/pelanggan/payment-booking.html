@@ -266,6 +266,12 @@
   let _currentUser = null;
   onAuthStateChanged(auth, u => { _currentUser = u; });
 
+  // ── Helper swalBg: ikuti light/dark mode ──
+  const swalBg = () => localStorage.getItem('pg_theme') === 'light'
+    ? { background: '#ffffff', color: '#1a202c' }
+    : { background: '#11171f', color: '#fff' };
+  const swalBtn = () => localStorage.getItem('pg_theme') === 'light' ? '#0284c7' : '#00d9ff';
+
   // ── Ganti dengan nomor DANA Prince Games ──
   const DANA_NUMBER = '085769033135';
 
@@ -275,7 +281,7 @@
     Swal.fire({
       icon:'error', title:'Sesi tidak valid',
       text:'Silakan mulai booking ulang.',
-      background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff'
+      ...swalBg(), confirmButtonColor:swalBtn()
     }).then(() => location.href = '../pelanggan/booking.html');
     throw new Error('No pending booking data');
   }
@@ -352,7 +358,7 @@
 
   window.copyDana = function() {
     navigator.clipboard.writeText(DANA_NUMBER).then(() => {
-      Swal.fire({ toast:true, position:'top', icon:'success', title:'Nomor DANA disalin!', showConfirmButton:false, timer:1800, background:'#11171f', color:'#fff' });
+      Swal.fire({ toast:true, position:'top', icon:'success', title:'Nomor DANA disalin!', showConfirmButton:false, timer:1800, ...swalBg() });
     });
   };
 
@@ -370,12 +376,12 @@
       icon:'question', showCancelButton:true,
       confirmButtonText: isEwallet ? 'Ya, sudah transfer' : 'Ya, konfirmasi',
       cancelButtonText: 'Kembali',
-      background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff', cancelButtonColor:'#374151'
+      ...swalBg(), confirmButtonColor:swalBtn(), cancelButtonColor:'#374151'
     });
 
     if (!res.isConfirmed) { btnEl.disabled = false; return; }
 
-    Swal.fire({ title:'Menyimpan booking...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), background:'#11171f', color:'#fff' });
+    Swal.fire({ title:'Menyimpan booking...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), ...swalBg() });
 
     try {
       await addDoc(collection(db, 'bookings'), {
@@ -421,7 +427,7 @@
     } catch (err) {
       console.error(err);
       btnEl.disabled = false;
-      Swal.fire({ icon:'error', title:'Gagal menyimpan', text:err.message, background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff' });
+      Swal.fire({ icon:'error', title:'Gagal menyimpan', text:err.message, ...swalBg(), confirmButtonColor:swalBtn() });
     }
   };
 
