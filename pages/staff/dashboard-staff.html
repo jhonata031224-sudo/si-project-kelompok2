@@ -203,6 +203,26 @@
 
         /* ── REVENUE CARD (new) ── */
         .srev-card { background:#11171f; border:1px solid rgba(255,255,255,0.06); border-radius:16px; padding:18px; margin-bottom:12px; }
+        /* Sidebar KPI card */
+        /* KPI bar horizontal (desktop) */
+        .ukpi-card {
+            display: flex; align-items: center; gap: 12px;
+            background: #11171f;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 14px 18px;
+            transition: border-color .2s, transform .15s;
+        }
+        .ukpi-card:hover { border-color: rgba(0,217,255,0.2); transform: translateY(-1px); }
+        .ukpi-icon { width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0; }
+        .ukpi-body { min-width:0; }
+        .ukpi-label { font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#4b5563;margin-bottom:2px; }
+        .ukpi-val { font-size:20px;font-weight:900;color:#e6edf3;line-height:1.1; }
+        .ukpi-sub { font-size:10px;color:#4b5563;margin-top:1px; }
+        body.light-mode .ukpi-card { background:#fff;border-color:rgba(0,0,0,0.07); }
+        body.light-mode .ukpi-card:hover { border-color:rgba(2,132,199,0.3); }
+        body.light-mode .ukpi-val { color:#0f172a; }
+        body.light-mode .ukpi-label, body.light-mode .ukpi-sub { color:#94a3b8; }
         .srev-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; gap:10px; }
         .srev-title { font-size:12px; font-weight:800; color:#e6edf3; }
         .srev-pills { display:flex; gap:5px; flex-shrink:0; }
@@ -595,6 +615,8 @@
             #staff-desktop-wrap { display: block !important; }
             #staff-main-content { padding: 0 !important; }
             #staff-desktop-topbar { display: none !important; }
+            #unit-kpi-bar { display: none !important; }
+            #unit-tab-layout { display: block !important; }
         }
 
         /* ══════════════════════════════════════════════
@@ -613,12 +635,25 @@
             .staff-bottom-nav-mobile { display: none !important; }
             #staff-fixed-header header { display: none !important; }
             #staff-fixed-header {
-                position: static !important;
-                padding: 0 !important;
-                box-shadow: none !important;
-                background: transparent !important;
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 50 !important;
+                padding: 16px 36px 0 !important;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
+                background: var(--bg, #080c12) !important;
+                margin-left: -36px !important;
+                margin-right: -36px !important;
             }
-            body.light-mode #staff-fixed-header { background: transparent !important; box-shadow: none !important; }
+            body.light-mode #staff-fixed-header {
+                background: #f0f4f8 !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+            }
+            /* Inner tab row ikut centering */
+            #tab-switcher-row {
+                max-width: 1200px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
             #staff-scroll-content {
                 position: static !important;
                 overflow: visible !important;
@@ -626,6 +661,9 @@
                 bottom: auto !important; top: auto !important;
                 left: auto !important; right: auto !important;
                 width: 100%;
+                max-width: 1200px;
+                margin-left: auto;
+                margin-right: auto;
             }
             #stats-panel {
                 position: static !important;
@@ -748,6 +786,9 @@
                 align-items: center; justify-content: space-between;
                 margin-bottom: 24px; padding-bottom: 18px;
                 border-bottom: 1px solid rgba(255,255,255,0.06);
+                max-width: 1200px;
+                margin-left: auto;
+                margin-right: auto;
             }
             body.light-mode #staff-desktop-topbar { border-color: rgba(0,0,0,0.07) !important; }
             #staff-desktop-topbar h1 {
@@ -768,7 +809,6 @@
                 border: none !important;
                 border-radius: 0 !important;
                 padding: 0 0 18px !important;
-                margin: 0 !important;
             }
             #tab-switcher-row .staff-tab {
                 flex: 0 0 auto !important;
@@ -793,11 +833,37 @@
             body.light-mode #tab-switcher-row .staff-tab { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.1) !important; color: #475569 !important; }
             body.light-mode #tab-switcher-row .staff-tab.staff-tab-active { background: #0284c7 !important; color: #fff !important; border-color: #0284c7 !important; }
 
+            /* Sidebar kanan - hapus, gunakan KPI bar horizontal */
+            #unit-sidebar { display: none !important; }
+
+            /* KPI bar horizontal 3 kolom */
+            #unit-kpi-bar {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 12px !important;
+                margin-bottom: 20px !important;
+            }
+
+            /* Unit tab layout full width */
+            #unit-tab-layout { display: block !important; }
+            #unit-main-col { width: 100% !important; }
+
             /* Unit grid: multi-kolom penuh */
             #unit-grid {
                 grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
                 width: 100% !important; max-width: 100% !important;
                 margin-bottom: 40px !important;
+            }
+            /* Dropdown hidden grid juga multi-kolom di desktop */
+            #unit-grid-hidden {
+                display: grid !important;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+                gap: 16px !important;
+                flex-direction: unset !important;
+            }
+            /* Wrapper dropdown button span full width */
+            #unit-dropdown-btn {
+                grid-column: 1 / -1 !important;
             }
             #unit-filter-bar { display: flex; gap: 8px; flex-wrap: wrap; overflow: visible; }
             #unit-grid button[onclick*="startSesi"] { min-height: 44px; }
@@ -1426,6 +1492,37 @@
 </div>
 
 <!-- Filter tipe unit -->
+<div id="unit-tab-layout">
+
+<!-- KPI Bar horizontal (desktop only) -->
+<div id="unit-kpi-bar" style="display:none">
+    <div class="ukpi-card">
+        <div class="ukpi-icon" style="background:rgba(63,185,80,0.12);color:#3fb950"><i class="fas fa-gamepad"></i></div>
+        <div class="ukpi-body">
+            <div class="ukpi-label">Unit Aktif</div>
+            <div class="ukpi-val" id="sb-active">0</div>
+            <div class="ukpi-sub"><span id="sb-avail">0</span> tersedia</div>
+        </div>
+    </div>
+    <div class="ukpi-card">
+        <div class="ukpi-icon" style="background:rgba(0,217,255,0.12);color:#00d9ff"><i class="fas fa-coins"></i></div>
+        <div class="ukpi-body">
+            <div class="ukpi-label">Pendapatan Hari Ini</div>
+            <div class="ukpi-val" style="font-size:15px;color:#00d9ff" id="sb-rev">Rp 0</div>
+            <div class="ukpi-sub" id="sb-trx">0 transaksi</div>
+        </div>
+    </div>
+    <div class="ukpi-card" onclick="switchTab('req')" style="cursor:pointer">
+        <div class="ukpi-icon" style="background:rgba(245,158,11,0.12);color:#f59e0b"><i class="fas fa-inbox"></i></div>
+        <div class="ukpi-body">
+            <div class="ukpi-label">Permintaan</div>
+            <div class="ukpi-val" id="sb-pending">0</div>
+            <div class="ukpi-sub">antrian: <span id="sb-waiting">0</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter bar + grid full width -->
 <div id="unit-filter-bar" class="flex gap-2 mb-4 px-1 overflow-x-auto pb-1">
     <button id="uf-semua"  onclick="filterUnit('semua',this)"  class="tab-btn tab-active whitespace-nowrap">
         <i class="fas fa-th-large mr-1"></i> Semua
@@ -1444,6 +1541,8 @@
 <div id="unit-grid" class="grid grid-cols-1 gap-4 mb-20" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))">
     <p class="text-center text-gray-500 py-10">Mengkoneksikan ke server...</p>
 </div>
+
+</div><!-- /unit-tab-layout -->
 
 <div class="staff-bottom-nav-mobile fixed bottom-0 left-0 right-0 glass-card !rounded-t-3xl !rounded-b-none border-t border-white/10 p-4 flex justify-around items-center z-50">
     <div onclick="switchTab('unit')" id="nav-unit" class="flex flex-col items-center text-cyan-400 cursor-pointer">
@@ -2121,7 +2220,7 @@
         const label  = document.getElementById('unit-dropdown-label');
         if (!hidden || !btn) return;
         if (_unitDropdownOpen) {
-            hidden.style.display   = 'flex';
+            hidden.style.display   = 'grid';
             icon.style.transform   = 'rotate(180deg)';
             if (label) label.textContent = label.textContent.replace('Lihat', 'Sembunyikan');
         } else {
@@ -2306,7 +2405,7 @@
                 container.innerHTML += `
                 <!-- Dropdown toggle button -->
                 <button id="unit-dropdown-btn" onclick="toggleUnitDropdown()"
-                    style="width:100%;padding:13px 18px;border-radius:16px;background:#11171f;border:1px dashed rgba(255,255,255,0.1);color:#9ca3af;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;transition:.2s;letter-spacing:.04em"
+                    style="width:100%;grid-column:1/-1;padding:13px 18px;border-radius:16px;background:#11171f;border:1px dashed rgba(255,255,255,0.1);color:#9ca3af;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;transition:.2s;letter-spacing:.04em"
                     onmouseover="if(document.body.classList.contains('light-mode')){this.style.borderColor='rgba(2,132,199,0.4)';this.style.color='#0284c7'}else{this.style.borderColor='rgba(0,217,255,0.3)';this.style.color='#00d9ff'}"
                     onmouseout="if(document.body.classList.contains('light-mode')){this.style.borderColor='rgba(0,0,0,0.12)';this.style.color='#475569'}else{this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='#9ca3af'}">
                     <i class="fas fa-chevron-down" id="unit-dropdown-icon" style="transition:transform .25s;${isOpen?'transform:rotate(180deg)':''}"></i>
@@ -2314,7 +2413,7 @@
                 </button>
 
                 <!-- Hidden cards container -->
-                <div id="unit-grid-hidden" style="display:${isOpen?'flex':'none'};flex-direction:column;gap:16px">
+                <div id="unit-grid-hidden" style="display:${isOpen?'grid':'none'};grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;grid-column:1/-1">
                     ${idleCards}
                 </div>`;
             } else {
@@ -2775,6 +2874,19 @@
                     <button onclick="hapusNotifSatuan(${i})" class="text-gray-600 hover:text-red-500"><i class="fas fa-times"></i></button>
                 </div>`;
         });
+        // Sync sidebar aktivitas
+        const sbList  = document.getElementById('sb-notif-list');
+        const sbEmpty = document.getElementById('sb-notif-empty');
+        if (sbList) {
+            sbList.innerHTML = '';
+            historyNotif.slice(0, 8).forEach(item => {
+                sbList.innerHTML += `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:8px 10px">
+                    <p style="font-size:10px;font-weight:700;color:#d1d5db;line-height:1.3">${item.pesan}</p>
+                    <span style="font-size:9px;color:#4b5563;font-weight:700">${item.waktu}</span>
+                </div>`;
+            });
+            if (sbEmpty) sbEmpty.style.display = historyNotif.length ? 'none' : 'block';
+        }
     }
     window.toggleNotif      = () => document.getElementById('notif-panel').classList.toggle('hidden');
     window.hapusSemuaNotif  = () => { historyNotif = []; updateNotifList(); };
@@ -3861,6 +3973,8 @@
         } else {
             document.getElementById('req-notif-dot').classList.remove('show');
         }
+        // sync sidebar
+        const sbP = document.getElementById('sb-pending'); if (sbP) sbP.textContent = totalPending;
     }
 
     // ── Suara peringatan waktu hampir habis ───────────────────────────
@@ -4630,6 +4744,8 @@
         const wdEl = document.getElementById('strip-wait-dot');
         if (swEl) swEl.textContent = allWaitingItems.length;
         if (wdEl) wdEl.classList.toggle('hidden', allWaitingItems.length === 0);
+        // sync sidebar
+        const sbW = document.getElementById('sb-waiting'); if (sbW) sbW.textContent = allWaitingItems.length;
         var items = allWaitingItems.filter(function(w) {
             if (activeWaitFilter === 'semua') return true;
             if (activeWaitFilter === 'booking') return w._col === 'bookings';
@@ -4915,6 +5031,9 @@
         if (sv) sv.textContent = avail;
         const availSub = document.getElementById('skpi-avail-sub');
         if (availSub) availSub.textContent = avail + ' tersedia';
+        // sync sidebar
+        const sbA = document.getElementById('sb-active'); if (sbA) sbA.textContent = active.length;
+        const sbAv = document.getElementById('sb-avail'); if (sbAv) sbAv.textContent = avail;
 
         // Hapus semua timer lama
         Object.values(skpiTimers).forEach(clearInterval);
@@ -5058,6 +5177,9 @@
         const todayDocs = _allPendapatan.filter(d => d.tanggal === today);
         if (revEl) revEl.textContent = fmtRp(todayDocs.reduce((s,d)=>s+(d.price||0),0));
         if (trxEl) trxEl.textContent = todayDocs.length + ' transaksi hari ini';
+        // sync sidebar
+        const sbRev = document.getElementById('sb-rev'); if (sbRev) sbRev.textContent = revEl ? revEl.textContent : 'Rp 0';
+        const sbTrx = document.getElementById('sb-trx'); if (sbTrx) sbTrx.textContent = todayDocs.length + ' transaksi';
 
         // Riwayat list
         const listEl = document.getElementById('srev-list');
