@@ -980,6 +980,72 @@
         </button>
     </div>
 
+    <!-- ══ PENGATURAN TAMPILAN UNIT ══ -->
+    <div class="glass-card p-5 mb-4">
+        <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">🎮 Pengaturan Tampilan Unit</h3>
+
+        <!-- Jumlah unit aktif yang langsung tampil -->
+        <div class="bg-white/[0.03] rounded-2xl p-4 mb-3">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <p class="text-sm font-black">📌 Unit Aktif Langsung Tampil</p>
+                    <p class="text-[10px] text-gray-500 mt-0.5">Unit berstatus <strong style="color:#3fb950">Digunakan</strong> atau <strong style="color:#fb923c">Dipesan</strong> selalu tampil semua tanpa dropdown.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 mt-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] text-gray-500 font-bold">Status</span>
+                    <span style="font-size:10px;padding:2px 10px;border-radius:99px;background:rgba(63,185,80,0.12);border:1px solid rgba(63,185,80,0.3);color:#3fb950;font-weight:800">AKTIF SELALU MUNCUL</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jumlah unit idle di luar dropdown (langsung tampil) -->
+        <div class="bg-white/[0.03] rounded-2xl p-4 mb-3">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <p class="text-sm font-black">👁️ Unit Tersedia Langsung Tampil</p>
+                    <p class="text-[10px] text-gray-500 mt-0.5">Berapa unit Tersedia/Maintenance yang langsung muncul di atas <em>sebelum</em> tombol dropdown.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <input id="input-visible-idle" type="number" min="0" max="20" value="0"
+                    class="w-20 text-center text-2xl font-black rounded-xl px-3 py-2 border border-white/10"
+                    style="background:#1a2030;color:white;font-family:inherit"
+                    oninput="previewVisibleIdle(this.value)">
+                <div>
+                    <p class="text-sm font-bold text-white">unit</p>
+                    <p id="visible-idle-preview" class="text-[10px] text-cyan-400 mt-0.5">= 0 unit tersedia langsung tampil</p>
+                </div>
+            </div>
+            <div class="mt-3 rounded-xl p-3 text-[10px] text-gray-400" style="background:rgba(0,217,255,0.04);border:1px solid rgba(0,217,255,0.1)">
+                <span style="color:#00d9ff">ℹ️</span> Set ke <strong style="color:#00d9ff">0</strong> = semua Tersedia masuk dropdown. Set ke <strong style="color:#00d9ff">99</strong> = semua langsung tampil tanpa dropdown.
+            </div>
+        </div>
+
+        <!-- Mode tampilan default dropdown -->
+        <div class="bg-white/[0.03] rounded-2xl p-4 mb-3">
+            <p class="text-sm font-black mb-1">🔽 Dropdown Default</p>
+            <p class="text-[10px] text-gray-500 mt-0.5 mb-3">Saat halaman dibuka, dropdown unit tersedia dalam kondisi...</p>
+            <div class="flex gap-2">
+                <button id="dd-default-tutup" onclick="setDropdownDefault('tutup')"
+                    class="flex-1 py-3 rounded-xl font-black text-[11px] uppercase"
+                    style="background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.3);color:#00d9ff">
+                    Tertutup
+                </button>
+                <button id="dd-default-buka" onclick="setDropdownDefault('buka')"
+                    class="flex-1 py-3 rounded-xl font-black text-[11px] uppercase"
+                    style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:#4b5563">
+                    Terbuka
+                </button>
+            </div>
+        </div>
+
+        <button onclick="simpanTampilanUnit()" class="w-full py-3 rounded-xl font-black text-[11px] uppercase" style="background:#10b981;color:#000">
+            <i class="fas fa-save mr-2"></i>Simpan Pengaturan Tampilan
+        </button>
+    </div>
+
     <!-- ══ HAPUS OTOMATIS RIWAYAT ══ -->
     <div class="glass-card p-5 mb-4">
         <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">🗑️ Hapus Otomatis Riwayat</h3>
@@ -2814,6 +2880,63 @@
         return (saved && saved >= 1) ? saved : 2;
     }
     window.getExtendLimit = getExtendLimit;
+
+    // ── PENGATURAN TAMPILAN UNIT ─────────────────────────────────────
+    window.previewVisibleIdle = function(val) {
+        const n = parseInt(val);
+        const el = document.getElementById('visible-idle-preview');
+        if (!el) return;
+        if (isNaN(n) || n < 0) { el.textContent = 'Masukkan angka valid'; el.style.color = '#ef4444'; return; }
+        if (n === 0)  el.textContent = '= semua Tersedia masuk dropdown';
+        else if (n >= 99) el.textContent = '= semua Tersedia langsung tampil (tanpa dropdown)';
+        else          el.textContent = `= ${n} unit Tersedia/Maintenance langsung tampil`;
+        el.style.color = '#00d9ff';
+    };
+
+    window.setDropdownDefault = function(mode) {
+        const btnTutup = document.getElementById('dd-default-tutup');
+        const btnBuka  = document.getElementById('dd-default-buka');
+        if (mode === 'buka') {
+            btnBuka.style.background  = 'rgba(0,217,255,0.1)';
+            btnBuka.style.borderColor = 'rgba(0,217,255,0.3)';
+            btnBuka.style.color       = '#00d9ff';
+            btnTutup.style.background = 'rgba(255,255,255,0.03)';
+            btnTutup.style.borderColor= 'rgba(255,255,255,0.08)';
+            btnTutup.style.color      = '#4b5563';
+        } else {
+            btnTutup.style.background  = 'rgba(0,217,255,0.1)';
+            btnTutup.style.borderColor = 'rgba(0,217,255,0.3)';
+            btnTutup.style.color       = '#00d9ff';
+            btnBuka.style.background   = 'rgba(255,255,255,0.03)';
+            btnBuka.style.borderColor  = 'rgba(255,255,255,0.08)';
+            btnBuka.style.color        = '#4b5563';
+        }
+        localStorage.setItem('pg_dropdown_default', mode);
+    };
+
+    window.simpanTampilanUnit = function() {
+        const val = parseInt(document.getElementById('input-visible-idle').value);
+        if (isNaN(val) || val < 0) {
+            Swal.fire({ toast:true, position:'top', icon:'error', title:'Masukkan angka valid (min 0)', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+            return;
+        }
+        localStorage.setItem('pg_visible_idle', val);
+        Swal.fire({ toast:true, position:'top', icon:'success', title:'Pengaturan tampilan disimpan!', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+        // Re-render langsung dengan setting baru
+        const filtered = activeUnitFilter === 'semua'
+            ? currentUnits
+            : currentUnits.filter(u => (u.type || '').toUpperCase() === activeUnitFilter);
+        renderUI(filtered);
+    };
+
+    // Init setting tampilan unit dari localStorage
+    (function initTampilanUnit() {
+        const savedIdle = parseInt(localStorage.getItem('pg_visible_idle') ?? '0') || 0;
+        const savedDD   = localStorage.getItem('pg_dropdown_default') || 'tutup';
+        const elIdle = document.getElementById('input-visible-idle');
+        if (elIdle) { elIdle.value = savedIdle; previewVisibleIdle(savedIdle); }
+        setDropdownDefault(savedDD);
+    })();
 
     // ── HAPUS SEMUA SEKARANG ──────────────────────────────────────────
     window.hapusSemuaRiwayat = async function() {
