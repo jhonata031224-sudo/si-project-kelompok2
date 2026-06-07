@@ -138,7 +138,7 @@
             .two-col{grid-template-columns:1fr}
             .kpi-grid{grid-template-columns:repeat(3,1fr)}
             .topbar{padding:12px 16px}
-            .main{padding:20px 16px 100px}
+            .main{padding:16px 14px 100px}
             .page-header h1{font-size:22px}
             .revenue-amount{font-size:24px}
             .revenue-header{flex-direction:column;align-items:flex-start}
@@ -147,28 +147,29 @@
             .nav-btn{padding:7px 10px}
             #revenue-shift-grid{grid-template-columns:1fr !important}
 
+            /* Hilangkan background gelap yang terlihat di antara card */
+            .owner-main-content { background: var(--bg); }
+            .main { background: var(--bg); }
+
             /* Grid 2 kolom chart jadi 1 kolom */
             .chart-two-col { grid-template-columns: 1fr !important; }
 
-            /* Tabel scroll horizontal — wrapper wajib ada */
+            /* Tabel scroll horizontal */
             .income-table { font-size:10px; }
             .income-table th, .income-table td { padding:7px 8px; white-space:nowrap; }
 
-            /* Shift summary grid 1 kolom saat semua ditampilkan */
-            #shift-summary-grid > div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
-
-            /* KPI card lebih compact */
+            /* KPI card compact */
             .kpi-card { padding:12px 10px; }
             .kpi-value { font-size:18px; }
             .kpi-sub { font-size:10px; }
             .kpi-label { font-size:9px; }
 
-            /* Filter pills scroll horizontal tanpa wrap */
+            /* Filter pills scroll horizontal */
             .filter-pills { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; scrollbar-width:none; }
             .filter-pills::-webkit-scrollbar { display:none; }
             .pill { flex-shrink:0; }
 
-            /* Revenue header responsive */
+            /* Revenue header */
             .revenue-header > div:last-child { flex-direction:column; align-items:flex-start; width:100%; }
             .revenue-header .filter-pills { width:100%; }
 
@@ -176,13 +177,20 @@
             .section-card { padding:14px 14px; }
             .chart-section { padding:14px 14px; }
 
-            /* Chart date row wrap di mobile */
+            /* Chart date row */
             .chart-date-row { flex-wrap:wrap; gap:6px; }
             .chart-date-input { width:calc(50% - 16px); min-width:0; }
             .chart-date-sep { display:none; }
 
-            /* Booking/Rental aktif header wrap */
-            #owner-aktif-list > div { flex-wrap:wrap; gap:8px; }
+            /* Collapsible header untuk section mobile */
+            .mobile-collapse-header {
+                display:flex; align-items:center; justify-content:space-between;
+                cursor:pointer; user-select:none;
+            }
+            .mobile-collapse-header .chevron { transition: transform .2s; }
+            .mobile-collapse-header.collapsed .chevron { transform: rotate(-90deg); }
+            .mobile-collapse-body { overflow:hidden; transition: max-height .3s ease; }
+            .mobile-collapse-body.collapsed { max-height:0 !important; }
         }
 
         /* ═══════════════════════════════════════════════════════════════
@@ -524,34 +532,48 @@
 
     <div class="chart-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
         <div class="chart-section" style="margin-bottom:0">
-            <div class="chart-title" style="font-size:12px;margin-bottom:3px"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:6px;font-size:11px"></i>Booking vs Rental</div>
-            <div class="chart-subtitle">Jumlah transaksi per tipe</div>
-            <div class="chart-date-row" style="margin-bottom:10px">
-                <input type="date" id="owner-chart-bvr-date-from" class="chart-date-input" oninput="applyOwnerChartDateFilter('bvr')" title="Dari tanggal">
-                <span class="chart-date-sep">—</span>
-                <input type="date" id="owner-chart-bvr-date-to" class="chart-date-input" oninput="applyOwnerChartDateFilter('bvr')" title="Sampai tanggal">
-                <button class="chart-date-clear" onclick="clearOwnerChartDateFilter('bvr')" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+            <div class="mobile-collapse-header" onclick="toggleMobileSection(this,'bvr-body')">
+                <div>
+                    <div class="chart-title" style="font-size:12px;margin-bottom:3px"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:6px;font-size:11px"></i>Booking vs Rental</div>
+                    <div class="chart-subtitle">Jumlah transaksi per tipe</div>
+                </div>
+                <i class="fas fa-chevron-down chevron" style="font-size:11px;color:#7d8590"></i>
             </div>
-            <div class="chart-wrap" style="height:170px"><canvas id="chart-bvr"></canvas></div>
-            <div class="chart-legend">
-                <div class="chart-leg"><div class="chart-leg-dot" style="background:#00d9ff"></div>Booking</div>
-                <div class="chart-leg"><div class="chart-leg-dot" style="background:#a855f7"></div>Rental</div>
+            <div id="bvr-body" class="mobile-collapse-body" style="max-height:400px">
+                <div class="chart-date-row" style="margin-bottom:10px;margin-top:8px">
+                    <input type="date" id="owner-chart-bvr-date-from" class="chart-date-input" oninput="applyOwnerChartDateFilter('bvr')" title="Dari tanggal">
+                    <span class="chart-date-sep">—</span>
+                    <input type="date" id="owner-chart-bvr-date-to" class="chart-date-input" oninput="applyOwnerChartDateFilter('bvr')" title="Sampai tanggal">
+                    <button class="chart-date-clear" onclick="clearOwnerChartDateFilter('bvr')" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="chart-wrap" style="height:170px"><canvas id="chart-bvr"></canvas></div>
+                <div class="chart-legend">
+                    <div class="chart-leg"><div class="chart-leg-dot" style="background:#00d9ff"></div>Booking</div>
+                    <div class="chart-leg"><div class="chart-leg-dot" style="background:#a855f7"></div>Rental</div>
+                </div>
             </div>
         </div>
         <div class="chart-section" style="margin-bottom:0">
-            <div class="chart-title" style="font-size:12px;margin-bottom:3px"><i class="fas fa-chart-line" style="color:#3fb950;margin-right:6px;font-size:11px"></i>Pendapatan per Tipe PS</div>
-            <div class="chart-subtitle">Kontribusi PS3 / PS4 / PS5</div>
-            <div class="chart-date-row" style="margin-bottom:10px">
-                <input type="date" id="owner-chart-ps-date-from" class="chart-date-input" oninput="applyOwnerChartDateFilter('ps')" title="Dari tanggal">
-                <span class="chart-date-sep">—</span>
-                <input type="date" id="owner-chart-ps-date-to" class="chart-date-input" oninput="applyOwnerChartDateFilter('ps')" title="Sampai tanggal">
-                <button class="chart-date-clear" onclick="clearOwnerChartDateFilter('ps')" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+            <div class="mobile-collapse-header" onclick="toggleMobileSection(this,'ps-body')">
+                <div>
+                    <div class="chart-title" style="font-size:12px;margin-bottom:3px"><i class="fas fa-chart-line" style="color:#3fb950;margin-right:6px;font-size:11px"></i>Pendapatan per Tipe PS</div>
+                    <div class="chart-subtitle">Kontribusi PS3 / PS4 / PS5</div>
+                </div>
+                <i class="fas fa-chevron-down chevron" style="font-size:11px;color:#7d8590"></i>
             </div>
-            <div class="chart-wrap" style="height:170px"><canvas id="chart-ps"></canvas></div>
-            <div class="chart-legend">
-                <div class="chart-leg"><div class="chart-leg-dot" style="background:#3fb950"></div>PS3</div>
-                <div class="chart-leg"><div class="chart-leg-dot" style="background:#00d9ff"></div>PS4</div>
-                <div class="chart-leg"><div class="chart-leg-dot" style="background:#e3b341"></div>PS5</div>
+            <div id="ps-body" class="mobile-collapse-body" style="max-height:400px">
+                <div class="chart-date-row" style="margin-bottom:10px;margin-top:8px">
+                    <input type="date" id="owner-chart-ps-date-from" class="chart-date-input" oninput="applyOwnerChartDateFilter('ps')" title="Dari tanggal">
+                    <span class="chart-date-sep">—</span>
+                    <input type="date" id="owner-chart-ps-date-to" class="chart-date-input" oninput="applyOwnerChartDateFilter('ps')" title="Sampai tanggal">
+                    <button class="chart-date-clear" onclick="clearOwnerChartDateFilter('ps')" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="chart-wrap" style="height:170px"><canvas id="chart-ps"></canvas></div>
+                <div class="chart-legend">
+                    <div class="chart-leg"><div class="chart-leg-dot" style="background:#3fb950"></div>PS3</div>
+                    <div class="chart-leg"><div class="chart-leg-dot" style="background:#00d9ff"></div>PS4</div>
+                    <div class="chart-leg"><div class="chart-leg-dot" style="background:#e3b341"></div>PS5</div>
+                </div>
             </div>
         </div>
     </div>
@@ -647,12 +669,22 @@
     <!-- Active & Completed -->
     <div class="two-col">
         <div class="section-card">
-            <div class="section-title">Sesi Aktif Sekarang</div>
-            <div id="active-list"><p class="empty-state">Tidak ada sesi aktif.</p></div>
+            <div class="mobile-collapse-header" onclick="toggleMobileSection(this,'sesi-aktif-body')">
+                <div class="section-title" style="margin-bottom:0">Sesi Aktif Sekarang</div>
+                <i class="fas fa-chevron-down chevron" style="font-size:11px;color:#7d8590"></i>
+            </div>
+            <div id="sesi-aktif-body" class="mobile-collapse-body" style="max-height:1000px;margin-top:10px">
+                <div id="active-list"><p class="empty-state">Tidak ada sesi aktif.</p></div>
+            </div>
         </div>
         <div class="section-card">
-            <div class="section-title">Sesi Selesai Hari Ini</div>
-            <div id="completed-list"><p class="empty-state">Belum ada sesi selesai hari ini.</p></div>
+            <div class="mobile-collapse-header" onclick="toggleMobileSection(this,'sesi-selesai-body')">
+                <div class="section-title" style="margin-bottom:0">Sesi Selesai Hari Ini</div>
+                <i class="fas fa-chevron-down chevron" style="font-size:11px;color:#7d8590"></i>
+            </div>
+            <div id="sesi-selesai-body" class="mobile-collapse-body" style="max-height:1000px;margin-top:10px">
+                <div id="completed-list"><p class="empty-state">Belum ada sesi selesai hari ini.</p></div>
+            </div>
         </div>
     </div>
 
@@ -675,14 +707,14 @@
         <div id="owner-aktif-list"></div>
     </div>
 
-    <!-- Riwayat Pembatalan -->
     <div class="section-card" style="margin-bottom:12px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
             <div class="section-title" style="margin-bottom:0">
                 <i class="fas fa-ban" style="color:#ef4444;margin-right:8px;font-size:13px"></i>Riwayat Pembatalan
             </div>
             <span id="cancel-count-badge" style="font-size:10px;font-weight:800;padding:3px 10px;border-radius:8px;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">0 pembatalan</span>
         </div>
+        <div id="cancel-select-toolbar" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap"></div>
         <div id="owner-cancel-list"><p class="empty-state">Belum ada pembatalan.</p></div>
     </div>
 
@@ -1645,86 +1677,170 @@
     };
 
     // ════════════════════════════════════════════════════════════════
-    // RIWAYAT PEMBATALAN — realtime dari collection cancellations
     // ════════════════════════════════════════════════════════════════
-    onSnapshot(
-        query(collection(db, 'cancellations'), orderBy('cancelledAt', 'desc')),
-        function(snap) {
-            var items = snap.docs.map(function(d) { return Object.assign({ _id: d.id }, d.data()); });
-            var badge = document.getElementById('cancel-count-badge');
-            if (badge) badge.textContent = items.length + ' pembatalan';
+    // RIWAYAT PEMBATALAN — accordion + multi-select delete
+    // ════════════════════════════════════════════════════════════════
+    var allCancelItems = [];
+    var cancelSelected = new Set();
 
-            var container = document.getElementById('owner-cancel-list');
-            if (!container) return;
+    function renderCancelList(items) {
+        var container = document.getElementById('owner-cancel-list');
+        if (!container) return;
 
-            if (!items.length) {
-                container.innerHTML = '<p class="empty-state">Belum ada pembatalan.</p>';
-                return;
-            }
+        if (!items.length) {
+            container.innerHTML = '<p class="empty-state">Belum ada pembatalan.</p>';
+            updateCancelToolbar();
+            return;
+        }
 
-            container.innerHTML = items.slice(0, 20).map(function(c) {
-                var waktu = c.cancelledAt
-                    ? new Date(c.cancelledAt).toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
-                    : '-';
-                var isBooking = c.type === 'booking';
-                var unitInfo = isBooking
-                    ? (c.assignedUnit ? 'Unit ' + c.assignedUnit : '-')
-                    : (c.assignedRentalUnit ? 'Unit ' + c.assignedRentalUnit : '-');
-                var byLabel = c.cancelledBy === 'owner'
-                    ? '<span style="color:#f59e0b;font-weight:800">Owner</span>'
-                    : '<span style="color:#60a5fa;font-weight:800">Staff</span>';
-                var total = c.total ? 'Rp ' + Number(c.total).toLocaleString('id-ID') : '-';
-                return '<div style="padding:12px 14px;border-radius:10px;border:1px solid rgba(239,68,68,0.15);background:rgba(239,68,68,0.04);margin-bottom:8px">' +
-                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">' +
-                        '<div style="display:flex;align-items:center;gap:8px">' +
-                            '<div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;background:rgba(239,68,68,0.12)">' +
-                                '<i class="fas ' + (isBooking ? 'fa-gamepad' : 'fa-box-open') + '" style="color:#ef4444;font-size:11px"></i>' +
-                            '</div>' +
-                            '<div>' +
-                                '<div style="font-size:12px;font-weight:800">' + (c.customerName||'-') + '</div>' +
-                                '<div style="font-size:10px;color:#6b7280">' + waktu + '</div>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
-                            '<div style="font-size:9px;margin-bottom:2px">Oleh: ' + byLabel + '</div>' +
-                            '<span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.25)">' + (isBooking ? 'Booking' : 'Rental') + '</span>' +
-                            '<button onclick="ownerHapusBatalan(\'' + c._id + '\')" style="font-size:9px;font-weight:800;padding:4px 10px;border-radius:7px;border:1px solid rgba(239,68,68,0.35);background:rgba(239,68,68,0.1);color:#ef4444;cursor:pointer;margin-top:2px">' +
-                                '<i class="fas fa-trash" style="margin-right:3px"></i>Hapus' +
-                            '</button>' +
-                        '</div>' +
+        container.innerHTML = items.map(function(c, idx) {
+            var waktu = c.cancelledAt
+                ? new Date(c.cancelledAt).toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+                : '-';
+            var isBooking = c.type === 'booking';
+            var unitInfo = isBooking
+                ? (c.assignedUnit ? 'Unit ' + c.assignedUnit : '-')
+                : (c.assignedRentalUnit ? 'Unit ' + c.assignedRentalUnit : '-');
+            var byLabel = c.cancelledBy === 'owner'
+                ? '<span style="color:#f59e0b;font-weight:800">Owner</span>'
+                : '<span style="color:#60a5fa;font-weight:800">Staff</span>';
+            var total = c.total ? 'Rp ' + Number(c.total).toLocaleString('id-ID') : '-';
+            var isOpen = idx === 0; // hanya card pertama terbuka
+            var isChecked = cancelSelected.has(c._id);
+
+            return '<div id="ccard-' + c._id + '" style="border-radius:10px;border:1px solid ' + (isChecked ? 'rgba(239,68,68,0.5)' : 'rgba(239,68,68,0.15)') + ';background:' + (isChecked ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.04)') + ';margin-bottom:8px;transition:all .15s">' +
+
+                // ── Row header (selalu tampil, bisa klik untuk toggle detail) ──
+                '<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer" onclick="toggleCancelCard(\'' + c._id + '\')">' +
+
+                    // Checkbox select
+                    '<div onclick="event.stopPropagation();toggleCancelSelect(\'' + c._id + '\')" style="width:20px;height:20px;border-radius:6px;border:1.5px solid ' + (isChecked ? '#ef4444' : 'rgba(255,255,255,0.15)') + ';background:' + (isChecked ? '#ef4444' : 'transparent') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s">' +
+                        (isChecked ? '<i class="fas fa-check" style="color:#fff;font-size:9px"></i>' : '') +
                     '</div>' +
+
+                    // Icon
+                    '<div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;background:rgba(239,68,68,0.12);flex-shrink:0">' +
+                        '<i class="fas ' + (isBooking ? 'fa-gamepad' : 'fa-box-open') + '" style="color:#ef4444;font-size:11px"></i>' +
+                    '</div>' +
+
+                    // Nama & waktu
+                    '<div style="flex:1;min-width:0">' +
+                        '<div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (c.customerName||'-') + '</div>' +
+                        '<div style="font-size:10px;color:#6b7280">' + waktu + '</div>' +
+                    '</div>' +
+
+                    // Badge tipe + chevron
+                    '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">' +
+                        '<span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.25)">' + (isBooking ? 'Booking' : 'Rental') + '</span>' +
+                        '<i id="chevron-' + c._id + '" class="fas fa-chevron-' + (isOpen ? 'up' : 'down') + '" style="font-size:10px;color:#6b7280;transition:transform .2s"></i>' +
+                    '</div>' +
+                '</div>' +
+
+                // ── Detail (accordion body) ──
+                '<div id="cdetail-' + c._id + '" style="display:' + (isOpen ? 'block' : 'none') + ';padding:0 14px 12px">' +
                     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:10px;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04)">' +
                         '<div style="color:#6b7280">Konsol</div><div style="font-weight:700;text-align:right">' + (c.console||'-') + ' · ' + (c.duration||'?') + ' Jam</div>' +
                         '<div style="color:#6b7280">Unit</div><div style="font-weight:700;text-align:right;color:#00d9ff">' + unitInfo + '</div>' +
                         '<div style="color:#6b7280">Total</div><div style="font-weight:700;text-align:right;color:#facc15">' + total + '</div>' +
+                        '<div style="color:#6b7280">Oleh</div><div style="font-weight:700;text-align:right">' + byLabel + '</div>' +
                         '<div style="color:#6b7280">Alasan</div><div style="font-weight:700;text-align:right;color:#f87171">' + (c.cancellationReason||'-') + '</div>' +
                     '</div>' +
-                '</div>';
-            }).join('');
+                '</div>' +
+            '</div>';
+        }).join('');
+
+        updateCancelToolbar();
+    }
+
+    // Toggle buka/tutup detail card
+    window.toggleCancelCard = function(id) {
+        var detail = document.getElementById('cdetail-' + id);
+        var chevron = document.getElementById('chevron-' + id);
+        if (!detail) return;
+        var isOpen = detail.style.display !== 'none';
+        detail.style.display = isOpen ? 'none' : 'block';
+        if (chevron) chevron.className = 'fas fa-chevron-' + (isOpen ? 'down' : 'up') + ' ' + chevron.className.split(' ').slice(1).join(' ');
+        if (chevron) chevron.style.cssText = 'font-size:10px;color:#6b7280;transition:transform .2s';
+        if (chevron) chevron.className = 'fas fa-chevron-' + (isOpen ? 'down' : 'up');
+        if (chevron) chevron.style = 'font-size:10px;color:#6b7280';
+    };
+
+    // Toggle select card
+    window.toggleCancelSelect = function(id) {
+        if (cancelSelected.has(id)) {
+            cancelSelected.delete(id);
+        } else {
+            cancelSelected.add(id);
+        }
+        renderCancelList(allCancelItems);
+    };
+
+    // Select all / deselect all
+    window.toggleSelectAllCancel = function() {
+        if (cancelSelected.size === allCancelItems.length) {
+            cancelSelected.clear();
+        } else {
+            allCancelItems.forEach(function(c) { cancelSelected.add(c._id); });
+        }
+        renderCancelList(allCancelItems);
+    };
+
+    // Update toolbar hapus terpilih
+    function updateCancelToolbar() {
+        var toolbar = document.getElementById('cancel-select-toolbar');
+        if (!toolbar) return;
+        var n = cancelSelected.size;
+        var total = allCancelItems.length;
+        toolbar.style.display = 'flex';
+        toolbar.innerHTML =
+            '<button onclick="toggleSelectAllCancel()" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:7px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:#9ca3af;cursor:pointer;font-family:inherit">' +
+                (n === total && total > 0 ? '<i class="fas fa-times-circle" style="margin-right:4px"></i>Batal Semua' : '<i class="fas fa-check-double" style="margin-right:4px"></i>Pilih Semua') +
+            '</button>' +
+            (n > 0
+                ? '<button onclick="ownerHapusTerpilih()" style="font-size:10px;font-weight:800;padding:5px 12px;border-radius:7px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.1);color:#ef4444;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px">' +
+                    '<i class="fas fa-trash-alt"></i> Hapus ' + n + ' Terpilih' +
+                  '</button>'
+                : '<span style="font-size:10px;color:#4b5563">Centang card untuk memilih</span>'
+            );
+    }
+
+    onSnapshot(
+        query(collection(db, 'cancellations'), orderBy('cancelledAt', 'desc')),
+        function(snap) {
+            allCancelItems = snap.docs.map(function(d) { return Object.assign({ _id: d.id }, d.data()); });
+            // Bersihkan selected yang sudah tidak ada
+            cancelSelected.forEach(function(id) {
+                if (!allCancelItems.find(function(c) { return c._id === id; })) cancelSelected.delete(id);
+            });
+            var badge = document.getElementById('cancel-count-badge');
+            if (badge) badge.textContent = allCancelItems.length + ' pembatalan';
+            renderCancelList(allCancelItems);
         }
     );
 
-    // ── Owner hapus riwayat pembatalan ─────────────────────────────────
-    window.ownerHapusBatalan = async function(cancelId) {
+    // Hapus item terpilih
+    window.ownerHapusTerpilih = async function() {
+        var ids = Array.from(cancelSelected);
+        if (!ids.length) return;
         var res = await Swal.fire({
-            title: '<span style="color:#ef4444"><i class="fas fa-trash" style="margin-right:8px"></i>Hapus Riwayat?</span>',
-            text: 'Riwayat pembatalan ini akan dihapus permanen.',
+            title: '<span style="color:#ef4444"><i class="fas fa-trash" style="margin-right:8px"></i>Hapus ' + ids.length + ' Riwayat?</span>',
+            text: 'Data yang dipilih akan dihapus permanen.',
             showCancelButton: true,
-            confirmButtonText: '<i class="fas fa-trash mr-1"></i> Ya, Hapus',
+            confirmButtonText: 'Ya, Hapus',
             cancelButtonText: 'Batal',
             confirmButtonColor: '#ef4444',
             cancelButtonColor: '#374151',
             background: '#11171f', color: '#fff'
         });
         if (!res.isConfirmed) return;
-
         try {
-            await deleteDoc(doc(db, 'cancellations', cancelId));
-            Swal.fire({
-                toast: true, position: 'top', icon: 'success',
-                title: 'Riwayat pembatalan berhasil dihapus',
-                showConfirmButton: false, timer: 2500, background: '#11171f', color: '#fff'
-            });
+            Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#11171f', color: '#fff' });
+            const { writeBatch } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+            var batch = writeBatch(db);
+            ids.forEach(function(id) { batch.delete(doc(db, 'cancellations', id)); });
+            await batch.commit();
+            cancelSelected.clear();
+            Swal.fire({ toast: true, position: 'top', icon: 'success', title: ids.length + ' riwayat dihapus', showConfirmButton: false, timer: 2000, background: '#11171f', color: '#fff' });
         } catch(e) {
             Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, background: '#11171f', color: '#fff' });
         }
@@ -1743,6 +1859,30 @@
                 if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
             });
         }
+    })();
+
+    // ── MOBILE COLLAPSIBLE SECTIONS ───────────────────────────────────
+    window.toggleMobileSection = function(header, bodyId) {
+        if (window.innerWidth > 640) return; // desktop: tidak collapse
+        var body = document.getElementById(bodyId);
+        if (!body) return;
+        var isCollapsed = body.classList.contains('collapsed');
+        body.classList.toggle('collapsed', !isCollapsed);
+        header.classList.toggle('collapsed', !isCollapsed);
+    };
+
+    // Init: collapse chart BvR dan PS di mobile saat load
+    (function initMobileCollapse() {
+        if (window.innerWidth > 640) return;
+        ['bvr-body','ps-body','sesi-aktif-body','sesi-selesai-body'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('collapsed');
+            // Flip chevron header
+            var header = el && el.previousElementSibling;
+            if (header && header.classList.contains('mobile-collapse-header')) {
+                header.classList.add('collapsed');
+            }
+        });
     })();
 
     window.toggleTheme = function() {
