@@ -52,6 +52,26 @@
         .chart-leg-dot{width:8px;height:8px;border-radius:50%}
         body.light-mode .chart-section{background:#fff;border-color:rgba(0,0,0,0.07)}
 
+        /* ── Chart Date Filter ── */
+        .chart-date-row{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+        .chart-date-input{
+            background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+            border-radius:8px;color:#e6edf3;font-size:10px;font-weight:700;font-family:inherit;
+            padding:5px 8px;width:110px;flex-shrink:0;outline:none;transition:border-color .2s;
+        }
+        .chart-date-input:focus{border-color:rgba(0,217,255,0.4)}
+        .chart-date-input::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
+        body.light-mode .chart-date-input{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.1);color:#1e293b}
+        body.light-mode .chart-date-input::-webkit-calendar-picker-indicator{filter:none}
+        .chart-date-sep{font-size:10px;color:#4b5563;font-weight:700;flex-shrink:0}
+        .chart-date-clear{
+            background:transparent;border:1px solid rgba(255,255,255,0.07);color:#6b7280;
+            border-radius:8px;padding:5px 8px;font-size:10px;font-weight:800;
+            cursor:pointer;font-family:inherit;flex-shrink:0;transition:.2s;
+        }
+        .chart-date-clear:hover{border-color:rgba(255,255,255,0.15);color:#9ca3af}
+        body.light-mode .chart-date-clear{border-color:rgba(0,0,0,0.1);color:#6b7280}
+
         /* ── KPI ── */
         .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
         .kpi-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:16px 18px}
@@ -471,6 +491,12 @@
                 <button class="chart-pill" onclick="switchChartPeriod('bulan',this)">Bulanan</button>
             </div>
         </div>
+        <div class="chart-date-row" style="margin-bottom:10px">
+            <input type="date" id="owner-chart-revenue-date-from" class="chart-date-input" oninput="applyOwnerChartDateFilter('revenue')" title="Dari tanggal">
+            <span class="chart-date-sep">—</span>
+            <input type="date" id="owner-chart-revenue-date-to" class="chart-date-input" oninput="applyOwnerChartDateFilter('revenue')" title="Sampai tanggal">
+            <button class="chart-date-clear" onclick="clearOwnerChartDateFilter('revenue')" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+        </div>
         <div class="chart-wrap"><canvas id="chart-revenue"></canvas></div>
     </div>
 
@@ -478,6 +504,12 @@
         <div class="chart-section" style="margin-bottom:0">
             <div class="chart-title" style="font-size:12px;margin-bottom:3px"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:6px;font-size:11px"></i>Booking vs Rental</div>
             <div class="chart-subtitle">Jumlah transaksi per tipe</div>
+            <div class="chart-date-row" style="margin-bottom:10px">
+                <input type="date" id="owner-chart-bvr-date-from" class="chart-date-input" oninput="applyOwnerChartDateFilter('bvr')" title="Dari tanggal">
+                <span class="chart-date-sep">—</span>
+                <input type="date" id="owner-chart-bvr-date-to" class="chart-date-input" oninput="applyOwnerChartDateFilter('bvr')" title="Sampai tanggal">
+                <button class="chart-date-clear" onclick="clearOwnerChartDateFilter('bvr')" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+            </div>
             <div class="chart-wrap" style="height:170px"><canvas id="chart-bvr"></canvas></div>
             <div class="chart-legend">
                 <div class="chart-leg"><div class="chart-leg-dot" style="background:#00d9ff"></div>Booking</div>
@@ -487,6 +519,12 @@
         <div class="chart-section" style="margin-bottom:0">
             <div class="chart-title" style="font-size:12px;margin-bottom:3px"><i class="fas fa-chart-line" style="color:#3fb950;margin-right:6px;font-size:11px"></i>Pendapatan per Tipe PS</div>
             <div class="chart-subtitle">Kontribusi PS3 / PS4 / PS5</div>
+            <div class="chart-date-row" style="margin-bottom:10px">
+                <input type="date" id="owner-chart-ps-date-from" class="chart-date-input" oninput="applyOwnerChartDateFilter('ps')" title="Dari tanggal">
+                <span class="chart-date-sep">—</span>
+                <input type="date" id="owner-chart-ps-date-to" class="chart-date-input" oninput="applyOwnerChartDateFilter('ps')" title="Sampai tanggal">
+                <button class="chart-date-clear" onclick="clearOwnerChartDateFilter('ps')" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+            </div>
             <div class="chart-wrap" style="height:170px"><canvas id="chart-ps"></canvas></div>
             <div class="chart-legend">
                 <div class="chart-leg"><div class="chart-leg-dot" style="background:#3fb950"></div>PS3</div>
@@ -551,25 +589,15 @@
                 </div>
                 <div style="font-size:10px;color:var(--muted)" id="shift-rev-filter-label">Mengikuti filter periode aktif</div>
             </div>
+            <div style="display:flex;gap:6px">
+                <button class="chart-pill" onclick="switchShiftView('semua',this)" style="font-size:10px;padding:4px 10px">Semua</button>
+                <button class="chart-pill active" id="shift-pill-1" onclick="switchShiftView('shift1',this)" style="font-size:10px;padding:4px 10px;background:rgba(255,193,7,0.12);border-color:rgba(255,193,7,0.4);color:#fbbf24">☀️ Shift 1</button>
+                <button class="chart-pill" id="shift-pill-2" onclick="switchShiftView('shift2',this)" style="font-size:10px;padding:4px 10px">🌙 Shift 2</button>
+            </div>
         </div>
 
-        <!-- Shift Summary Cards -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px" id="shift-summary-grid">
-            <div style="background:rgba(255,193,7,0.05);border:1px solid rgba(255,193,7,0.2);border-radius:10px;padding:14px">
-                <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#fbbf24;margin-bottom:8px;display:flex;align-items:center;gap:6px">
-                    <span>☀️</span> Shift 1 (Pagi/Siang)
-                </div>
-                <div style="font-size:20px;font-weight:800;color:#ffd54f" id="shift1-total">Rp 0</div>
-                <div style="font-size:11px;color:var(--muted);margin-top:4px" id="shift1-trx">0 transaksi</div>
-            </div>
-            <div style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:14px">
-                <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#818cf8;margin-bottom:8px;display:flex;align-items:center;gap:6px">
-                    <span>🌙</span> Shift 2 (Sore/Malam)
-                </div>
-                <div style="font-size:20px;font-weight:800;color:#a5b4fc" id="shift2-total">Rp 0</div>
-                <div style="font-size:11px;color:var(--muted);margin-top:4px" id="shift2-trx">0 transaksi</div>
-            </div>
-        </div>
+        <!-- Shift Summary Card (single, dinamis) -->
+        <div id="shift-summary-grid" style="margin-bottom:16px"></div>
 
         <!-- Tabel per Staff -->
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
@@ -716,6 +744,28 @@
     }
 
     // ── Render Pendapatan Per Shift & Staff ───────────────────────────
+    let currentShiftView = 'shift1'; // 'shift1' | 'shift2' | 'semua'
+
+    window.switchShiftView = (view, btn) => {
+        currentShiftView = view;
+        // reset warna semua pill ke default dulu
+        document.querySelectorAll('#shift-revenue-card .chart-pill').forEach(p => {
+            p.classList.remove('active');
+            p.style.background = ''; p.style.borderColor = ''; p.style.color = '';
+        });
+        btn.classList.add('active');
+        if (view === 'shift1') {
+            btn.style.background = 'rgba(255,193,7,0.12)';
+            btn.style.borderColor = 'rgba(255,193,7,0.4)';
+            btn.style.color = '#fbbf24';
+        } else if (view === 'shift2') {
+            btn.style.background = 'rgba(99,102,241,0.12)';
+            btn.style.borderColor = 'rgba(99,102,241,0.4)';
+            btn.style.color = '#818cf8';
+        }
+        renderShiftRevenue(allPendapatan);
+    };
+
     function renderShiftRevenue(data) {
         const filtered = filterData(data);
 
@@ -724,7 +774,6 @@
         const lbl = document.getElementById('shift-rev-filter-label');
         if (lbl) lbl.textContent = 'Periode: ' + (labelMap[currentFilter] || currentFilter);
 
-        // Pisah shift1 vs shift2 berdasarkan shiftNama
         const s1 = filtered.filter(d => {
             const n = (d.shiftNama || '').toLowerCase();
             return n.includes('1') || n.includes('pagi') || n.includes('siang') || n.includes('morning');
@@ -733,20 +782,60 @@
             const n = (d.shiftNama || '').toLowerCase();
             return n.includes('2') || n.includes('sore') || n.includes('malam') || n.includes('night') || n.includes('evening');
         });
-        // Yang tidak punya shiftNama / tidak teridentifikasi — masuk shift1 sebagai fallback
-        const s1final = s1.length || s2.length ? s1 : filtered; // jika data lama tanpa shift, tampilkan di s1
 
         const s1Total = s1.reduce((a, d) => a + (d.price || 0), 0);
         const s2Total = s2.reduce((a, d) => a + (d.price || 0), 0);
 
-        document.getElementById('shift1-total').textContent = fmt(s1Total);
-        document.getElementById('shift1-trx').textContent   = s1.length + ' transaksi';
-        document.getElementById('shift2-total').textContent = fmt(s2Total);
-        document.getElementById('shift2-trx').textContent   = s2.length + ' transaksi';
+        // Render summary card sesuai view
+        const grid = document.getElementById('shift-summary-grid');
+        if (grid) {
+            if (currentShiftView === 'shift1') {
+                grid.innerHTML = `
+                <div style="background:rgba(255,193,7,0.05);border:1px solid rgba(255,193,7,0.2);border-radius:10px;padding:14px">
+                    <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#fbbf24;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                        <span>☀️</span> Shift 1 (Pagi/Siang)
+                    </div>
+                    <div style="font-size:20px;font-weight:800;color:#ffd54f">${fmt(s1Total)}</div>
+                    <div style="font-size:11px;color:var(--muted);margin-top:4px">${s1.length} transaksi</div>
+                </div>`;
+            } else if (currentShiftView === 'shift2') {
+                grid.innerHTML = `
+                <div style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:14px">
+                    <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#818cf8;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                        <span>🌙</span> Shift 2 (Sore/Malam)
+                    </div>
+                    <div style="font-size:20px;font-weight:800;color:#a5b4fc">${fmt(s2Total)}</div>
+                    <div style="font-size:11px;color:var(--muted);margin-top:4px">${s2.length} transaksi</div>
+                </div>`;
+            } else {
+                grid.innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <div style="background:rgba(255,193,7,0.05);border:1px solid rgba(255,193,7,0.2);border-radius:10px;padding:14px">
+                        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#fbbf24;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                            <span>☀️</span> Shift 1 (Pagi/Siang)
+                        </div>
+                        <div style="font-size:20px;font-weight:800;color:#ffd54f">${fmt(s1Total)}</div>
+                        <div style="font-size:11px;color:var(--muted);margin-top:4px">${s1.length} transaksi</div>
+                    </div>
+                    <div style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:14px">
+                        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#818cf8;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                            <span>🌙</span> Shift 2 (Sore/Malam)
+                        </div>
+                        <div style="font-size:20px;font-weight:800;color:#a5b4fc">${fmt(s2Total)}</div>
+                        <div style="font-size:11px;color:var(--muted);margin-top:4px">${s2.length} transaksi</div>
+                    </div>
+                </div>`;
+            }
+        }
+
+        // Filter tabel berdasarkan shift view
+        let tableData = filtered;
+        if (currentShiftView === 'shift1') tableData = s1;
+        else if (currentShiftView === 'shift2') tableData = s2;
 
         // Kelompokkan per staff + shift
         const staffMap = {};
-        filtered.forEach(d => {
+        tableData.forEach(d => {
             const key = (d.staffName || 'Tidak Diketahui') + '||' + (d.shiftNama || 'Shift -');
             if (!staffMap[key]) staffMap[key] = { staffName: d.staffName || 'Tidak Diketahui', shiftNama: d.shiftNama || '-', shiftJam: d.shiftJam || '-', total: 0, count: 0 };
             staffMap[key].total += (d.price || 0);
@@ -830,6 +919,13 @@
     let chartPeriod = '7d';
     let allBookingsData = [], allRentalsData = [];
 
+    // ── Date filter state per chart ─────────────────────────────────────
+    const ownerChartDateState = {
+        revenue: { dateFrom: null, dateTo: null },
+        bvr:     { dateFrom: null, dateTo: null },
+        ps:      { dateFrom: null, dateTo: null },
+    };
+
     const chartDefaults = {
         responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: {
@@ -879,9 +975,37 @@
     }
 
     function buildRevenueChart(data) {
+        const ds = ownerChartDateState.revenue;
+        let filteredData = data;
+        let labels, subtitleText;
+
+        if (ds.dateFrom || ds.dateTo) {
+            // Mode custom date range — tampilkan per hari dalam rentang
+            const from = ds.dateFrom || '2000-01-01';
+            const to   = ds.dateTo   || '2099-12-31';
+            filteredData = data.filter(d => (d.tanggal||'') >= from && (d.tanggal||'') <= to);
+            // Buat label hari unik dalam rentang
+            const days = [];
+            const d = new Date(from);
+            const end = new Date(to);
+            while (d <= end) { days.push(d.toISOString().slice(0,10)); d.setDate(d.getDate()+1); }
+            labels = days;
+            const fmtTgl = s => { const [,m,dd]=s.split('-'); return `${dd}/${m}`; };
+            const totals = labels.map(lbl => filteredData.filter(d=>d.tanggal===lbl).reduce((s,d)=>s+(d.price||0),0));
+            const subtitleEl = document.getElementById('chart-rev-subtitle');
+            if (subtitleEl) subtitleEl.textContent = `Pendapatan ${from} — ${to}`;
+            const ctx = document.getElementById('chart-revenue').getContext('2d');
+            if (chartRevenue) chartRevenue.destroy();
+            chartRevenue = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels.map(fmtTgl), datasets: [lineDataset('Pendapatan', totals, '#00d9ff')] },
+                options: { ...chartDefaults }
+            });
+            return;
+        }
+
         const n = chartPeriod === '7d' ? 7 : chartPeriod === '30d' ? 30 : 12;
-        const labels = chartPeriod === 'bulan' ? getMonthLabels(n) : getDateLabels(n);
-        const key = chartPeriod === 'bulan' ? 'bulan' : 'tanggal';
+        labels = chartPeriod === 'bulan' ? getMonthLabels(n) : getDateLabels(n);
 
         const totals = labels.map(lbl => {
             return data.filter(d => (chartPeriod === 'bulan' ? d.bulan : d.tanggal) === lbl)
@@ -902,11 +1026,33 @@
     }
 
     function buildBvRChart(pendapatan) {
-        const n = chartPeriod === 'bulan' ? 12 : chartPeriod === '30d' ? 30 : 7;
-        const labels = chartPeriod === 'bulan' ? getMonthLabels(n) : getDateLabels(n);
-        const keyField = chartPeriod === 'bulan' ? 'bulan' : 'tanggal';
+        const ds = ownerChartDateState.bvr;
+        let labels, keyField;
 
-        // Booking = unitId tidak diawali R-, Rental = unitId diawali R-
+        if (ds.dateFrom || ds.dateTo) {
+            const from = ds.dateFrom || '2000-01-01';
+            const to   = ds.dateTo   || '2099-12-31';
+            const days = [];
+            const d = new Date(from); const end = new Date(to);
+            while (d <= end) { days.push(d.toISOString().slice(0,10)); d.setDate(d.getDate()+1); }
+            labels = days; keyField = 'tanggal';
+            const fmtTgl = s => { const [,m,dd]=s.split('-'); return `${dd}/${m}`; };
+            const bkTotals  = labels.map(lbl => pendapatan.filter(d=>(d[keyField]||'')===lbl && !(d.unitId||'').startsWith('R-')).length);
+            const rntTotals = labels.map(lbl => pendapatan.filter(d=>(d[keyField]||'')===lbl &&  (d.unitId||'').startsWith('R-')).length);
+            const ctx = document.getElementById('chart-bvr').getContext('2d');
+            if (chartBvR) chartBvR.destroy();
+            chartBvR = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels.map(fmtTgl), datasets: [lineDataset('Booking', bkTotals, '#00d9ff'), lineDataset('Rental', rntTotals, '#a855f7')] },
+                options: { ...chartDefaults, plugins: { ...chartDefaults.plugins, tooltip: { ...chartDefaults.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } } }
+            });
+            return;
+        }
+
+        const n = chartPeriod === 'bulan' ? 12 : chartPeriod === '30d' ? 30 : 7;
+        labels = chartPeriod === 'bulan' ? getMonthLabels(n) : getDateLabels(n);
+        keyField = chartPeriod === 'bulan' ? 'bulan' : 'tanggal';
+
         const bkTotals  = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && !(d.unitId||'').startsWith('R-')).length);
         const rntTotals = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && (d.unitId||'').startsWith('R-')).length);
 
@@ -926,6 +1072,28 @@
     }
 
     function buildPSChart(pendapatan) {
+        const ds = ownerChartDateState.ps;
+
+        if (ds.dateFrom || ds.dateTo) {
+            const from = ds.dateFrom || '2000-01-01';
+            const to   = ds.dateTo   || '2099-12-31';
+            const days = [];
+            const d = new Date(from); const end = new Date(to);
+            while (d <= end) { days.push(d.toISOString().slice(0,10)); d.setDate(d.getDate()+1); }
+            const fmtTgl = s => { const [,m,dd]=s.split('-'); return `${dd}/${m}`; };
+            const ps3 = days.map(lbl => pendapatan.filter(d=>d.tanggal===lbl && (d.unitType||d.unitId||'').includes('PS3')).reduce((s,d)=>s+(d.price||0),0));
+            const ps4 = days.map(lbl => pendapatan.filter(d=>d.tanggal===lbl && (d.unitType||d.unitId||'').includes('PS4')).reduce((s,d)=>s+(d.price||0),0));
+            const ps5 = days.map(lbl => pendapatan.filter(d=>d.tanggal===lbl && (d.unitType||d.unitId||'').includes('PS5')).reduce((s,d)=>s+(d.price||0),0));
+            const ctx = document.getElementById('chart-ps').getContext('2d');
+            if (chartPS) chartPS.destroy();
+            chartPS = new Chart(ctx, {
+                type: 'line',
+                data: { labels: days.map(fmtTgl), datasets: [lineDataset('PS3', ps3, '#3fb950'), lineDataset('PS4', ps4, '#00d9ff'), lineDataset('PS5', ps5, '#e3b341')] },
+                options: { ...chartDefaults }
+            });
+            return;
+        }
+
         const n = chartPeriod === 'bulan' ? 12 : chartPeriod === '30d' ? 30 : 7;
         const labels = chartPeriod === 'bulan' ? getMonthLabels(n) : getDateLabels(n);
         const keyField = chartPeriod === 'bulan' ? 'bulan' : 'tanggal';
@@ -961,6 +1129,27 @@
         document.querySelectorAll('.chart-pill').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
         buildAllCharts(allPendapatan);
+    };
+
+    window.applyOwnerChartDateFilter = (chartKey) => {
+        const ds = ownerChartDateState[chartKey];
+        ds.dateFrom = document.getElementById(`owner-chart-${chartKey}-date-from`)?.value || null;
+        ds.dateTo   = document.getElementById(`owner-chart-${chartKey}-date-to`)?.value   || null;
+        if (chartKey === 'revenue') buildRevenueChart(allPendapatan);
+        else if (chartKey === 'bvr') buildBvRChart(allPendapatan);
+        else if (chartKey === 'ps')  buildPSChart(allPendapatan);
+    };
+
+    window.clearOwnerChartDateFilter = (chartKey) => {
+        const ds = ownerChartDateState[chartKey];
+        ds.dateFrom = null; ds.dateTo = null;
+        const fromEl = document.getElementById(`owner-chart-${chartKey}-date-from`);
+        const toEl   = document.getElementById(`owner-chart-${chartKey}-date-to`);
+        if (fromEl) fromEl.value = '';
+        if (toEl)   toEl.value   = '';
+        if (chartKey === 'revenue') buildRevenueChart(allPendapatan);
+        else if (chartKey === 'bvr') buildBvRChart(allPendapatan);
+        else if (chartKey === 'ps')  buildPSChart(allPendapatan);
     };
 
     // ── Listen pendapatan realtime ─────────────────────────────────────

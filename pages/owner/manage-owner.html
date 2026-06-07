@@ -283,8 +283,11 @@
         .sheet-overlay {
             display: none; position: fixed; inset: 0; z-index: 200;
             background: rgba(0,0,0,.6);
+            backdrop-filter: blur(2px);
         }
         .sheet-overlay.open { display: block; }
+
+        /* ── Mobile: bottom sheet ── */
         .sheet {
             position: fixed; bottom: 0; left: 0; right: 0; z-index: 201;
             background: var(--card);
@@ -295,17 +298,54 @@
             transition: transform .3s cubic-bezier(.4,0,.2,1);
         }
         .sheet-overlay.open + .sheet, .sheet.open { transform: translateY(0); }
+        @media (min-width: 768px) {
+            .sheet-overlay.open + .sheet { transform: translate(-50%, -50%) scale(1); }
+        }
         .sheet-handle {
             width: 36px; height: 4px; background: var(--muted2);
             border-radius: 2px; margin: 12px auto 20px;
         }
+
+        /* ── Desktop: centered modal ── */
+        @media (min-width: 768px) {
+            .sheet {
+                position: fixed;
+                top: 50%; left: 50%;
+                transform: translate(-50%, -50%) scale(0.96);
+                bottom: auto; right: auto;
+                width: 480px;
+                border-radius: 20px;
+                border: 1px solid var(--border);
+                padding: 0 0 28px 0;
+                box-shadow: 0 32px 80px rgba(0,0,0,.55);
+                opacity: 0;
+                visibility: hidden;
+                transition: transform .25s cubic-bezier(.4,0,.2,1), opacity .25s ease, visibility .25s;
+            }
+            .sheet.open {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+                visibility: visible;
+            }
+            .sheet-handle { display: none; }
+        }
+
         .sheet-title {
             font-size: 14px; font-weight: 800; padding: 0 20px 16px;
             border-bottom: 1px solid var(--border);
             display: flex; align-items: center; gap: 8px;
         }
+        @media (min-width: 768px) {
+            .sheet-title { padding: 20px 20px 16px; }
+        }
         .sheet-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
         .sheet-actions { display: flex; gap: 8px; padding: 0 20px; margin-top: 4px; }
+        @media (min-width: 768px) {
+            .sheet-body { padding: 20px 28px; gap: 16px; }
+            .sheet-actions { padding: 0 28px; margin-top: 8px; }
+            .sheet-title { padding: 24px 28px 18px !important; font-size: 15px; }
+            .btn-sheet-cancel, .btn-sheet-save { height: 48px; font-size: 13px; border-radius: 14px; }
+        }
         .btn-sheet-cancel {
             flex: 1; height: 44px; border-radius: 12px;
             background: var(--card2); border: 1px solid var(--border);
