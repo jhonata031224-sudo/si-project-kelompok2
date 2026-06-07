@@ -69,6 +69,12 @@
         .toast.warning{border-color:rgba(255,180,0,.3)}.toast.warning .toast-icon{color:#ffb400}
         .toast-icon{font-size:16px;flex-shrink:0}
 
+
+        @media (min-width: 768px) {
+            body { display: flex; flex-direction: column; align-items: center; }
+            .topbar { width: 100%; max-width: 100%; }
+            .hero, .card, .perks, .version-bar { max-width: 480px; width: 100%; }
+        }
         /* ===== DARK/LIGHT THEME TOGGLE ===== */
         body.light-mode{
             --bg:#f0f4f8;--card:#ffffff;--border:rgba(0,0,0,0.08);--text:#1a2332;--muted:#7a8a9a;

@@ -75,6 +75,12 @@
 
         .version-bar{text-align:center;padding:0 0 24px;font-size:10px;color:#2a3545;letter-spacing:1px}
 
+
+        @media (min-width: 768px) {
+            body { display: flex; flex-direction: column; align-items: center; }
+            .topbar { width: 100%; max-width: 100%; }
+            .hero, .card, .perks, .version-bar { max-width: 480px; width: 100%; }
+        }
         /* ===== DARK/LIGHT THEME TOGGLE ===== */
         body.light-mode{
             --bg:#f0f4f8;--card:#ffffff;--border:rgba(0,0,0,0.08);--text:#1a2332;--muted:#7a8a9a;
