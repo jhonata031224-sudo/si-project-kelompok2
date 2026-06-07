@@ -281,6 +281,23 @@
 
         
         @media (max-width: 767px) {
+            /* Wrapper: susun vertikal di mobile */
+            .export-total-wrap {
+                flex-direction: column !important;
+            }
+            /* Box tombol: full width, tombol sejajar */
+            .export-btn-box {
+                flex-direction: row !important;
+                flex-shrink: unset !important;
+                width: 100% !important;
+                padding: 16px !important;
+                gap: 10px !important;
+            }
+            .export-btn-box .btn-action {
+                flex: 1 !important;
+                width: 0 !important;
+                min-width: 0 !important;
+            }
             /* Prevent horizontal overflow on mobile */
             .owner-main-content > *,
             .owner-main-content .glass-card,
@@ -328,7 +345,7 @@
 <div class="owner-main-content">
 
     <div class="mb-6">
-        <h1 class="text-2xl font-medium uppercase tracking-tight text-cyan-400">Ekspor Laporan</h1>
+        <h1 class="text-2xl font-black uppercase tracking-tight text-cyan-400" style="letter-spacing:-.5px">Ekspor Laporan</h1>
         <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Data real-time dari Firebase</p>
     </div>
 
@@ -374,7 +391,7 @@
     </div>
 
     <!-- Total Gabungan + Tombol Export -->
-    <div style="display:flex;gap:12px;margin-bottom:24px;align-items:stretch;flex-wrap:wrap;">
+    <div class="export-total-wrap" style="display:flex;gap:12px;margin-bottom:24px;align-items:stretch;flex-wrap:wrap;">
         <!-- Box Total -->
         <div class="glass-card p-5 border-t-4 border-t-cyan-400 text-center" style="flex:1;min-width:180px;">
             <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2">Total Pendapatan</p>
@@ -386,7 +403,7 @@
             </div>
         </div>
         <!-- Box Tombol -->
-        <div class="glass-card" style="flex-shrink:0;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:20px 24px;">
+        <div class="glass-card export-btn-box" style="flex-shrink:0;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:20px 24px;">
             <button onclick="unduhPDF()" class="btn-action bg-pdf">
                 <i class="fas fa-file-pdf"></i> Ekspor PDF
             </button>

@@ -105,6 +105,16 @@
 
         /* ── Tabel Riwayat Pendapatan ── */
         .table-scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;width:100%}
+
+        /* ── Custom Scrollbar ── */
+        .table-scroll-wrap::-webkit-scrollbar { height: 4px; }
+        .table-scroll-wrap::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 99px; }
+        .table-scroll-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 99px; }
+        .table-scroll-wrap::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.20); }
+
+        body.light-mode .table-scroll-wrap::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+        body.light-mode .table-scroll-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
+        body.light-mode .table-scroll-wrap::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
         .income-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px;min-width:520px}
         .income-table th{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border2)}
         .income-table td{padding:9px 10px;border-bottom:1px solid var(--border2);vertical-align:middle}
@@ -979,18 +989,28 @@
         ps:      { dateFrom: null, dateTo: null },
     };
 
-    const chartDefaults = {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: {
-            backgroundColor: '#1c2128', titleColor: '#e6edf3', bodyColor: '#7d8590',
-            borderColor: 'rgba(255,255,255,0.08)', borderWidth: 1, padding: 10,
-            callbacks: { label: ctx => ' Rp ' + (ctx.raw||0).toLocaleString('id-ID') }
-        }},
-        scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#7d8590', font: { size: 9, family: 'Space Grotesk' }, maxRotation: 45 } },
-            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#7d8590', font: { size: 9, family: 'Space Grotesk' }, callback: v => 'Rp ' + (v>=1000000 ? (v/1000000).toFixed(1)+'jt' : v>=1000 ? (v/1000).toFixed(0)+'k' : v) }, beginAtZero: true }
-        }
-    };
+    function getChartDefaults() {
+        const isLight = document.body.classList.contains('light-mode');
+        const gridColor   = isLight ? 'rgba(0,0,0,0.07)'   : 'rgba(255,255,255,0.04)';
+        const tickColor   = isLight ? '#94a3b8'             : '#7d8590';
+        const tooltipBg   = isLight ? '#ffffff'             : '#1c2128';
+        const tooltipTitle= isLight ? '#0f172a'             : '#e6edf3';
+        const tooltipBody = isLight ? '#64748b'             : '#7d8590';
+        const tooltipBorder=isLight ? 'rgba(0,0,0,0.1)'    : 'rgba(255,255,255,0.08)';
+        return {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: {
+                backgroundColor: tooltipBg, titleColor: tooltipTitle, bodyColor: tooltipBody,
+                borderColor: tooltipBorder, borderWidth: 1, padding: 10,
+                callbacks: { label: ctx => ' Rp ' + (ctx.raw||0).toLocaleString('id-ID') }
+            }},
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 9, family: 'Space Grotesk' }, maxRotation: 45 } },
+                y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 9, family: 'Space Grotesk' }, callback: v => 'Rp ' + (v>=1000000 ? (v/1000000).toFixed(1)+'jt' : v>=1000 ? (v/1000).toFixed(0)+'k' : v) }, beginAtZero: true }
+            }
+        };
+    }
+    const chartDefaults = getChartDefaults();
 
     const lineDataset = (label, data, color) => ({
         label, data,
@@ -1052,7 +1072,7 @@
             chartRevenue = new Chart(ctx, {
                 type: 'line',
                 data: { labels: labels.map(fmtTgl), datasets: [lineDataset('Pendapatan', totals, '#00d9ff')] },
-                options: { ...chartDefaults }
+                options: { ...getChartDefaults() }
             });
             return;
         }
@@ -1074,7 +1094,7 @@
         chartRevenue = new Chart(ctx, {
             type: 'line',
             data: { labels: labels.map(labelShort), datasets: [lineDataset('Pendapatan', totals, '#00d9ff')] },
-            options: { ...chartDefaults }
+            options: { ...getChartDefaults() }
         });
     }
 
@@ -1097,7 +1117,7 @@
             chartBvR = new Chart(ctx, {
                 type: 'line',
                 data: { labels: labels.map(fmtTgl), datasets: [lineDataset('Booking', bkTotals, '#00d9ff'), lineDataset('Rental', rntTotals, '#a855f7')] },
-                options: { ...chartDefaults, plugins: { ...chartDefaults.plugins, tooltip: { ...chartDefaults.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } } }
+                options: (function(){ const cd=getChartDefaults(); return { ...cd, plugins: { ...cd.plugins, tooltip: { ...cd.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } } }; })()
             });
             return;
         }
@@ -1120,7 +1140,7 @@
                     lineDataset('Rental',  rntTotals, '#a855f7')
                 ]
             },
-            options: { ...chartDefaults, plugins: { ...chartDefaults.plugins, tooltip: { ...chartDefaults.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } } }
+            options: (function(){ const cd=getChartDefaults(); return { ...cd, plugins: { ...cd.plugins, tooltip: { ...cd.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } } }; })()
         });
     }
 
@@ -1142,7 +1162,7 @@
             chartPS = new Chart(ctx, {
                 type: 'line',
                 data: { labels: days.map(fmtTgl), datasets: [lineDataset('PS3', ps3, '#3fb950'), lineDataset('PS4', ps4, '#00d9ff'), lineDataset('PS5', ps5, '#e3b341')] },
-                options: { ...chartDefaults }
+                options: { ...getChartDefaults() }
             });
             return;
         }
@@ -1167,11 +1187,12 @@
                     lineDataset('PS5', ps5, '#e3b341')
                 ]
             },
-            options: { ...chartDefaults }
+            options: { ...getChartDefaults() }
         });
     }
 
     function buildAllCharts(data) {
+        window._lastChartData = data;
         buildRevenueChart(data);
         buildBvRChart(data);
         buildPSChart(data);
@@ -1895,6 +1916,10 @@
                 icon.classList.toggle('fa-moon',  isLight);
             }
         });
+        // Rebuild charts agar grid/ticks ikut tema
+        if (typeof buildAllCharts === 'function' && window._lastChartData) {
+            buildAllCharts(window._lastChartData);
+        }
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 toast: true, position: 'top', icon: 'success',
