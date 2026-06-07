@@ -10,7 +10,28 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { background-color: #0b0e14; color: white; font-family: 'Plus Jakarta Sans', sans-serif; padding-bottom: 100px; }
+        body { background-color: #0b0e14; color: white; font-family: 'Plus Jakarta Sans', sans-serif; padding-bottom: 0; overflow: hidden; height: 100dvh; }
+        /* ── FIXED HEADER LAYOUT ── */
+        #staff-fixed-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 60;
+            background: #0b0e14;
+            padding: 16px 16px 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        }
+        body.light-mode #staff-fixed-header {
+            background: #f0f4f8;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        /* ── SCROLLABLE CONTENT ── */
+        #staff-scroll-content {
+            position: fixed;
+            left: 0; right: 0; bottom: 72px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 16px 16px 24px;
+        }
         * { font-style: normal !important; }
         .glass-card { background: #11171f; border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; }
         .border-ps5 { border-left: 6px solid #ffbf00; }
@@ -75,7 +96,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 6px;
-            margin: 0 0 20px;
+            margin: 0;
             padding: 4px;
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.05);
@@ -260,10 +281,10 @@
             background: rgba(0,0,0,0.04) !important;
             border-color: rgba(0,0,0,0.08) !important;
         }
-        body.light-mode .staff-tab { color: #64748b !important; }
+        body.light-mode .staff-tab { color: #334155 !important; }
         body.light-mode .staff-tab-active { background: #0284c7 !important; color: #fff !important; box-shadow: 0 2px 12px rgba(2,132,199,.25) !important; }
         /* Tab buttons */
-        body.light-mode .tab-inactive { color: #64748b !important; background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.1) !important; }
+        body.light-mode .tab-inactive { color: #334155 !important; background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.1) !important; }
         body.light-mode .tab-active   { background: #0284c7 !important; color: #fff !important; border-color: #0284c7 !important; }
         /* Bottom nav bar */
         body.light-mode .fixed.bottom-0 {
@@ -273,20 +294,24 @@
         /* Text overrides */
         body.light-mode .text-white,
         body.light-mode [style*="color:#e6edf3"],
-        body.light-mode [style*="color: #e6edf3"] { color: #1a202c !important; }
+        body.light-mode [style*="color: #e6edf3"] { color: #0f172a !important; }
+        /* abu sedang → gelap */
         body.light-mode [style*="color:#9ca3af"],
-        body.light-mode .text-gray-400 { color: #64748b !important; }
+        body.light-mode .text-gray-400 { color: #475569 !important; }
+        /* abu medium */
         body.light-mode [style*="color:#6b7280"],
-        body.light-mode .text-gray-500 { color: #94a3b8 !important; }
+        body.light-mode .text-gray-500 { color: #334155 !important; }
+        /* abu label kecil */
         body.light-mode [style*="color:#4b5563"],
         body.light-mode .skpi-label,
-        body.light-mode .skpi-sub { color: #94a3b8 !important; }
+        body.light-mode .skpi-sub { color: #475569 !important; }
+        /* abu muted */
         body.light-mode [style*="color:#7d8590"],
         body.light-mode .staff-session-price,
         body.light-mode .staff-empty,
         body.light-mode .srev-sublabel,
         body.light-mode .srev-row-left,
-        body.light-mode .srev-row-unit { color: #64748b !important; }
+        body.light-mode .srev-row-unit { color: #475569 !important; }
         /* Backgrounds used inline */
         body.light-mode [style*="background:#11171f"],
         body.light-mode [style*="background: #11171f"] { background: #ffffff !important; }
@@ -318,7 +343,7 @@
         body.light-mode .hdcard-cell { background: rgba(0,0,0,0.04) !important; }
         body.light-mode .hdcard-reason { background: rgba(220,38,38,0.04) !important; border-color: rgba(220,38,38,0.12) !important; }
         body.light-mode .hist-search input { background: #f1f5f9 !important; border-color: rgba(0,0,0,0.1) !important; color: #1a202c !important; }
-        body.light-mode .hfil { background: rgba(0,0,0,0.05) !important; color: #64748b !important; }
+        body.light-mode .hfil { background: rgba(0,0,0,0.05) !important; color: #334155 !important; }
         body.light-mode .hfil.on { background: #0284c7 !important; color: #fff !important; }
         /* Badges */
         body.light-mode .badge-booking { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; border-color: rgba(2,132,199,0.2) !important; }
@@ -330,10 +355,10 @@
         body.light-mode .btn-reject  { background: rgba(220,38,38,0.08) !important; color: #dc2626 !important; border-color: rgba(220,38,38,0.25) !important; }
         body.light-mode .btn-activate { background: #d97706 !important; }
         body.light-mode .btn-logout-staff { background: rgba(234,88,12,0.07) !important; border-color: rgba(234,88,12,0.2) !important; color: #ea580c !important; }
-        body.light-mode .btn-owner-back { border-color: rgba(0,0,0,0.12) !important; color: #64748b !important; }
-        body.light-mode .auto-del-pill { background: rgba(0,0,0,0.05) !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
+        body.light-mode .btn-owner-back { border-color: rgba(0,0,0,0.12) !important; color: #334155 !important; }
+        body.light-mode .auto-del-pill { background: rgba(0,0,0,0.05) !important; border-color: rgba(0,0,0,0.1) !important; color: #334155 !important; }
         body.light-mode .auto-del-pill.active { background: rgba(220,38,38,0.08) !important; border-color: rgba(220,38,38,0.25) !important; color: #dc2626 !important; }
-        body.light-mode .srev-pill { border-color: rgba(0,0,0,0.1) !important; color: #94a3b8 !important; }
+        body.light-mode .srev-pill { border-color: rgba(0,0,0,0.1) !important; color: #475569 !important; }
         body.light-mode .srev-pill-active { background: rgba(2,132,199,0.1) !important; border-color: rgba(2,132,199,0.3) !important; color: #0284c7 !important; }
 
         /* ── Staff Charts ── */
@@ -349,8 +374,9 @@
         .staff-chart-leg{display:flex;align-items:center;gap:4px;font-size:9px;color:#4b5563}
         .staff-chart-leg-dot{width:7px;height:7px;border-radius:50%}
         body.light-mode .staff-chart-section{background:#f8fafc;border-color:rgba(0,0,0,0.07)}
-        body.light-mode .staff-chart-title{color:#1e293b}
-        body.light-mode .staff-chart-pill{border-color:rgba(0,0,0,0.1);color:#94a3b8}
+        body.light-mode .staff-chart-title{color:#0f172a}
+        body.light-mode .staff-chart-pill{border-color:rgba(0,0,0,0.1);color:#475569}
+        body.light-mode .staff-chart-leg { color: #475569 !important; }
         /* Wait pos badge */
         body.light-mode .wait-pos-badge { background: rgba(217,119,6,0.1) !important; border-color: rgba(217,119,6,0.25) !important; color: #d97706 !important; }
         /* Unit cards (inline rendered) */
@@ -368,6 +394,35 @@
         }
         /* Separator lines */
         body.light-mode .srev-row { border-color: rgba(0,0,0,0.05) !important; }
+
+        /* ── Tambahan: semua varian abu Tailwind & inline → gelap di light mode ── */
+        body.light-mode .text-gray-600 { color: #374151 !important; }
+        body.light-mode .text-gray-500 { color: #374151 !important; }
+        body.light-mode .text-gray-400 { color: #4b5563 !important; }
+        body.light-mode [style*="color:#4b5563"] { color: #475569 !important; }
+        body.light-mode [style*="color:#6b7280"] { color: #334155 !important; }
+        body.light-mode [style*="color:#9ca3af"] { color: #475569 !important; }
+        body.light-mode [style*="color:#7d8590"] { color: #475569 !important; }
+        body.light-mode [style*="color:#6b7280"] { color: #334155 !important; }
+        /* Label uppercase kecil (skpi-label, chart subtitle dll) */
+        body.light-mode .skpi-label,
+        body.light-mode .staff-kpi-label,
+        body.light-mode .staff-chart-subtitle,
+        body.light-mode .srev-title { color: #1e293b !important; }
+        body.light-mode .skpi-sub,
+        body.light-mode .srev-sublabel,
+        body.light-mode .srev-date-sep { color: #475569 !important; }
+        /* Nav bottom */
+        body.light-mode .fixed.bottom-0 .text-gray-500,
+        body.light-mode .fixed.bottom-0 [style*="color:#9ca3af"] { color: #64748b !important; }
+        /* History drawer teks */
+        body.light-mode .hstat-lbl,
+        body.light-mode .hdcard-sub,
+        body.light-mode .hdcard-date,
+        body.light-mode .hdcell-lbl { color: #475569 !important; }
+        body.light-mode .hist-empty { color: #475569 !important; }
+        /* Stat chips */
+        body.light-mode .stat-chip-lbl { color: #475569 !important; }
 
         /* ── DATE FILTER ── */
         .srev-date-row { display:flex; align-items:center; gap:6px; margin-top:10px; flex-wrap:wrap; }
@@ -435,6 +490,54 @@
             color: #64748b !important;
         }
         body.light-mode .btn-theme-toggle:hover { background: rgba(0,0,0,0.08) !important; color: #1a202c !important; }
+        /* ── Light mode override untuk SweetAlert2 popup ── */
+        body.light-mode .swal2-popup {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+        body.light-mode .swal2-title { color: #0f172a !important; }
+        body.light-mode .swal2-html-container { color: #334155 !important; }
+        body.light-mode .swal2-html-container [style*="color:#9ca3af"],
+        body.light-mode .swal2-html-container [style*="color: #9ca3af"] { color: #475569 !important; }
+        body.light-mode .swal2-html-container [style*="color:#fff"],
+        body.light-mode .swal2-html-container [style*="color: #fff"],
+        body.light-mode .swal2-html-container [style*="color:white"],
+        body.light-mode .swal2-html-container [style*="color:#e6edf3"] { color: #0f172a !important; }
+        body.light-mode .swal2-html-container [style*="color:#6b7280"],
+        body.light-mode .swal2-html-container [style*="color:#4b5563"] { color: #334155 !important; }
+        body.light-mode .swal2-input {
+            background: #f1f5f9 !important;
+            border-color: rgba(0,0,0,0.12) !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .swal2-textarea {
+            background: #f1f5f9 !important;
+            border-color: rgba(0,0,0,0.12) !important;
+            color: #0f172a !important;
+        }
+        /* Tombol Cash/Ewallet dalam Swal (background:#1c2128) */
+        body.light-mode .swal2-html-container [style*="background:#1c2128"],
+        body.light-mode .swal2-html-container [style*="background: #1c2128"] {
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
+            border-color: rgba(0,0,0,0.12) !important;
+        }
+        /* Detail bg rows dalam Swal (rgba putih transparan → gelap transparan) */
+        body.light-mode .swal2-html-container [style*="background:rgba(255,255,255,0.04)"],
+        body.light-mode .swal2-html-container [style*="background: rgba(255,255,255,0.04)"],
+        body.light-mode .swal2-html-container [style*="background:rgba(255,255,255,0.03)"] {
+            background: rgba(0,0,0,0.03) !important;
+        }
+        /* Toast */
+        body.light-mode .swal2-toast {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border: 1px solid rgba(0,0,0,0.08) !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+        }
+        /* Warning box inline */
+        body.light-mode .swal2-html-container [style*="background:rgba(245,158,11,0.0"] { opacity: 1; }
         /* Transition smooth */
         body, body * { transition: background-color .2s, color .15s, border-color .2s; }
     </style>
@@ -442,6 +545,7 @@
 </head>
 <body class="p-4">
 
+<div id="staff-fixed-header">
 <!-- ══ STAFF HEADER ══ -->
 <header class="mb-5 px-2">
     <!-- Row 1: Greeting + actions -->
@@ -672,7 +776,7 @@
 </div>
 
 <!-- ══ PANEL STATISTIK (tab baru) ══ -->
-<div id="stats-panel" class="hidden" style="position:fixed;top:0;left:0;right:0;bottom:72px;z-index:40;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 20px;background:var(--bg,#080c12);">
+<div id="stats-panel" class="hidden" style="position:fixed;top:0;left:0;right:0;bottom:72px;z-index:40;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 20px;background:var(--bg,#080c12);" class="hidden">
 
     <!-- ══ HEADER RINGKASAN ══ -->
     <div style="margin-bottom:14px;">
@@ -828,6 +932,9 @@
         <span id="req-notif-dot" class="req-notif-dot"></span>
     </button>
 </div>
+</div><!-- /staff-fixed-header -->
+
+<div id="staff-scroll-content">
 
 <!-- PANEL WAITING LIST -->
 <div id="waiting-panel">
@@ -1220,6 +1327,8 @@
     </div>
 </div>
 
+</div><!-- /staff-scroll-content -->
+
 <!-- ══ HISTORY DRAWER ══ -->
 <div class="hist-overlay" id="hist-overlay" onclick="tutupHistoryDrawer()"></div>
 <div class="hist-drawer" id="hist-drawer">
@@ -1372,6 +1481,39 @@
     let timerInterval = null;
     let warningThresholdMs = 5 * 60 * 1000; // default 5 menit
     const warnedUnits = new Set(); // track unit yang sudah dapat notif peringatan
+
+    // ── Helper: Swal theme mengikuti light/dark mode ──────────────────
+    function swalTheme() {
+        const isLight = document.body.classList.contains('light-mode');
+        return {
+            background: isLight ? '#ffffff' : '#11171f',
+            color:      isLight ? '#0f172a'  : '#ffffff',
+        };
+    }
+    function swalThemeAlt() {
+        // Untuk varian 0d1520 / toast gelap
+        const isLight = document.body.classList.contains('light-mode');
+        return {
+            background: isLight ? '#f8fafc' : '#0d1520',
+            color:      isLight ? '#0f172a' : '#e8edf5',
+        };
+    }
+
+    // ── Hitung tinggi header fixed & set top scroll content ──────────
+    function adjustScrollTop() {
+        const hdr = document.getElementById('staff-fixed-header');
+        const scr = document.getElementById('staff-scroll-content');
+        const sp  = document.getElementById('stats-panel');
+        const stg = document.getElementById('setting-panel');
+        if (!hdr || !scr) return;
+        const h = hdr.getBoundingClientRect().height;
+        scr.style.top = h + 'px';
+        if (sp)  sp.style.top = h + 'px';
+        if (stg) stg.style.top = h + 'px';
+    }
+    // Run setelah DOM ready dan setiap resize
+    requestAnimationFrame(adjustScrollTop);
+    window.addEventListener('resize', adjustScrollTop);
 
     // ── Auth: cek login staff ──────────────────────────────────────────
     onAuthStateChanged(auth, async (user) => {
@@ -1824,7 +1966,7 @@
                         toast: true, position: 'top', icon: 'warning',
                         title: `⚠️ ${uid} — Sisa ±${menit} menit!`,
                         showConfirmButton: false, timer: 6000, timerProgressBar: true,
-                        background: '#1a1000', color: '#f59e0b'
+                        background: document.body.classList.contains('light-mode') ? '#fffbeb' : '#1a1000', color: '#d97706'
                     });
                 }
                 if (text === 'SELESAI' && !autoStopped.has(uid)) {
@@ -1867,7 +2009,7 @@
             title: 'Hapus status unit ini?',
             html: '<p style="font-size:13px;color:#9ca3af">Unit <strong style="color:#fff">' + unitId + '</strong> akan direset ke <strong style="color:#00d9ff">Tersedia</strong>.<br>Data booking/jadwal yang menggantung akan dibersihkan.</p>',
             icon: 'warning',
-            background: '#11171f', color: '#fff',
+            ...swalTheme(),
             showCancelButton: true,
             confirmButtonText: '<i class="fas fa-trash-alt" style="margin-right:6px"></i>Ya, Hapus',
             cancelButtonText: 'Batal',
@@ -1884,10 +2026,10 @@
             Swal.fire({ toast:true, position:'top', icon:'success',
                 title: unitId + ' berhasil direset ke Tersedia',
                 showConfirmButton:false, timer:2500,
-                background:'#11171f', color:'#fff' });
+                ...swalTheme() });
             tambahNotif('\uD83D\uDDD1 Clean Manual: ' + unitId + ' → Tersedia');
         } catch(e) {
-            Swal.fire({ icon:'error', title:'Gagal', text: e.message, background:'#11171f', color:'#fff' });
+            Swal.fire({ icon:'error', title:'Gagal', text: e.message, ...swalTheme() });
         }
     };
 
@@ -1910,7 +2052,7 @@
                 Swal.fire({ toast:true, position:'top', icon:'info',
                     title: 'Auto-clean: ' + unit.id + ' direset (jadwal kedaluwarsa)',
                     showConfirmButton:false, timer:3000,
-                    background:'#11171f', color:'#fff' });
+                    ...swalTheme() });
             } catch(e) { console.warn('Auto-clean error', unit.id, e); }
         }
     }
@@ -1931,7 +2073,7 @@
                 toast: true, position: 'top', icon: 'success',
                 title: `▶ ${unit.id} — Sesi dimulai otomatis!`,
                 showConfirmButton: false, timer: 3000,
-                background: '#11171f', color: '#fff'
+                ...swalTheme()
             });
             setTimeout(() => autoStopped.delete('start_' + unit.id), 5000);
         } catch(e) { console.error('autoStart error', e); }
@@ -2021,7 +2163,7 @@
             html: `<p style="color:#9ca3af;font-size:11px;margin-bottom:10px">
                      Username pelanggan terdaftar, atau nama tamu langsung
                    </p>`,
-            background: '#11171f', color: '#fff',
+            ...swalTheme(),
             input: 'text',
             inputPlaceholder: 'Contoh: budi123 atau Andi',
             inputAttributes: {
@@ -2040,7 +2182,7 @@
         if (!ok1 || !namaInput) return;
 
         // Coba match ke akun pelanggan terdaftar
-        Swal.fire({ title: 'Mengecek akun...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#11171f', color: '#fff' });
+        Swal.fire({ title: 'Mengecek akun...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
         const pelanggan = await cariPelanggan(namaInput);
         Swal.close();
 
@@ -2053,7 +2195,7 @@
             html: `<p style="color:#9ca3af;font-size:11px;margin-bottom:8px">
                      ${pelanggan ? '✅ Pelanggan terdaftar' : '👤 Tamu langsung'} &nbsp;·&nbsp; Berapa jam?
                    </p>`,
-            background: '#11171f', color: '#fff',
+            ...swalTheme(),
             input: 'number',
             inputPlaceholder: 'Contoh: 2',
             inputAttributes: {
@@ -2086,7 +2228,7 @@
         });
         autoStopped.delete(id);
         tambahNotif(`▶ Sesi Dimulai: ${id} · ${customerName} · ${jam} Jam`);
-        Swal.fire({ toast: true, position: 'top', icon: 'success', title: `${id} — ${customerName} · ${jam} Jam`, showConfirmButton: false, timer: 2000, background: '#11171f', color: '#fff' });
+        Swal.fire({ toast: true, position: 'top', icon: 'success', title: `${id} — ${customerName} · ${jam} Jam`, showConfirmButton: false, timer: 2000, ...swalTheme() });
     };
 
     window.selesaiSesi = async (id) => {
@@ -2102,7 +2244,7 @@
             icon: 'warning', showCancelButton: true,
             confirmButtonColor: '#ef4444', cancelButtonColor: '#374151',
             confirmButtonText: '⏹ Ya, STOP', cancelButtonText: 'Batal',
-            background: '#11171f', color: '#fff'
+            ...swalTheme()
         });
         if (isConfirmed) {
             autoStopped.add(id);
@@ -2121,7 +2263,7 @@
 
         // Guard: maksimal extend sesuai setting
         if (extendCount >= extendLimit) {
-            Swal.fire({ icon:'warning', title:'Limit Extend', text:`Maksimal ${extendLimit}x extend per sesi. Pelanggan harus selesai dulu.`, background:'#11171f', color:'#fff', confirmButtonColor:'#f59e0b' });
+            Swal.fire({ icon:'warning', title:'Limit Extend', text:`Maksimal ${extendLimit}x extend per sesi. Pelanggan harus selesai dulu.`, ...swalTheme(), confirmButtonColor:'#f59e0b' });
             return;
         }
 
@@ -2156,8 +2298,7 @@
             showCancelButton: true,
             cancelButtonText: '❌ Belum Bayar — Batalkan',
             cancelButtonColor: '#374151',
-            background: '#11171f',
-            color: '#fff',
+            ...(swalTheme()),
             preConfirm: () => {
                 if (!window._extendPay) {
                     Swal.showValidationMessage('Pilih metode pembayaran terlebih dahulu');
@@ -2206,7 +2347,7 @@
             Swal.fire({ toast:true, position:'top', icon:'success', title:`+1 Jam | ${payMethod} Tercatat`, showConfirmButton:false, timer:2000 });
         } catch(e) {
             console.error('Extend error:', e);
-            Swal.fire({ icon:'error', title:'Gagal Extend', text:'Terjadi kesalahan. Coba lagi.', background:'#11171f', color:'#fff' });
+            Swal.fire({ icon:'error', title:'Gagal Extend', text:'Terjadi kesalahan. Coba lagi.', ...swalTheme() });
         }
     };
 
@@ -2337,7 +2478,7 @@
             if (lbl) { lbl.textContent = _nama + " � " + _jam; lbl.style.color = _warna; }
             if (dot) dot.style.background = _warna;
         }
-        Swal.fire({ toast:true, position:'top', icon:'success', title:'Jam shift berhasil disimpan!', showConfirmButton:false, timer:2000, background:'#0d1520', color:'#e8edf5' });
+        Swal.fire({ toast:true, position:'top', icon:'success', title:'Jam shift berhasil disimpan!', showConfirmButton:false, timer:2000, ...(swalThemeAlt()) });
     };
 
     window.gantiShift = async function() {
@@ -2359,7 +2500,7 @@
             cancelButtonText: 'Batal',
             confirmButtonColor: '#00d9ff',
             cancelButtonColor: '#374151',
-            background: '#0d1520', color: '#e8edf5',
+            ...(swalThemeAlt()),
             preConfirm: () => {
                 const v = document.getElementById('swal-inp').value;
                 if (!v) { Swal.showValidationMessage('Pilih salah satu shift'); return false; }
@@ -2388,7 +2529,7 @@
         if (sJam)  sJam.textContent  = jam;
         if (sTgl)  sTgl.textContent  = 'Tanggal: ' + today;
         if (sIkon) sIkon.textContent = ikon;
-        Swal.fire({ toast:true, position:'top', icon:'success', title:'Shift berhasil diganti!', showConfirmButton:false, timer:2000, background:'#0d1520', color:'#e8edf5' });
+        Swal.fire({ toast:true, position:'top', icon:'success', title:'Shift berhasil diganti!', showConfirmButton:false, timer:2000, ...(swalThemeAlt()) });
     };
     (function() {
         const isOwnerView = sessionStorage.getItem('owner_viewing_staff') === '1';
@@ -2472,6 +2613,8 @@
         settingPanel.classList.toggle('hidden', tab !== 'setting');
         statsPanel.classList.toggle('hidden', tab !== 'stats');
         tabRow.style.display = (tab === 'setting' || tab === 'stats') ? 'none' : '';
+        // Re-adjust scroll top karena tinggi header berubah
+        setTimeout(adjustScrollTop, 0);
 
         if (tab === 'req') document.getElementById('req-notif-dot').classList.remove('show');
         if (tab === 'waiting') { document.getElementById('waiting-notif-dot').classList.remove('show'); renderWaitingFiltered(); }
@@ -2754,14 +2897,14 @@
             html: 'Konfirmasi pesanan F&B dari <strong>' + custName + '</strong>?',
             showCancelButton: true, confirmButtonText: '✓ Proses', cancelButtonText: 'Batal',
             confirmButtonColor: '#a855f7', cancelButtonColor: '#374151',
-            background: '#11171f', color: '#fff'
+            ...swalTheme()
         });
         if (!isConfirmed) return;
         try {
             await updateDoc(doc(db, 'fnb_orders', id), { status: 'Diproses', processedAt: new Date().toISOString() });
             tambahNotif('🍜 F&B diproses: ' + custName);
-            Swal.fire({ toast:true, position:'top', icon:'success', title:'Pesanan diproses!', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
-        } catch(e) { Swal.fire({ icon:'error', title:'Gagal', text:e.message, background:'#11171f', color:'#fff' }); }
+            Swal.fire({ toast:true, position:'top', icon:'success', title:'Pesanan diproses!', showConfirmButton:false, timer:2000, ...swalTheme() });
+        } catch(e) { Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalTheme() }); }
     };
 
     window.tolakFnb = async function(id) {
@@ -2769,11 +2912,11 @@
             title: 'Tolak F&B?', icon:'warning',
             showCancelButton:true, confirmButtonText:'Tolak', cancelButtonText:'Batal',
             confirmButtonColor:'#ef4444', cancelButtonColor:'#374151',
-            background:'#11171f', color:'#fff'
+            ...swalTheme()
         });
         if (!isConfirmed) return;
         await updateDoc(doc(db, 'fnb_orders', id), { status: 'Ditolak', rejectedAt: new Date().toISOString() });
-        Swal.fire({ toast:true, position:'top', icon:'info', title:'Pesanan ditolak', showConfirmButton:false, timer:1500, background:'#11171f', color:'#fff' });
+        Swal.fire({ toast:true, position:'top', icon:'info', title:'Pesanan ditolak', showConfirmButton:false, timer:1500, ...swalTheme() });
     };
 
     // ── F&B Panel (order langsung oleh staff) ─────────────────────────
@@ -2880,8 +3023,8 @@
     window.submitFnbOrder = async function() {
         const sel = document.getElementById('fnb-unit-select');
         const unitId = sel.value;
-        if (!unitId) { Swal.fire({ toast:true, position:'top', icon:'warning', title:'Pilih unit dulu', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' }); return; }
-        if (!Object.keys(fnbCart).length) { Swal.fire({ toast:true, position:'top', icon:'warning', title:'Keranjang kosong', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' }); return; }
+        if (!unitId) { Swal.fire({ toast:true, position:'top', icon:'warning', title:'Pilih unit dulu', showConfirmButton:false, timer:2000, ...swalTheme() }); return; }
+        if (!Object.keys(fnbCart).length) { Swal.fire({ toast:true, position:'top', icon:'warning', title:'Keranjang kosong', showConfirmButton:false, timer:2000, ...swalTheme() }); return; }
 
         const unit  = currentUnits.find(u => u.id === unitId);
         const items = Object.entries(fnbCart).map(([id, qty]) => {
@@ -2930,8 +3073,7 @@
             showCancelButton: true,
             cancelButtonText: '❌ Belum Bayar — Batalkan',
             cancelButtonColor: '#374151',
-            background: '#11171f',
-            color: '#fff',
+            ...(swalTheme()),
             preConfirm: () => {
                 if (!window._fnbPay) {
                     Swal.showValidationMessage('Pilih metode pembayaran terlebih dahulu');
@@ -2943,7 +3085,7 @@
 
         window._fnbPay = null; // reset global
         if (!okPay) {
-            Swal.fire({ toast:true, position:'top', icon:'info', title:'Pesanan dibatalkan', showConfirmButton:false, timer:1500, background:'#11171f', color:'#fff' });
+            Swal.fire({ toast:true, position:'top', icon:'info', title:'Pesanan dibatalkan', showConfirmButton:false, timer:1500, ...swalTheme() });
             return;
         }
 
@@ -2992,9 +3134,9 @@
                 title: '🍜 F&B terkirim · ' + payMethod,
                 html: '<span style="font-size:11px;color:#a855f7">' + items.map(i=>i.name+' x'+i.qty).join(' · ') + '</span>',
                 showConfirmButton: false, timer: 3000, timerProgressBar: true,
-                background: '#11171f', color: '#fff'
+                ...swalTheme()
             });
-        } catch(e) { Swal.fire({ icon:'error', title:'Gagal', text:e.message, background:'#11171f', color:'#fff' }); }
+        } catch(e) { Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalTheme() }); }
     };
 
 
@@ -3031,12 +3173,12 @@
     window.simpanThreshold = function() {
         const val = parseInt(document.getElementById('input-threshold').value);
         if (!val || val < 1 || val > 60) {
-            Swal.fire({ toast:true, position:'top', icon:'error', title:'Masukkan angka 1–60 menit', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+            Swal.fire({ toast:true, position:'top', icon:'error', title:'Masukkan angka 1–60 menit', showConfirmButton:false, timer:2000, ...swalTheme() });
             return;
         }
         warningThresholdMs = val * 60 * 1000;
         warnedUnits.clear();
-        Swal.fire({ toast:true, position:'top', icon:'success', title:`Peringatan diset: ${val} menit sebelum habis`, showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+        Swal.fire({ toast:true, position:'top', icon:'success', title:`Peringatan diset: ${val} menit sebelum habis`, showConfirmButton:false, timer:2000, ...swalTheme() });
     };
 
     // ── Limit Extend: preview & simpan ───────────────────────────────
@@ -3057,14 +3199,14 @@
     window.simpanLimitExtend = function() {
         const val = parseInt(document.getElementById('input-limit-extend').value);
         if (!val || val < 1 || val > 10) {
-            Swal.fire({ toast:true, position:'top', icon:'error', title:'Masukkan angka 1–10', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+            Swal.fire({ toast:true, position:'top', icon:'error', title:'Masukkan angka 1–10', showConfirmButton:false, timer:2000, ...swalTheme() });
             return;
         }
         localStorage.setItem('pg_extend_limit', val);
         // Simpan ke Firestore agar pelanggan bisa baca
         setDoc(doc(db, 'settings', 'extend'), { limit: val, updatedAt: new Date().toISOString() })
             .catch(e => console.warn('Gagal simpan limit ke Firestore:', e));
-        Swal.fire({ toast:true, position:'top', icon:'success', title:`Limit extend diset: ${val}x per sesi`, showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+        Swal.fire({ toast:true, position:'top', icon:'success', title:`Limit extend diset: ${val}x per sesi`, showConfirmButton:false, timer:2000, ...swalTheme() });
     };
 
     // ── Load limit extend dari localStorage/Firestore saat init ──────────
@@ -3133,11 +3275,11 @@
     window.simpanTampilanUnit = function() {
         const val = parseInt(document.getElementById('input-visible-idle').value);
         if (isNaN(val) || val < 0) {
-            Swal.fire({ toast:true, position:'top', icon:'error', title:'Masukkan angka valid (min 0)', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+            Swal.fire({ toast:true, position:'top', icon:'error', title:'Masukkan angka valid (min 0)', showConfirmButton:false, timer:2000, ...swalTheme() });
             return;
         }
         localStorage.setItem('pg_visible_idle', val);
-        Swal.fire({ toast:true, position:'top', icon:'success', title:'Pengaturan tampilan disimpan!', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+        Swal.fire({ toast:true, position:'top', icon:'success', title:'Pengaturan tampilan disimpan!', showConfirmButton:false, timer:2000, ...swalTheme() });
         // Re-render langsung dengan setting baru
         const filtered = activeUnitFilter === 'semua'
             ? currentUnits
@@ -3165,7 +3307,7 @@
             cancelButtonColor: '#374151',
             confirmButtonText: 'Ya, Hapus Semua',
             cancelButtonText: 'Batal',
-            background: '#11171f', color: '#fff'
+            ...swalTheme()
         });
         if (!result.isConfirmed) return;
 
@@ -3181,9 +3323,9 @@
             snapC.forEach(d => batch2.delete(fsDoc(db, 'cancellations', d.id)));
             if (!snapC.empty) await batch2.commit();
 
-            Swal.fire({ toast:true, position:'top', icon:'success', title:'Semua riwayat dihapus', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+            Swal.fire({ toast:true, position:'top', icon:'success', title:'Semua riwayat dihapus', showConfirmButton:false, timer:2000, ...swalTheme() });
         } catch(e) {
-            Swal.fire({ icon:'error', title:'Gagal', text: e.message, background:'#11171f', color:'#fff' });
+            Swal.fire({ icon:'error', title:'Gagal', text: e.message, ...swalTheme() });
         }
     };
 
@@ -3199,7 +3341,7 @@
         if (info)  info.style.borderColor = hari === 0 ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.35)';
         Swal.fire({ toast:true, position:'top', icon:'success',
             title: hari === 0 ? 'Hapus otomatis dinonaktifkan' : `Hapus otomatis: data > ${hari} hari`,
-            showConfirmButton:false, timer:1800, background:'#11171f', color:'#fff' });
+            showConfirmButton:false, timer:1800, ...swalTheme() });
     };
     // Init pill state dari localStorage
     (function initAutoDeletePill() {
@@ -3405,8 +3547,7 @@
                 extraHtml +
                 '</div>',
             icon: undefined,
-            background: '#11171f',
-            color: '#fff',
+            ...(swalTheme()),
             confirmButtonText: 'Lihat Permintaan',
             confirmButtonColor: isBooking ? '#00d9ff' : '#a855f7',
             showCancelButton: true,
@@ -3508,7 +3649,7 @@
                             cancelButtonText: 'Nanti',
                             confirmButtonColor: '#00d9ff',
                             cancelButtonColor: '#374151',
-                            background: '#11171f', color: '#fff'
+                            ...swalTheme()
                         }).then(function(res) {
                             if (res.isConfirmed) switchTab('req');
                         });
@@ -3581,11 +3722,11 @@
             cancelButtonText: 'Batal',
             confirmButtonColor: isBooking ? '#10b981' : '#a855f7',
             cancelButtonColor: '#374151',
-            background: '#11171f', color: '#fff'
+            ...swalTheme()
         });
         if (!res.isConfirmed) return;
 
-        Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#11171f', color: '#fff' });
+        Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
 
         try {
             var confirmedAt = new Date().toISOString();
@@ -3611,7 +3752,7 @@
                         icon: 'error',
                         title: 'Unit Penuh!',
                         html: 'Semua unit <strong>' + consoleType + '</strong> sedang digunakan.<br><span style="color:#9ca3af;font-size:12px">Tolak atau tunggu hingga ada unit tersedia.</span>',
-                        background: '#11171f', color: '#fff'
+                        ...swalTheme()
                     });
                     return;
                 }
@@ -3689,7 +3830,7 @@
                             icon: 'error',
                             title: 'Unit Rental Habis!',
                             html: 'Tidak ada unit rental <strong>' + consRental + '</strong> yang tersedia.<br><span style="color:#9ca3af;font-size:12px">Tambah unit rental di halaman Owner → Manage.</span>',
-                            background: '#11171f', color: '#fff'
+                            ...swalTheme()
                         });
                         return;
                     }
@@ -3727,11 +3868,11 @@
                     : assignedRU
                         ? '📦 Rental ' + resolvedName + ' → Unit ' + assignedRU + ' dipinjam!'
                         : '📦 Rental ' + resolvedName + ' disetujui!',
-                showConfirmButton: false, timer: 3500, background: '#11171f', color: '#fff'
+                showConfirmButton: false, timer: 3500, ...swalTheme()
             });
 
         } catch(e) {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, background: '#11171f', color: '#fff' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, ...swalTheme() });
         }
     };
 
@@ -3749,7 +3890,7 @@
             cancelButtonText: 'Batal',
             confirmButtonColor: '#ef4444',
             cancelButtonColor: '#374151',
-            background: '#11171f', color: '#fff',
+            ...swalTheme(),
             inputAttributes: { style: 'background:#1a2030;border:1px solid rgba(255,255,255,0.1);color:white;border-radius:8px;padding:10px;font-size:13px;' }
         });
         if (!res.isConfirmed) return;
@@ -3761,10 +3902,10 @@
                 rejectedBy: 'staff',
                 rejectionReason: res.value || 'Tidak ada alasan'
             });
-            Swal.fire({ toast: true, position: 'top', icon: 'info', title: 'Permintaan ditolak', showConfirmButton: false, timer: 2000, background: '#11171f', color: '#fff' });
+            Swal.fire({ toast: true, position: 'top', icon: 'info', title: 'Permintaan ditolak', showConfirmButton: false, timer: 2000, ...swalTheme() });
             tambahNotif('❌ Ditolak: ' + custName + ' (' + (col === 'bookings' ? 'Booking' : 'Rental') + ') — ' + (res.value || '-'));
         } catch(e) {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, background: '#11171f', color: '#fff' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, ...swalTheme() });
         }
     };
 
@@ -3788,7 +3929,7 @@
             showCancelButton: true,
             cancelButtonText: 'Batal',
             cancelButtonColor: '#374151',
-            background: '#11171f', color: '#fff',
+            ...swalTheme(),
             preConfirm: function() {
                 if (!window._extendPay) { Swal.showValidationMessage('Pilih metode pembayaran dulu'); return false; }
                 return window._extendPay;
@@ -3811,7 +3952,7 @@
             const extendLimit  = parseInt(localStorage.getItem('pg_extend_limit')) || 2;
 
             if (extendCount >= extendLimit) {
-                Swal.fire({ icon:'warning', title:'Limit Extend', text:`Unit ini sudah ${extendLimit}x di-extend dalam sesi ini.`, background:'#11171f', color:'#fff' });
+                Swal.fire({ icon:'warning', title:'Limit Extend', text:`Unit ini sudah ${extendLimit}x di-extend dalam sesi ini.`, ...swalTheme() });
                 return;
             }
 
@@ -3850,7 +3991,7 @@
             tambahNotif('⏱ Extend Disetujui: ' + unitId + ' (+1 Jam) — ' + payMethod + ' — Rp ' + rate.toLocaleString('id-ID'));
             Swal.fire({ toast:true, position:'top', icon:'success', title:'+1 Jam | Extend Disetujui', showConfirmButton:false, timer:2000 });
         } catch(e) {
-            Swal.fire({ icon:'error', title:'Gagal', text:e.message, background:'#11171f', color:'#fff' });
+            Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalTheme() });
         }
     };
 
@@ -3864,7 +4005,7 @@
             cancelButtonText: 'Batal',
             confirmButtonColor: '#ef4444',
             cancelButtonColor: '#374151',
-            background: '#11171f', color: '#fff'
+            ...swalTheme()
         });
         if (!isConfirmed) return;
 
@@ -3876,7 +4017,7 @@
             Swal.fire({ toast:true, position:'top', icon:'info', title:'Request Extend Ditolak', showConfirmButton:false, timer:2000 });
             tambahNotif('❌ Extend Ditolak: ' + unitId);
         } catch(e) {
-            Swal.fire({ icon:'error', title:'Gagal', text:e.message, background:'#11171f', color:'#fff' });
+            Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalTheme() });
         }
     };
 
@@ -3899,7 +4040,7 @@
             cancelButtonText: 'Kembali',
             confirmButtonColor: '#ef4444',
             cancelButtonColor: '#374151',
-            background: '#11171f', color: '#fff',
+            ...swalTheme(),
             preConfirm: (alasan) => {
                 if (!alasan || alasan.trim().length < 5) {
                     Swal.showValidationMessage('Alasan wajib diisi (minimal 5 karakter)');
@@ -3910,7 +4051,7 @@
         });
         if (!res.isConfirmed) return;
 
-        Swal.fire({ title: 'Membatalkan...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#11171f', color: '#fff' });
+        Swal.fire({ title: 'Membatalkan...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
 
         try {
             var now = new Date().toISOString();
@@ -3963,10 +4104,10 @@
             Swal.fire({
                 toast: true, position: 'top', icon: 'success',
                 title: 'Reservasi ' + custName + ' dibatalkan. Unit dibebaskan.',
-                showConfirmButton: false, timer: 3500, background: '#11171f', color: '#fff'
+                showConfirmButton: false, timer: 3500, ...swalTheme()
             });
         } catch(e) {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, background: '#11171f', color: '#fff' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, ...swalTheme() });
         }
     };
 
@@ -4007,8 +4148,7 @@
         var total      = (v.grandTotal || v.total || 0).toLocaleString('id-ID');
 
         Swal.fire({
-            background: '#11171f',
-            color: '#fff',
+            ...(swalTheme()),
             showConfirmButton: true,
             showCancelButton: true,
             confirmButtonText: '<i class="fas fa-list" style="margin-right:6px"></i> Lihat Pesanan',
@@ -4246,7 +4386,7 @@
                 icon: 'warning',
                 title: 'Unit Masih Penuh!',
                 html: 'Semua unit <strong>' + (item.console||'-') + '</strong> masih digunakan.<br><span style="color:#9ca3af;font-size:12px">Tunggu hingga ada unit yang selesai sebelum mengkonfirmasi.</span>',
-                background: '#11171f', color: '#fff', confirmButtonColor: '#f59e0b'
+                ...swalTheme(), confirmButtonColor: '#f59e0b'
             });
             return;
         }
@@ -4267,11 +4407,11 @@
             cancelButtonText: 'Batal',
             confirmButtonColor: '#10b981',
             cancelButtonColor: '#374151',
-            background: '#11171f', color: '#fff'
+            ...swalTheme()
         });
         if (!res.isConfirmed) return;
 
-        Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#11171f', color: '#fff' });
+        Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
 
         try {
             var confirmedAt = new Date().toISOString();
@@ -4308,7 +4448,7 @@
                     assignedUnit: assignedUnit, customerName: resolvedName
                 });
                 tambahNotif('✅ Waiting List Aktif: ' + resolvedName + ' → Unit ' + assignedUnit + ' (' + consoleType + ' · ' + duration + ' Jam)');
-                Swal.fire({ toast:true, position:'top', icon:'success', title:'✅ ' + resolvedName + ' → Unit ' + assignedUnit + ' aktif!', showConfirmButton:false, timer:3500, background:'#11171f', color:'#fff' });
+                Swal.fire({ toast:true, position:'top', icon:'success', title:'✅ ' + resolvedName + ' → Unit ' + assignedUnit + ' aktif!', showConfirmButton:false, timer:3500, ...swalTheme() });
 
             } else {
                 var ruDoc  = unitSnap.docs[0];
@@ -4324,10 +4464,10 @@
                     customerName: resolvedName, assignedRentalUnit: assignedRU
                 });
                 tambahNotif('📦 Waiting List Rental Aktif: ' + resolvedName + ' → Unit ' + assignedRU);
-                Swal.fire({ toast:true, position:'top', icon:'success', title:'📦 Rental ' + resolvedName + ' → Unit ' + assignedRU + ' dipinjam!', showConfirmButton:false, timer:3500, background:'#11171f', color:'#fff' });
+                Swal.fire({ toast:true, position:'top', icon:'success', title:'📦 Rental ' + resolvedName + ' → Unit ' + assignedRU + ' dipinjam!', showConfirmButton:false, timer:3500, ...swalTheme() });
             }
         } catch(e) {
-            Swal.fire({ icon:'error', title:'Gagal', text: e.message, background:'#11171f', color:'#fff' });
+            Swal.fire({ icon:'error', title:'Gagal', text: e.message, ...swalTheme() });
         }
     };
 
@@ -4344,7 +4484,7 @@
             cancelButtonText: 'Batal',
             confirmButtonColor: '#ef4444',
             cancelButtonColor: '#374151',
-            background: '#11171f', color: '#fff',
+            ...swalTheme(),
             inputAttributes: { style: 'background:#1a2030;border:1px solid rgba(255,255,255,0.1);color:white;border-radius:8px;padding:10px;font-size:13px;' }
         });
         if (!res.isConfirmed) return;
@@ -4356,9 +4496,9 @@
                 rejectionReason: res.value || 'Antrian dibatalkan staff'
             });
             tambahNotif('❌ Waiting List Ditolak: ' + custName);
-            Swal.fire({ toast:true, position:'top', icon:'info', title:'Antrian ditolak', showConfirmButton:false, timer:2000, background:'#11171f', color:'#fff' });
+            Swal.fire({ toast:true, position:'top', icon:'info', title:'Antrian ditolak', showConfirmButton:false, timer:2000, ...swalTheme() });
         } catch(e) {
-            Swal.fire({ icon:'error', title:'Gagal', text:e.message, background:'#11171f', color:'#fff' });
+            Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalTheme() });
         }
     };
 
@@ -5135,14 +5275,14 @@
             icon: 'warning', showCancelButton: true,
             confirmButtonColor: '#ef4444', cancelButtonColor: '#374151',
             confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal',
-            background: '#11171f', color: '#fff'
+            ...swalTheme()
         });
         if (!result.isConfirmed) return;
         try {
             await deleteDoc(doc(db2, 'pendapatan', id));
-            Swal.fire({ toast:true, position:'top', icon:'success', title:'Sesi dihapus', showConfirmButton:false, timer:1500, background:'#11171f', color:'#fff' });
+            Swal.fire({ toast:true, position:'top', icon:'success', title:'Sesi dihapus', showConfirmButton:false, timer:1500, ...swalTheme() });
         } catch(e) {
-            Swal.fire({ icon:'error', title:'Gagal', text: e.message, background:'#11171f', color:'#fff' });
+            Swal.fire({ icon:'error', title:'Gagal', text: e.message, ...swalTheme() });
         }
     };
 
@@ -5153,14 +5293,14 @@
             icon: 'warning', showCancelButton: true,
             confirmButtonColor: '#ef4444', cancelButtonColor: '#374151',
             confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal',
-            background: '#11171f', color: '#fff'
+            ...swalTheme()
         });
         if (!result.isConfirmed) return;
         try {
             await deleteDoc(doc(db2, 'cancellations', id));
-            Swal.fire({ toast:true, position:'top', icon:'success', title:'Pembatalan dihapus', showConfirmButton:false, timer:1500, background:'#11171f', color:'#fff' });
+            Swal.fire({ toast:true, position:'top', icon:'success', title:'Pembatalan dihapus', showConfirmButton:false, timer:1500, ...swalTheme() });
         } catch(e) {
-            Swal.fire({ icon:'error', title:'Gagal', text: e.message, background:'#11171f', color:'#fff' });
+            Swal.fire({ icon:'error', title:'Gagal', text: e.message, ...swalTheme() });
         }
     };
 
