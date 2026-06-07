@@ -2460,6 +2460,7 @@
 
             // Render charts setelah panel visible + trigger resize agar canvas sizing benar
             setTimeout(() => {
+                ['sp-chart-revenue','sp-chart-bvr','sp-chart-ps'].forEach(id => _setDefaultDates(id, _getCS(id).period));
                 buildSPCharts(_allPendapatan);
                 window.dispatchEvent(new Event('resize'));
             }, 80);
@@ -4527,6 +4528,11 @@
         snap => {
             _allPendapatan = snap.docs.map(d => d.data());
             renderStaffRevenue();
+            // Isi tanggal default di input saat pertama load (defer agar semua fungsi sudah siap)
+            setTimeout(() => {
+                const ids = ['staff-chart-revenue','staff-chart-bvr','staff-chart-ps','sp-chart-revenue','sp-chart-bvr','sp-chart-ps'];
+                ids.forEach(id => _setDefaultDates(id, _getCS(id).period));
+            }, 0);
             buildStaffCharts(_allPendapatan);
         }
     );
@@ -4642,17 +4648,34 @@
     function buildStaffCharts(data) { ['staff-chart-revenue','staff-chart-bvr','staff-chart-ps'].forEach(id=>buildOneChart(id,data)); }
     function buildSPCharts(data)    { ['sp-chart-revenue','sp-chart-bvr','sp-chart-ps'].forEach(id=>buildOneChart(id,data)); }
 
+    // ── Helper: isi input tanggal sesuai period aktif ────────────────
+    function _setDefaultDates(chartId, period) {
+        const fromEl = document.getElementById(chartId+'-date-from');
+        const toEl   = document.getElementById(chartId+'-date-to');
+        if (!fromEl || !toEl) return;
+        const today = new Date();
+        const fmt = d => d.toISOString().slice(0,10);
+        if (period === '7d') {
+            const from = new Date(today); from.setDate(from.getDate()-6);
+            fromEl.value = fmt(from); toEl.value = fmt(today);
+        } else if (period === '30d') {
+            const from = new Date(today); from.setDate(from.getDate()-29);
+            fromEl.value = fmt(from); toEl.value = fmt(today);
+        } else {
+            // mode bulanan — kosongkan saja, chart pakai label bulan
+            fromEl.value = ''; toEl.value = '';
+        }
+    }
+
     window.switchChart = function(chartId, period, btn) {
         const cs = _getCS(chartId);
         cs.period = period;
         // Reset tombol sekelompok pill yang sama (identifikasi dari parent .staff-chart-pills)
         btn.closest('.staff-chart-pills')?.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
-        // Kosongkan date filter jika pakai period
-        const fromEl = document.getElementById(chartId+'-date-from');
-        const toEl   = document.getElementById(chartId+'-date-to');
-        if (fromEl) fromEl.value=''; if (toEl) toEl.value='';
+        // Isi input tanggal sesuai period (tidak kosong agar mobile tidak bingung)
         cs.dateFrom = null; cs.dateTo = null;
+        _setDefaultDates(chartId, period);
         buildOneChart(chartId, _allPendapatan);
     };
 
@@ -4671,13 +4694,12 @@
     window.clearChartDateFilter = function(chartId) {
         const cs = _getCS(chartId);
         cs.dateFrom = null; cs.dateTo = null;
-        const fromEl = document.getElementById(chartId+'-date-from');
-        const toEl   = document.getElementById(chartId+'-date-to');
-        if (fromEl) fromEl.value=''; if (toEl) toEl.value='';
         // Aktifkan kembali pill 7H
         const pills = document.getElementById(chartId)?.closest('.staff-chart-section')?.querySelectorAll('.staff-chart-pill');
         if (pills) { pills.forEach(b=>b.classList.remove('active')); pills[0]?.classList.add('active'); }
         cs.period = '7d';
+        // Isi ulang tanggal default 7 hari agar tidak kosong di mobile
+        _setDefaultDates(chartId, '7d');
         buildOneChart(chartId, _allPendapatan);
     };
 
