@@ -1335,15 +1335,16 @@
         const hidden = document.getElementById('unit-grid-hidden');
         const btn    = document.getElementById('unit-dropdown-btn');
         const icon   = document.getElementById('unit-dropdown-icon');
+        const label  = document.getElementById('unit-dropdown-label');
         if (!hidden || !btn) return;
         if (_unitDropdownOpen) {
-            hidden.style.maxHeight = hidden.scrollHeight + 'px';
-            hidden.style.opacity   = '1';
+            hidden.style.display   = 'flex';
             icon.style.transform   = 'rotate(180deg)';
+            if (label) label.textContent = label.textContent.replace('Lihat', 'Sembunyikan');
         } else {
-            hidden.style.maxHeight = '0';
-            hidden.style.opacity   = '0';
+            hidden.style.display   = 'none';
             icon.style.transform   = 'rotate(0deg)';
+            if (label) label.textContent = label.textContent.replace('Sembunyikan', 'Lihat');
         }
     };
 
@@ -1360,7 +1361,7 @@
         else                 statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.3);color:#00d9ff;letter-spacing:.5px">TERSEDIA</span>';
 
         // ── Timer besar ──
-        let timerHTML = '<div style="font-size:42px;font-weight:900;color:#1e2938;letter-spacing:2px;line-height:1;font-variant-numeric:tabular-nums">--:--:--</div>';
+        let timerHTML = '<div style="font-size:14px;font-weight:700;color:#4b5563;letter-spacing:.5px;line-height:1;padding:10px 0">Siap digunakan</div>';
         let timerColor = '#e6edf3';
         if (isPlaying && unit.endTime) {
             const { text, cls } = formatSisa(unit.endTime);
@@ -1441,7 +1442,7 @@
                 </button>`;
         }
 
-        return `<div style="background:#11171f;border:1px solid ${borderAccent};border-radius:20px;padding:20px;position:relative;overflow:hidden">
+        return `<div style="background:#11171f;border:1px solid ${borderAccent};border-radius:20px;padding:20px;position:relative">
             <!-- Header -->
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
                 <div>
@@ -1474,7 +1475,7 @@
         const container = document.getElementById('unit-grid');
         container.innerHTML = '';
 
-        // ── Sort: aktif/dipesan naik ke atas, sisanya urut by id ──
+        // ── Sort: Digunakan → Dipesan → Tersedia/Maintenance, lalu by id ──
         const sorted = [...units].sort((a, b) => {
             const pri = u => (u.status === 'Digunakan' ? 0 : u.status === 'Dipesan' ? 1 : 2);
             const p = pri(a) - pri(b);
@@ -1482,26 +1483,26 @@
             return a.id.localeCompare(b.id);
         });
 
-        const VISIBLE = 2;
-        const visible = sorted.slice(0, VISIBLE);
-        const hidden  = sorted.slice(VISIBLE);
+        // ── Unit aktif/dipesan → semua tampil langsung (tidak dipotong) ──
+        const aktif  = sorted.filter(u => u.status === 'Digunakan' || u.status === 'Dipesan');
+        const idle   = sorted.filter(u => u.status !== 'Digunakan' && u.status !== 'Dipesan');
 
-        // ── Render 2 card pertama ──
-        visible.forEach(unit => {
+        // Render semua unit aktif langsung
+        aktif.forEach(unit => {
             container.innerHTML += buildUnitCard(unit);
         });
 
-        // ── Dropdown untuk sisanya ──
-        if (hidden.length > 0) {
-            // Reset state buka/tutup saat re-render
+        // ── Unit idle (Tersedia/Maintenance) → masuk dropdown ──
+        if (idle.length > 0) {
             _unitDropdownOpen = false;
 
-            const hiddenCards = hidden.map(u => buildUnitCard(u)).join('');
-            const idleCount   = hidden.filter(u => u.status !== 'Digunakan' && u.status !== 'Dipesan').length;
-            const activeCount = hidden.filter(u => u.status === 'Digunakan' || u.status === 'Dipesan').length;
+            const idleCards  = idle.map(u => buildUnitCard(u)).join('');
+            const tersedia   = idle.filter(u => u.status === 'Tersedia').length;
+            const maint      = idle.filter(u => u.status === 'Maintenance').length;
 
-            let btnLabel = `${hidden.length} unit lainnya`;
-            if (activeCount > 0) btnLabel = `${hidden.length} unit lainnya <span style="font-size:9px;padding:1px 6px;border-radius:99px;background:rgba(63,185,80,0.15);border:1px solid rgba(63,185,80,0.3);color:#3fb950;margin-left:4px">${activeCount} aktif</span>`;
+            let btnLabel = `${idle.length} unit tersedia`;
+            if (maint > 0 && tersedia > 0) btnLabel = `${tersedia} tersedia, ${maint} maintenance`;
+            else if (maint > 0)            btnLabel = `${maint} unit maintenance`;
 
             container.innerHTML += `
             <!-- Dropdown toggle button -->
@@ -1510,12 +1511,12 @@
                 onmouseover="this.style.borderColor='rgba(0,217,255,0.3)';this.style.color='#00d9ff'"
                 onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='#9ca3af'">
                 <i class="fas fa-chevron-down" id="unit-dropdown-icon" style="transition:transform .25s"></i>
-                Lihat ${btnLabel}
+                <span id="unit-dropdown-label">Lihat ${btnLabel}</span>
             </button>
 
             <!-- Hidden cards container -->
-            <div id="unit-grid-hidden" style="display:grid;grid-template-columns:inherit;gap:inherit;max-height:0;overflow:hidden;opacity:0;transition:max-height .35s ease,opacity .25s ease">
-                ${hiddenCards}
+            <div id="unit-grid-hidden" style="display:none;flex-direction:column;gap:16px">
+                ${idleCards}
             </div>`;
         }
 
