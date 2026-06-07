@@ -368,6 +368,56 @@
         }
         /* Separator lines */
         body.light-mode .srev-row { border-color: rgba(0,0,0,0.05) !important; }
+
+        /* ── DATE FILTER ── */
+        .srev-date-row { display:flex; align-items:center; gap:6px; margin-top:10px; flex-wrap:wrap; }
+        .srev-date-input {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            color: #e6edf3;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: inherit;
+            padding: 5px 8px;
+            flex: 1;
+            min-width: 100px;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .srev-date-input:focus { border-color: rgba(0,217,255,0.4); }
+        .srev-date-input::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
+        body.light-mode .srev-date-input { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: #1e293b; }
+        body.light-mode .srev-date-input::-webkit-calendar-picker-indicator { filter: none; }
+        .srev-date-sep { font-size: 10px; color: #4b5563; font-weight: 700; flex-shrink:0; }
+        .srev-date-apply {
+            background: rgba(0,217,255,0.1);
+            border: 1px solid rgba(0,217,255,0.25);
+            color: #00d9ff;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+            flex-shrink: 0;
+            transition: .2s;
+        }
+        .srev-date-apply:hover { background: rgba(0,217,255,0.2); }
+        .srev-date-clear {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.07);
+            color: #6b7280;
+            border-radius: 8px;
+            padding: 5px 8px;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+            flex-shrink: 0;
+            transition: .2s;
+        }
+        .srev-date-clear:hover { border-color: rgba(255,255,255,0.15); color: #9ca3af; }
         body.light-mode .staff-session-row { border-color: rgba(0,0,0,0.05) !important; }
         /* Theme toggle button */
         .btn-theme-toggle {
@@ -511,6 +561,14 @@
         <div class="srev-amount" id="srev-amount">Rp 0</div>
         <div class="srev-sublabel" id="srev-sublabel">Memuat data...</div>
 
+        <!-- Filter Tanggal -->
+        <div class="srev-date-row">
+            <input type="date" id="srev-date-from" class="srev-date-input" oninput="applyStaffDateFilter()" title="Dari tanggal">
+            <span class="srev-date-sep">—</span>
+            <input type="date" id="srev-date-to" class="srev-date-input" oninput="applyStaffDateFilter()" title="Sampai tanggal">
+            <button class="srev-date-clear" onclick="clearStaffDateFilter()" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+        </div>
+
         <!-- Riwayat singkat -->
         <div style="margin-top:14px">
             <div style="font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#4b5563;margin-bottom:8px">Riwayat Terakhir</div>
@@ -526,33 +584,69 @@
                 <div class="staff-chart-subtitle" id="staff-chart-rev-subtitle">Pendapatan per hari (7 hari terakhir)</div>
             </div>
             <div class="staff-chart-pills">
-                <button class="staff-chart-pill active" onclick="switchStaffChartPeriod('7d',this)">7H</button>
-                <button class="staff-chart-pill" onclick="switchStaffChartPeriod('30d',this)">30H</button>
-                <button class="staff-chart-pill" onclick="switchStaffChartPeriod('bulan',this)">Bln</button>
+                <button class="staff-chart-pill sc1-pill active" onclick="switchChart('staff-chart-revenue','7d',this)">7H</button>
+                <button class="staff-chart-pill sc1-pill" onclick="switchChart('staff-chart-revenue','30d',this)">30H</button>
+                <button class="staff-chart-pill sc1-pill" onclick="switchChart('staff-chart-revenue','bulan',this)">Bln</button>
             </div>
         </div>
-        <div class="staff-chart-wrap"><canvas id="staff-chart-revenue"></canvas></div>
+        <div class="srev-date-row" style="margin-bottom:10px">
+            <input type="date" id="staff-chart-revenue-date-from" class="srev-date-input" oninput="applyChartDateFilter('staff-chart-revenue')" title="Dari tanggal">
+            <span class="srev-date-sep">—</span>
+            <input type="date" id="staff-chart-revenue-date-to" class="srev-date-input" oninput="applyChartDateFilter('staff-chart-revenue')" title="Sampai tanggal">
+            <button class="srev-date-clear" onclick="clearChartDateFilter('staff-chart-revenue')" title="Reset"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="staff-chart-wrap" style="height:180px"><canvas id="staff-chart-revenue"></canvas></div>
+        
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-        <div class="staff-chart-section" style="margin-bottom:0">
-            <div class="staff-chart-title" style="font-size:11px;margin-bottom:2px"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:5px;font-size:10px"></i>Booking vs Rental</div>
-            <div class="staff-chart-subtitle">Jumlah transaksi</div>
-            <div class="staff-chart-wrap" style="height:150px"><canvas id="staff-chart-bvr"></canvas></div>
-            <div class="staff-chart-legend">
-                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>Booking</div>
-                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#a855f7"></div>Rental</div>
+    <div class="staff-chart-section">
+        <div class="staff-chart-header">
+            <div>
+                <div class="staff-chart-title"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:6px;font-size:11px"></i>Booking vs Rental</div>
+                <div class="staff-chart-subtitle" id="staff-chart-bvr-subtitle">Jumlah transaksi</div>
+            </div>
+            <div class="staff-chart-pills">
+                <button class="staff-chart-pill sc2-pill active" onclick="switchChart('staff-chart-bvr','7d',this)">7H</button>
+                <button class="staff-chart-pill sc2-pill" onclick="switchChart('staff-chart-bvr','30d',this)">30H</button>
+                <button class="staff-chart-pill sc2-pill" onclick="switchChart('staff-chart-bvr','bulan',this)">Bln</button>
             </div>
         </div>
-        <div class="staff-chart-section" style="margin-bottom:0">
-            <div class="staff-chart-title" style="font-size:11px;margin-bottom:2px"><i class="fas fa-chart-line" style="color:#3fb950;margin-right:5px;font-size:10px"></i>Per Tipe PS</div>
-            <div class="staff-chart-subtitle">Kontribusi PS3/PS4/PS5</div>
-            <div class="staff-chart-wrap" style="height:150px"><canvas id="staff-chart-ps"></canvas></div>
-            <div class="staff-chart-legend">
-                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#3fb950"></div>PS3</div>
-                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>PS4</div>
-                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#e3b341"></div>PS5</div>
+        <div class="srev-date-row" style="margin-bottom:10px">
+            <input type="date" id="staff-chart-bvr-date-from" class="srev-date-input" oninput="applyChartDateFilter('staff-chart-bvr')" title="Dari tanggal">
+            <span class="srev-date-sep">—</span>
+            <input type="date" id="staff-chart-bvr-date-to" class="srev-date-input" oninput="applyChartDateFilter('staff-chart-bvr')" title="Sampai tanggal">
+            <button class="srev-date-clear" onclick="clearChartDateFilter('staff-chart-bvr')" title="Reset"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="staff-chart-wrap" style="height:150px"><canvas id="staff-chart-bvr"></canvas></div>
+        <div class="staff-chart-legend">
+            <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>Booking</div>
+            <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#a855f7"></div>Rental</div>
+        </div>
+    </div>
+
+    <div class="staff-chart-section">
+        <div class="staff-chart-header">
+            <div>
+                <div class="staff-chart-title"><i class="fas fa-chart-line" style="color:#3fb950;margin-right:6px;font-size:11px"></i>Per Tipe PS</div>
+                <div class="staff-chart-subtitle" id="staff-chart-ps-subtitle">Kontribusi PS3/PS4/PS5</div>
             </div>
+            <div class="staff-chart-pills">
+                <button class="staff-chart-pill sc3-pill active" onclick="switchChart('staff-chart-ps','7d',this)">7H</button>
+                <button class="staff-chart-pill sc3-pill" onclick="switchChart('staff-chart-ps','30d',this)">30H</button>
+                <button class="staff-chart-pill sc3-pill" onclick="switchChart('staff-chart-ps','bulan',this)">Bln</button>
+            </div>
+        </div>
+        <div class="srev-date-row" style="margin-bottom:10px">
+            <input type="date" id="staff-chart-ps-date-from" class="srev-date-input" oninput="applyChartDateFilter('staff-chart-ps')" title="Dari tanggal">
+            <span class="srev-date-sep">—</span>
+            <input type="date" id="staff-chart-ps-date-to" class="srev-date-input" oninput="applyChartDateFilter('staff-chart-ps')" title="Sampai tanggal">
+            <button class="srev-date-clear" onclick="clearChartDateFilter('staff-chart-ps')" title="Reset"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="staff-chart-wrap" style="height:150px"><canvas id="staff-chart-ps"></canvas></div>
+        <div class="staff-chart-legend">
+            <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#3fb950"></div>PS3</div>
+            <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>PS4</div>
+            <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#e3b341"></div>PS5</div>
         </div>
     </div>
 
@@ -605,33 +699,69 @@
                 <div class="staff-chart-subtitle" id="sp-chart-subtitle">7 hari terakhir</div>
             </div>
             <div class="staff-chart-pills">
-                <button class="staff-chart-pill sp-pill active" onclick="switchSPChart('7d',this)">7H</button>
-                <button class="staff-chart-pill sp-pill" onclick="switchSPChart('30d',this)">30H</button>
-                <button class="staff-chart-pill sp-pill" onclick="switchSPChart('bulan',this)">Bln</button>
+                <button class="staff-chart-pill sp1-pill active" onclick="switchChart('sp-chart-revenue','7d',this)">7H</button>
+                <button class="staff-chart-pill sp1-pill" onclick="switchChart('sp-chart-revenue','30d',this)">30H</button>
+                <button class="staff-chart-pill sp1-pill" onclick="switchChart('sp-chart-revenue','bulan',this)">Bln</button>
             </div>
         </div>
-        <div class="staff-chart-wrap"><canvas id="sp-chart-revenue"></canvas></div>
+        <div class="srev-date-row" style="margin-bottom:10px">
+            <input type="date" id="sp-chart-revenue-date-from" class="srev-date-input" oninput="applyChartDateFilter('sp-chart-revenue')" title="Dari tanggal">
+            <span class="srev-date-sep">—</span>
+            <input type="date" id="sp-chart-revenue-date-to" class="srev-date-input" oninput="applyChartDateFilter('sp-chart-revenue')" title="Sampai tanggal">
+            <button class="srev-date-clear" onclick="clearChartDateFilter('sp-chart-revenue')" title="Reset"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="staff-chart-wrap" style="height:180px"><canvas id="sp-chart-revenue"></canvas></div>
+        
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-        <div class="staff-chart-section" style="margin-bottom:0">
-            <div class="staff-chart-title" style="font-size:11px;margin-bottom:2px"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:5px;font-size:10px"></i>Booking vs Rental</div>
-            <div class="staff-chart-subtitle">Jumlah transaksi</div>
-            <div class="staff-chart-wrap" style="height:150px"><canvas id="sp-chart-bvr"></canvas></div>
-            <div class="staff-chart-legend">
-                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>Booking</div>
-                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#a855f7"></div>Rental</div>
+    <div class="staff-chart-section">
+        <div class="staff-chart-header">
+            <div>
+                <div class="staff-chart-title"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:6px;font-size:11px"></i>Booking vs Rental</div>
+                <div class="staff-chart-subtitle" id="sp-chart-bvr-subtitle">Jumlah transaksi</div>
+            </div>
+            <div class="staff-chart-pills">
+                <button class="staff-chart-pill sp2-pill active" onclick="switchChart('sp-chart-bvr','7d',this)">7H</button>
+                <button class="staff-chart-pill sp2-pill" onclick="switchChart('sp-chart-bvr','30d',this)">30H</button>
+                <button class="staff-chart-pill sp2-pill" onclick="switchChart('sp-chart-bvr','bulan',this)">Bln</button>
             </div>
         </div>
-        <div class="staff-chart-section" style="margin-bottom:0">
-            <div class="staff-chart-title" style="font-size:11px;margin-bottom:2px"><i class="fas fa-chart-line" style="color:#3fb950;margin-right:5px;font-size:10px"></i>Per Tipe PS</div>
-            <div class="staff-chart-subtitle">PS3 / PS4 / PS5</div>
-            <div class="staff-chart-wrap" style="height:150px"><canvas id="sp-chart-ps"></canvas></div>
-            <div class="staff-chart-legend">
-                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#3fb950"></div>PS3</div>
-                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>PS4</div>
-                <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#e3b341"></div>PS5</div>
+        <div class="srev-date-row" style="margin-bottom:10px">
+            <input type="date" id="sp-chart-bvr-date-from" class="srev-date-input" oninput="applyChartDateFilter('sp-chart-bvr')" title="Dari tanggal">
+            <span class="srev-date-sep">—</span>
+            <input type="date" id="sp-chart-bvr-date-to" class="srev-date-input" oninput="applyChartDateFilter('sp-chart-bvr')" title="Sampai tanggal">
+            <button class="srev-date-clear" onclick="clearChartDateFilter('sp-chart-bvr')" title="Reset"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="staff-chart-wrap" style="height:150px"><canvas id="sp-chart-bvr"></canvas></div>
+        <div class="staff-chart-legend">
+            <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>Booking</div>
+            <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#a855f7"></div>Rental</div>
+        </div>
+    </div>
+
+    <div class="staff-chart-section">
+        <div class="staff-chart-header">
+            <div>
+                <div class="staff-chart-title"><i class="fas fa-chart-line" style="color:#3fb950;margin-right:6px;font-size:11px"></i>Per Tipe PS</div>
+                <div class="staff-chart-subtitle" id="sp-chart-ps-subtitle">PS3 / PS4 / PS5</div>
             </div>
+            <div class="staff-chart-pills">
+                <button class="staff-chart-pill sp3-pill active" onclick="switchChart('sp-chart-ps','7d',this)">7H</button>
+                <button class="staff-chart-pill sp3-pill" onclick="switchChart('sp-chart-ps','30d',this)">30H</button>
+                <button class="staff-chart-pill sp3-pill" onclick="switchChart('sp-chart-ps','bulan',this)">Bln</button>
+            </div>
+        </div>
+        <div class="srev-date-row" style="margin-bottom:10px">
+            <input type="date" id="sp-chart-ps-date-from" class="srev-date-input" oninput="applyChartDateFilter('sp-chart-ps')" title="Dari tanggal">
+            <span class="srev-date-sep">—</span>
+            <input type="date" id="sp-chart-ps-date-to" class="srev-date-input" oninput="applyChartDateFilter('sp-chart-ps')" title="Sampai tanggal">
+            <button class="srev-date-clear" onclick="clearChartDateFilter('sp-chart-ps')" title="Reset"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="staff-chart-wrap" style="height:150px"><canvas id="sp-chart-ps"></canvas></div>
+        <div class="staff-chart-legend">
+            <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#3fb950"></div>PS3</div>
+            <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#00d9ff"></div>PS4</div>
+            <div class="staff-chart-leg"><div class="staff-chart-leg-dot" style="background:#e3b341"></div>PS5</div>
         </div>
     </div>
 
@@ -650,6 +780,13 @@
         </div>
         <div class="srev-amount" id="srev-amount2">Rp 0</div>
         <div class="srev-sublabel" id="srev-sublabel2">Memuat data...</div>
+        <!-- Filter Tanggal (stats panel — sync visual saja, aksi ke panel utama) -->
+        <div class="srev-date-row">
+            <input type="date" id="srev-date-from2" class="srev-date-input" oninput="syncAndApplyDateFilter2()" title="Dari tanggal">
+            <span class="srev-date-sep">—</span>
+            <input type="date" id="srev-date-to2" class="srev-date-input" oninput="syncAndApplyDateFilter2()" title="Sampai tanggal">
+            <button class="srev-date-clear" onclick="clearStaffDateFilter()" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+        </div>
         <div style="margin-top:14px">
             <div style="font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#4b5563;margin-bottom:8px">Riwayat Terakhir</div>
             <div id="srev-list2"><p class="staff-empty">Belum ada.</p></div>
@@ -1394,10 +1531,10 @@
     }
 
     // ── Render UI ─────────────────────────────────────────────────────
-    let _unitDropdownOpen = false;
+    let _unitDropdownOpen = null; // null = belum pernah render, pakai ddDefault; true/false = ikut state toggle user
 
     window.toggleUnitDropdown = function() {
-        _unitDropdownOpen = !_unitDropdownOpen;
+        _unitDropdownOpen = !(_unitDropdownOpen === true);
         const hidden = document.getElementById('unit-grid-hidden');
         const btn    = document.getElementById('unit-dropdown-btn');
         const icon   = document.getElementById('unit-dropdown-icon');
@@ -1558,32 +1695,52 @@
             container.innerHTML += buildUnitCard(unit);
         });
 
-        // ── Unit idle (Tersedia/Maintenance) → masuk dropdown ──
+        // ── Unit idle (Tersedia/Maintenance) → sebagian langsung tampil, sisanya dropdown ──
         if (idle.length > 0) {
-            _unitDropdownOpen = false;
+            // Baca setting: berapa unit langsung tampil di luar dropdown
+            const visibleCount = parseInt(localStorage.getItem('pg_visible_idle') ?? '0') || 0;
+            const ddDefault    = localStorage.getItem('pg_dropdown_default') || 'tutup';
 
-            const idleCards  = idle.map(u => buildUnitCard(u)).join('');
-            const tersedia   = idle.filter(u => u.status === 'Tersedia').length;
-            const maint      = idle.filter(u => u.status === 'Maintenance').length;
+            const inlineIdle  = visibleCount >= 99 ? idle : idle.slice(0, visibleCount);
+            const hiddenIdle  = visibleCount >= 99 ? []   : idle.slice(visibleCount);
 
-            let btnLabel = `${idle.length} unit tersedia`;
-            if (maint > 0 && tersedia > 0) btnLabel = `${tersedia} tersedia, ${maint} maintenance`;
-            else if (maint > 0)            btnLabel = `${maint} unit maintenance`;
+            // Render unit langsung tampil
+            inlineIdle.forEach(u => { container.innerHTML += buildUnitCard(u); });
 
-            container.innerHTML += `
-            <!-- Dropdown toggle button -->
-            <button id="unit-dropdown-btn" onclick="toggleUnitDropdown()"
-                style="width:100%;padding:13px 18px;border-radius:16px;background:#11171f;border:1px dashed rgba(255,255,255,0.1);color:#9ca3af;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;transition:.2s;letter-spacing:.04em"
-                onmouseover="this.style.borderColor='rgba(0,217,255,0.3)';this.style.color='#00d9ff'"
-                onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='#9ca3af'">
-                <i class="fas fa-chevron-down" id="unit-dropdown-icon" style="transition:transform .25s"></i>
-                <span id="unit-dropdown-label">Lihat ${btnLabel}</span>
-            </button>
+            // Render dropdown hanya jika masih ada unit yang tersembunyi
+            if (hiddenIdle.length > 0) {
+                const idleCards  = hiddenIdle.map(u => buildUnitCard(u)).join('');
+                const tersedia   = hiddenIdle.filter(u => u.status === 'Tersedia').length;
+                const maint      = hiddenIdle.filter(u => u.status === 'Maintenance').length;
 
-            <!-- Hidden cards container -->
-            <div id="unit-grid-hidden" style="display:none;flex-direction:column;gap:16px">
-                ${idleCards}
-            </div>`;
+                let btnLabel = `${hiddenIdle.length} unit tersedia`;
+                if (maint > 0 && tersedia > 0) btnLabel = `${tersedia} tersedia, ${maint} maintenance`;
+                else if (maint > 0)            btnLabel = `${maint} unit maintenance`;
+
+                // Gunakan state toggle yang sudah ada; hanya pakai ddDefault saat pertama kali (null sentinel)
+                if (_unitDropdownOpen === null) {
+                    _unitDropdownOpen = ddDefault === 'buka';
+                }
+                const isOpen = _unitDropdownOpen;
+
+                container.innerHTML += `
+                <!-- Dropdown toggle button -->
+                <button id="unit-dropdown-btn" onclick="toggleUnitDropdown()"
+                    style="width:100%;padding:13px 18px;border-radius:16px;background:#11171f;border:1px dashed rgba(255,255,255,0.1);color:#9ca3af;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;transition:.2s;letter-spacing:.04em"
+                    onmouseover="this.style.borderColor='rgba(0,217,255,0.3)';this.style.color='#00d9ff'"
+                    onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='#9ca3af'">
+                    <i class="fas fa-chevron-down" id="unit-dropdown-icon" style="transition:transform .25s;${isOpen?'transform:rotate(180deg)':''}"></i>
+                    <span id="unit-dropdown-label">${isOpen ? 'Sembunyikan' : 'Lihat '+btnLabel}</span>
+                </button>
+
+                <!-- Hidden cards container -->
+                <div id="unit-grid-hidden" style="display:${isOpen?'flex':'none'};flex-direction:column;gap:16px">
+                    ${idleCards}
+                </div>`;
+            } else {
+                // Tidak ada dropdown → reset state ke null untuk next render
+                _unitDropdownOpen = null;
+            }
         }
 
         // ── Cek auto-stop ──
@@ -2275,7 +2432,15 @@
             ['srev-amount','srev-sublabel','srev-list','skpi-active-list','skpi-completed-list'].forEach(function(id) {
                 var src = document.getElementById(id);
                 var dst = document.getElementById(id + '2');
-                if (src && dst) dst.innerHTML = src.innerHTML;
+                if (src && dst) {
+                    // Ganti ID dropdown agar tidak konflik dengan panel utama
+                    var html = src.innerHTML
+                        .replace(/id="srev-extra-rows"/g, 'id="srev-extra-rows2"')
+                        .replace(/id="srev-toggle-btn"/g, 'id="srev-toggle-btn2"')
+                        .replace(/getElementById\('srev-extra-rows'\)/g, "getElementById('srev-extra-rows2')")
+                        .replace(/getElementById\('srev-toggle-btn'\)/g, "getElementById('srev-toggle-btn2')");
+                    dst.innerHTML = html;
+                }
             });
             var lbl = document.getElementById('srev-filter-label');
             var lbl2 = document.getElementById('srev-filter-label2');
@@ -4221,6 +4386,52 @@
         return String(date.getFullYear()) + '-W' + String(1+Math.round(((date-w1)/86400000-3+(w1.getDay()+6)%7)/7)).padStart(2,'0');
     }
 
+    // ── Date range filter ────────────────────────────────────────────
+    let _staffDateFrom = null;  // string 'YYYY-MM-DD' | null
+    let _staffDateTo   = null;
+
+    window.applyStaffDateFilter = function() {
+        const from = document.getElementById('srev-date-from')?.value || '';
+        const to   = document.getElementById('srev-date-to')?.value   || '';
+        _staffDateFrom = from || null;
+        _staffDateTo   = to   || null;
+        // Sync ke stats panel
+        const f2 = document.getElementById('srev-date-from2');
+        const t2 = document.getElementById('srev-date-to2');
+        if (f2) f2.value = from;
+        if (t2) t2.value = to;
+        // Reset pill active — pakai mode 'custom' jika ada tanggal
+        if (_staffDateFrom || _staffDateTo) {
+            document.querySelectorAll('.srev-pill').forEach(b => b.classList.remove('srev-pill-active'));
+            const lbl = document.getElementById('srev-filter-label');
+            const lbl2 = document.getElementById('srev-filter-label2');
+            const txt = [_staffDateFrom||'...', _staffDateTo||'...'].join(' s.d. ');
+            if (lbl) lbl.textContent = 'Filter: ' + txt;
+            if (lbl2) lbl2.textContent = 'Filter: ' + txt;
+        }
+        renderStaffRevenue();
+        buildStaffCharts(_allPendapatan);
+    };
+
+    window.syncAndApplyDateFilter2 = function() {
+        const from = document.getElementById('srev-date-from2')?.value || '';
+        const to   = document.getElementById('srev-date-to2')?.value   || '';
+        const f1 = document.getElementById('srev-date-from');
+        const t1 = document.getElementById('srev-date-to');
+        if (f1) f1.value = from;
+        if (t1) t1.value = to;
+        applyStaffDateFilter();
+    };
+
+    window.clearStaffDateFilter = function() {
+        _staffDateFrom = null; _staffDateTo = null;
+        ['srev-date-from','srev-date-to','srev-date-from2','srev-date-to2'].forEach(id => {
+            const el = document.getElementById(id); if (el) el.value = '';
+        });
+        renderStaffRevenue();
+        buildStaffCharts(_allPendapatan);
+    };
+
     window.setStaffFilter = function(f) {
         _staffFilter = f;
         document.querySelectorAll('.srev-pill').forEach(b => b.classList.remove('srev-pill-active'));
@@ -4239,7 +4450,15 @@
         const month   = now.toISOString().slice(0,7);
 
         let filtered;
-        if (_staffFilter === 'harian')   filtered = _allPendapatan.filter(d => d.tanggal === today);
+        if (_staffDateFrom || _staffDateTo) {
+            // Mode custom range tanggal
+            filtered = _allPendapatan.filter(d => {
+                const tgl = d.tanggal || '';
+                if (_staffDateFrom && tgl < _staffDateFrom) return false;
+                if (_staffDateTo   && tgl > _staffDateTo)   return false;
+                return true;
+            });
+        } else if (_staffFilter === 'harian')   filtered = _allPendapatan.filter(d => d.tanggal === today);
         else if (_staffFilter === 'mingguan') filtered = _allPendapatan.filter(d => d.minggu === week);
         else                             filtered = _allPendapatan.filter(d => (d.tanggal||'').startsWith(month));
 
@@ -4265,14 +4484,22 @@
             if (!filtered.length) {
                 listEl.innerHTML = '<p class="staff-empty">Belum ada pendapatan.</p>';
             } else {
-                listEl.innerHTML = filtered.slice(0,6).map(d => `
+                const makeRow = d => `
                     <div class="srev-row">
                         <div>
                             <div class="srev-row-left">${d.customerName || 'Walk-in'} &middot; ${d.stopTime||'-'}</div>
                             <div class="srev-row-unit">${d.unitId||''} ${d.unitType ? '&middot; '+d.unitType : ''} &middot; ${d.tanggal||''}</div>
                         </div>
                         <div class="srev-row-price">${fmtRp(d.price)}</div>
-                    </div>`).join('');
+                    </div>`;
+                const visible = filtered.slice(0, 2);
+                const hidden  = filtered.slice(2, 6);
+                let html = visible.map(makeRow).join('');
+                if (hidden.length) {
+                    html += `<div id="srev-extra-rows" style="display:none">${hidden.map(makeRow).join('')}</div>`;
+                    html += `<button id="srev-toggle-btn" onclick="(function(){var el=document.getElementById('srev-extra-rows');var btn=document.getElementById('srev-toggle-btn');var isOpen=el.style.display!=='none';el.style.display=isOpen?'none':'block';btn.innerHTML=isOpen?'<i class=\'fas fa-chevron-down\' style=\'margin-right:5px\'></i>Lihat ${hidden.length} lainnya':'<i class=\'fas fa-chevron-up\' style=\'margin-right:5px\'></i>Sembunyikan';})()" style="width:100%;margin-top:8px;padding:7px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:#6b7280;font-size:10px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;transition:.2s"><i class="fas fa-chevron-down" style="margin-right:5px"></i>Lihat ${hidden.length} lainnya</button>`;
+                }
+                listEl.innerHTML = html;
             }
         }
 
@@ -4305,128 +4532,158 @@
     );
 
     // ══════════════════════════════════════════════════════════════════
-    // STAFF CHARTS
+    // STAFF CHARTS — per-chart independent filter
     // ══════════════════════════════════════════════════════════════════
-    let _sChartRevenue = null, _sChartBvR = null, _sChartPS = null;
-    let _sChartPeriod = '7d';
+
+    // State per chart-id: { period, dateFrom, dateTo, instance }
+    const _chartState = {};
+    function _getCS(id) {
+        if (!_chartState[id]) _chartState[id] = { period:'7d', dateFrom:null, dateTo:null, instance:null };
+        return _chartState[id];
+    }
 
     const _sChartDefaults = {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: {
-            backgroundColor: '#1c2128', titleColor: '#e6edf3', bodyColor: '#7d8590',
-            borderColor: 'rgba(255,255,255,0.08)', borderWidth: 1, padding: 8,
-            callbacks: { label: ctx => ' Rp ' + (ctx.raw||0).toLocaleString('id-ID') }
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false }, tooltip:{
+            backgroundColor:'#1c2128', titleColor:'#e6edf3', bodyColor:'#7d8590',
+            borderColor:'rgba(255,255,255,0.08)', borderWidth:1, padding:8,
+            callbacks:{ label: ctx => ' Rp ' + (ctx.raw||0).toLocaleString('id-ID') }
         }},
-        scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#4b5563', font: { size: 8, family: 'inherit' }, maxRotation: 45 } },
-            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#4b5563', font: { size: 8, family: 'inherit' }, callback: v => v>=1000000 ? (v/1000000).toFixed(1)+'jt' : v>=1000 ? (v/1000).toFixed(0)+'k' : v }, beginAtZero: true }
+        scales:{
+            x:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#4b5563',font:{size:8,family:'inherit'},maxRotation:45} },
+            y:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#4b5563',font:{size:8,family:'inherit'},callback:v=>v>=1000000?(v/1000000).toFixed(1)+'jt':v>=1000?(v/1000).toFixed(0)+'k':v}, beginAtZero:true }
         }
     };
+    const _sChartDefaultsTrx = { ..._sChartDefaults, plugins:{ ..._sChartDefaults.plugins, tooltip:{ ..._sChartDefaults.plugins.tooltip, callbacks:{ label:ctx=>`${ctx.dataset.label}: ${ctx.raw} trx` } } } };
 
-    function _sLineDs(label, data, color) {
-        return { label, data, borderColor: color, backgroundColor: color + '22', borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, fill: true, tension: 0.4 };
+    function _sLineDs(label,data,color){ return { label,data,borderColor:color,backgroundColor:color+'22',borderWidth:2,pointRadius:2,pointHoverRadius:4,fill:true,tension:0.4 }; }
+
+    function _sDateLabels(n){ const l=[]; for(let i=n-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);l.push(d.toISOString().slice(0,10));} return l; }
+    function _sMonthLabels(n){ const l=[]; for(let i=n-1;i>=0;i--){const d=new Date();d.setMonth(d.getMonth()-i);l.push(d.toISOString().slice(0,7));} return l; }
+    function _sLabelShort(str){ if(str.length===10){const[,m,d]=str.split('-');return `${d}/${m}`;} const[,m]=str.split('-'); return ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][parseInt(m)-1]; }
+
+    function _getChartLabels(cs) {
+        if (cs.dateFrom || cs.dateTo) {
+            const from = cs.dateFrom ? new Date(cs.dateFrom) : new Date(cs.dateTo);
+            const to   = cs.dateTo   ? new Date(cs.dateTo)   : new Date(cs.dateFrom);
+            const diff = Math.round((to - from)/86400000)+1;
+            if (diff <= 62) {
+                const l=[];
+                for(let i=0;i<diff;i++){const d=new Date(from);d.setDate(d.getDate()+i);l.push(d.toISOString().slice(0,10));}
+                return { labels:l, keyF:'tanggal' };
+            }
+        }
+        const n = cs.period==='bulan'?12:cs.period==='30d'?30:7;
+        return { labels: cs.period==='bulan'?_sMonthLabels(n):_sDateLabels(n), keyF: cs.period==='bulan'?'bulan':'tanggal' };
     }
 
-    function _sDateLabels(n) {
-        const l = [];
-        for (let i = n-1; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate()-i); l.push(d.toISOString().slice(0,10)); }
-        return l;
+    function _filterData(data, cs) {
+        if (!cs.dateFrom && !cs.dateTo) return data;
+        return data.filter(d=>{
+            const tgl = d.tanggal||'';
+            if (cs.dateFrom && tgl < cs.dateFrom) return false;
+            if (cs.dateTo   && tgl > cs.dateTo)   return false;
+            return true;
+        });
     }
 
-    function _sMonthLabels(n) {
-        const l = [];
-        for (let i = n-1; i >= 0; i--) { const d = new Date(); d.setMonth(d.getMonth()-i); l.push(d.toISOString().slice(0,7)); }
-        return l;
+    function _updateSubtitle(id, cs) {
+        const subMap = {
+            'staff-chart-revenue': 'staff-chart-rev-subtitle',
+            'staff-chart-bvr':     'staff-chart-bvr-subtitle',
+            'staff-chart-ps':      'staff-chart-ps-subtitle',
+            'sp-chart-revenue':    'sp-chart-subtitle',
+            'sp-chart-bvr':        'sp-chart-bvr-subtitle',
+            'sp-chart-ps':         'sp-chart-ps-subtitle',
+        };
+        const el = document.getElementById(subMap[id]);
+        if (!el) return;
+        if (cs.dateFrom || cs.dateTo) {
+            el.textContent = [cs.dateFrom||'...', cs.dateTo||'...'].join(' s.d. ');
+        } else {
+            const p = cs.period;
+            el.textContent = p==='7d'?'7 hari terakhir':p==='30d'?'30 hari terakhir':'12 bulan terakhir';
+        }
     }
 
-    function _sLabelShort(str) {
-        if (str.length === 10) { const [,m,d] = str.split('-'); return `${d}/${m}`; }
-        const [,m] = str.split('-');
-        return ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][parseInt(m)-1];
-    }
-
-    function buildStaffCharts(data) {
-        const n = _sChartPeriod === 'bulan' ? 12 : _sChartPeriod === '30d' ? 30 : 7;
-        const labels = _sChartPeriod === 'bulan' ? _sMonthLabels(n) : _sDateLabels(n);
-        const keyF = _sChartPeriod === 'bulan' ? 'bulan' : 'tanggal';
+    function buildOneChart(id, data) {
+        const cs = _getCS(id);
+        const { labels, keyF } = _getChartLabels(cs);
         const shortL = labels.map(_sLabelShort);
+        const fd = _filterData(data, cs);
+        _updateSubtitle(id, cs);
 
-        const sub = document.getElementById('staff-chart-rev-subtitle');
-        if (sub) sub.textContent = `Pendapatan per ${_sChartPeriod === 'bulan' ? 'bulan' : 'hari'} (${_sChartPeriod === '7d' ? '7 hari' : _sChartPeriod === '30d' ? '30 hari' : '12 bulan'} terakhir)`;
+        const ctx = document.getElementById(id);
+        if (!ctx) return;
+        if (cs.instance) { cs.instance.destroy(); cs.instance = null; }
 
-        // Chart 1: Revenue
-        const totals = labels.map(l => data.filter(d => (d[keyF]||'') === l).reduce((s,d)=>s+(d.price||0),0));
-        const ctx1 = document.getElementById('staff-chart-revenue');
-        if (ctx1) {
-            if (_sChartRevenue) _sChartRevenue.destroy();
-            _sChartRevenue = new Chart(ctx1.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('Pendapatan',totals,'#00d9ff')] }, options:{..._sChartDefaults} });
-        }
-
-        // Chart 2: Booking vs Rental
-        const bk  = labels.map(l => data.filter(d => (d[keyF]||'') === l && !(d.unitId||'').startsWith('R-')).length);
-        const rnt = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitId||'').startsWith('R-')).length);
-        const ctx2 = document.getElementById('staff-chart-bvr');
-        if (ctx2) {
-            if (_sChartBvR) _sChartBvR.destroy();
-            _sChartBvR = new Chart(ctx2.getContext('2d'), {
-                type:'line', data:{ labels:shortL, datasets:[_sLineDs('Booking',bk,'#00d9ff'),_sLineDs('Rental',rnt,'#a855f7')] },
-                options: { ..._sChartDefaults, plugins:{ ..._sChartDefaults.plugins, tooltip:{ ..._sChartDefaults.plugins.tooltip, callbacks:{ label:ctx=>`${ctx.dataset.label}: ${ctx.raw} trx` } } } }
-            });
-        }
-
-        // Chart 3: Per tipe PS
-        const ps3 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS3')).reduce((s,d)=>s+(d.price||0),0));
-        const ps4 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS4')).reduce((s,d)=>s+(d.price||0),0));
-        const ps5 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS5')).reduce((s,d)=>s+(d.price||0),0));
-        const ctx3 = document.getElementById('staff-chart-ps');
-        if (ctx3) {
-            if (_sChartPS) _sChartPS.destroy();
-            _sChartPS = new Chart(ctx3.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('PS3',ps3,'#3fb950'),_sLineDs('PS4',ps4,'#00d9ff'),_sLineDs('PS5',ps5,'#e3b341')] }, options:{..._sChartDefaults} });
+        if (id.includes('bvr')) {
+            const bk  = labels.map(l => fd.filter(d=>(d[keyF]||'')===l && !(d.unitId||'').startsWith('R-')).length);
+            const rnt = labels.map(l => fd.filter(d=>(d[keyF]||'')===l &&  (d.unitId||'').startsWith('R-')).length);
+            cs.instance = new Chart(ctx.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('Booking',bk,'#00d9ff'),_sLineDs('Rental',rnt,'#a855f7')] }, options:{..._sChartDefaultsTrx} });
+        } else if (id.includes('-ps')) {
+            const ps3 = labels.map(l => fd.filter(d=>(d[keyF]||'')===l&&(d.unitType||d.unitId||'').includes('PS3')).reduce((s,d)=>s+(d.price||0),0));
+            const ps4 = labels.map(l => fd.filter(d=>(d[keyF]||'')===l&&(d.unitType||d.unitId||'').includes('PS4')).reduce((s,d)=>s+(d.price||0),0));
+            const ps5 = labels.map(l => fd.filter(d=>(d[keyF]||'')===l&&(d.unitType||d.unitId||'').includes('PS5')).reduce((s,d)=>s+(d.price||0),0));
+            cs.instance = new Chart(ctx.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('PS3',ps3,'#3fb950'),_sLineDs('PS4',ps4,'#00d9ff'),_sLineDs('PS5',ps5,'#e3b341')] }, options:{..._sChartDefaults} });
+        } else {
+            const totals = labels.map(l => fd.filter(d=>(d[keyF]||'')===l).reduce((s,d)=>s+(d.price||0),0));
+            cs.instance = new Chart(ctx.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('Pendapatan',totals,'#00d9ff')] }, options:{..._sChartDefaults} });
         }
     }
 
-    window.switchStaffChartPeriod = (period, btn) => {
-        _sChartPeriod = period;
-        document.querySelectorAll('.staff-chart-pill').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        buildStaffCharts(_allPendapatan);
-    };
+    const _allChartIds = ['staff-chart-revenue','staff-chart-bvr','staff-chart-ps','sp-chart-revenue','sp-chart-bvr','sp-chart-ps'];
 
-    // ── SP Charts (stats-panel, canvas sp-chart-*) ────────────────────
-    let _spChartRevenue = null, _spChartBvR = null, _spChartPS = null;
-    let _spPeriod = '7d';
-
-    function buildSPCharts(data) {
-        const n = _spPeriod === 'bulan' ? 12 : _spPeriod === '30d' ? 30 : 7;
-        const labels = _spPeriod === 'bulan' ? _sMonthLabels(n) : _sDateLabels(n);
-        const keyF = _spPeriod === 'bulan' ? 'bulan' : 'tanggal';
-        const shortL = labels.map(_sLabelShort);
-
-        const sub = document.getElementById('sp-chart-subtitle');
-        if (sub) sub.textContent = _spPeriod === '7d' ? '7 hari terakhir' : _spPeriod === '30d' ? '30 hari terakhir' : '12 bulan terakhir';
-
-        const totals = labels.map(l => data.filter(d => (d[keyF]||'') === l).reduce((s,d)=>s+(d.price||0),0));
-        const ctx1 = document.getElementById('sp-chart-revenue');
-        if (ctx1) { if (_spChartRevenue) _spChartRevenue.destroy(); _spChartRevenue = new Chart(ctx1.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('Pendapatan',totals,'#00d9ff')] }, options:{..._sChartDefaults} }); }
-
-        const bk  = labels.map(l => data.filter(d => (d[keyF]||'') === l && !(d.unitId||'').startsWith('R-')).length);
-        const rnt = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitId||'').startsWith('R-')).length);
-        const ctx2 = document.getElementById('sp-chart-bvr');
-        if (ctx2) { if (_spChartBvR) _spChartBvR.destroy(); _spChartBvR = new Chart(ctx2.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('Booking',bk,'#00d9ff'),_sLineDs('Rental',rnt,'#a855f7')] }, options:{..._sChartDefaults, plugins:{..._sChartDefaults.plugins, tooltip:{..._sChartDefaults.plugins.tooltip, callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} trx`}}}} }); }
-
-        const ps3 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS3')).reduce((s,d)=>s+(d.price||0),0));
-        const ps4 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS4')).reduce((s,d)=>s+(d.price||0),0));
-        const ps5 = labels.map(l => data.filter(d => (d[keyF]||'') === l && (d.unitType||d.unitId||'').includes('PS5')).reduce((s,d)=>s+(d.price||0),0));
-        const ctx3 = document.getElementById('sp-chart-ps');
-        if (ctx3) { if (_spChartPS) _spChartPS.destroy(); _spChartPS = new Chart(ctx3.getContext('2d'), { type:'line', data:{ labels:shortL, datasets:[_sLineDs('PS3',ps3,'#3fb950'),_sLineDs('PS4',ps4,'#00d9ff'),_sLineDs('PS5',ps5,'#e3b341')] }, options:{..._sChartDefaults} }); }
+    function buildAllCharts(data) {
+        _allChartIds.forEach(id => buildOneChart(id, data));
     }
 
-    window.switchSPChart = (period, btn) => {
-        _spPeriod = period;
-        document.querySelectorAll('.sp-pill').forEach(p => p.classList.remove('active'));
+    // Fungsi lama untuk kompatibilitas onSnapshot
+    function buildStaffCharts(data) { ['staff-chart-revenue','staff-chart-bvr','staff-chart-ps'].forEach(id=>buildOneChart(id,data)); }
+    function buildSPCharts(data)    { ['sp-chart-revenue','sp-chart-bvr','sp-chart-ps'].forEach(id=>buildOneChart(id,data)); }
+
+    window.switchChart = function(chartId, period, btn) {
+        const cs = _getCS(chartId);
+        cs.period = period;
+        // Reset tombol sekelompok pill yang sama (identifikasi dari parent .staff-chart-pills)
+        btn.closest('.staff-chart-pills')?.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
-        buildSPCharts(_allPendapatan);
+        // Kosongkan date filter jika pakai period
+        const fromEl = document.getElementById(chartId+'-date-from');
+        const toEl   = document.getElementById(chartId+'-date-to');
+        if (fromEl) fromEl.value=''; if (toEl) toEl.value='';
+        cs.dateFrom = null; cs.dateTo = null;
+        buildOneChart(chartId, _allPendapatan);
     };
+
+    window.applyChartDateFilter = function(chartId) {
+        const cs = _getCS(chartId);
+        cs.dateFrom = document.getElementById(chartId+'-date-from')?.value || null;
+        cs.dateTo   = document.getElementById(chartId+'-date-to')?.value   || null;
+        // Nonaktifkan semua pill jika ada date
+        if (cs.dateFrom || cs.dateTo) {
+            document.getElementById(chartId)?.closest('.staff-chart-section')
+                ?.querySelectorAll('.staff-chart-pill').forEach(b=>b.classList.remove('active'));
+        }
+        buildOneChart(chartId, _allPendapatan);
+    };
+
+    window.clearChartDateFilter = function(chartId) {
+        const cs = _getCS(chartId);
+        cs.dateFrom = null; cs.dateTo = null;
+        const fromEl = document.getElementById(chartId+'-date-from');
+        const toEl   = document.getElementById(chartId+'-date-to');
+        if (fromEl) fromEl.value=''; if (toEl) toEl.value='';
+        // Aktifkan kembali pill 7H
+        const pills = document.getElementById(chartId)?.closest('.staff-chart-section')?.querySelectorAll('.staff-chart-pill');
+        if (pills) { pills.forEach(b=>b.classList.remove('active')); pills[0]?.classList.add('active'); }
+        cs.period = '7d';
+        buildOneChart(chartId, _allPendapatan);
+    };
+
+    // Backward compat (revenue card global filter masih bisa rebuild chart)
+    window.switchStaffChartPeriod = (period, btn) => { window.switchChart('staff-chart-revenue', period, btn); };
+    window.switchSPChart = (period, btn) => { window.switchChart('sp-chart-revenue', period, btn); };
 
     // ════════════════════════════════════════════════════
     // END STAFF KPI DASHBOARD
