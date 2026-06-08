@@ -763,9 +763,11 @@
   import { auth, db, collection, onSnapshot, handleLogout, doc } from '../../assets/js/auth.js';
   import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
   import { query, where, orderBy, limit, deleteDoc, getDocs, updateDoc, addDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+  import { listenKonfirmasiNotif } from '../../assets/js/utils/confirmnotif.js';
 
   let unsubBookings = null;
   let unsubRentals  = null;
+  let unsubKonfirmasi = null;
   let currentUid    = null;
 
   // State seleksi
@@ -789,6 +791,9 @@
     currentUid = user.uid;
     loadBookings(user.uid);
     loadRentals(user.uid);
+    // Mulai listener notif konfirmasi booking & rental
+    if (unsubKonfirmasi) unsubKonfirmasi();
+    unsubKonfirmasi = listenKonfirmasiNotif(user.uid);
     // Auto-buka riwayat jika diarahkan dari halaman lain (?history=1)
     if (new URLSearchParams(window.location.search).get('history') === '1') {
       setTimeout(() => navGoPesanan(), 600);
