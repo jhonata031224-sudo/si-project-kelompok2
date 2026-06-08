@@ -198,9 +198,74 @@
     }
 
     function toggleAgree() {
-        agreed = !agreed;
-        document.getElementById('agreeCheck').classList.toggle('checked', agreed);
-        document.getElementById('regBtn').disabled = !agreed;
+        if (agreed) {
+            agreed = false;
+            document.getElementById('agreeCheck').classList.remove('checked');
+            document.getElementById('regBtn').disabled = true;
+            return;
+        }
+
+        const bg = localStorage.getItem('pg_theme') === 'light'
+            ? { background: '#ffffff', color: '#1a202c' }
+            : { background: '#11171f', color: '#fff' };
+
+        Swal.fire({
+            title: '<span style="font-size:18px;font-weight:800;letter-spacing:-.3px">Syarat & Ketentuan</span>',
+            html: `
+                <div style="text-align:left;font-size:13px;line-height:1.7;max-height:360px;overflow-y:auto;padding-right:6px;color:#8899aa">
+                    <p style="margin-bottom:14px">Selamat datang di <b style="color:#00d9ff">Prince Games</b>! Dengan mendaftar, kamu menyetujui ketentuan penggunaan layanan kami berikut ini.</p>
+                    <div style="margin-bottom:14px">
+                        <div style="font-weight:700;color:#e8edf5;margin-bottom:5px;display:flex;align-items:center;gap:7px">
+                            <span style="background:rgba(0,217,255,0.15);color:#00d9ff;border-radius:6px;padding:1px 8px;font-size:11px;flex-shrink:0">1</span>Akun &amp; Identitas
+                        </div>
+                        <p>Setiap pengguna hanya boleh memiliki <b style="color:#e8edf5">satu akun aktif</b>. Data yang kamu daftarkan harus valid. Prince Games berhak menonaktifkan akun yang terbukti menggunakan identitas palsu.</p>
+                    </div>
+                    <div style="margin-bottom:14px">
+                        <div style="font-weight:700;color:#e8edf5;margin-bottom:5px;display:flex;align-items:center;gap:7px">
+                            <span style="background:rgba(0,217,255,0.15);color:#00d9ff;border-radius:6px;padding:1px 8px;font-size:11px;flex-shrink:0">2</span>Booking &amp; Rental
+                        </div>
+                        <p>Booking yang sudah dikonfirmasi bersifat mengikat. Pembatalan kurang dari <b style="color:#e8edf5">30 menit</b> sebelum sesi dimulai dapat dikenakan penalti berupa pembekuan fitur booking sementara. Harap datang tepat waktu.</p>
+                    </div>
+                    <div style="margin-bottom:14px">
+                        <div style="font-weight:700;color:#e8edf5;margin-bottom:5px;display:flex;align-items:center;gap:7px">
+                            <span style="background:rgba(0,217,255,0.15);color:#00d9ff;border-radius:6px;padding:1px 8px;font-size:11px;flex-shrink:0">3</span>Penggunaan Perangkat
+                        </div>
+                        <p>Pengguna wajib menjaga perangkat dengan baik selama sesi. Kerusakan akibat kelalaian menjadi <b style="color:#e8edf5">tanggung jawab pengguna</b>. Dilarang menginstal software ilegal atau konten berbahaya pada perangkat.</p>
+                    </div>
+                    <div style="margin-bottom:14px">
+                        <div style="font-weight:700;color:#e8edf5;margin-bottom:5px;display:flex;align-items:center;gap:7px">
+                            <span style="background:rgba(0,217,255,0.15);color:#00d9ff;border-radius:6px;padding:1px 8px;font-size:11px;flex-shrink:0">4</span>Poin &amp; Loyalitas
+                        </div>
+                        <p>Poin loyalitas didapat dari setiap sesi rental yang diselesaikan. Poin <b style="color:#e8edf5">tidak dapat ditransfer</b> ke akun lain dan memiliki masa berlaku <b style="color:#e8edf5">6 bulan</b> sejak terakhir digunakan.</p>
+                    </div>
+                    <div style="margin-bottom:14px">
+                        <div style="font-weight:700;color:#e8edf5;margin-bottom:5px;display:flex;align-items:center;gap:7px">
+                            <span style="background:rgba(0,217,255,0.15);color:#00d9ff;border-radius:6px;padding:1px 8px;font-size:11px;flex-shrink:0">5</span>Privasi Data
+                        </div>
+                        <p>Data pribadi kamu (username, nomor WhatsApp) hanya digunakan untuk keperluan layanan Prince Games dan <b style="color:#e8edf5">tidak akan dibagikan</b> kepada pihak ketiga tanpa persetujuanmu.</p>
+                    </div>
+                    <div>
+                        <div style="font-weight:700;color:#e8edf5;margin-bottom:5px;display:flex;align-items:center;gap:7px">
+                            <span style="background:rgba(0,217,255,0.15);color:#00d9ff;border-radius:6px;padding:1px 8px;font-size:11px;flex-shrink:0">6</span>Perilaku Pengguna
+                        </div>
+                        <p>Pengguna dilarang melakukan tindakan yang mengganggu kenyamanan pengguna lain. Pelanggaran dapat mengakibatkan <b style="color:#e8edf5">pemblokiran akun permanen</b> tanpa pemberitahuan sebelumnya.</p>
+                    </div>
+                </div>
+            `,
+            confirmButtonText: '<i class="fas fa-check" style="margin-right:6px"></i>Saya Setuju',
+            confirmButtonColor: '#00d9ff',
+            showCancelButton: true,
+            cancelButtonText: 'Batal',
+            cancelButtonColor: '#374151',
+            ...bg,
+            width: 480,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                agreed = true;
+                document.getElementById('agreeCheck').classList.add('checked');
+                document.getElementById('regBtn').disabled = false;
+            }
+        });
     }
 
     function checkStrength(val) {

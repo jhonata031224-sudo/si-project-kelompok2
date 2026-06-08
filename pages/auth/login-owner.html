@@ -154,11 +154,6 @@
             </div>
         </div>
 
-        <div class="remember">
-            <div class="custom-check" id="rememberCheck" onclick="toggleRemember()"><i class="fas fa-check"></i></div>
-            <span onclick="toggleRemember()">Tetap masuk di perangkat ini</span>
-        </div>
-
         <button class="btn-primary" id="loginBtn" onclick="doLogin()">
             Sign in <i class="fas fa-arrow-right"></i>
         </button>
@@ -170,7 +165,7 @@
     <div class="version-bar">v0.1 · Prince Games</div>
 
 <script>
-    let loginAttempts = 0, rememberMe = false;
+    let loginAttempts = 0;
     function showToast(type, msg) {
         const t = document.getElementById('toast');
         const icons = {success:'fa-check-circle',error:'fa-times-circle',warning:'fa-exclamation-triangle'};
@@ -184,10 +179,6 @@
         const icon = document.getElementById(iconId);
         input.type = input.type === 'password' ? 'text' : 'password';
         icon.className = input.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
-    }
-    function toggleRemember() {
-        rememberMe = !rememberMe;
-        document.getElementById('rememberCheck').classList.toggle('checked', rememberMe);
     }
     function setLoading(on) {
         const btn = document.getElementById('loginBtn');

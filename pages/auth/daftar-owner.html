@@ -158,12 +158,7 @@
             <div class="strength-label" id="strength-label">Minimal 8 karakter</div>
         </div>
 
-        <div class="agree-row">
-            <div class="custom-check" id="agreeCheck" onclick="toggleAgree()"><i class="fas fa-check"></i></div>
-            <div class="agree-text">Saya setuju dengan <a href="#">Syarat & Ketentuan</a> dan <a href="#">Kebijakan Privasi</a>.</div>
-        </div>
-
-        <button class="btn-primary" id="regBtn" onclick="doRegister()" disabled>
+        <button class="btn-primary" id="regBtn" onclick="doRegister()">
             Daftar sebagai Owner <i class="fas fa-arrow-right"></i>
         </button>
 
@@ -183,7 +178,7 @@
     <div class="version-bar">v0.1 · Prince Games</div>
 
 <script>
-    let agreed = false, regAttempts = 0;
+    let regAttempts = 0;
     function showToast(type, msg) {
         const t = document.getElementById('toast');
         const icons = {success:'fa-check-circle',error:'fa-times-circle',warning:'fa-exclamation-triangle'};
@@ -197,11 +192,6 @@
         const icon = document.getElementById(iconId);
         input.type = input.type === 'password' ? 'text' : 'password';
         icon.className = input.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
-    }
-    function toggleAgree() {
-        agreed = !agreed;
-        document.getElementById('agreeCheck').classList.toggle('checked', agreed);
-        document.getElementById('regBtn').disabled = !agreed;
     }
     function checkStrength(val) {
         const segs = ['s1','s2','s3','s4'].map(id => document.getElementById(id));
@@ -230,7 +220,6 @@
         if (!email || !/\S+@\S+\.\S+/.test(email)) { document.getElementById('owner-email').classList.add('error'); showToast('error','Format email tidak valid!'); return; }
         if (email.length > 50) { document.getElementById('owner-email').classList.add('error'); showToast('error','Email maksimal 50 karakter!'); return; }
         if (pass.length < 8) { document.getElementById('owner-pass').classList.add('error'); showToast('error','Password minimal 8 karakter!'); return; }
-        if (!agreed) { showToast('warning','Centang persetujuan terlebih dahulu!'); return; }
         regAttempts++;
         if (regAttempts >= 5) {
             ['owner-email','owner-pass'].forEach(id => document.getElementById(id).value = '');

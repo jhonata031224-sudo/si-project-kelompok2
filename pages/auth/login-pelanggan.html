@@ -67,6 +67,7 @@
         .btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 32px rgba(0,217,255,0.4)}
         .btn-primary:active{transform:scale(.98)}
         .btn-primary.loading{opacity:.7;pointer-events:none}
+        .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
 
         .divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--muted);font-size:11px}
         .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -176,7 +177,7 @@
             <span onclick="toggleRemember()">Tetap masuk di perangkat ini</span>
         </div>
 
-        <button class="btn-primary" id="loginBtn" onclick="doLogin()">
+        <button class="btn-primary" id="loginBtn" onclick="doLogin()" disabled>
             Sign in <i class="fas fa-arrow-right"></i>
         </button>
 
@@ -211,6 +212,7 @@
     function toggleRemember() {
         rememberMe = !rememberMe;
         document.getElementById('rememberCheck').classList.toggle('checked', rememberMe);
+        document.getElementById('loginBtn').disabled = !rememberMe;
     }
 
     function setLoading(on) {
