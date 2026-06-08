@@ -18,11 +18,9 @@ const STATUS_DITOLAK          = 'ditolak';
 
 function normalize(s) { return (s || '').toLowerCase().trim(); }
 
-// ── sessionStorage: cegah notif muncul dobel dalam satu sesi ─────────────────
-// Pakai sessionStorage (bukan localStorage) agar tiap buka tab baru / refresh
-// tetap bisa menerima notif jika status berubah lagi di sesi yang berbeda.
-function getFlag(key)      { try { return sessionStorage.getItem(key); }  catch { return null; } }
-function setFlag(key)      { try { sessionStorage.setItem(key, '1'); }    catch {} }
+// ── localStorage: cegah notif muncul dobel ───────────────────────────────────
+function getFlag(key)      { try { return localStorage.getItem(key); }  catch { return null; } }
+function setFlag(key)      { try { localStorage.setItem(key, '1'); }    catch {} }
 
 // ── Suara via Web Audio API ───────────────────────────────────────────────────
 function playSound(type) {
@@ -149,7 +147,7 @@ function popup(variant, item, itemType) {
             cancelButtonText: 'Tutup',
             confirmButtonColor: accent,
             cancelButtonColor: '#1f2937',
-            allowOutsideClick: true,
+            allowOutsideClick: false,
             customClass: { popup: popupClass },
             html: `
                 <div style="text-align:center;padding:6px 0">
@@ -175,7 +173,7 @@ function popup(variant, item, itemType) {
             showConfirmButton: true,
             confirmButtonText: 'Mengerti',
             confirmButtonColor: '#ef4444',
-            allowOutsideClick: true,
+            allowOutsideClick: false,
             customClass: { popup: 'cn-popup-no' },
             html: `
                 <div style="text-align:center;padding:6px 0">
@@ -263,9 +261,6 @@ function buatListener(uid, namaKoleksi, itemType, filterExtra) {
 export function listenKonfirmasiNotif(uid) {
     if (!uid) return () => {};
     injectCSS();
-
-    // Safety: tutup popup Swal yang mungkin nyangkut dari sesi sebelumnya
-    try { if (typeof Swal !== 'undefined') Swal.close(); } catch(e) {}
 
     const unsubBooking = buatListener(uid, 'bookings', 'booking', null);
     const unsubRental  = buatListener(uid, 'rentals',  'rental',  ['type', '==', 'bawa_pulang']);
