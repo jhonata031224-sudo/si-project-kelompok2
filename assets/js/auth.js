@@ -1,7 +1,8 @@
 // js/auth.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
-    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged 
+    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+    signOut, onAuthStateChanged, sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
     getFirestore, doc, updateDoc, onSnapshot, collection, setDoc, getDoc, getDocs, addDoc, deleteDoc, query, orderBy, where
@@ -21,8 +22,8 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const swalBg = () => localStorage.getItem('pg_theme') === 'light'
-    ? { background: '#ffffff', color: '#1a202c' }
-    : { background: '#11171f', color: '#fff' };
+    ? { background: '#ffffff', color: '#1a202c', border: 'rgba(0,0,0,0.30)', inputBg: 'rgba(0,0,0,0.04)' }
+    : { background: '#11171f', color: '#fff',    border: 'rgba(255,255,255,0.18)', inputBg: 'rgba(255,255,255,0.05)' };
 
 const notify = (icon, title, text = "") => {
     Swal.fire({
@@ -33,6 +34,174 @@ const notify = (icon, title, text = "") => {
 };
 
 // --- FUNGSI LOGOUT UNIVERSAL ---
+// --- LUPA PASSWORD (UNIVERSAL, SEMUA ROLE) ---
+// role: 'pelanggan' → pakai username | 'staff'/'owner' → pakai email
+window.forgotPassword = async (role = 'staff') => {
+    const isPelanggan = role === 'pelanggan';
+    const bg = swalBg();
+
+    const inputFieldHtml = isPelanggan ? `
+        <div style="margin-bottom:14px;text-align:left">
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Username</label>
+            <div style="position:relative;display:flex;align-items:center">
+                <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
+                    <i class="fas fa-user"></i>
+                </span>
+                <input id="swal-fp-username" type="text" placeholder="Masukkan username kamu"
+                    autocomplete="username"
+                    style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 14px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
+            </div>
+        </div>
+        <div style="text-align:left">
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">New Password</label>
+            <div style="position:relative;display:flex;align-items:center">
+                <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <input id="swal-fp-newpass" type="password" placeholder="Password baru"
+                    style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 38px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
+                <button type="button" onclick="(function(){const i=document.getElementById('swal-fp-newpass');i.type=i.type==='password'?'text':'password';this.querySelector('i').className=i.type==='password'?'fas fa-eye':'fas fa-eye-slash'}).call(this)"
+                    style="position:absolute;right:12px;background:none;border:none;color:#8899aa;cursor:pointer;padding:4px;font-size:14px;display:flex;align-items:center">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+        <div style="margin-top:14px;text-align:left">
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Confirm Password</label>
+            <div style="position:relative;display:flex;align-items:center">
+                <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <input id="swal-fp-confirmpass" type="password" placeholder="Ulangi password baru"
+                    style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 38px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
+                <button type="button" onclick="(function(){const i=document.getElementById('swal-fp-confirmpass');i.type=i.type==='password'?'text':'password';this.querySelector('i').className=i.type==='password'?'fas fa-eye':'fas fa-eye-slash'}).call(this)"
+                    style="position:absolute;right:12px;background:none;border:none;color:#8899aa;cursor:pointer;padding:4px;font-size:14px;display:flex;align-items:center">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+    ` : `
+        <div style="margin-bottom:14px;text-align:left">
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Email</label>
+            <div style="position:relative;display:flex;align-items:center">
+                <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
+                    <i class="fas fa-envelope"></i>
+                </span>
+                <input id="swal-fp-email" type="email" placeholder="contoh@email.com"
+                    autocomplete="email"
+                    style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 14px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
+            </div>
+        </div>
+        <div style="text-align:left">
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">New Password</label>
+            <div style="position:relative;display:flex;align-items:center">
+                <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <input id="swal-fp-newpass" type="password" placeholder="Password baru"
+                    style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 38px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
+                <button type="button" onclick="(function(){const i=document.getElementById('swal-fp-newpass');i.type=i.type==='password'?'text':'password';this.querySelector('i').className=i.type==='password'?'fas fa-eye':'fas fa-eye-slash'}).call(this)"
+                    style="position:absolute;right:12px;background:none;border:none;color:#8899aa;cursor:pointer;padding:4px;font-size:14px;display:flex;align-items:center">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+        <div style="margin-top:14px;text-align:left">
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Confirm Password</label>
+            <div style="position:relative;display:flex;align-items:center">
+                <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <input id="swal-fp-confirmpass" type="password" placeholder="Ulangi password baru"
+                    style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 38px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
+                <button type="button" onclick="(function(){const i=document.getElementById('swal-fp-confirmpass');i.type=i.type==='password'?'text':'password';this.querySelector('i').className=i.type==='password'?'fas fa-eye':'fas fa-eye-slash'}).call(this)"
+                    style="position:absolute;right:12px;background:none;border:none;color:#8899aa;cursor:pointer;padding:4px;font-size:14px;display:flex;align-items:center">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+    `;
+
+    const { value: formData } = await Swal.fire({
+        title: 'Reset Password',
+        html: `<div style="margin-top:4px">${inputFieldHtml}</div>`,
+        confirmButtonText: 'SUBMIT',
+        confirmButtonColor: '#00d9ff',
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        cancelButtonColor: '#374151',
+        ...bg,
+        width: isPelanggan ? 400 : 400,
+        customClass: {
+            confirmButton: 'swal-submit-btn',
+            popup: 'swal-reset-popup'
+        },
+        focusConfirm: false,
+        preConfirm: () => {
+            const newPass    = document.getElementById('swal-fp-newpass').value;
+            const confirmPass = document.getElementById('swal-fp-confirmpass').value;
+
+            if (isPelanggan) {
+                const username = document.getElementById('swal-fp-username').value.trim().toLowerCase();
+                if (!username) { Swal.showValidationMessage('Username tidak boleh kosong'); return false; }
+                if (!newPass)  { Swal.showValidationMessage('Password baru tidak boleh kosong'); return false; }
+                if (newPass.length < 8) { Swal.showValidationMessage('Password minimal 8 karakter'); return false; }
+                if (newPass !== confirmPass) { Swal.showValidationMessage('Password tidak cocok'); return false; }
+                return { type: 'pelanggan', username, newPass };
+            } else {
+                const email = document.getElementById('swal-fp-email').value.trim();
+                if (!email) { Swal.showValidationMessage('Email tidak boleh kosong'); return false; }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { Swal.showValidationMessage('Format email tidak valid'); return false; }
+                if (!newPass)  { Swal.showValidationMessage('Password baru tidak boleh kosong'); return false; }
+                if (newPass.length < 8) { Swal.showValidationMessage('Password minimal 8 karakter'); return false; }
+                if (newPass !== confirmPass) { Swal.showValidationMessage('Password tidak cocok'); return false; }
+                return { type: role, email, newPass };
+            }
+        }
+    });
+
+    if (!formData) return;
+
+    try {
+        if (formData.type === 'pelanggan') {
+            // Pelanggan: cari email dari username, lalu kirim reset email
+            const fakeEmail = `${formData.username}@prince.com`;
+            // Verifikasi username ada di Firestore
+            const usernameDoc = await getDoc(doc(db, 'usernames', formData.username));
+            if (!usernameDoc.exists()) {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: 'Username tidak ditemukan di sistem.', confirmButtonColor: '#00d9ff', ...bg });
+                return;
+            }
+            await sendPasswordResetEmail(auth, fakeEmail);
+            Swal.fire({
+                icon: 'success',
+                title: 'Kata Sandi Berhasil Diubah!',
+                html: `<p style="font-size:13px;color:#8899aa">Kata sandi untuk akun<br><b style="color:#00d9ff">${formData.username}</b><br>telah berhasil diperbarui.</p>`,
+                confirmButtonColor: '#00d9ff',
+                confirmButtonText: 'OK',
+                ...bg
+            });
+        } else {
+            // Staff / Owner: kirim reset email langsung
+            await sendPasswordResetEmail(auth, formData.email);
+            Swal.fire({
+                icon: 'success',
+                title: 'Kata Sandi Berhasil Diubah!',
+                html: `<p style="font-size:13px;color:#8899aa">Kata sandi untuk akun<br><b style="color:#00d9ff">${formData.email}</b><br>telah berhasil diperbarui.</p>`,
+                confirmButtonColor: '#00d9ff',
+                confirmButtonText: 'OK',
+                ...bg
+            });
+        }
+    } catch (err) {
+        let msg = 'Terjadi kesalahan. Coba lagi.';
+        if (err.code === 'auth/user-not-found')    msg = 'Akun tidak ditemukan di sistem.';
+        if (err.code === 'auth/invalid-email')     msg = 'Format email tidak valid.';
+        if (err.code === 'auth/too-many-requests') msg = 'Terlalu banyak permintaan. Coba lagi nanti.';
+        Swal.fire({ icon: 'error', title: 'Gagal', text: msg, confirmButtonColor: '#00d9ff', ...bg });
+    }
+};
+
 export const handleLogout = async (targetUrl = '../../pages/auth/login-pelanggan.html') => {
     const result = await Swal.fire({
         title: 'Logout?',

@@ -57,6 +57,22 @@
         .modal-confirm-btn{flex:1;padding:10px;border-radius:11px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;}
         .modal-confirm-btn:hover{background:rgba(239,68,68,.3);}
 
+        /* Modal light mode */
+        body.light-mode .modal-box {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .modal-title { color: #0f172a !important; }
+        body.light-mode .modal-desc  { color: #64748b !important; }
+        body.light-mode .modal-cancel-btn {
+            background: #f1f5f9 !important;
+            border-color: rgba(0,0,0,0.1) !important;
+            color: #475569 !important;
+        }
+        body.light-mode .modal-cancel-btn:hover { background: #e2e8f0 !important; }
+        body.light-mode .modal-overlay { background: rgba(0,0,0,0.45) !important; }
+
         /* ═══════════════════════════════════════════════════════════════
            RESPONSIVE DESKTOP — Prince Games Owner Panel
            Sidebar di ≥768px, bottom nav di <768px
@@ -268,16 +284,116 @@
         body.light-mode .btn-theme-toggle { background: #f1f5f9 !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
         body.light-mode .role-badge { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
 
+        body.light-mode .cancel-accordion {
+            background: #fff !important;
+            border-color: rgba(239,68,68,.2) !important;
+        }
+        body.light-mode .cancel-accordion:hover { border-color: rgba(239,68,68,.4) !important; }
+        body.light-mode .cancel-accordion-inner { color: #0f172a !important; }
+        body.light-mode .cancel-accordion-body { background: #fff !important; }
+
         /* Misc */
         body.light-mode .empty-box p { color: #94a3b8 !important; }
         body.light-mode .loading-pulse { color: #94a3b8 !important; }
         body.light-mode input[type="date"] { color-scheme: light; }
+        body.light-mode #sesi-date-from,
+        body.light-mode #sesi-date-to {
+            background: #f8fafc !important;
+            border-color: rgba(0,0,0,0.12) !important;
+            color: #0f172a !important;
+        }
+        body.light-mode #sesi-pagination { border-color: rgba(0,0,0,0.06) !important; }
         body.light-mode [class*="text-gray"] { color: #64748b !important; }
         body.light-mode [class*="text-white"] { color: #0f172a !important; }
         body.light-mode [class*="bg-white/"] { background: rgba(0,0,0,0.04) !important; }
         body.light-mode [class*="border-white/"] { border-color: rgba(0,0,0,0.08) !important; }
 
         
+        /* ── SHOW MORE BUTTON ── */
+        .cancel-show-more-btn {
+            width: 100%;
+            padding: 13px 18px;
+            border-radius: 16px;
+            background: #11171f;
+            border: 1px dashed rgba(255,255,255,0.1);
+            color: #9ca3af;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            transition: all .2s;
+            letter-spacing: .04em;
+        }
+        .cancel-show-more-btn:hover {
+            border-color: rgba(239,68,68,0.35);
+            color: #ef4444;
+        }
+        body.light-mode .cancel-show-more-btn {
+            background: #f8fafc !important;
+            border-color: rgba(0,0,0,0.1) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .cancel-show-more-btn:hover {
+            border-color: rgba(239,68,68,0.4) !important;
+            color: #ef4444 !important;
+        }
+
+        /* ── CANCELLATION ACCORDION ── */
+        .cancel-accordion {
+            border: 1px solid rgba(239,68,68,.2);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            background: rgba(239,68,68,.03);
+            transition: all 0.2s;
+        }
+        .cancel-accordion:hover { border-color: rgba(239,68,68,.35); }
+        .cancel-accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 14px;
+            cursor: pointer;
+            user-select: none;
+            gap: 10px;
+        }
+        .cancel-accordion-header:active { background: rgba(239,68,68,.06); }
+        .cancel-accordion-chevron {
+            width: 26px; height: 26px;
+            border-radius: 8px;
+            background: rgba(239,68,68,.1);
+            border: 1px solid rgba(239,68,68,.2);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.25s ease;
+            color: #ef4444; font-size: 11px;
+        }
+        .cancel-accordion.open .cancel-accordion-chevron {
+            transform: rotate(180deg);
+        }
+        .cancel-accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .cancel-accordion.open .cancel-accordion-body {
+            max-height: 600px;
+        }
+        .cancel-accordion-inner {
+            padding: 0 14px 14px;
+            border-top: 1px solid rgba(239,68,68,.1);
+        }
+        .cancel-summary-chip {
+            font-size: 9px; font-weight: 800;
+            padding: 2px 8px; border-radius: 5px;
+            border: 1px solid;
+            flex-shrink: 0;
+        }
+
         @media (max-width: 767px) {
             /* Prevent horizontal overflow on mobile */
             .owner-main-content > *,
@@ -373,7 +489,7 @@
 
         <!-- Tabel Detail Sesi -->
         <div class="glass-card p-2 overflow-hidden mb-8">
-            <div class="p-3 flex justify-between items-start">
+            <div class="p-3 flex justify-between items-start flex-wrap gap-2">
                 <div>
                     <h3 class="text-xs font-black uppercase tracking-widest mb-1">Detail Sesi Terbaru</h3>
                     <p class="text-[9px] text-gray-600" id="sesi-count">Memuat data...</p>
@@ -382,11 +498,35 @@
                     <i class="fas fa-trash-alt"></i> Hapus Semua
                 </button>
             </div>
+            <!-- Filter tanggal khusus sesi -->
+            <div class="px-3 pb-3 flex flex-wrap gap-2 items-end border-b border-white/5">
+                <div class="flex-1 min-w-[110px]">
+                    <label class="text-[9px] text-gray-500 font-bold uppercase ml-1">Dari</label>
+                    <input type="date" id="sesi-date-from" class="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-xs text-white outline-none mt-1">
+                </div>
+                <div class="flex-1 min-w-[110px]">
+                    <label class="text-[9px] text-gray-500 font-bold uppercase ml-1">Sampai</label>
+                    <input type="date" id="sesi-date-to" class="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-xs text-white outline-none mt-1">
+                </div>
+                <button onclick="resetSesiDateFilter()" class="filter-btn" style="align-self:flex-end;padding:7px 14px" title="Reset filter tanggal sesi">
+                    <i class="fas fa-rotate-left"></i>
+                </button>
+            </div>
             <div class="overflow-x-auto" id="sesi-table-wrap">
                 <div class="empty-box">
                     <i class="fas fa-clock"></i>
                     <p>Memuat data dari server...</p>
                 </div>
+            </div>
+            <!-- Pagination -->
+            <div id="sesi-pagination" style="display:none" class="flex items-center justify-between px-4 py-3 border-t border-white/5">
+                <button id="sesi-prev-btn" onclick="sesiChangePage(-1)" class="filter-btn" style="padding:5px 14px">
+                    <i class="fas fa-chevron-left mr-1"></i> Prev
+                </button>
+                <span id="sesi-page-info" class="text-[10px] text-gray-500 font-bold"></span>
+                <button id="sesi-next-btn" onclick="sesiChangePage(1)" class="filter-btn" style="padding:5px 14px">
+                    Next <i class="fas fa-chevron-right ml-1"></i>
+                </button>
             </div>
         </div>
 
@@ -475,20 +615,113 @@
     let allFnb        = [];
     let unitFilter    = 'semua';
 
+    // ── Pagination state ─────────────────────────────────────────────
+    let sesiPage = 1;
+    const SESI_PER_PAGE = 10;
+    let _lastFilteredSesi = [];
+
+    // ── Init filter tanggal sesi (default: 30 hari) ──────────────────
+    document.getElementById('sesi-date-from').value = from30.toISOString().slice(0,10);
+    document.getElementById('sesi-date-to').value   = today.toISOString().slice(0,10);
+
+    window.resetSesiDateFilter = () => {
+        const t = new Date(); const f = new Date(); f.setDate(t.getDate()-30);
+        document.getElementById('sesi-date-from').value = f.toISOString().slice(0,10);
+        document.getElementById('sesi-date-to').value   = t.toISOString().slice(0,10);
+        sesiPage = 1;
+        applyFilter();
+    };
+
+    window.sesiChangePage = (dir) => {
+        const totalPages = Math.ceil(_lastFilteredSesi.length / SESI_PER_PAGE);
+        sesiPage = Math.max(1, Math.min(totalPages, sesiPage + dir));
+        renderSesiTable(_lastFilteredSesi);
+    };
+
+    function renderSesiTable(list) {
+        const wrap         = document.getElementById('sesi-table-wrap');
+        const pagination   = document.getElementById('sesi-pagination');
+        const deleteAllBtn = document.getElementById('delete-all-btn');
+        const totalPages   = Math.ceil(list.length / SESI_PER_PAGE);
+
+        document.getElementById('sesi-count').textContent =
+            list.length ? `${list.length} sesi ditemukan` : '';
+
+        if (!list.length) {
+            deleteAllBtn.style.display = 'none';
+            pagination.style.display  = 'none';
+            wrap.innerHTML = `
+                <div class="empty-box">
+                    <i class="fas fa-inbox"></i>
+                    <p>Belum ada sesi yang tercatat<br>untuk rentang & filter ini.</p>
+                </div>`;
+            return;
+        }
+
+        deleteAllBtn.style.display = 'flex';
+        window._filteredSesiIds = list.map(d => d.id);
+
+        const start    = (sesiPage - 1) * SESI_PER_PAGE;
+        const pageData = list.slice(start, start + SESI_PER_PAGE);
+
+        wrap.innerHTML = `
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b border-white/5">
+                        <th class="table-header p-3">Tanggal</th>
+                        <th class="table-header p-3">Unit</th>
+                        <th class="table-header p-3">Customer</th>
+                        <th class="table-header p-3">Stop</th>
+                        <th class="table-header p-3">Total</th>
+                        <th class="table-header p-3"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${pageData.map(d => `
+                        <tr class="border-b border-white/5 hover:bg-white/[0.02]" id="row-${d.id}">
+                            <td class="table-cell text-gray-400">${d.tanggal||'-'}</td>
+                            <td class="table-cell font-bold text-cyan-400">${d.unitId||'-'} <span class="text-gray-600 font-normal">${d.unitType||''}</span></td>
+                            <td class="table-cell">${d.customerName||'-'}</td>
+                            <td class="table-cell text-gray-400">${d.stopTime||'-'}</td>
+                            <td class="table-cell font-black text-green-400">${fmt(d.price)}</td>
+                            <td class="table-cell">
+                                <button class="delete-btn" onclick="confirmDeleteSesi('${d.id}','${(d.customerName||'-').replace(/'/g,"\\'")}','${d.tanggal||'-'}')" title="Hapus sesi ini">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>`;
+
+        if (totalPages > 1) {
+            pagination.style.display = 'flex';
+            document.getElementById('sesi-page-info').textContent =
+                `Hal. ${sesiPage} / ${totalPages} · ${list.length} total`;
+            document.getElementById('sesi-prev-btn').disabled = sesiPage === 1;
+            document.getElementById('sesi-next-btn').disabled = sesiPage === totalPages;
+            document.getElementById('sesi-prev-btn').style.opacity = sesiPage === 1 ? '0.4' : '1';
+            document.getElementById('sesi-next-btn').style.opacity = sesiPage === totalPages ? '0.4' : '1';
+        } else {
+            pagination.style.display = 'none';
+        }
+    }
+
     // ── Filter & Render ──────────────────────────────────────────────
     function applyFilter() {
-        const from = document.getElementById('date-from').value;
-        const to   = document.getElementById('date-to').value;
+        const from     = document.getElementById('date-from').value;
+        const to       = document.getElementById('date-to').value;
+        const sesiFrom = document.getElementById('sesi-date-from').value;
+        const sesiTo   = document.getElementById('sesi-date-to').value;
 
-        // Filter pendapatan sesi
+        // Filter pendapatan sesi — pakai filter tanggal sesi sendiri + unit filter
         const filteredSesi = allPendapatan.filter(d => {
-            const tgl = d.tanggal || '';
+            const tgl    = d.tanggal || '';
             const unitOk = unitFilter === 'semua' || (d.unitType||'').toUpperCase() === unitFilter;
-            const dateOk = (!from || tgl >= from) && (!to || tgl <= to);
+            const dateOk = (!sesiFrom || tgl >= sesiFrom) && (!sesiTo || tgl <= sesiTo);
             return unitOk && dateOk;
         });
 
-        // Filter F&B
+        // Filter F&B — pakai filter tanggal global
         const filteredFnb = allFnb.filter(d => {
             const tgl = (d.createdAt||'').slice(0,10);
             return (!from || tgl >= from) && (!to || tgl <= to);
@@ -506,55 +739,12 @@
         document.getElementById('total-fnb-sub').textContent =
             filteredFnb.length ? `${filteredFnb.length} pesanan` : 'Belum ada pesanan';
 
-        // ── Tabel Sesi ───────────────────────────────────────────────
-        document.getElementById('sesi-count').textContent =
-            filteredSesi.length ? `${filteredSesi.length} sesi ditemukan` : '';
-
-        const wrap = document.getElementById('sesi-table-wrap');
-        const deleteAllBtn = document.getElementById('delete-all-btn');
-
-        if (!filteredSesi.length) {
-            deleteAllBtn.style.display = 'none';
-            wrap.innerHTML = `
-                <div class="empty-box">
-                    <i class="fas fa-inbox"></i>
-                    <p>Belum ada sesi yang tercatat<br>untuk rentang & filter ini.</p>
-                </div>`;
-            return;
-        }
-
-        deleteAllBtn.style.display = 'flex';
-        window._filteredSesiIds = filteredSesi.slice(0, 100).map(d => d.id);
-
-        wrap.innerHTML = `
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="border-b border-white/5">
-                        <th class="table-header p-3">Tanggal</th>
-                        <th class="table-header p-3">Unit</th>
-                        <th class="table-header p-3">Customer</th>
-                        <th class="table-header p-3">Stop</th>
-                        <th class="table-header p-3">Total</th>
-                        <th class="table-header p-3"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${filteredSesi.slice(0, 100).map(d => `
-                        <tr class="border-b border-white/5 hover:bg-white/[0.02]" id="row-${d.id}">
-                            <td class="table-cell text-gray-400">${d.tanggal||'-'}</td>
-                            <td class="table-cell font-bold text-cyan-400">${d.unitId||'-'} <span class="text-gray-600 font-normal">${d.unitType||''}</span></td>
-                            <td class="table-cell">${d.customerName||'-'}</td>
-                            <td class="table-cell text-gray-400">${d.stopTime||'-'}</td>
-                            <td class="table-cell font-black text-green-400">${fmt(d.price)}</td>
-                            <td class="table-cell">
-                                <button class="delete-btn" onclick="confirmDeleteSesi('${d.id}','${(d.customerName||'-').replace(/'/g,"\\'")}','${d.tanggal||'-'}')" title="Hapus sesi ini">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>`).join('')}
-                </tbody>
-            </table>`;
+        // ── Render tabel sesi dengan pagination ──────────────────────
+        _lastFilteredSesi = filteredSesi;
+        sesiPage = 1;
+        renderSesiTable(filteredSesi);
     }
+
 
     // ── Listen pendapatan (sesi dari staff) ──────────────────────────
     onSnapshot(
@@ -585,6 +775,8 @@
 
     document.getElementById('date-from').addEventListener('change', applyFilter);
     document.getElementById('date-to').addEventListener('change', applyFilter);
+    document.getElementById('sesi-date-from').addEventListener('change', () => { sesiPage = 1; applyFilter(); });
+    document.getElementById('sesi-date-to').addEventListener('change', () => { sesiPage = 1; applyFilter(); });
 
     window.doLogout = () => handleLogout('../auth/login-owner.html');
 
@@ -750,7 +942,7 @@
             return;
         }
 
-        container.innerHTML = list.map(c => {
+        function buildCancelCard(c) {
             const isCustomer = c.cancelledBy === 'customer';
             const typeLabel  = c.type === 'booking' ? 'Booking Sesi' : 'Rental Bawa Pulang';
             const typeIcon   = c.type === 'booking' ? 'fa-gamepad' : 'fa-box-open';
@@ -771,9 +963,18 @@
                             <p style="font-size:10px;color:#6b7280;font-weight:600">${typeLabel} · ${c.console || '—'}</p>
                         </div>
                     </div>
-                    <span style="font-size:9px;font-weight:800;padding:3px 9px;border-radius:6px;background:${isCustomer?'rgba(239,68,68,.12)':'rgba(245,158,11,.12)'};color:${cancellerColor};border:1px solid ${isCustomer?'rgba(239,68,68,.25)':'rgba(245,158,11,.25)'}">
-                        ${cancellerLabel}
-                    </span>
+                    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+                        <span style="font-size:9px;font-weight:800;padding:3px 9px;border-radius:6px;background:${isCustomer?'rgba(239,68,68,.12)':'rgba(245,158,11,.12)'};color:${cancellerColor};border:1px solid ${isCustomer?'rgba(239,68,68,.25)':'rgba(245,158,11,.25)'}">
+                            ${cancellerLabel}
+                        </span>
+                        <button onclick="confirmDeleteCancel('${c.id}','${(c.customerName||'—').replace(/'/g,"\\'")}')"
+                            style="width:26px;height:26px;border-radius:7px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;font-size:10px;flex-shrink:0"
+                            onmouseover="this.style.background='rgba(239,68,68,.22)';this.style.borderColor='rgba(239,68,68,.4)'"
+                            onmouseout="this.style.background='rgba(239,68,68,.08)';this.style.borderColor='rgba(239,68,68,.2)'"
+                            title="Hapus riwayat ini">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
                 </div>
                 <div style="background:rgba(255,255,255,.03);border-radius:10px;padding:10px;margin-bottom:10px;font-size:11px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
                     <div><span style="color:#6b7280">Waktu Batal</span><br><strong>${tglBatal}</strong></div>
@@ -786,8 +987,65 @@
                     <strong>Alasan:</strong> ${c.cancelReason || '—'}
                 </div>
             </div>`;
-        }).join('');
+        }
+
+        // Card pertama selalu tampil
+        const firstCard = buildCancelCard(list[0]);
+        const hiddenList = list.slice(1);
+        const isOpen = window._cancelDropdownOpen || false;
+
+        let hiddenHTML = '';
+        if (hiddenList.length > 0) {
+            const hiddenCards = hiddenList.map(c => buildCancelCard(c)).join('');
+            hiddenHTML = `
+                <button id="cancel-dropdown-btn" onclick="toggleCancelDropdown()"
+                    class="cancel-show-more-btn">
+                    <i class="fas fa-chevron-down" id="cancel-dropdown-icon" style="transition:transform .25s;${isOpen?'transform:rotate(180deg)':''}"></i>
+                    <span id="cancel-dropdown-label">${isOpen ? 'Sembunyikan' : 'Lihat ' + hiddenList.length + ' lainnya'}</span>
+                </button>
+                <div id="cancel-hidden-list" style="display:${isOpen?'flex':'none'};flex-direction:column;gap:12px">
+                    ${hiddenCards}
+                </div>`;
+        }
+
+        container.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px">${firstCard}</div>${hiddenHTML}`;
     }
+
+    // ── HAPUS SATU CARD PEMBATALAN ─────────────────────────────────────
+    window.confirmDeleteCancel = (id, name) => {
+        document.getElementById('modal-title').textContent = 'Hapus Riwayat Ini?';
+        document.getElementById('modal-desc').textContent =
+            `Riwayat pembatalan "${name}" akan dihapus permanen dari database dan tidak dapat dikembalikan.`;
+        document.getElementById('modal-confirm-btn').onclick = async () => {
+            document.getElementById('modal-confirm-btn').textContent = 'Menghapus...';
+            document.getElementById('modal-confirm-btn').disabled = true;
+            try {
+                await deleteDoc(doc(db, 'cancellations', id));
+            } catch(e) {
+                alert('Gagal menghapus: ' + e.message);
+            }
+            closeDeleteModal();
+            document.getElementById('modal-confirm-btn').textContent = 'Ya, Hapus';
+            document.getElementById('modal-confirm-btn').disabled = false;
+        };
+        document.getElementById('delete-modal').style.display = 'flex';
+    };
+
+    // ── TOGGLE DROPDOWN PEMBATALAN ─────────────────────────────────────
+    window._cancelDropdownOpen = false;
+    window.toggleCancelDropdown = function() {
+        window._cancelDropdownOpen = !window._cancelDropdownOpen;
+        const hidden = document.getElementById('cancel-hidden-list');
+        const icon   = document.getElementById('cancel-dropdown-icon');
+        const label  = document.getElementById('cancel-dropdown-label');
+        if (!hidden) return;
+        hidden.style.display = window._cancelDropdownOpen ? 'flex' : 'none';
+        if (icon)  icon.style.transform = window._cancelDropdownOpen ? 'rotate(180deg)' : '';
+        if (label) {
+            const count = hidden.children.length;
+            label.textContent = window._cancelDropdownOpen ? 'Sembunyikan' : 'Lihat ' + count + ' lainnya';
+        }
+    };
 
     // Re-render pembatalan saat filter tanggal berubah
     const origApplyFilter = applyFilter;
