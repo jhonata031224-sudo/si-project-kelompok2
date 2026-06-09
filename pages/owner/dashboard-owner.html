@@ -29,8 +29,8 @@
         .role-badge{background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2);border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:.5px}
         .nav-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none;font-family:'Space Grotesk',sans-serif}
         .nav-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.15)}
-        .btn-logout{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.2);color:var(--orange)}
-        .btn-logout:hover{background:rgba(247,129,102,0.15);color:var(--orange)}
+        .btn-keluar{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.2);color:var(--orange)}
+        .btn-keluar:hover{background:rgba(247,129,102,0.15);color:var(--orange)}
         .btn-staff-view{background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--muted);font-size:10px;padding:4px 9px}
         .btn-staff-view:hover{background:rgba(255,255,255,0.04);color:var(--text);border-color:rgba(255,255,255,0.15)}
 
@@ -264,7 +264,7 @@
             .sidebar-nav-item.active { background: rgba(0,217,255,0.08); color: #00d9ff; }
             .sidebar-nav-item i { width: 16px; text-align: center; font-size: 13px; }
             .sidebar-spacer { flex: 1; }
-            .sidebar-logout {
+            .sidebar-keluar {
                 display: flex;
                 align-items: center;
                 gap: 10px;
@@ -281,7 +281,7 @@
                 transition: all 0.15s;
                 width: 100%;
             }
-            .sidebar-logout:hover { background: rgba(247,129,102,0.14); }
+            .sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
             .sidebar-staff-view {
                 display: flex;
                 align-items: center;
@@ -419,11 +419,11 @@
         body.light-mode .badge-booking { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; border-color: rgba(2,132,199,0.2) !important; }
         body.light-mode .badge-rental  { background: rgba(124,58,237,0.08) !important; color: #7c3aed !important; border-color: rgba(124,58,237,0.2) !important; }
         body.light-mode .badge-pending { background: rgba(217,119,6,0.08) !important; color: #d97706 !important; border-color: rgba(217,119,6,0.2) !important; }
-        /* Logout button */
-        body.light-mode .btn-logout,
+        /* Keluar button */
+        body.light-mode .btn-keluar,
         body.light-mode .btn-out-hdr,
-        body.light-mode .topbar-logout-btn,
-        body.light-mode .sidebar-logout { background: rgba(234,88,12,0.07) !important; border-color: rgba(234,88,12,0.2) !important; color: #ea580c !important; }
+        body.light-mode .topbar-keluar-btn,
+        body.light-mode .sidebar-keluar { background: rgba(234,88,12,0.07) !important; border-color: rgba(234,88,12,0.2) !important; color: #ea580c !important; }
         /* History drawer */
         body.light-mode .hist-drawer { background: #f8fafc !important; border-color: rgba(0,0,0,0.08) !important; }
         body.light-mode .hdcard-header.selesai { background: rgba(22,163,74,0.06) !important; border-color: rgba(22,163,74,0.15) !important; }
@@ -475,8 +475,8 @@
         <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left;margin-bottom:6px">
             <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
         </button>
-        <button class="sidebar-logout" onclick="doLogout()">
-            <i class="fas fa-right-from-bracket"></i> Logout
+        <button class="sidebar-keluar" onclick="doLogout()">
+            <i class="fas fa-right-from-bracket"></i> Keluar
         </button>
     </aside>
 <div class="owner-main-content">
@@ -492,7 +492,7 @@
     <div id="topbar-actions" style="display:flex;align-items:center;gap:8px">
         <button class="nav-btn btn-staff-view" onclick="goToStaffView()"><i class="fas fa-users-gear"></i><span class="btn-label-hide">Staff View</span></button>
         <button id="btn-theme" onclick="toggleTheme()" class="btn-theme-toggle" title="Ganti tema"><i id="theme-icon" class="fas fa-sun"></i></button>
-        <button class="nav-btn btn-logout" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i><span class="btn-label-hide">Logout</span></button>
+        <button class="nav-btn btn-keluar" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i><span class="btn-label-hide">Keluar</span></button>
     </div></div>
 
 <div class="main">
@@ -739,7 +739,7 @@
     window.goToStaffView = async () => {
         const result = await Swal.fire({
             title: '👔 Masuk sebagai Staff?',
-            html: `Anda akan diarahkan ke <b>Dashboard Staff</b>.<br><span style="font-size:12px;color:#9ca3af">Aksi ini tidak akan logout dari akun Owner.</span>`,
+            html: `Anda akan diarahkan ke <b>Dashboard Staff</b>.<br><span style="font-size:12px;color:#9ca3af">Aksi ini tidak akan keluar dari akun Owner.</span>`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#bc8cff',

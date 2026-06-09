@@ -146,11 +146,11 @@
         #req-panel { display: none; }
         #req-panel.show { display: block; }
 
-        .badge-waiting { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); border-radius: 6px; padding: 2px 8px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
-        .req-card.waiting-req { border-left: 4px solid #f59e0b; }
+        .badge-antrian { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); border-radius: 6px; padding: 2px 8px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        .req-card.antrian-req { border-left: 4px solid #f59e0b; }
         .wait-pos-badge { background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.4); color: #f59e0b; border-radius: 8px; padding: 3px 10px; font-size: 11px; font-weight: 800; }
-        #waiting-panel { display: none; }
-        #waiting-panel.show { display: block; }
+        #antrian-panel { display: none; }
+        #antrian-panel.show { display: block; }
         .btn-activate { background: #f59e0b; color: #000; border: none; border-radius: 10px; padding: 9px 18px; font-size: 11px; font-weight: 800; cursor: pointer; font-family: inherit; transition: 0.15s; }
         .btn-activate:hover { filter: brightness(1.1); }
         .income-toast {
@@ -161,8 +161,8 @@
             color:#6ee7b7; z-index:9999; animation:slideDown 0.4s ease; white-space:nowrap;
         }
         @keyframes slideDown { from{opacity:0;top:-20px} to{opacity:1;top:20px} }
-        .btn-logout-staff { display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px; background:rgba(247,129,102,0.08); border:1px solid rgba(247,129,102,0.2); color:#f78166; font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .2s; }
-        .btn-logout-staff:hover { background:rgba(247,129,102,0.18); }
+        .btn-keluar-staff { display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px; background:rgba(247,129,102,0.08); border:1px solid rgba(247,129,102,0.2); color:#f78166; font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .2s; }
+        .btn-keluar-staff:hover { background:rgba(247,129,102,0.18); }
         .btn-owner-back { display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,0.08); color:#9ca3af; font-size:10px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .2s; }
         .btn-owner-back:hover { background:rgba(255,255,255,0.04); color:#e6edf3; border-color:rgba(255,255,255,0.15); }
 
@@ -377,12 +377,12 @@
         body.light-mode .badge-booking { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; border-color: rgba(2,132,199,0.2) !important; }
         body.light-mode .badge-rental  { background: rgba(124,58,237,0.08) !important; color: #7c3aed !important; border-color: rgba(124,58,237,0.2) !important; }
         body.light-mode .badge-pending { background: rgba(217,119,6,0.08) !important; color: #d97706 !important; border-color: rgba(217,119,6,0.2) !important; }
-        body.light-mode .badge-waiting { background: rgba(217,119,6,0.08) !important; color: #d97706 !important; border-color: rgba(217,119,6,0.2) !important; }
+        body.light-mode .badge-antrian { background: rgba(217,119,6,0.08) !important; color: #d97706 !important; border-color: rgba(217,119,6,0.2) !important; }
         /* Buttons */
         body.light-mode .btn-approve { background: #16a34a !important; }
         body.light-mode .btn-reject  { background: rgba(220,38,38,0.08) !important; color: #dc2626 !important; border-color: rgba(220,38,38,0.25) !important; }
         body.light-mode .btn-activate { background: #d97706 !important; }
-        body.light-mode .btn-logout-staff { background: rgba(234,88,12,0.07) !important; border-color: rgba(234,88,12,0.2) !important; color: #ea580c !important; }
+        body.light-mode .btn-keluar-staff { background: rgba(234,88,12,0.07) !important; border-color: rgba(234,88,12,0.2) !important; color: #ea580c !important; }
         body.light-mode .btn-owner-back { border-color: rgba(0,0,0,0.12) !important; color: #334155 !important; }
         body.light-mode .auto-del-pill { background: rgba(0,0,0,0.05) !important; border-color: rgba(0,0,0,0.1) !important; color: #334155 !important; }
         body.light-mode .auto-del-pill.active { background: rgba(220,38,38,0.08) !important; border-color: rgba(220,38,38,0.25) !important; color: #dc2626 !important; }
@@ -640,7 +640,7 @@
             #unit-tab-layout { display: block !important; }
             /* Mobile: panel tetap fullscreen fixed */
             #stats-panel { position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 72px !important; z-index: 40 !important; }
-            #setting-panel { position: fixed !important; inset: 0 !important; bottom: 72px !important; top: 0 !important; z-index: 40 !important; }
+            #setelan-panel { position: fixed !important; inset: 0 !important; bottom: 72px !important; top: 0 !important; z-index: 40 !important; }
         }
 
         /* ══════════════════════════════════════════════
@@ -705,7 +705,7 @@
                 margin-right: auto !important;
                 width: 100% !important;
             }
-            #setting-panel {
+            #setelan-panel {
                 position: static !important;
                 overflow: visible !important;
                 padding: 0 !important;
@@ -791,7 +791,7 @@
                 animation: pulse-red 1s infinite;
             }
             .staff-sidebar-notif-dot.show { display: block; }
-            .staff-sidebar-logout {
+            .staff-sidebar-keluar {
                 display: flex; align-items: center; gap: 10px;
                 padding: 10px 12px; border-radius: 10px;
                 font-size: 12px; font-weight: 500; color: #f78166;
@@ -799,8 +799,8 @@
                 border: 1px solid rgba(247,129,102,0.15);
                 font-family: inherit; transition: all 0.15s; width: 100%;
             }
-            .staff-sidebar-logout:hover { background: rgba(247,129,102,0.14); }
-            body.light-mode .staff-sidebar-logout { background: rgba(239,68,68,0.07) !important; border-color: rgba(239,68,68,0.15) !important; }
+            .staff-sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
+            body.light-mode .staff-sidebar-keluar { background: rgba(239,68,68,0.07) !important; border-color: rgba(239,68,68,0.15) !important; }
 
             /* Main Content */
             #staff-main-content {
@@ -912,15 +912,15 @@
 
             /* Panel visibility */
             /* Panel hidden: benar-benar tidak intercept klik */
-            #stats-panel.hidden, #setting-panel.hidden {
+            #stats-panel.hidden, #setelan-panel.hidden {
                 display: none !important;
                 pointer-events: none !important;
                 visibility: hidden !important;
             }
-            #stats-panel:not(.hidden), #setting-panel:not(.hidden) { display: block !important; }
+            #stats-panel:not(.hidden), #setelan-panel:not(.hidden) { display: block !important; }
 
             /* Desktop: lepas fixed positioning agar tidak menutupi/memblokir klik konten lain */
-            #stats-panel, #setting-panel {
+            #stats-panel, #setelan-panel {
                 position: static !important;
                 inset: auto !important;
                 top: auto !important; left: auto !important;
@@ -945,9 +945,9 @@
                 z-index: 10;
             }
 
-            /* Setting panel */
-            /* Setting panel 2-column desktop layout */
-            #setting-desktop-grid {
+            /* Setelan panel */
+            /* Setelan panel 2-column desktop layout */
+            #setelan-desktop-grid {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 0 16px;
@@ -956,20 +956,20 @@
                 margin-left: auto;
                 margin-right: auto;
             }
-            #setting-col-left, #setting-col-right { min-width: 0; }
-            #setting-col-left .glass-card,
-            #setting-col-right .glass-card { max-width: none !important; margin-bottom: 16px !important; }
-            #setting-col-left .glass-card:last-child,
-            #setting-col-right .glass-card:last-child { margin-bottom: 0 !important; }
-            #setting-panel button[onclick="gantiShift()"],
-            #setting-panel button[onclick="simpanJamShift()"],
-            #setting-panel button[onclick="simpanThreshold()"],
-            #setting-panel button[onclick="simpanPesananNotif()"],
-            #setting-panel button[onclick="simpanSuara()"] {
+            #setelan-col-left, #setelan-col-right { min-width: 0; }
+            #setelan-col-left .glass-card,
+            #setelan-col-right .glass-card { max-width: none !important; margin-bottom: 16px !important; }
+            #setelan-col-left .glass-card:last-child,
+            #setelan-col-right .glass-card:last-child { margin-bottom: 0 !important; }
+            #setelan-panel button[onclick="gantiShift()"],
+            #setelan-panel button[onclick="simpanJamShift()"],
+            #setelan-panel button[onclick="simpanThreshold()"],
+            #setelan-panel button[onclick="simpanPesananNotif()"],
+            #setelan-panel button[onclick="simpanSuara()"] {
                 width: auto !important; display: inline-flex !important;
                 align-items: center; gap: 8px; padding: 10px 24px !important;
             }
-            #setting-panel input[type="time"] { max-width: 180px; }
+            #setelan-panel input[type="time"] { max-width: 180px; }
 
             /* Stats & charts */
             .staff-chart-wrap { height: 220px !important; }
@@ -992,7 +992,7 @@
             #fnb-panel select { max-width: 400px !important; width: auto !important; }
             #fnb-panel button[onclick="submitFnbOrder()"] { width: auto !important; display: inline-flex !important; padding: 10px 24px !important; }
 
-            /* Req & Waiting cards */
+            /* Req & Antrian cards */
             .req-card { max-width: 760px; }
             .req-card .flex > .btn-approve,
             .req-card .flex > .btn-reject,
@@ -1058,8 +1058,8 @@
     <button class="staff-snav-item" id="snav-history" onclick="bukaHistoryDrawer()">
         <i class="fas fa-history"></i> Riwayat
     </button>
-    <button class="staff-snav-item" id="snav-setting" onclick="desktopSwitchTab('setting', this)">
-        <i class="fas fa-sliders"></i> Setting
+    <button class="staff-snav-item" id="snav-setelan" onclick="desktopSwitchTab('setelan', this)">
+        <i class="fas fa-sliders"></i> Setelan
     </button>
     <div class="staff-sidebar-spacer"></div>
 
@@ -1083,8 +1083,8 @@
     <button id="btn-theme-sidebar" onclick="toggleTheme()" class="staff-snav-item" style="margin-bottom:6px">
         <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
     </button>
-    <button class="staff-sidebar-logout" onclick="doLogout()">
-        <i class="fas fa-right-from-bracket"></i> Logout
+    <button class="staff-sidebar-keluar" onclick="doLogout()">
+        <i class="fas fa-right-from-bracket"></i> Keluar
     </button>
 </aside>
 
@@ -1122,7 +1122,7 @@
             <button id="btn-theme" onclick="toggleTheme()" class="btn-theme-toggle" title="Ganti tema">
                 <i id="theme-icon" class="fas fa-sun"></i>
             </button>
-            <button id="exit-btn" class="btn-logout-staff" onclick="doLogout()">
+            <button id="exit-btn" class="btn-keluar-staff" onclick="doLogout()">
                 <i class="fas fa-right-from-bracket"></i>
                 <span>Keluar</span>
             </button>
@@ -1139,7 +1139,7 @@
         <div class="skpi-card" onclick="switchTab('req')" style="cursor:pointer">
             <div class="skpi-label">Permintaan <span class="skpi-icon yellow"><i class="fas fa-clock"></i></span></div>
             <div class="skpi-value" id="strip-pending">0<span id="strip-req-dot" class="chip-dot hidden" style="margin-left:4px"></span></div>
-            <div class="skpi-sub">antrian: <span id="strip-waiting">0</span><span id="strip-wait-dot" class="chip-dot hidden" style="margin-left:4px"></span></div>
+            <div class="skpi-sub">antrian: <span id="strip-antrian">0</span><span id="strip-wait-dot" class="chip-dot hidden" style="margin-left:4px"></span></div>
         </div>
         <div class="skpi-card">
             <div class="skpi-label">Pendapatan <span class="skpi-icon cyan"><i class="fas fa-coins"></i></span></div>
@@ -1482,9 +1482,9 @@
     <button id="tab-fnb-tab" onclick="switchTab('fnb')" class="staff-tab">
         <i class="fas fa-utensils"></i><span>F&B</span>
     </button>
-    <button id="tab-waiting" onclick="switchTab('waiting')" class="staff-tab" style="position:relative">
-        <i class="fas fa-hourglass-half"></i><span>Waiting</span>
-        <span id="waiting-notif-dot" class="req-notif-dot"></span>
+    <button id="tab-antrian" onclick="switchTab('antrian')" class="staff-tab" style="position:relative">
+        <i class="fas fa-hourglass-half"></i><span>Antrian</span>
+        <span id="antrian-notif-dot" class="req-notif-dot"></span>
     </button>
     <button id="tab-req" onclick="switchTab('req')" class="staff-tab" style="position:relative">
         <i class="fas fa-inbox"></i><span>Permintaan</span>
@@ -1495,10 +1495,10 @@
 
 <div id="staff-scroll-content">
 
-<!-- PANEL WAITING LIST -->
-<div id="waiting-panel">
+<!-- PANEL ANTRIAN LIST -->
+<div id="antrian-panel">
     <div class="glass-card p-4 mb-4" style="border-left:4px solid #f59e0b">
-        <p class="text-xs font-black uppercase tracking-widest text-yellow-400 mb-1">⏳ Waiting List Antrian</p>
+        <p class="text-xs font-black uppercase tracking-widest text-yellow-400 mb-1">⏳ Antrian List Antrian</p>
         <p class="text-[10px] text-gray-500">Pelanggan menunggu unit tersedia · Max 2 per unit · Konfirmasi saat unit kosong</p>
     </div>
     <div class="flex gap-2 mb-4 px-1">
@@ -1512,10 +1512,10 @@
             <i class="fas fa-box-open mr-1"></i> Rental
         </button>
     </div>
-    <div id="waiting-list" class="space-y-0 mb-20">
+    <div id="antrian-list" class="space-y-0 mb-20">
         <div class="text-center py-12 text-gray-600">
             <i class="fas fa-spinner fa-spin text-yellow-400 text-2xl mb-3 block"></i>
-            Memuat waiting list...
+            Memuat antrian list...
         </div>
     </div>
 </div>
@@ -1622,7 +1622,7 @@
         <div class="ukpi-body">
             <div class="ukpi-label">Permintaan</div>
             <div class="ukpi-val" id="sb-pending">0</div>
-            <div class="ukpi-sub">antrian: <span id="sb-waiting">0</span></div>
+            <div class="ukpi-sub">antrian: <span id="sb-antrian">0</span></div>
         </div>
     </div>
 </div>
@@ -1662,28 +1662,28 @@
         <i class="fas fa-history text-lg"></i>
         <span class="text-[9px] font-bold uppercase mt-1">Riwayat</span>
     </div>
-    <div onclick="switchTab('setting')" id="nav-setting" class="flex flex-col items-center text-gray-500 cursor-pointer">
+    <div onclick="switchTab('setelan')" id="nav-setelan" class="flex flex-col items-center text-gray-500 cursor-pointer">
         <i class="fas fa-sliders text-lg"></i>
-        <span class="text-[9px] font-bold uppercase mt-1">Setting</span>
+        <span class="text-[9px] font-bold uppercase mt-1">Setelan</span>
     </div>
 </div>
 
-<!-- PANEL SETTING -->
-<div id="setting-panel" class="hidden" style="overflow-y:auto;padding:16px 16px 16px;background:var(--bg, #080c12);">
+<!-- PANEL SETELAN -->
+<div id="setelan-panel" class="hidden" style="overflow-y:auto;padding:16px 16px 16px;background:var(--bg, #080c12);">
 
-<div id="setting-desktop-grid">
-<div id="setting-col-left">
+<div id="setelan-desktop-grid">
+<div id="setelan-col-left">
     <!-- ══ KETERANGAN SHIFT ══ -->
     <div class="glass-card p-5 mb-4">
         <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">🕐 Keterangan Shift</h3>
-        <div id="setting-shift-info" class="bg-white/[0.03] rounded-2xl p-4 mb-3">
+        <div id="setelan-shift-info" class="bg-white/[0.03] rounded-2xl p-4 mb-3">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-black" id="setting-shift-nama">—</p>
-                    <p class="text-[11px] text-gray-400 mt-1" id="setting-shift-jam">Belum memilih shift</p>
-                    <p class="text-[10px] text-gray-500 mt-1" id="setting-shift-tgl">—</p>
+                    <p class="text-sm font-black" id="setelan-shift-nama">—</p>
+                    <p class="text-[11px] text-gray-400 mt-1" id="setelan-shift-jam">Belum memilih shift</p>
+                    <p class="text-[10px] text-gray-500 mt-1" id="setelan-shift-tgl">—</p>
                 </div>
-                <div id="setting-shift-ikon" style="font-size:32px">—</div>
+                <div id="setelan-shift-ikon" style="font-size:32px">—</div>
             </div>
         </div>
         <button onclick="gantiShift()" class="w-full py-3 rounded-xl font-black text-[11px] uppercase" style="background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.3);color:#00d9ff">
@@ -1789,42 +1789,42 @@
         </div>
     </div>
 
-</div><!-- /setting-col-left -->
-<div id="setting-col-right">
-    <!-- ══ PENGATURAN LIMIT EXTEND ══ -->
+</div><!-- /setelan-col-left -->
+<div id="setelan-col-right">
+    <!-- ══ PENGATURAN LIMIT TAMBAHAN ══ -->
     <div class="glass-card p-5 mb-4">
-        <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">⏱️ Pengaturan Limit Extend</h3>
+        <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">⏱️ Pengaturan Limit Tambahan</h3>
 
         <div class="bg-white/[0.03] rounded-2xl p-4 mb-3">
             <div class="flex justify-between items-start mb-3">
                 <div>
-                    <p class="text-sm font-black">🔒 Maksimal Extend per Sesi</p>
-                    <p class="text-[10px] text-gray-500 mt-0.5">Jumlah maksimum extend yang boleh dilakukan pelanggan dalam 1 sesi main</p>
+                    <p class="text-sm font-black">🔒 Maksimal Tambahan per Sesi</p>
+                    <p class="text-[10px] text-gray-500 mt-0.5">Jumlah maksimum tambahan yang boleh dilakukan pelanggan dalam 1 sesi main</p>
                 </div>
             </div>
             <div class="flex items-center gap-3 mt-3">
-                <input id="input-limit-extend" type="number" min="1" max="10" value="2"
+                <input id="input-limit-tambahan" type="number" min="1" max="10" value="2"
                     class="w-20 text-center text-2xl font-black rounded-xl px-3 py-2 border border-white/10"
                     style="background:#1a2030;color:white;font-family:inherit"
                     oninput="previewLimitExtend(this.value)">
                 <div>
-                    <p class="text-sm font-bold text-white">kali extend</p>
-                    <p id="limit-extend-preview" class="text-[10px] text-cyan-400 mt-0.5">= maks. 2x extend per sesi</p>
+                    <p class="text-sm font-bold text-white">kali tambahan</p>
+                    <p id="limit-tambahan-preview" class="text-[10px] text-cyan-400 mt-0.5">= maks. 2x tambahan per sesi</p>
                 </div>
             </div>
 
             <!-- Info ilustrasi -->
             <div class="mt-3 rounded-xl p-3" style="background:rgba(0,217,255,0.05);border:1px solid rgba(0,217,255,0.15)">
                 <p class="text-[10px] text-gray-400">
-                    <span style="color:#00d9ff">ℹ️</span> Contoh: jika diset <strong id="limit-extend-contoh" style="color:#00d9ff">2</strong>x,
-                    pelanggan hanya bisa extend maksimal <strong id="limit-extend-contoh2" style="color:#00d9ff">2</strong> kali.
-                    Setelah itu tombol extend terkunci hingga sesi selesai.
+                    <span style="color:#00d9ff">ℹ️</span> Contoh: jika diset <strong id="limit-tambahan-contoh" style="color:#00d9ff">2</strong>x,
+                    pelanggan hanya bisa tambahan maksimal <strong id="limit-tambahan-contoh2" style="color:#00d9ff">2</strong> kali.
+                    Setelah itu tombol tambahan terkunci hingga sesi selesai.
                 </p>
             </div>
         </div>
 
         <button onclick="simpanLimitExtend()" class="w-full py-3 rounded-xl font-black text-[11px] uppercase" style="background:rgba(0,217,255,0.15);border:1px solid rgba(0,217,255,0.35);color:#00d9ff">
-            <i class="fas fa-save mr-2"></i>Simpan Limit Extend
+            <i class="fas fa-save mr-2"></i>Simpan Limit Tambahan
         </button>
     </div>
 
@@ -1853,7 +1853,7 @@
             <div class="flex justify-between items-start mb-3">
                 <div>
                     <p class="text-sm font-black">👁️ Unit Tersedia Langsung Tampil</p>
-                    <p class="text-[10px] text-gray-500 mt-0.5">Berapa unit Tersedia/Maintenance yang langsung muncul di atas <em>sebelum</em> tombol dropdown.</p>
+                    <p class="text-[10px] text-gray-500 mt-0.5">Berapa unit Tersedia/Perawatan yang langsung muncul di atas <em>sebelum</em> tombol dropdown.</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -1921,8 +1921,8 @@
             </button>
         </div>
     </div>
-</div><!-- /setting-col-right -->
-</div><!-- /setting-desktop-grid -->
+</div><!-- /setelan-col-right -->
+</div><!-- /setelan-desktop-grid -->
 </div>
 
 </div><!-- /staff-scroll-content -->
@@ -1967,7 +1967,7 @@
         const hdr = document.getElementById('staff-fixed-header');
         const scr = document.getElementById('staff-scroll-content');
         const sp  = document.getElementById('stats-panel');
-        const stg = document.getElementById('setting-panel');
+        const stg = document.getElementById('setelan-panel');
         if (!hdr || !scr) return;
         // Desktop: semua elemen static, jangan set top
         if (window.innerWidth >= 768) {
@@ -2215,14 +2215,14 @@
 
     function buildUnitCard(unit) {
         const isPlaying   = unit.status === 'Digunakan';
-        const isMaint     = unit.status === 'Maintenance';
+        const isMaint     = unit.status === 'Perawatan';
         const isDipesan   = unit.status === 'Dipesan';
 
         // ── Status badge ──
         let statusBadge = '';
         if (isPlaying)       statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(63,185,80,0.12);border:1px solid rgba(63,185,80,0.35);color:#3fb950;letter-spacing:.5px">ACTIVE</span>';
         else if (isDipesan)  statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(251,146,60,0.12);border:1px solid rgba(251,146,60,0.35);color:#fb923c;letter-spacing:.5px">DIPESAN</span>';
-        else if (isMaint)    statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);color:#f59e0b;letter-spacing:.5px">MAINTENANCE</span>';
+        else if (isMaint)    statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);color:#f59e0b;letter-spacing:.5px">PERAWATAN</span>';
         else                 statusBadge = '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.3);color:#00d9ff;letter-spacing:.5px">TERSEDIA</span>';
 
         // ── Timer besar ──
@@ -2295,11 +2295,11 @@
                     <i class="fas fa-utensils" style="font-size:11px"></i> F&B
                 </button>
                 ${(unit.extendCount || 0) >= (parseInt(localStorage.getItem('pg_extend_limit')) || 2)
-                    ? `<button disabled style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:800;background:#1c2128;border:1px solid rgba(255,255,255,0.05);color:#4b5563;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:5px" title="Maksimal ${parseInt(localStorage.getItem('pg_extend_limit')) || 2}x extend per sesi">
+                    ? `<button disabled style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:800;background:#1c2128;border:1px solid rgba(255,255,255,0.05);color:#4b5563;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:5px" title="Maksimal ${parseInt(localStorage.getItem('pg_extend_limit')) || 2}x tambahan per sesi">
                            <i class="fas fa-lock" style="font-size:10px"></i> Limit (${unit.extendCount}/${parseInt(localStorage.getItem('pg_extend_limit')) || 2})
                        </button>`
                     : `<button onclick="tambahWaktu('${unit.id}',${unit.endTime},${unit.price})" style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:800;background:#1c2128;border:1px solid rgba(255,255,255,0.1);color:#e6edf3;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
-                           <i class="fas fa-plus" style="font-size:10px"></i> Extend (${unit.extendCount || 0}/${parseInt(localStorage.getItem('pg_extend_limit')) || 2})
+                           <i class="fas fa-plus" style="font-size:10px"></i> Tambahan (${unit.extendCount || 0}/${parseInt(localStorage.getItem('pg_extend_limit')) || 2})
                        </button>`
                 }
                 <button onclick="selesaiSesi('${unit.id}')" style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:900;background:#ef4444;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
@@ -2340,7 +2340,7 @@
         const container = document.getElementById('unit-grid');
         container.innerHTML = '';
 
-        // ── Sort: Digunakan → Dipesan → Tersedia/Maintenance, lalu by id ──
+        // ── Sort: Digunakan → Dipesan → Tersedia/Perawatan, lalu by id ──
         const sorted = [...units].sort((a, b) => {
             const pri = u => (u.status === 'Digunakan' ? 0 : u.status === 'Dipesan' ? 1 : 2);
             const p = pri(a) - pri(b);
@@ -2357,9 +2357,9 @@
             container.innerHTML += buildUnitCard(unit);
         });
 
-        // ── Unit idle (Tersedia/Maintenance) → sebagian langsung tampil, sisanya dropdown ──
+        // ── Unit idle (Tersedia/Perawatan) → sebagian langsung tampil, sisanya dropdown ──
         if (idle.length > 0) {
-            // Baca setting: berapa unit langsung tampil di luar dropdown
+            // Baca setelan: berapa unit langsung tampil di luar dropdown
             const visibleCount = parseInt(localStorage.getItem('pg_visible_idle') ?? '0') || 0;
             const ddDefault    = localStorage.getItem('pg_dropdown_default') || 'tutup';
 
@@ -2373,11 +2373,11 @@
             if (hiddenIdle.length > 0) {
                 const idleCards  = hiddenIdle.map(u => buildUnitCard(u)).join('');
                 const tersedia   = hiddenIdle.filter(u => u.status === 'Tersedia').length;
-                const maint      = hiddenIdle.filter(u => u.status === 'Maintenance').length;
+                const maint      = hiddenIdle.filter(u => u.status === 'Perawatan').length;
 
                 let btnLabel = `${hiddenIdle.length} unit tersedia`;
-                if (maint > 0 && tersedia > 0) btnLabel = `${tersedia} tersedia, ${maint} maintenance`;
-                else if (maint > 0)            btnLabel = `${maint} unit maintenance`;
+                if (maint > 0 && tersedia > 0) btnLabel = `${tersedia} tersedia, ${maint} perawatan`;
+                else if (maint > 0)            btnLabel = `${maint} unit perawatan`;
 
                 // Gunakan state toggle yang sudah ada; hanya pakai ddDefault saat pertama kali (null sentinel)
                 if (_unitDropdownOpen === null) {
@@ -2731,39 +2731,39 @@
         const extendCount = unit?.extendCount || 0;
         const extendLimit = parseInt(localStorage.getItem('pg_extend_limit')) || 2;
 
-        // Guard: maksimal extend sesuai setting
+        // Guard: maksimal tambahan sesuai setelan
         if (extendCount >= extendLimit) {
-            Swal.fire({ icon:'warning', title:'Limit Extend', text:`Maksimal ${extendLimit}x extend per sesi. Pelanggan harus selesai dulu.`, ...swalTheme(), confirmButtonColor:'#f59e0b' });
+            Swal.fire({ icon:'warning', title:'Limit Tambahan', text:`Maksimal ${extendLimit}x tambahan per sesi. Pelanggan harus selesai dulu.`, ...swalTheme(), confirmButtonColor:'#f59e0b' });
             return;
         }
 
         // STEP 1: Konfirmasi pembayaran dulu — staf WAJIB pilih metode bayar
         let selectedPay = null;
         const { isConfirmed } = await Swal.fire({
-            title: `Extend +1 Jam — ${unit?.type || id}`,
+            title: `Tambahan +1 Jam — ${unit?.type || id}`,
             html: `
                 <p style="color:#9ca3af;font-size:12px;margin-bottom:14px">
-                    Biaya extend: <strong style="color:#00d9ff;font-size:15px">Rp ${rate.toLocaleString('id-ID')}</strong>
+                    Biaya tambahan: <strong style="color:#00d9ff;font-size:15px">Rp ${rate.toLocaleString('id-ID')}</strong>
                 </p>
                 <p style="color:#f59e0b;font-size:11px;margin-bottom:14px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:8px">
                     ⚠️ Pastikan pelanggan sudah membayar sebelum menekan tombol di bawah.
                 </p>
                 <div style="display:flex;flex-direction:column;gap:8px">
-                    <button id="btn-cash-extend" type="button"
+                    <button id="btn-cash-tambahan" type="button"
                         style="padding:12px;border-radius:10px;background:#1c2128;border:1px solid rgba(255,255,255,0.1);color:#e6edf3;font-weight:800;cursor:pointer;font-size:12px;font-family:inherit;transition:border-color 0.2s"
                         onmouseover="this.style.borderColor='#00d9ff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'"
-                        onclick="document.getElementById('btn-cash-extend').style.borderColor='#00d9ff';document.getElementById('btn-ewallet-extend').style.borderColor='rgba(255,255,255,0.1)';window._extendPay='Cash'">
+                        onclick="document.getElementById('btn-cash-tambahan').style.borderColor='#00d9ff';document.getElementById('btn-ewallet-tambahan').style.borderColor='rgba(255,255,255,0.1)';window._extendPay='Cash'">
                         💵 Sudah Bayar — Cash
                     </button>
-                    <button id="btn-ewallet-extend" type="button"
+                    <button id="btn-ewallet-tambahan" type="button"
                         style="padding:12px;border-radius:10px;background:#1c2128;border:1px solid rgba(255,255,255,0.1);color:#00d9ff;font-weight:800;cursor:pointer;font-size:12px;font-family:inherit;transition:border-color 0.2s"
                         onmouseover="this.style.borderColor='#00d9ff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'"
-                        onclick="document.getElementById('btn-ewallet-extend').style.borderColor='#00d9ff';document.getElementById('btn-cash-extend').style.borderColor='rgba(255,255,255,0.1)';window._extendPay='Ewallet'">
+                        onclick="document.getElementById('btn-ewallet-tambahan').style.borderColor='#00d9ff';document.getElementById('btn-cash-tambahan').style.borderColor='rgba(255,255,255,0.1)';window._extendPay='Ewallet'">
                         📱 Sudah Bayar — Ewallet
                     </button>
                 </div>`,
             showConfirmButton: true,
-            confirmButtonText: '✅ Konfirmasi Extend',
+            confirmButtonText: '✅ Konfirmasi Tambahan',
             confirmButtonColor: '#00d9ff',
             showCancelButton: true,
             cancelButtonText: '❌ Belum Bayar — Batalkan',
@@ -2781,7 +2781,7 @@
         window._extendPay = null; // reset global
 
         if (!isConfirmed) {
-            Swal.fire({ toast:true, position:'top', icon:'info', title:'Extend dibatalkan', showConfirmButton:false, timer:1500 });
+            Swal.fire({ toast:true, position:'top', icon:'info', title:'Tambahan dibatalkan', showConfirmButton:false, timer:1500 });
             return;
         }
 
@@ -2789,7 +2789,7 @@
         const now = new Date().toISOString();
 
         try {
-            // STEP 2: Simpan log extend sebagai transaksi terpisah di Firestore
+            // STEP 2: Simpan log tambahan sebagai transaksi terpisah di Firestore
             await addDoc(collection(db, 'extendLog'), {
                 unitId:     id,
                 unitType:   unit?.type || '-',
@@ -2813,11 +2813,11 @@
                 extendCount: extendCount + 1
             });
 
-            tambahNotif(`⏱ Extend ${id} (+1 Jam) — ${payMethod} — Rp ${rate.toLocaleString('id-ID')}`);
+            tambahNotif(`⏱ Tambahan ${id} (+1 Jam) — ${payMethod} — Rp ${rate.toLocaleString('id-ID')}`);
             Swal.fire({ toast:true, position:'top', icon:'success', title:`+1 Jam | ${payMethod} Tercatat`, showConfirmButton:false, timer:2000 });
         } catch(e) {
-            console.error('Extend error:', e);
-            Swal.fire({ icon:'error', title:'Gagal Extend', text:'Terjadi kesalahan. Coba lagi.', ...swalTheme() });
+            console.error('Tambahan error:', e);
+            Swal.fire({ icon:'error', title:'Gagal Tambahan', text:'Terjadi kesalahan. Coba lagi.', ...swalTheme() });
         }
     };
 
@@ -2836,7 +2836,7 @@
 
     window.toggleMaint = async (id, currentStatus) => {
         await updateDoc(doc(db,'units',id), {
-            status: currentStatus === 'Maintenance' ? 'Tersedia' : 'Maintenance'
+            status: currentStatus === 'Perawatan' ? 'Tersedia' : 'Perawatan'
         });
     };
 
@@ -2901,11 +2901,11 @@
             if (dotEl) dotEl.style.background = warna;
         }
 
-        // Tampilkan info shift di setting panel
-        const sNama = document.getElementById('setting-shift-nama');
-        const sJam  = document.getElementById('setting-shift-jam');
-        const sTgl  = document.getElementById('setting-shift-tgl');
-        const sIkon = document.getElementById('setting-shift-ikon');
+        // Tampilkan info shift di setelan panel
+        const sNama = document.getElementById('setelan-shift-nama');
+        const sJam  = document.getElementById('setelan-shift-jam');
+        const sTgl  = document.getElementById('setelan-shift-tgl');
+        const sIkon = document.getElementById('setelan-shift-ikon');
         if (shift && shiftTgl === today) {
             if (sNama) sNama.textContent = shiftNama || ('Shift ' + shift);
             if (sJam)  sJam.textContent  = shiftJam  || '—';
@@ -2952,8 +2952,8 @@
             const _warna = _shift === "1" ? "#ffd54f" : "#818cf8";
             sessionStorage.setItem("staff_shift_nama", _nama);
             sessionStorage.setItem("staff_shift_jam",  _jam);
-            const elNama = document.getElementById("setting-shift-nama");
-            const elJam  = document.getElementById("setting-shift-jam");
+            const elNama = document.getElementById("setelan-shift-nama");
+            const elJam  = document.getElementById("setelan-shift-jam");
             if (elNama) elNama.textContent = _nama;
             if (elJam)  elJam.textContent  = _jam;
             const lbl = document.getElementById("shift-label");
@@ -3004,10 +3004,10 @@
         const dot = document.getElementById('shift-dot');
         if (lbl) { lbl.textContent = ikon + ' ' + nama + ' · ' + jam; lbl.style.color = warna; }
         if (dot) dot.style.background = warna;
-        const sNama = document.getElementById('setting-shift-nama');
-        const sJam  = document.getElementById('setting-shift-jam');
-        const sTgl  = document.getElementById('setting-shift-tgl');
-        const sIkon = document.getElementById('setting-shift-ikon');
+        const sNama = document.getElementById('setelan-shift-nama');
+        const sJam  = document.getElementById('setelan-shift-jam');
+        const sTgl  = document.getElementById('setelan-shift-tgl');
+        const sIkon = document.getElementById('setelan-shift-ikon');
         if (sNama) sNama.textContent = nama;
         if (sJam)  sJam.textContent  = jam;
         if (sTgl)  sTgl.textContent  = 'Tanggal: ' + today;
@@ -3071,34 +3071,34 @@
     window.switchTab = function(tab) {
         var unitGrid     = document.getElementById('unit-grid');
         var reqPanel     = document.getElementById('req-panel');
-        var waitingPanel = document.getElementById('waiting-panel');
+        var waitingPanel = document.getElementById('antrian-panel');
         var fnbPanel     = document.getElementById('fnb-panel');
-        var settingPanel = document.getElementById('setting-panel');
+        var settingPanel = document.getElementById('setelan-panel');
         var statsPanel   = document.getElementById('stats-panel');
         var tabRow       = document.getElementById('tab-switcher-row');
 
         // Tab switcher buttons
-        ['tab-unit','tab-fnb-tab','tab-waiting','tab-req'].forEach(id => {
+        ['tab-unit','tab-fnb-tab','tab-antrian','tab-req'].forEach(id => {
             document.getElementById(id).className = 'staff-tab';
         });
-        const activeMap = { unit:'tab-unit', fnb:'tab-fnb-tab', waiting:'tab-waiting', req:'tab-req' };
+        const activeMap = { unit:'tab-unit', fnb:'tab-fnb-tab', antrian:'tab-antrian', req:'tab-req' };
         if (activeMap[tab]) document.getElementById(activeMap[tab]).className = 'staff-tab staff-tab-active';
 
         // Nav bar highlight
         document.getElementById('nav-unit').className    = 'flex flex-col items-center cursor-pointer ' + (tab === 'unit'    ? 'text-cyan-400' : 'text-gray-500');
         document.getElementById('nav-stats').className   = 'flex flex-col items-center cursor-pointer ' + (tab === 'stats'   ? 'text-cyan-400' : 'text-gray-500');
-        document.getElementById('nav-setting').className = 'flex flex-col items-center cursor-pointer ' + (tab === 'setting' ? 'text-cyan-400' : 'text-gray-500');
+        document.getElementById('nav-setelan').className = 'flex flex-col items-center cursor-pointer ' + (tab === 'setelan' ? 'text-cyan-400' : 'text-gray-500');
 
         unitGrid.style.display = tab === 'unit' ? '' : 'none';
         var unitFilterBar = document.getElementById('unit-filter-bar');
         if (unitFilterBar) unitFilterBar.style.display = tab === 'unit' ? '' : 'none';
         reqPanel.classList.toggle('show', tab === 'req');
-        waitingPanel.classList.toggle('show', tab === 'waiting');
+        waitingPanel.classList.toggle('show', tab === 'antrian');
         fnbPanel.classList.toggle('hidden', tab !== 'fnb');
-        settingPanel.classList.toggle('hidden', tab !== 'setting');
+        settingPanel.classList.toggle('hidden', tab !== 'setelan');
         statsPanel.classList.toggle('hidden', tab !== 'stats');
-        // Sembunyikan tab row saat stats/setting, tampilkan saat beranda
-        var hideTabRow = (tab === 'setting' || tab === 'stats');
+        // Sembunyikan tab row saat stats/setelan, tampilkan saat beranda
+        var hideTabRow = (tab === 'setelan' || tab === 'stats');
         if (hideTabRow) {
             tabRow.style.cssText = 'display:none !important; visibility:hidden; height:0; overflow:hidden; padding:0; margin:0;';
         } else {
@@ -3108,7 +3108,7 @@
         setTimeout(adjustScrollTop, 0);
 
         if (tab === 'req') document.getElementById('req-notif-dot').classList.remove('show');
-        if (tab === 'waiting') { document.getElementById('waiting-notif-dot').classList.remove('show'); renderWaitingFiltered(); }
+        if (tab === 'antrian') { document.getElementById('antrian-notif-dot').classList.remove('show'); renderWaitingFiltered(); }
         if (tab === 'fnb') initFnbPanel();
 
         // Sync stats panel content from original KPI elements
@@ -3293,7 +3293,7 @@
                         '<p class="text-[10px] text-gray-500">' + waktu + '</p>' +
                     '</div>' +
                 '</div>' +
-                '<span class="text-[9px] font-black uppercase px-2 py-1 rounded-full" style="background:rgba(0,217,255,0.1);color:#00d9ff">Minta Extend</span>' +
+                '<span class="text-[9px] font-black uppercase px-2 py-1 rounded-full" style="background:rgba(0,217,255,0.1);color:#00d9ff">Minta Tambahan</span>' +
             '</div>' +
             '<div class="bg-white/[0.03] rounded-xl p-3 mb-3 text-xs">' +
                 '<div class="flex justify-between mb-1"><span class="text-gray-500">Unit</span><strong class="text-cyan-400">' + (item.unitId || '-') + ' (' + (item.unitType || '-') + ')</strong></div>' +
@@ -3306,7 +3306,7 @@
             '<div class="flex gap-2">' +
                 '<button onclick="approveExtendReq(\'' + item.id + '\',\'' + (item.unitId||'') + '\',' + (item.rate||0) + ')" ' +
                     'style="flex:1;padding:10px;border-radius:10px;background:#00d9ff;border:none;color:#000;font-size:10px;font-weight:900;cursor:pointer">' +
-                    '<i class="fas fa-check" style="margin-right:4px"></i>Approve & Extend' +
+                    '<i class="fas fa-check" style="margin-right:4px"></i>Approve & Tambahan' +
                 '</button>' +
                 '<button onclick="rejectExtendReq(\'' + item.id + '\',\'' + (item.unitId||'') + '\')" ' +
                     'style="flex:1;padding:10px;border-radius:10px;background:#1c2128;border:1px solid rgba(239,68,68,0.3);color:#f87171;font-size:10px;font-weight:800;cursor:pointer">' +
@@ -3532,7 +3532,7 @@
             '</div>'
         ).join('');
 
-        // ── STEP 1: Konfirmasi pembayaran — SAMA PERSIS seperti extend ─
+        // ── STEP 1: Konfirmasi pembayaran — SAMA PERSIS seperti tambahan ─
         window._fnbPay = null;
         const { isConfirmed: okPay } = await Swal.fire({
             title: '🍜 F&B — ' + (unit?.customerName||'-') + ' · ' + unitId,
@@ -3631,7 +3631,7 @@
     };
 
 
-    // ── Setting: toggle state ─────────────────────────────────────────
+    // ── Setelan: toggle state ─────────────────────────────────────────
     let suaraAktif = true;
     let popupAktif = true;
 
@@ -3672,44 +3672,44 @@
         Swal.fire({ toast:true, position:'top', icon:'success', title:`Peringatan diset: ${val} menit sebelum habis`, showConfirmButton:false, timer:2000, ...swalTheme() });
     };
 
-    // ── Limit Extend: preview & simpan ───────────────────────────────
+    // ── Limit Tambahan: preview & simpan ───────────────────────────────
     window.previewLimitExtend = function(val) {
         const n = parseInt(val);
-        const preview = document.getElementById('limit-extend-preview');
-        const contoh  = document.getElementById('limit-extend-contoh');
-        const contoh2 = document.getElementById('limit-extend-contoh2');
+        const preview = document.getElementById('limit-tambahan-preview');
+        const contoh  = document.getElementById('limit-tambahan-contoh');
+        const contoh2 = document.getElementById('limit-tambahan-contoh2');
         if (!n || n < 1) {
-            if (preview) { preview.textContent = 'Minimal 1x extend'; preview.style.color = '#ef4444'; }
+            if (preview) { preview.textContent = 'Minimal 1x tambahan'; preview.style.color = '#ef4444'; }
             return;
         }
-        if (preview) { preview.textContent = `= maks. ${n}x extend per sesi`; preview.style.color = '#00d9ff'; }
+        if (preview) { preview.textContent = `= maks. ${n}x tambahan per sesi`; preview.style.color = '#00d9ff'; }
         if (contoh)  contoh.textContent  = n;
         if (contoh2) contoh2.textContent = n;
     };
 
     window.simpanLimitExtend = function() {
-        const val = parseInt(document.getElementById('input-limit-extend').value);
+        const val = parseInt(document.getElementById('input-limit-tambahan').value);
         if (!val || val < 1 || val > 10) {
             Swal.fire({ toast:true, position:'top', icon:'error', title:'Masukkan angka 1–10', showConfirmButton:false, timer:2000, ...swalTheme() });
             return;
         }
         localStorage.setItem('pg_extend_limit', val);
         // Simpan ke Firestore agar pelanggan bisa baca
-        setDoc(doc(db, 'settings', 'extend'), { limit: val, updatedAt: new Date().toISOString() })
+        setDoc(doc(db, 'settings', 'tambahan'), { limit: val, updatedAt: new Date().toISOString() })
             .catch(e => console.warn('Gagal simpan limit ke Firestore:', e));
-        Swal.fire({ toast:true, position:'top', icon:'success', title:`Limit extend diset: ${val}x per sesi`, showConfirmButton:false, timer:2000, ...swalTheme() });
+        Swal.fire({ toast:true, position:'top', icon:'success', title:`Limit tambahan diset: ${val}x per sesi`, showConfirmButton:false, timer:2000, ...swalTheme() });
     };
 
-    // ── Load limit extend dari localStorage/Firestore saat init ──────────
+    // ── Load limit tambahan dari localStorage/Firestore saat init ──────────
     (async function loadLimitExtendSetting() {
         // Coba baca dari Firestore dulu
         try {
-            const snap = await getDoc(doc(db, 'settings', 'extend'));
+            const snap = await getDoc(doc(db, 'settings', 'tambahan'));
             if (snap.exists()) {
                 const saved = snap.data().limit;
                 if (saved && saved >= 1) {
                     localStorage.setItem('pg_extend_limit', saved);
-                    const el = document.getElementById('input-limit-extend');
+                    const el = document.getElementById('input-limit-tambahan');
                     if (el) { el.value = saved; previewLimitExtend(saved); }
                     return;
                 }
@@ -3718,12 +3718,12 @@
         // Fallback ke localStorage
         const saved = parseInt(localStorage.getItem('pg_extend_limit'));
         if (saved && saved >= 1) {
-            const el = document.getElementById('input-limit-extend');
+            const el = document.getElementById('input-limit-tambahan');
             if (el) { el.value = saved; previewLimitExtend(saved); }
         }
     })();
 
-    // ── Helper: baca limit extend aktif ──────────────────────────────
+    // ── Helper: baca limit tambahan aktif ──────────────────────────────
     function getExtendLimit() {
         const saved = parseInt(localStorage.getItem('pg_extend_limit'));
         return (saved && saved >= 1) ? saved : 2;
@@ -3738,7 +3738,7 @@
         if (isNaN(n) || n < 0) { el.textContent = 'Masukkan angka valid'; el.style.color = '#ef4444'; return; }
         if (n === 0)  el.textContent = '= semua Tersedia masuk dropdown';
         else if (n >= 99) el.textContent = '= semua Tersedia langsung tampil (tanpa dropdown)';
-        else          el.textContent = `= ${n} unit Tersedia/Maintenance langsung tampil`;
+        else          el.textContent = `= ${n} unit Tersedia/Perawatan langsung tampil`;
         el.style.color = '#00d9ff';
     };
 
@@ -3771,14 +3771,14 @@
         }
         localStorage.setItem('pg_visible_idle', val);
         Swal.fire({ toast:true, position:'top', icon:'success', title:'Pengaturan tampilan disimpan!', showConfirmButton:false, timer:2000, ...swalTheme() });
-        // Re-render langsung dengan setting baru
+        // Re-render langsung dengan setelan baru
         const filtered = activeUnitFilter === 'semua'
             ? currentUnits
             : currentUnits.filter(u => (u.type || '').toUpperCase() === activeUnitFilter);
         renderUI(filtered);
     };
 
-    // Init setting tampilan unit dari localStorage
+    // Init setelan tampilan unit dari localStorage
     (function initTampilanUnit() {
         const savedIdle = parseInt(localStorage.getItem('pg_visible_idle') ?? '0') || 0;
         const savedDD   = localStorage.getItem('pg_dropdown_default') || 'tutup';
@@ -3820,7 +3820,7 @@
         }
     };
 
-    // ── HAPUS OTOMATIS SETTING ────────────────────────────────────────
+    // ── HAPUS OTOMATIS SETELAN ────────────────────────────────────────
     window.setAutoDelete = function(hari) {
         localStorage.setItem('pg_auto_delete_days', hari);
         document.querySelectorAll('.auto-del-pill').forEach(btn => {
@@ -4129,13 +4129,13 @@
                     if (!knownExtendIds.has(r.id)) {
                         knownExtendIds.add(r.id);
                         bunyiNotif('booking');
-                        tambahNotif('⏱ Request Extend: ' + (r.customerName || 'Pelanggan') + ' — ' + r.unitId + ' (+1 Jam · Rp ' + (r.rate || 0).toLocaleString('id-ID') + ')');
+                        tambahNotif('⏱ Permintaan Tambahan: ' + (r.customerName || 'Pelanggan') + ' — ' + r.unitId + ' (+1 Jam · Rp ' + (r.rate || 0).toLocaleString('id-ID') + ')');
                         // Popup langsung muncul
                         Swal.fire({
                             icon: 'info',
-                            title: '⏱ Request Extend!',
+                            title: '⏱ Permintaan Tambahan!',
                             html: '<p style="color:#9ca3af;font-size:13px;margin-bottom:8px">' +
-                                  '<strong style="color:#fff">' + (r.customerName || 'Pelanggan') + '</strong> minta extend unit <strong style="color:#00d9ff">' + r.unitId + ' (' + r.unitType + ')</strong></p>' +
+                                  '<strong style="color:#fff">' + (r.customerName || 'Pelanggan') + '</strong> minta tambahan unit <strong style="color:#00d9ff">' + r.unitId + ' (' + r.unitType + ')</strong></p>' +
                                   '<p style="color:#9ca3af;font-size:13px">Biaya: <strong style="color:#00d9ff">Rp ' + (r.rate || 0).toLocaleString('id-ID') + '</strong></p>',
                             showCancelButton: true,
                             confirmButtonText: 'Proses Sekarang',
@@ -4383,7 +4383,7 @@
         const quickReasons = [
             'Unit sudah dipesan orang lain',
             'Jadwal bentrok',
-            'Unit sedang maintenance',
+            'Unit sedang perawatan',
             'Slot penuh',
             'Pelanggan tidak bisa dihubungi',
         ];
@@ -4448,12 +4448,12 @@
         }
     };
 
-    // ── Approve / Reject Request Extend dari Pelanggan ────────────────
+    // ── Approve / Reject Permintaan Tambahan dari Pelanggan ────────────────
     window.approveExtendReq = async function(reqId, unitId, rate) {
         // Konfirmasi bayar dulu — sama seperti tambahWaktu manual
         window._extendPay = null;
         const { isConfirmed } = await Swal.fire({
-            title: 'Approve Extend — ' + unitId,
+            title: 'Approve Tambahan — ' + unitId,
             html: '<p style="color:#9ca3af;font-size:12px;margin-bottom:10px">Pastikan pelanggan sudah bayar:</p>' +
                   '<p style="color:#00d9ff;font-size:18px;font-weight:900;margin-bottom:14px">Rp ' + rate.toLocaleString('id-ID') + '</p>' +
                   '<div style="display:flex;flex-direction:column;gap:8px">' +
@@ -4463,7 +4463,7 @@
                           'style="padding:11px;border-radius:10px;background:#1c2128;border:1px solid rgba(255,255,255,0.1);color:#00d9ff;font-weight:800;cursor:pointer;font-size:12px;font-family:inherit">📱 Sudah Bayar — Ewallet</button>' +
                   '</div>',
             showConfirmButton: true,
-            confirmButtonText: '✅ Konfirmasi & Extend',
+            confirmButtonText: '✅ Konfirmasi & Tambahan',
             confirmButtonColor: '#00d9ff',
             showCancelButton: true,
             cancelButtonText: 'Batal',
@@ -4491,7 +4491,7 @@
             const extendLimit  = parseInt(localStorage.getItem('pg_extend_limit')) || 2;
 
             if (extendCount >= extendLimit) {
-                Swal.fire({ icon:'warning', title:'Limit Extend', text:`Unit ini sudah ${extendLimit}x di-extend dalam sesi ini.`, ...swalTheme() });
+                Swal.fire({ icon:'warning', title:'Limit Tambahan', text:`Unit ini sudah ${extendLimit}x di-tambahan dalam sesi ini.`, ...swalTheme() });
                 return;
             }
 
@@ -4520,15 +4520,15 @@
                 extendCount: extendCount + 1
             });
 
-            // Tandai request sebagai Approved
+            // Tandai permintaan sebagai Approved
             await updateDoc(doc(db, 'extendRequests', reqId), {
                 status:     'Approved',
                 approvedAt: now,
                 payMethod
             });
 
-            tambahNotif('⏱ Extend Disetujui: ' + unitId + ' (+1 Jam) — ' + payMethod + ' — Rp ' + rate.toLocaleString('id-ID'));
-            Swal.fire({ toast:true, position:'top', icon:'success', title:'+1 Jam | Extend Disetujui', showConfirmButton:false, timer:2000 });
+            tambahNotif('⏱ Tambahan Disetujui: ' + unitId + ' (+1 Jam) — ' + payMethod + ' — Rp ' + rate.toLocaleString('id-ID'));
+            Swal.fire({ toast:true, position:'top', icon:'success', title:'+1 Jam | Tambahan Disetujui', showConfirmButton:false, timer:2000 });
         } catch(e) {
             Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalTheme() });
         }
@@ -4536,8 +4536,8 @@
 
     window.rejectExtendReq = async function(reqId, unitId) {
         const { isConfirmed } = await Swal.fire({
-            title: 'Tolak Request Extend?',
-            html: 'Unit <strong style="color:#00d9ff">' + unitId + '</strong> tidak akan di-extend.<br><span style="color:#9ca3af;font-size:12px">Pelanggan akan melihat statusnya di dashboard mereka.</span>',
+            title: 'Tolak Permintaan Tambahan?',
+            html: 'Unit <strong style="color:#00d9ff">' + unitId + '</strong> tidak akan di-tambahan.<br><span style="color:#9ca3af;font-size:12px">Pelanggan akan melihat statusnya di dashboard mereka.</span>',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Ya, Tolak',
@@ -4553,8 +4553,8 @@
                 status:     'Rejected',
                 rejectedAt: new Date().toISOString()
             });
-            Swal.fire({ toast:true, position:'top', icon:'info', title:'Request Extend Ditolak', showConfirmButton:false, timer:2000 });
-            tambahNotif('❌ Extend Ditolak: ' + unitId);
+            Swal.fire({ toast:true, position:'top', icon:'info', title:'Permintaan Tambahan Ditolak', showConfirmButton:false, timer:2000 });
+            tambahNotif('❌ Tambahan Ditolak: ' + unitId);
         } catch(e) {
             Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalTheme() });
         }
@@ -4757,7 +4757,7 @@
     );
 
     // ════════════════════════════════════════════════════
-    // WAITING LIST — listener, render, filter, aksi
+    // ANTRIAN LIST — listener, render, filter, aksi
     // ════════════════════════════════════════════════════
     var allWaitingItems  = [];
     var activeWaitFilter = 'semua';
@@ -4773,14 +4773,14 @@
     };
 
     function renderWaitingFiltered() {
-        var container = document.getElementById('waiting-list');
-        // Update strip-waiting count
-        const swEl = document.getElementById('strip-waiting');
+        var container = document.getElementById('antrian-list');
+        // Update strip-antrian count
+        const swEl = document.getElementById('strip-antrian');
         const wdEl = document.getElementById('strip-wait-dot');
         if (swEl) swEl.textContent = allWaitingItems.length;
         if (wdEl) wdEl.classList.toggle('hidden', allWaitingItems.length === 0);
         // sync sidebar
-        const sbW = document.getElementById('sb-waiting'); if (sbW) sbW.textContent = allWaitingItems.length;
+        const sbW = document.getElementById('sb-antrian'); if (sbW) sbW.textContent = allWaitingItems.length;
         var items = allWaitingItems.filter(function(w) {
             if (activeWaitFilter === 'semua') return true;
             if (activeWaitFilter === 'booking') return w._col === 'bookings';
@@ -4798,7 +4798,7 @@
             container.innerHTML =
                 '<div class="text-center py-12 text-gray-600">' +
                 '<i class="fas fa-check-circle text-2xl mb-3 block text-green-500"></i>' +
-                '<p class="text-sm font-bold text-gray-500">Tidak ada antrian waiting list</p>' +
+                '<p class="text-sm font-bold text-gray-500">Tidak ada antrian antrian list</p>' +
                 '</div>';
             return;
         }
@@ -4815,7 +4815,7 @@
         var posLabel = item.waitingPos ? '#' + item.waitingPos : '#?';
         var custName = (item.customerName || item.custName || 'Unknown').replace(/'/g, "\\'");
         var html =
-            '<div class="req-card waiting-req" id="wait-' + item.id + '">' +
+            '<div class="req-card antrian-req" id="wait-' + item.id + '">' +
             '<div class="flex justify-between items-start mb-3">' +
                 '<div class="flex items-center gap-2">' +
                     '<div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm" style="background:rgba(245,158,11,0.12)">' +
@@ -4828,7 +4828,7 @@
                 '</div>' +
                 '<div class="flex flex-col items-end gap-1">' +
                     '<span class="wait-pos-badge">Antrian ' + posLabel + '</span>' +
-                    '<span class="badge-waiting">' + (isBooking ? 'Booking' : 'Rental') + '</span>' +
+                    '<span class="badge-antrian">' + (isBooking ? 'Booking' : 'Rental') + '</span>' +
                 '</div>' +
             '</div>' +
             '<div class="bg-white/[0.03] rounded-xl p-3 mb-3 space-y-1.5">' +
@@ -4849,9 +4849,9 @@
         return html;
     }
 
-    // ── Listen waiting list bookings ──────────────────────────────────
+    // ── Listen antrian list bookings ──────────────────────────────────
     onSnapshot(
-        query(collection(db, 'bookings'), where('status', '==', 'Waiting List')),
+        query(collection(db, 'bookings'), where('status', '==', 'Antrian List')),
         function(snap) {
             var wBookings = snap.docs.map(function(d) { return Object.assign({ id: d.id, _col: 'bookings' }, d.data()); });
             var currentIds = new Set(wBookings.map(function(b) { return b.id; }));
@@ -4863,21 +4863,21 @@
                     if (!knownWaitIds.has(b.id)) {
                         knownWaitIds.add(b.id);
                         bunyiNotif('booking');
-                        tambahNotif('⏳ Waiting List Booking: ' + (b.customerName||b.custName||'Pelanggan') + ' — ' + (b.console||'-') + ' #' + (b.waitingPos||'?'));
-                        document.getElementById('waiting-notif-dot').classList.add('show');
+                        tambahNotif('⏳ Antrian List Booking: ' + (b.customerName||b.custName||'Pelanggan') + ' — ' + (b.console||'-') + ' #' + (b.waitingPos||'?'));
+                        document.getElementById('antrian-notif-dot').classList.add('show');
                     }
                 });
             }
 
             allWaitingItems = allWaitingItems.filter(function(w) { return w._col !== 'bookings'; }).concat(wBookings);
             renderWaitingFiltered();
-            if (wBookings.length) document.getElementById('waiting-notif-dot').classList.add('show');
+            if (wBookings.length) document.getElementById('antrian-notif-dot').classList.add('show');
         }
     );
 
-    // ── Listen waiting list rentals ───────────────────────────────────
+    // ── Listen antrian list rentals ───────────────────────────────────
     onSnapshot(
-        query(collection(db, 'rentals'), where('status', '==', 'Waiting List')),
+        query(collection(db, 'rentals'), where('status', '==', 'Antrian List')),
         function(snap) {
             var wRentals = snap.docs.map(function(d) { return Object.assign({ id: d.id, _col: 'rentals' }, d.data()); });
             var currentIds = new Set(wRentals.map(function(r) { return r.id; }));
@@ -4887,19 +4887,19 @@
                     if (!knownWaitIds.has(r.id)) {
                         knownWaitIds.add(r.id);
                         bunyiNotif('rental');
-                        tambahNotif('⏳ Waiting List Rental: ' + (r.customerName||'Pelanggan') + ' — ' + (r.console||'-') + ' #' + (r.waitingPos||'?'));
-                        document.getElementById('waiting-notif-dot').classList.add('show');
+                        tambahNotif('⏳ Antrian List Rental: ' + (r.customerName||'Pelanggan') + ' — ' + (r.console||'-') + ' #' + (r.waitingPos||'?'));
+                        document.getElementById('antrian-notif-dot').classList.add('show');
                     }
                 });
             }
 
             allWaitingItems = allWaitingItems.filter(function(w) { return w._col !== 'rentals'; }).concat(wRentals);
             renderWaitingFiltered();
-            if (wRentals.length) document.getElementById('waiting-notif-dot').classList.add('show');
+            if (wRentals.length) document.getElementById('antrian-notif-dot').classList.add('show');
         }
     );
 
-    // ── Aktivasi waiting list → proses seperti permintaan biasa ──────
+    // ── Aktivasi antrian list → proses seperti permintaan biasa ──────
     window.aktivasiWaiting = async function(col, docId) {
         var item = allWaitingItems.find(function(w) { return w.id === docId && w._col === col; });
         if (!item) return;
@@ -4933,7 +4933,7 @@
         }
 
         var res = await Swal.fire({
-            title: '⏳ Konfirmasi Waiting List?',
+            title: '⏳ Konfirmasi Antrian List?',
             html:
                 '<div style="text-align:left;font-size:12px;line-height:2">' +
                 '<div style="display:flex;justify-content:space-between"><span style="color:#9ca3af">Pelanggan</span><strong style="color:#fff">' + custName + '</strong></div>' +
@@ -4988,7 +4988,7 @@
                     status: 'Aktif', confirmedAt, confirmedBy: 'staff',
                     assignedUnit: assignedUnit, customerName: resolvedName
                 });
-                tambahNotif('✅ Waiting List Aktif: ' + resolvedName + ' → Unit ' + assignedUnit + ' (' + consoleType + ' · ' + duration + ' Jam)');
+                tambahNotif('✅ Antrian List Aktif: ' + resolvedName + ' → Unit ' + assignedUnit + ' (' + consoleType + ' · ' + duration + ' Jam)');
                 Swal.fire({ toast:true, position:'top', icon:'success', title:'✅ ' + resolvedName + ' → Unit ' + assignedUnit + ' aktif!', showConfirmButton:false, timer:3500, ...swalTheme() });
 
             } else {
@@ -5004,7 +5004,7 @@
                     status: 'Aktif', confirmedAt, confirmedBy: 'staff',
                     customerName: resolvedName, assignedRentalUnit: assignedRU
                 });
-                tambahNotif('📦 Waiting List Rental Aktif: ' + resolvedName + ' → Unit ' + assignedRU);
+                tambahNotif('📦 Antrian List Rental Aktif: ' + resolvedName + ' → Unit ' + assignedRU);
                 Swal.fire({ toast:true, position:'top', icon:'success', title:'📦 Rental ' + resolvedName + ' → Unit ' + assignedRU + ' dipinjam!', showConfirmButton:false, timer:3500, ...swalTheme() });
             }
         } catch(e) {
@@ -5012,7 +5012,7 @@
         }
     };
 
-    // ── Tolak waiting list ────────────────────────────────────────────
+    // ── Tolak antrian list ────────────────────────────────────────────
     window.tolakWaiting = async function(col, id, custName) {
         const isLight = document.body.classList.contains('light-mode');
         const chipStyle = (active) => `
@@ -5025,7 +5025,7 @@
         const quickReasons = [
             'Unit sudah dipesan orang lain',
             'Jadwal bentrok',
-            'Unit sedang maintenance',
+            'Unit sedang perawatan',
             'Slot penuh',
             'Pelanggan tidak bisa dihubungi',
         ];
@@ -5037,7 +5037,7 @@
                 const c = document.getElementById('chip-tw-'+i);
                 if (c) c.style.cssText = chipStyle(selectedReason === r);
             });
-            const inp = document.getElementById('swal-waiting-custom');
+            const inp = document.getElementById('swal-antrian-custom');
             if (inp && selectedReason) inp.value = '';
         };
 
@@ -5049,7 +5049,7 @@
             title: 'Tolak Antrian?',
             html: `
                 <div style="font-size:12px;color:#9ca3af;margin-bottom:12px;">
-                    Tolak antrian waiting list dari <strong style="color:${isLight?'#0f172a':'#fff'}">${custName}</strong>?
+                    Tolak antrian antrian list dari <strong style="color:${isLight?'#0f172a':'#fff'}">${custName}</strong>?
                 </div>
                 <div style="text-align:left;margin-bottom:8px;">
                     <div style="font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#f87171;margin-bottom:6px;">⚡ Pilih Alasan Cepat</div>
@@ -5057,7 +5057,7 @@
                 </div>
                 <div style="text-align:left;margin-top:10px;">
                     <div style="font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6b7280;margin-bottom:6px;">✏️ Atau Tulis Sendiri</div>
-                    <textarea id="swal-waiting-custom" placeholder="Tulis alasan lain..." rows="2"
+                    <textarea id="swal-antrian-custom" placeholder="Tulis alasan lain..." rows="2"
                         style="width:100%;background:${isLight?'#f1f5f9':'#1a2030'};border:1px solid ${isLight?'rgba(0,0,0,0.12)':'rgba(255,255,255,0.1)'};color:${isLight?'#0f172a':'#fff'};border-radius:8px;padding:10px;font-size:12px;resize:none;font-family:inherit;outline:none;"></textarea>
                 </div>
             `,
@@ -5069,7 +5069,7 @@
             cancelButtonColor: '#374151',
             ...swalTheme(),
             preConfirm: () => {
-                const custom = document.getElementById('swal-waiting-custom').value.trim();
+                const custom = document.getElementById('swal-antrian-custom').value.trim();
                 return selectedReason || custom || 'Antrian dibatalkan staff';
             }
         });
@@ -5081,7 +5081,7 @@
                 rejectedBy: 'staff',
                 rejectionReason: res.value
             });
-            tambahNotif('❌ Waiting List Ditolak: ' + custName + ' — ' + res.value);
+            tambahNotif('❌ Antrian List Ditolak: ' + custName + ' — ' + res.value);
             Swal.fire({ toast:true, position:'top', icon:'info', title:'Antrian ditolak', showConfirmButton:false, timer:2000, ...swalTheme() });
         } catch(e) {
             Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalTheme() });
@@ -5903,7 +5903,7 @@
         // Highlight nav
         document.getElementById('nav-history').style.color = '#00d9ff';
         // Set snav-history active, hapus active dari menu lain
-        ['snav-beranda','snav-stats','snav-history','snav-setting'].forEach(id => {
+        ['snav-beranda','snav-stats','snav-history','snav-setelan'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.remove('active');
         });
@@ -5933,7 +5933,7 @@
             document.getElementById('nav-history').style.color = '';
         }
         // Update sidebar active state
-        ['snav-beranda','snav-stats','snav-history','snav-setting'].forEach(id => {
+        ['snav-beranda','snav-stats','snav-history','snav-setelan'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.remove('active');
         });
@@ -5996,7 +5996,7 @@
         setInterval(syncSidebarNotifDot, 2000);
         syncSidebarNotifDot();
 
-        // Sync jam shift setelah setting panel mungkin ter-render
+        // Sync jam shift setelah setelan panel mungkin ter-render
         setTimeout(syncSidebarShift, 1500);
         setTimeout(syncSidebarShift, 4000);
     })();

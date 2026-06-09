@@ -60,8 +60,8 @@
         .role-badge { background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2);border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:.5px }
         .nav-btn { display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none;font-family:'Space Grotesk',sans-serif }
         .nav-btn:hover { color:var(--text);border-color:rgba(255,255,255,0.15) }
-        .btn-logout { background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.2);color:var(--orange) }
-        .btn-logout:hover { background:rgba(247,129,102,0.15);color:var(--orange) }
+        .btn-keluar { background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.2);color:var(--orange) }
+        .btn-keluar:hover { background:rgba(247,129,102,0.15);color:var(--orange) }
         .btn-staff-view { background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--muted);font-size:10px;padding:4px 9px }
         .btn-staff-view:hover { background:rgba(255,255,255,0.04);color:var(--text);border-color:rgba(255,255,255,0.15) }
         .btn-theme-toggle { width:32px;height:32px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s }
@@ -231,7 +231,7 @@
         }
         .s-available { color: var(--green); background: rgba(34,197,94,.1); }
         .s-inuse { color: var(--cyan); background: rgba(0,217,255,.1); }
-        .s-maintenance { color: var(--orange); background: rgba(249,115,22,.1); }
+        .s-perawatan { color: var(--orange); background: rgba(249,115,22,.1); }
         .unit-del {
             position: absolute; top: 5px; right: 5px;
             width: 22px; height: 22px;
@@ -435,7 +435,7 @@
             .sidebar-nav-item.active { background: rgba(0,217,255,0.08); color: #00d9ff; }
             .sidebar-nav-item i { width: 16px; text-align: center; font-size: 13px; }
             .sidebar-spacer { flex: 1; }
-            .sidebar-logout {
+            .sidebar-keluar {
                 display: flex;
                 align-items: center;
                 gap: 10px;
@@ -452,7 +452,7 @@
                 transition: all 0.15s;
                 width: 100%;
             }
-            .sidebar-logout:hover { background: rgba(247,129,102,0.14); }
+            .sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
             .sidebar-staff-view { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-size:12px; font-weight:700; color:#4b5563; cursor:pointer; border:1px solid rgba(255,255,255,0.06); background:transparent; font-family:inherit; transition:all 0.15s; width:100%; margin-bottom:6px; text-decoration:none; }
             .sidebar-staff-view:hover { background:rgba(255,255,255,0.04); color:#9ca3af; }
             .owner-main-content { flex: 1; min-width: 0; overflow-y: auto; padding: 28px 40px 80px 40px; max-width: 1100px; margin: 0 auto; width: 100%; box-sizing: border-box; }
@@ -495,7 +495,7 @@
         body.light-mode .sidebar-nav-item.active { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
         body.light-mode .sidebar-staff-view { color: #94a3b8 !important; border-color: rgba(0,0,0,0.08) !important; }
         body.light-mode .sidebar-staff-view:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
-        body.light-mode .sidebar-logout { background: rgba(239,68,68,0.07) !important; border-color: rgba(239,68,68,0.15) !important; }
+        body.light-mode .sidebar-keluar { background: rgba(239,68,68,0.07) !important; border-color: rgba(239,68,68,0.15) !important; }
 
         /* Layout & wrappers */
         body.light-mode .owner-main-content { background: #f0f4f8 !important; }
@@ -643,8 +643,8 @@
         <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left;margin-bottom:6px">
             <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
         </button>
-        <button class="sidebar-logout" onclick="doLogout()">
-            <i class="fas fa-right-from-bracket"></i> Logout
+        <button class="sidebar-keluar" onclick="doLogout()">
+            <i class="fas fa-right-from-bracket"></i> Keluar
         </button>
     </aside>
 <div class="owner-main-content">
@@ -986,10 +986,10 @@ function renderUnits() {
         const s = u.status || '';
         const sc = s === 'Tersedia' ? 's-available'
                  : (s === 'Digunakan' || s === 'Dipakai') ? 's-inuse'
-                 : 's-maintenance';
+                 : 's-perawatan';
         const sl = s === 'Tersedia' ? 'Tersedia'
                  : (s === 'Digunakan' || s === 'Dipakai') ? 'Dipakai'
-                 : 'Maintenance';
+                 : 'Perawatan';
 
         // Tentukan badge berdasarkan tipe atau ID unit
         const typeRaw = (u.type || u.id || '').toUpperCase();
@@ -1406,7 +1406,7 @@ renderMenu();
     window.doLogout = async () => {
         const { signOut } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
         const result = await Swal.fire({
-            title: 'Logout?', text: 'Sesi Anda akan berakhir.',
+            title: 'Keluar?', text: 'Sesi Anda akan berakhir.',
             icon: 'warning', showCancelButton: true,
             confirmButtonColor: '#00d9ff', cancelButtonColor: '#ef4444',
             confirmButtonText: 'Ya, Keluar', cancelButtonText: 'Batal',
@@ -1418,7 +1418,7 @@ renderMenu();
     window.goToStaffView = async () => {
         const result = await Swal.fire({
             title: '👔 Masuk sebagai Staff?',
-            html: `Anda akan diarahkan ke <b>Dashboard Staff</b>.<br><span style="font-size:12px;color:#9ca3af">Aksi ini tidak akan logout dari akun Owner.</span>`,
+            html: `Anda akan diarahkan ke <b>Dashboard Staff</b>.<br><span style="font-size:12px;color:#9ca3af">Aksi ini tidak akan keluar dari akun Owner.</span>`,
             icon: 'question', showCancelButton: true,
             confirmButtonColor: '#bc8cff', cancelButtonColor: '#374151',
             confirmButtonText: '<i class="fas fa-users-gear"></i> Ya, buka Staff View',

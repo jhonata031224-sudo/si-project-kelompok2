@@ -417,11 +417,11 @@
         body.light-mode .badge-booking { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; border-color: rgba(2,132,199,0.2) !important; }
         body.light-mode .badge-rental  { background: rgba(124,58,237,0.08) !important; color: #7c3aed !important; border-color: rgba(124,58,237,0.2) !important; }
         body.light-mode .badge-pending { background: rgba(217,119,6,0.08) !important; color: #d97706 !important; border-color: rgba(217,119,6,0.2) !important; }
-        /* Logout button */
-        body.light-mode .btn-logout,
+        /* Keluar button */
+        body.light-mode .btn-keluar,
         body.light-mode .btn-out-hdr,
-        body.light-mode .topbar-logout-btn,
-        body.light-mode .sidebar-logout { background: rgba(234,88,12,0.07) !important; border-color: rgba(234,88,12,0.2) !important; color: #ea580c !important; }
+        body.light-mode .topbar-keluar-btn,
+        body.light-mode .sidebar-keluar { background: rgba(234,88,12,0.07) !important; border-color: rgba(234,88,12,0.2) !important; color: #ea580c !important; }
         /* History drawer */
         body.light-mode .hist-drawer { background: #f8fafc !important; border-color: rgba(0,0,0,0.08) !important; }
         body.light-mode .hdcard-header.selesai { background: rgba(22,163,74,0.06) !important; border-color: rgba(22,163,74,0.15) !important; }
@@ -537,7 +537,7 @@
         padding: 6px 10px 4px;
       }
       .sidebar-section-box .sidebar-nav-item { margin-bottom: 0; }
-      .sidebar-logout {
+      .sidebar-keluar {
         display: flex; align-items: center; gap: 10px;
         padding: 10px 12px; border-radius: 10px;
         font-size: 12px; font-weight: 700;
@@ -546,8 +546,8 @@
         background: rgba(247,129,102,.06); width: 100%;
         font-family: inherit; text-align: left; margin-top: 4px;
       }
-      .sidebar-logout:hover { background: rgba(247,129,102,.14); }
-      .sidebar-logout i { width: 15px; text-align: center; font-size: 13px; }
+      .sidebar-keluar:hover { background: rgba(247,129,102,.14); }
+      .sidebar-keluar i { width: 15px; text-align: center; font-size: 13px; }
 
       /* Main content area */
       .cust-main-content {
@@ -674,8 +674,8 @@
     body.light-mode .sidebar-nav-item { color: #94a3b8 !important; }
     body.light-mode .sidebar-nav-item:hover { background: rgba(0,0,0,.04) !important; color: #64748b !important; }
     body.light-mode .sidebar-nav-item.active { background: rgba(2,132,199,.08) !important; color: #0284c7 !important; }
-    body.light-mode .sidebar-logout { background: rgba(234,88,12,.06) !important; border-color: rgba(234,88,12,.18) !important; color: #ea580c !important; }
-    body.light-mode .sidebar-logout:hover { background: rgba(234,88,12,.12) !important; }
+    body.light-mode .sidebar-keluar { background: rgba(234,88,12,.06) !important; border-color: rgba(234,88,12,.18) !important; color: #ea580c !important; }
+    body.light-mode .sidebar-keluar:hover { background: rgba(234,88,12,.12) !important; }
     body.light-mode .sidebar-section-label-box { background: rgba(2,132,199,.06) !important; border-color: #0284c7 !important; color: #0284c7 !important; box-shadow: 0 0 10px rgba(2,132,199,.12) !important; }
     body.light-mode .sidebar-item-box { background: rgba(0,0,0,.03) !important; border-color: rgba(0,0,0,.08) !important; color: #64748b !important; }
     body.light-mode .sidebar-item-box:hover { background: rgba(0,0,0,.07) !important; }
@@ -762,7 +762,7 @@
 <button onclick="toggleTheme()" class="sidebar-item-box" id="sb-theme" style="color:#9ca3af">
     <i id="theme-icon-sidebar" class="fas fa-sun"></i> Ganti Tema
   </button>
-  <button class="sidebar-logout" onclick="doLogout()">
+  <button class="sidebar-keluar" onclick="doLogout()">
     <i class="fas fa-right-from-bracket"></i> Keluar
   </button>
 </aside>
@@ -837,7 +837,7 @@
 
   <div class="sec-box" id="unit-live-box">
     <div class="sec-head unit-live-toggle" onclick="toggleUnitLive()" style="margin-bottom:0;cursor:pointer;user-select:none;">
-      <div class="sec-title"><i class="fas fa-bolt"></i> Status unit live</div>
+      <div class="sec-title"><i class="fas fa-bolt"></i> Ketersediaan Unit</div>
       <div class="unit-live-chevron" id="unit-live-chevron">
         <i class="fas fa-chevron-down"></i>
       </div>
@@ -867,7 +867,7 @@
       <div class="legend">
         <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Tersedia</div>
         <div class="leg"><div class="leg-dot" style="background:var(--red)"></div>Dipakai</div>
-        <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>Maintenance</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>Perawatan</div>
       </div>
       <div class="unit-grid" id="unit-grid"></div>
     </div>
@@ -885,7 +885,7 @@
       <div class="legend">
         <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Tersedia</div>
         <div class="leg"><div class="leg-dot" style="background:var(--red)"></div>Dipinjam</div>
-        <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>Maintenance</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>Perawatan</div>
       </div>
       <div class="unit-grid" id="rental-unit-grid" style="margin-top:10px;"></div>
     </div>
@@ -1083,11 +1083,11 @@
   let allBookingDocs = [];  // array {id, ...data} untuk booking
   let allRentalDocs  = [];  // array {id, ...data} untuk rental
 
-  // ── Limit extend — baca dari Firestore (diset oleh staff) ───────────
+  // ── Limit tambahan — baca dari Firestore (diset oleh staff) ───────────
   let extendLimit = 2; // default
   (async function loadExtendLimit() {
     try {
-      const snap = await getDoc(doc(db, 'settings', 'extend'));
+      const snap = await getDoc(doc(db, 'settings', 'tambahan'));
       if (snap.exists() && snap.data().limit >= 1) {
         extendLimit = snap.data().limit;
       }
@@ -1550,9 +1550,9 @@
     }
     grid.innerHTML = list.map((u, i) => {
       const isMine = u.status === 'Dipinjam' && u.borrowerId && u.borrowerId === currentUid;
-      const dot = u.status === 'Maintenance' ? 'da' : u.status === 'Dipinjam' ? 'dr' : 'dg';
-      const stHtml = u.status === 'Maintenance'
-        ? `<div class="unit-status st-m"><i class="fas fa-key" style="font-size:9px"></i> Maintenance</div>`
+      const dot = u.status === 'Perawatan' ? 'da' : u.status === 'Dipinjam' ? 'dr' : 'dg';
+      const stHtml = u.status === 'Perawatan'
+        ? `<div class="unit-status st-m"><i class="fas fa-key" style="font-size:9px"></i> Perawatan</div>`
         : isMine
           ? `<div class="unit-status st-d" style="color:#a78bfa;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2)"><i class="fas fa-house" style="font-size:9px;margin-right:3px"></i>Kamu pinjam</div>`
           : u.status === 'Dipinjam'
@@ -1741,10 +1741,10 @@
           ? 'Rp ' + Number(item.grandTotal || item.total).toLocaleString('id-ID') : '—';
         const jam    = item.time ? item.time + ' WIB' : '—';
         const durasi = item.duration ? item.duration + ' Jam' : '—';
-        // Info extend jika ada (field extendCount disimpan di booking/rental setelah extend)
+        // Info tambahan jika ada (field extendCount disimpan di booking/rental setelah tambahan)
         const ec = item.extendCount || 0;
         const extendBadge = ec > 0
-          ? `<div class="hcard-row" style="margin-top:2px"><span class="hcard-lbl"><i class="fas fa-plus-circle" style="font-size:8px;margin-right:3px;color:#00d9ff"></i>Extend</span><span class="hcard-val" style="color:#00d9ff;font-weight:800">${ec}x tambah waktu</span></div>`
+          ? `<div class="hcard-row" style="margin-top:2px"><span class="hcard-lbl"><i class="fas fa-plus-circle" style="font-size:8px;margin-right:3px;color:#00d9ff"></i>Tambahan</span><span class="hcard-val" style="color:#00d9ff;font-weight:800">${ec}x tambah waktu</span></div>`
           : '';
         const isDitolak = (item.status || '').toLowerCase().includes('ditolak');
         const alasanTolak = item.rejectionReason || item.cancelReason || '';
@@ -1860,7 +1860,7 @@
       }
     } catch(e) { /* Firestore tidak tersedia, lanjut tanpa F&B */ }
 
-    // Fetch extend log terkait transaksi ini
+    // Fetch tambahan log terkait transaksi ini
     let extendItems = [];
     try {
       const { getDocs: gd2, collection: col2, query: q2, where: wh2 } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
@@ -1888,14 +1888,14 @@
         });
       }
       extendItems.sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
-    } catch(e) { /* lanjut tanpa extend */ }
+    } catch(e) { /* lanjut tanpa tambahan */ }
 
     const { jsPDF } = window.jspdf;
     const fnbTotal    = fnbItems.reduce((s, i) => s + (i.price * i.qty), 0);
     const extendTotal = extendItems.reduce((s, e) => s + (e.biaya || 0), 0);
     const totalNum    = (item.grandTotal || item.total || 0) + fnbTotal;
 
-    // Hitung tinggi dinamis berdasarkan jumlah item F&B + extend
+    // Hitung tinggi dinamis berdasarkan jumlah item F&B + tambahan
     const extraHeight = (fnbItems.length > 0 ? (fnbItems.length * 6 + 20) : 14)
                       + (extendItems.length > 0 ? (extendItems.length * 6 + 18) : 0);
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [80, 165 + extraHeight] });
@@ -1968,18 +1968,18 @@
     }
     line(false); gap(4);
 
-    // Extend Section
+    // Tambahan Section
     if (extendItems.length > 0) {
-      lx('RIWAYAT EXTEND', 6.5, true); gap(4);
+      lx('RIWAYAT TAMBAHAN', 6.5, true); gap(4);
       extendItems.forEach((ex, idx) => {
         doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
-        doc.text('Extend #' + (idx + 1) + ' (+' + (ex.extendJam || 1) + ' Jam) · ' + (ex.payMethod || 'Cash'), 5, y);
+        doc.text('Tambahan #' + (idx + 1) + ' (+' + (ex.extendJam || 1) + ' Jam) · ' + (ex.payMethod || 'Cash'), 5, y);
         doc.setFont('helvetica', 'bold');
         doc.text('Rp ' + (ex.biaya || 0).toLocaleString('id-ID'), W-5, y, { align:'right' });
         gap(5.5);
       });
       doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
-      doc.text('Subtotal Extend (' + extendItems.length + 'x)', 5, y);
+      doc.text('Subtotal Tambahan (' + extendItems.length + 'x)', 5, y);
       doc.setFont('helvetica', 'bold');
       doc.text('Rp ' + extendTotal.toLocaleString('id-ID'), W-5, y, { align:'right' });
       gap(4);
@@ -1995,7 +1995,7 @@
       rx('Rp ' + Number(sesiNum).toLocaleString('id-ID'), 7, false);
       gap(4.5);
       if (extendItems.length > 0) {
-        lx('Extend (' + extendItems.length + 'x)', 7, false);
+        lx('Tambahan (' + extendItems.length + 'x)', 7, false);
         rx('Rp ' + extendTotal.toLocaleString('id-ID'), 7, false);
         gap(4.5);
       }
@@ -2047,7 +2047,7 @@
       return;
     }
     grid.innerHTML = list.map((u, i) => {
-      const m  = u.status === 'Maintenance';
+      const m  = u.status === 'Perawatan';
       const d  = u.status === 'Digunakan' || u.status === 'Dipakai';
       const b  = u.status === 'Dipesan';
       const isMine = d && u.customerId && u.customerId === currentUid;
@@ -2073,17 +2073,17 @@
 
         if (extendCount >= extendLimit) {
           extendBtnHtml = `<div style="margin-top:6px;padding:7px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);text-align:center;font-size:9px;color:#4b5563;font-weight:700">
-            <i class="fas fa-lock" style="margin-right:3px"></i>Limit extend (${extendCount}/${extendLimit})
+            <i class="fas fa-lock" style="margin-right:3px"></i>Limit tambahan (${extendCount}/${extendLimit})
           </div>`;
         } else {
           extendBtnHtml = `<button onclick="requestExtend('${u.id}','${u.type}',${rate},${extendCount})" style="margin-top:6px;width:100%;padding:8px;border-radius:8px;background:rgba(0,217,255,0.06);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;font-size:9px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px">
-            <i class="fas fa-plus" style="font-size:9px"></i> Minta Extend +1 Jam · Rp ${rate.toLocaleString('id-ID')} (${extendCount}/${extendLimit})
+            <i class="fas fa-plus" style="font-size:9px"></i> Minta Tambahan +1 Jam · Rp ${rate.toLocaleString('id-ID')} (${extendCount}/${extendLimit})
           </button>`;
         }
       }
 
       const stHtml = m
-        ? `<div class="unit-status st-m"><i class="fas fa-key" style="font-size:9px"></i> Maintenance</div>`
+        ? `<div class="unit-status st-m"><i class="fas fa-key" style="font-size:9px"></i> Perawatan</div>`
         : b ? `<div class="unit-status st-b"><i class="fas fa-lock" style="font-size:9px"></i> Sudah Dibooking${jadwalStr ? `<span style="margin-left:4px;font-size:8px;opacity:.8">· mulai ${jadwalStr}</span>` : ''}</div>`
         : isMine ? `<div class="unit-status st-d" style="color:#00d9ff;background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2)"><i class="fas fa-gamepad" style="font-size:9px;margin-right:3px"></i>Sesi kamu</div>`
         : d ? `<div class="unit-status st-d">Dipakai</div>`
@@ -2101,14 +2101,14 @@
     }).join('');
   }
 
-  // ── Request Extend oleh Pelanggan ────────────────────────────────────
+  // ── Permintaan Tambahan oleh Pelanggan ────────────────────────────────────
   window.requestExtend = async (unitId, unitType, rate, extendCount) => {
     if (extendCount >= extendLimit) {
-      Swal.fire({ icon:'warning', title:'Limit Extend', text:`Maksimal ${extendLimit}x extend per sesi.`, ...swalBg() });
+      Swal.fire({ icon:'warning', title:'Limit Tambahan', text:`Maksimal ${extendLimit}x tambahan per sesi.`, ...swalBg() });
       return;
     }
 
-    // Cek apakah sudah ada request pending untuk unit ini
+    // Cek apakah sudah ada permintaan pending untuk unit ini
     const existing = await getDocs(query(
       collection(db, 'extendRequests'),
       where('unitId', '==', unitId),
@@ -2117,15 +2117,15 @@
     if (!existing.empty) {
       Swal.fire({
         icon: 'info',
-        title: 'Request Sudah Terkirim',
-        text: 'Permintaan extend-mu sedang diproses staff. Mohon tunggu sebentar.',
+        title: 'Permintaan Sudah Terkirim',
+        text: 'Permintaan tambahan-mu sedang diproses staff. Mohon tunggu sebentar.',
         ...swalBg(), confirmButtonColor: '#00d9ff'
       });
       return;
     }
 
     const { isConfirmed } = await Swal.fire({
-      title: `Minta Extend +1 Jam?`,
+      title: `Minta Tambahan +1 Jam?`,
       html: `<p style="color:#9ca3af;font-size:13px;margin-bottom:8px">
                Unit: <strong style="color:#fff">${unitId} (${unitType})</strong>
              </p>
@@ -2134,10 +2134,10 @@
              </p>
              <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:10px;font-size:11px;color:#f59e0b;text-align:left">
                <i class="fas fa-triangle-exclamation" style="margin-right:5px"></i>
-               Setelah request dikirim, <strong>siapkan pembayaran</strong> untuk diserahkan ke staff saat dikonfirmasi.
+               Setelah permintaan dikirim, <strong>siapkan pembayaran</strong> untuk diserahkan ke staff saat dikonfirmasi.
              </div>`,
       showCancelButton: true,
-      confirmButtonText: '📨 Kirim Request Extend',
+      confirmButtonText: '📨 Kirim Permintaan Tambahan',
       cancelButtonText: 'Batal',
       confirmButtonColor: '#00d9ff',
       cancelButtonColor: '#374151',
@@ -2158,7 +2158,7 @@
       });
       Swal.fire({
         icon: 'success',
-        title: 'Request Terkirim!',
+        title: 'Permintaan Terkirim!',
         html: `<p style="color:#9ca3af;font-size:12px">Staff akan segera memproses requestmu.</p>
                <p style="color:#f59e0b;font-size:11px;margin-top:8px">⚠️ Siapkan pembayaran <strong>Rp ${rate.toLocaleString('id-ID')}</strong> untuk diserahkan ke staff.</p>`,
         confirmButtonColor: '#00d9ff',
@@ -2171,14 +2171,14 @@
 
   // ══════════════════════════════════════════════════════════════
   // NOTIFIKASI F&B DARI STAFF — real-time listener
-  // Mirip logika extend: staff order → Firestore → pelanggan dapat notif
+  // Mirip logika tambahan: staff order → Firestore → pelanggan dapat notif
   // ══════════════════════════════════════════════════════════════
   let _knownFnbIds = null; // null = belum init (hindari notif saat pertama load)
 
   function bunyiFnbNotif() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      // Melodi "ding-dong" ramah — beda dari extend/warning
+      // Melodi "ding-dong" ramah — beda dari tambahan/warning
       [[880,100],[1100,80],[880,60],[1320,200]].reduce((t,[f,d]) => {
         const o = ctx.createOscillator(), g = ctx.createGain();
         o.connect(g); g.connect(ctx.destination);

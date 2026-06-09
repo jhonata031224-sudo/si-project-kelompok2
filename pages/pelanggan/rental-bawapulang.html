@@ -448,11 +448,11 @@
             return snap.size;
         }
 
-        // Cek jumlah waiting list aktif rental untuk tipe ini
+        // Cek jumlah antrian list aktif rental untuk tipe ini
         async function countRentalWaitingList(consoleType) {
             const snap = await getDocs(query(collection(db, 'rentals'),
                 where('console', '==', consoleType),
-                where('status', '==', 'Waiting List')
+                where('status', '==', 'Antrian List')
             ));
             return snap.size;
         }
@@ -736,7 +736,7 @@
             }
 
             if (available === 0) {
-                // Cek waiting list aktif
+                // Cek antrian list aktif
                 const waitCount = await countRentalWaitingList(rentalData.console);
 
                 if (waitCount >= 2) {
@@ -746,8 +746,8 @@
                         : '<br><br>Semua tipe unit rental juga penuh saat ini.';
                     Swal.fire({
                         icon: 'error',
-                        title: 'Waiting List Penuh!',
-                        html: 'Unit rental <strong>' + rentalData.console + '</strong> penuh & antrian waiting list sudah maksimal (2 orang).' + saranHtml,
+                        title: 'Antrian List Penuh!',
+                        html: 'Unit rental <strong>' + rentalData.console + '</strong> penuh & antrian antrian list sudah maksimal (2 orang).' + saranHtml,
                         background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff',
                         confirmButtonText: unitLain.length > 0 ? 'Pilih Konsol Lain' : 'Kembali'
                     });
@@ -755,7 +755,7 @@
                     return;
                 }
 
-                // Tawari waiting list
+                // Tawari antrian list
                 const posisi = waitCount + 1;
                 const { isConfirmed: mauWaiting } = await Swal.fire({
                     icon: 'warning',
@@ -768,7 +768,7 @@
                         '</div>' +
                         '<p style="color:#6b7280;font-size:11px">Atau pilih konsol lain jika tidak mau menunggu.</p>',
                     showCancelButton: true,
-                    confirmButtonText: '✋ Masuk Waiting List',
+                    confirmButtonText: '✋ Masuk Antrian List',
                     cancelButtonText: 'Pilih Konsol Lain',
                     confirmButtonColor: '#f59e0b',
                     cancelButtonColor: '#374151',
@@ -777,7 +777,7 @@
 
                 if (!mauWaiting) { goToStep(1); return; }
 
-                // Simpan sebagai Waiting List rental
+                // Simpan sebagai Antrian List rental
                 Swal.fire({ title:'Mendaftar antrian...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), background:'#11171f', color:'#fff' });
                 try {
                     await addDoc(collection(db, 'rentals'), {
@@ -799,7 +799,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: '✅ Berhasil Masuk Antrian!',
-                        html: 'Kamu di posisi <strong style="color:#f59e0b">#' + posisi + '</strong> waiting list unit rental <strong>' + rentalData.console + '</strong>.<br><span style="color:#9ca3af;font-size:11px">Staff akan mengkonfirmasi saat unit tersedia. Cek riwayat untuk update status.</span>',
+                        html: 'Kamu di posisi <strong style="color:#f59e0b">#' + posisi + '</strong> antrian list unit rental <strong>' + rentalData.console + '</strong>.<br><span style="color:#9ca3af;font-size:11px">Staff akan mengkonfirmasi saat unit tersedia. Cek riwayat untuk update status.</span>',
                         confirmButtonText: 'Lihat Riwayat',
                         confirmButtonColor: '#f59e0b',
                         background:'#11171f', color:'#fff'

@@ -96,13 +96,13 @@
         @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         .fade-in { animation: fadeIn 0.25s ease-out forwards; }
 
-        .btn-logout-staff {
+        .btn-keluar-staff {
             display: flex; align-items: center; gap: 6px; padding: 6px 12px;
             border-radius: 8px; background: rgba(247,129,102,0.08);
             border: 1px solid rgba(247,129,102,0.2); color: #f78166;
             font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .2s;
         }
-        .btn-logout-staff:hover { background: rgba(247,129,102,0.18); }
+        .btn-keluar-staff:hover { background: rgba(247,129,102,0.18); }
 
         @keyframes pulse-green { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
@@ -133,7 +133,7 @@
                         <i class="fas fa-bell text-sm"></i>
                         <span id="notif-badge" class="hidden absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full"></span>
                     </button>
-                    <button class="btn-logout-staff" onclick="doLogout()">
+                    <button class="btn-keluar-staff" onclick="doLogout()">
                         <i class="fas fa-right-from-bracket"></i>
                         <span>Keluar</span>
                     </button>
@@ -287,9 +287,9 @@
         <i class="fas fa-history" style="font-size:18px"></i>
         <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em">Riwayat</span>
     </div>
-    <div onclick="window.location.href='../staff/dashboard-staff.html#setting'" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:#6b7280">
+    <div onclick="window.location.href='../staff/dashboard-staff.html#setelan'" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:#6b7280">
         <i class="fas fa-sliders" style="font-size:18px"></i>
-        <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em">Setting</span>
+        <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em">Setelan</span>
     </div>
 </div>
 
