@@ -408,10 +408,29 @@
         /* Wait pos badge */
         body.light-mode .wait-pos-badge { background: rgba(217,119,6,0.1) !important; border-color: rgba(217,119,6,0.25) !important; color: #d97706 !important; }
         /* Unit cards (inline rendered) */
-        body.light-mode #unit-grid > div,
-        body.light-mode [style*="background:#11171f;border:1px solid"] { background: #ffffff !important; }
+        /* Unit cards: hanya card individu, bukan wrapper dropdown */
+        body.light-mode #unit-grid > div[style*="background:#11171f"],
+        body.light-mode #unit-grid-hidden > div[style*="background:#11171f"],
+        body.light-mode [style*="background:#11171f;border:1px solid"] {
+            background: #ffffff !important;
+            border: 1.5px solid rgba(0,0,0,0.13) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+        }
+        /* Wrapper dropdown jangan punya background */
+        body.light-mode #unit-grid > div:not([style*="background:#11171f"]) {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
 
         /* ── Unit dropdown toggle button (inline-rendered) ── */
+        /* Light mode: tombol di dalam card unit */
+        body.light-mode #unit-grid button[style*="background:#1c2128"],
+        body.light-mode #unit-grid-hidden button[style*="background:#1c2128"] {
+            background: #f1f5f9 !important;
+            border-color: rgba(0,0,0,0.12) !important;
+            color: #475569 !important;
+        }
         body.light-mode #unit-dropdown-btn {
             background: #f1f5f9 !important;
             border-color: rgba(0,0,0,0.12) !important;
@@ -880,8 +899,26 @@
             #unit-grid button[onclick*="startSesi"] { min-height: 44px; }
 
             /* Panel visibility */
-            #stats-panel.hidden, #setting-panel.hidden { display: none !important; }
+            /* Panel hidden: benar-benar tidak intercept klik */
+            #stats-panel.hidden, #setting-panel.hidden {
+                display: none !important;
+                pointer-events: none !important;
+                visibility: hidden !important;
+            }
             #stats-panel:not(.hidden), #setting-panel:not(.hidden) { display: block !important; }
+            /* Filter bar, tab row, dropdown: selalu bisa diklik */
+            #unit-filter-bar,
+            #unit-filter-bar .tab-btn,
+            #unit-tab-layout,
+            #tab-switcher-row,
+            #tab-switcher-row .staff-tab,
+            #unit-grid,
+            #unit-grid-hidden,
+            #unit-dropdown-btn {
+                pointer-events: all !important;
+                position: relative;
+                z-index: 10;
+            }
 
             /* Setting panel */
             /* Setting panel 2-column desktop layout */
@@ -2037,6 +2074,13 @@
         const sp  = document.getElementById('stats-panel');
         const stg = document.getElementById('setting-panel');
         if (!hdr || !scr) return;
+        // Desktop: semua elemen static, jangan set top
+        if (window.innerWidth >= 768) {
+            scr.style.top = '';
+            if (sp)  { sp.style.top = ''; sp.style.left = ''; sp.style.right = ''; sp.style.bottom = ''; sp.style.position = ''; }
+            if (stg) { stg.style.top = ''; stg.style.left = ''; stg.style.right = ''; stg.style.bottom = ''; stg.style.position = ''; stg.style.inset = ''; }
+            return;
+        }
         const h = hdr.getBoundingClientRect().height;
         scr.style.top = h + 'px';
         if (sp)  sp.style.top = h + 'px';
