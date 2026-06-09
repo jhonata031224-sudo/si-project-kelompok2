@@ -209,6 +209,8 @@
         ═══════════════════════════════════════════════════════════════ */
         @media (min-width: 768px) {
             #topbar-actions { display: none !important; }
+            .role-badge { display: none !important; }
+            .topbar .logo { display: none !important; }
             .bottom-nav, .bnav-item span { display: none !important; }
             body { padding-bottom: 0 !important; display: flex; flex-direction: column; min-height: 100vh; }
             .owner-layout { display: flex; min-height: 100vh; }
@@ -466,10 +468,11 @@
             <a href="../owner/history-owner.html" class="sidebar-nav-item"><i class="fas fa-history"></i> Riwayat</a>
             <a href="../owner/export-owner.html" class="sidebar-nav-item"><i class="fas fa-file-export"></i> Laporan</a>
         <div class="sidebar-spacer"></div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 8px;border-radius:4px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;text-transform:uppercase;margin-bottom:8px;display:inline-block">OWNER</div>
         <button class="sidebar-staff-view" onclick="goToStaffView()">
             <i class="fas fa-users-gear"></i> Staff View
         </button>
-        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-nav-item" style="border:none;cursor:pointer;text-align:left;width:100%;margin-bottom:6px">
+        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left;margin-bottom:6px">
             <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
         </button>
         <button class="sidebar-logout" onclick="doLogout()">
@@ -496,20 +499,20 @@
 
     <div class="page-header">
         <h1>Owner Dashboard</h1>
-        <p>Real-time business KPIs &amp; pendapatan tercatat</p>
+        <p>KPI bisnis real-time &amp; pendapatan tercatat</p>
     </div>
 
     <!-- KPI Row -->
     <div class="kpi-grid">
         <div class="kpi-card">
-            <div class="kpi-label">Occupancy <div class="kpi-icon cyan"><i class="fas fa-wave-square"></i></div></div>
+            <div class="kpi-label">Pemakaian <div class="kpi-icon cyan"><i class="fas fa-wave-square"></i></div></div>
             <div class="kpi-value" id="kpi-occupancy">0%</div>
-            <div class="kpi-sub" id="kpi-occupancy-sub">0 of 0 units</div>
+            <div class="kpi-sub" id="kpi-occupancy-sub">0 dari 0 unit</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Sesi Aktif <div class="kpi-icon purple"><i class="fas fa-users"></i></div></div>
             <div class="kpi-value" id="kpi-sessions">0</div>
-            <div class="kpi-sub" id="kpi-sessions-sub">0 completed</div>
+            <div class="kpi-sub" id="kpi-sessions-sub">0 selesai</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Total Transaksi <div class="kpi-icon green"><i class="fas fa-receipt"></i></div></div>
@@ -1455,7 +1458,7 @@
         (snap) => {
             const today = todayStr();
             const doneToday = snap.docs.map(d=>d.data()).filter(d => d.tanggal === today);
-            document.getElementById('kpi-sessions-sub').textContent = doneToday.length + ' completed';
+            document.getElementById('kpi-sessions-sub').textContent = doneToday.length + ' selesai';
 
             const cEl = document.getElementById('completed-list');
             if (!doneToday.length) {

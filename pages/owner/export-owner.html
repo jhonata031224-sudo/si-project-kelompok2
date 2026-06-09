@@ -14,6 +14,13 @@
         html.light-mode-pre body { background: #f0f4f8 !important; }
         html.light-mode-pre { background: #f0f4f8; }
 
+        :root {
+            --bg:#0d1117;--surface:#161b22;--surface2:#1c2128;
+            --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.05);
+            --text:#e6edf3;--muted:#7d8590;--cyan:#00d9ff;--green:#3fb950;
+            --orange:#f78166;--purple:#bc8cff;--yellow:#e3b341;--red:#ff4d4f;
+        }
+
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800');
         * { font-style: normal !important; box-sizing: border-box; }
         body { background-color: #06090f; color: white; font-family: 'Space Grotesk', sans-serif; padding-bottom: 120px; }
@@ -110,7 +117,7 @@
                 padding: 10px 12px;
                 border-radius: 10px;
                 font-size: 12px;
-                font-weight: 700;
+                font-weight: 500;
                 color: var(--muted);
                 text-decoration: none;
                 transition: all 0.15s;
@@ -332,10 +339,11 @@
             <a href="../owner/history-owner.html" class="sidebar-nav-item"><i class="fas fa-history"></i> Riwayat</a>
             <a href="../owner/export-owner.html" class="sidebar-nav-item active"><i class="fas fa-file-export"></i> Laporan</a>
         <div class="sidebar-spacer"></div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 8px;border-radius:4px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;text-transform:uppercase;margin-bottom:8px;display:inline-block">OWNER</div>
         <button class="sidebar-staff-view" onclick="goToStaffView()">
             <i class="fas fa-users-gear"></i> Staff View
         </button>
-        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-nav-item" style="border:none;cursor:pointer;text-align:left;width:100%;margin-bottom:6px">
+        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left;margin-bottom:6px">
             <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
         </button>
         <button class="sidebar-logout" onclick="doLogout()">
@@ -345,7 +353,7 @@
 <div class="owner-main-content">
 
     <div class="mb-6">
-        <h1 class="text-2xl font-black uppercase tracking-tight text-cyan-400" style="letter-spacing:-.5px">Ekspor Laporan</h1>
+        <h1 class="text-2xl font-black uppercase tracking-tight text-white" style="letter-spacing:-.5px">Ekspor Laporan</h1>
         <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Data real-time dari Firebase</p>
     </div>
 
@@ -405,10 +413,10 @@
         <!-- Box Tombol -->
         <div class="glass-card export-btn-box" style="flex-shrink:0;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:20px 24px;">
             <button onclick="unduhPDF()" class="btn-action bg-pdf">
-                <i class="fas fa-file-pdf"></i> Ekspor PDF
+                <i class="fas fa-file-pdf"></i> Unduh PDF
             </button>
             <button onclick="unduhExcel()" class="btn-action bg-excel">
-                <i class="fas fa-file-excel"></i> Ekspor Excel
+                <i class="fas fa-file-excel"></i> Unduh Excel
             </button>
         </div>
     </div>

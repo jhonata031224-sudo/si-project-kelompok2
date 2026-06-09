@@ -425,7 +425,7 @@
                 padding: 10px 12px;
                 border-radius: 10px;
                 font-size: 12px;
-                font-weight: 700;
+                font-weight: 500;
                 color: #4b5563;
                 text-decoration: none;
                 transition: all 0.15s;
@@ -636,10 +636,11 @@
             <a href="../owner/history-owner.html" class="sidebar-nav-item"><i class="fas fa-history"></i> Riwayat</a>
             <a href="../owner/export-owner.html" class="sidebar-nav-item"><i class="fas fa-file-export"></i> Laporan</a>
         <div class="sidebar-spacer"></div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 8px;border-radius:4px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;text-transform:uppercase;margin-bottom:8px;display:inline-block">OWNER</div>
         <button class="sidebar-staff-view" onclick="goToStaffView()">
             <i class="fas fa-users-gear"></i> Staff View
         </button>
-        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-nav-item" style="border:none;cursor:pointer;text-align:left;width:100%;margin-bottom:6px">
+        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left;margin-bottom:6px">
             <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
         </button>
         <button class="sidebar-logout" onclick="doLogout()">
