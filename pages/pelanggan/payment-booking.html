@@ -261,6 +261,36 @@
 <script type="module">
   import { db, auth, collection, addDoc } from '../../assets/js/auth.js';
   import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+  import { getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+  // ── Cek ketersediaan unit real-time ──
+  async function checkUnitAvailable(consoleType) {
+    const snap = await getDocs(query(collection(db, 'units'),
+      where('type', '==', consoleType),
+      where('status', '==', 'Tersedia')
+    ));
+    return snap.size;
+  }
+
+  // ── Hitung waiting list aktif ──
+  async function countWaitingList(consoleType) {
+    const snap = await getDocs(query(collection(db, 'bookings'),
+      where('console', '==', consoleType),
+      where('status', '==', 'Waiting List')
+    ));
+    return snap.size;
+  }
+
+  // ── Cari konsol lain yang masih tersedia ──
+  async function cariUnitLainTersedia(excludeConsole) {
+    const tipes = ['PS3', 'PS4', 'PS5'].filter(t => t !== excludeConsole);
+    const hasil = [];
+    for (const t of tipes) {
+      const n = await checkUnitAvailable(t);
+      if (n > 0) hasil.push(t);
+    }
+    return hasil;
+  }
 
   // Simpan user aktif agar userId selalu up-to-date saat submit
   let _currentUser = null;
@@ -381,6 +411,104 @@
 
     if (!res.isConfirmed) { btnEl.disabled = false; return; }
 
+    // ── Cek ulang ketersediaan unit (anti race condition) ──
+    Swal.fire({ title:'Mengecek ketersediaan unit...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), ...swalBg() });
+    const availableNow = await checkUnitAvailable(bk.console);
+    Swal.close();
+
+    if (availableNow === 0) {
+      // Unit sudah diambil orang lain duluan — cek waiting list
+      const waitCount = await countWaitingList(bk.console);
+
+      if (waitCount >= 2) {
+        // Waiting list juga penuh — sarankan konsol lain
+        const unitLain = await cariUnitLainTersedia(bk.console);
+        const saranHtml = unitLain.length > 0
+          ? '<br><br>💡 Konsol tersedia saat ini: <strong style="color:#00d9ff">' + unitLain.join(', ') + '</strong>'
+          : '<br><br>Semua tipe konsol juga penuh saat ini.';
+        await Swal.fire({
+          icon: 'error',
+          title: '😔 Booking Tidak Bisa Diproses',
+          html: '<p style="color:#9ca3af;font-size:13px">Unit <strong>' + bk.console + '</strong> baru saja diambil pelanggan lain, dan antrian waiting list sudah penuh (2 orang).</p>' + saranHtml,
+          confirmButtonText: unitLain.length > 0 ? 'Pilih Konsol Lain' : 'Kembali',
+          confirmButtonColor: swalBtn(),
+          ...swalBg()
+        });
+        btnEl.disabled = false;
+        history.back();
+        return;
+      }
+
+      // Masih ada slot waiting list — tawarkan
+      const posisi = waitCount + 1;
+      const { isConfirmed: mauWaiting } = await Swal.fire({
+        icon: 'warning',
+        title: '⚡ Unit Baru Saja Diambil!',
+        html:
+          '<p style="color:#9ca3af;font-size:12px;margin-bottom:10px">' +
+            'Saat kamu konfirmasi, unit <strong>' + bk.console + '</strong> sudah lebih dulu dipesan pelanggan lain.' +
+          '</p>' +
+          '<div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:12px;margin-bottom:10px">' +
+            '<p style="font-size:14px;font-weight:800;color:#f59e0b">Masuk Waiting List Posisi #' + posisi + '</p>' +
+            '<p style="color:#9ca3af;font-size:11px;margin-top:4px">Staff akan konfirmasi begitu unit tersedia. Cek riwayat untuk update status.</p>' +
+          '</div>' +
+          '<p style="color:#6b7280;font-size:11px">Atau kembali untuk memilih konsol lain.</p>',
+        showCancelButton: true,
+        confirmButtonText: '✋ Masuk Waiting List',
+        cancelButtonText: 'Pilih Konsol Lain',
+        confirmButtonColor: '#f59e0b',
+        cancelButtonColor: '#374151',
+        ...swalBg()
+      });
+
+      if (!mauWaiting) {
+        btnEl.disabled = false;
+        history.back();
+        return;
+      }
+
+      // Simpan sebagai Waiting List
+      Swal.fire({ title:'Mendaftar antrian...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), ...swalBg() });
+      try {
+        await addDoc(collection(db, 'bookings'), {
+          type          : 'sesi',
+          console       : bk.console,
+          rate          : bk.rate,
+          duration      : bk.duration,
+          date          : bk.date,
+          time          : bk.time,
+          fnbOrders     : bk.fnbOrders || [],
+          fnbTotal      : bk.fnbTotal || 0,
+          grandTotal    : bk.grandTotal,
+          paymentMethod : isEwallet ? 'Ewallet (DANA)' : 'Cash',
+          paymentStatus : isEwallet ? 'Lunas' : 'Belum Bayar',
+          customerName  : bk.custName,
+          customerPhone : bk.custPhone,
+          status        : 'Waiting List',
+          waitingPos    : posisi,
+          userId        : (_currentUser && _currentUser.uid) || bk.userId || null,
+          userEmail     : (_currentUser && _currentUser.email) || bk.userEmail || null,
+          createdAt     : new Date().toISOString()
+        });
+        sessionStorage.removeItem('pendingBooking');
+        Swal.fire({
+          icon: 'success',
+          title: '✅ Berhasil Masuk Antrian!',
+          html: 'Kamu di posisi <strong style="color:#f59e0b">#' + posisi + '</strong> waiting list unit <strong>' + bk.console + '</strong>.<br><span style="color:#9ca3af;font-size:11px">Staff akan mengkonfirmasi saat unit tersedia.</span>',
+          confirmButtonText: 'Lihat Riwayat',
+          confirmButtonColor: '#f59e0b',
+          ...swalBg()
+        }).then(r => {
+          location.href = r.isConfirmed ? 'dashboard-customer.html?history=1' : 'dashboard-customer.html';
+        });
+      } catch(e) {
+        Swal.fire({ icon:'error', title:'Gagal mendaftar antrian', text:e.message, ...swalBg() });
+        btnEl.disabled = false;
+      }
+      return;
+    }
+
+    // ── Unit tersedia — lanjut simpan booking normal ──
     Swal.fire({ title:'Menyimpan booking...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), ...swalBg() });
 
     try {

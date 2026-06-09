@@ -260,6 +260,8 @@
             .staff-kpi-grid { grid-template-columns:repeat(3,1fr); gap:8px; }
             .staff-kpi-value { font-size:18px; }
             .staff-two-col { grid-template-columns:1fr; }
+            #kpi-desktop-row { display: block !important; }
+            #srev-card-main { margin-bottom: 12px !important; }
         }
 
         /* ══════════════════════════════════════════
@@ -638,7 +640,7 @@
                 position: sticky !important;
                 top: 0 !important;
                 z-index: 50 !important;
-                padding: 16px 36px 0 !important;
+                padding: 16px 36px 14px !important;
                 box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
                 background: var(--bg, #080c12) !important;
                 margin-left: -36px !important;
@@ -671,6 +673,15 @@
                 padding: 0 !important;
                 background: transparent !important;
                 bottom: auto !important; top: auto !important;
+            }
+            /* Sejajarkan stats & kpi dengan topbar */
+            #stats-panel,
+            #staff-kpi-section,
+            #staff-status-strip {
+                max-width: 1200px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                width: 100% !important;
             }
             #setting-panel {
                 position: static !important;
@@ -873,7 +884,21 @@
             #stats-panel:not(.hidden), #setting-panel:not(.hidden) { display: block !important; }
 
             /* Setting panel */
-            #setting-panel .glass-card { max-width: 760px; }
+            /* Setting panel 2-column desktop layout */
+            #setting-desktop-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0 16px;
+                align-items: start;
+                max-width: 1200px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            #setting-col-left, #setting-col-right { min-width: 0; }
+            #setting-col-left .glass-card,
+            #setting-col-right .glass-card { max-width: none !important; margin-bottom: 16px !important; }
+            #setting-col-left .glass-card:last-child,
+            #setting-col-right .glass-card:last-child { margin-bottom: 0 !important; }
             #setting-panel button[onclick="gantiShift()"],
             #setting-panel button[onclick="simpanJamShift()"],
             #setting-panel button[onclick="simpanThreshold()"],
@@ -887,7 +912,18 @@
             /* Stats & charts */
             .staff-chart-wrap { height: 220px !important; }
             .staff-two-col { grid-template-columns: 1fr 1fr !important; }
-            .srev-card { max-width: 760px; }
+            .srev-card { max-width: none; }
+            /* Desktop: revenue kiri + sesi kanan */
+            #kpi-desktop-row {
+                display: grid !important;
+                grid-template-columns: 1fr 320px;
+                gap: 12px;
+                align-items: start;
+                margin-bottom: 12px;
+            }
+            #srev-card-main { margin-bottom: 0 !important; }
+            #sesi-sidebar { display: flex; flex-direction: column; }
+            #sesi-sidebar .staff-section-card:last-child { margin-bottom: 0 !important; }
 
             /* FnB panel */
             #fnb-panel .glass-card { max-width: 760px; }
@@ -1111,8 +1147,9 @@
 <!-- ══ KPI SECTION (tampil saat tab Unit) ══ -->
 <div id="staff-kpi-section" style="margin-bottom:16px;display:none">
 
-    <!-- Revenue Card -->
-    <div class="srev-card">
+    <!-- ══ DESKTOP: Revenue kiri + Sesi kanan ══ -->
+    <div id="kpi-desktop-row">
+    <div id="srev-card-main" class="srev-card">
         <div class="srev-header">
             <div>
                 <div class="srev-title">Total Pendapatan Tercatat</div>
@@ -1216,9 +1253,9 @@
         </div>
     </div>
 
-    <!-- Sesi Aktif & Selesai -->
-    <div class="staff-two-col">
-        <div class="staff-section-card">
+    <!-- Sesi Aktif & Selesai — kanan -->
+    <div id="sesi-sidebar">
+        <div class="staff-section-card" style="margin-bottom:10px">
             <div class="staff-section-title"><i class="fas fa-circle" style="color:#3fb950;font-size:8px;margin-right:6px"></i>Sesi Aktif</div>
             <div id="skpi-active-list"><p class="staff-empty">Tidak ada sesi aktif.</p></div>
         </div>
@@ -1227,6 +1264,7 @@
             <div id="skpi-completed-list"><p class="staff-empty">Belum ada.</p></div>
         </div>
     </div>
+    </div><!-- /kpi-desktop-row -->
 </div>
 
 <!-- ══ PANEL STATISTIK (tab baru) ══ -->
@@ -1566,6 +1604,8 @@
 <!-- PANEL SETTING -->
 <div id="setting-panel" class="hidden" style="position:fixed;inset:0;bottom:72px;top:0;z-index:40;overflow-y:auto;padding:16px 16px 16px;background:var(--bg, #080c12);">
 
+<div id="setting-desktop-grid">
+<div id="setting-col-left">
     <!-- ══ KETERANGAN SHIFT ══ -->
     <div class="glass-card p-5 mb-4">
         <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">🕐 Keterangan Shift</h3>
@@ -1682,6 +1722,8 @@
         </div>
     </div>
 
+</div><!-- /setting-col-left -->
+<div id="setting-col-right">
     <!-- ══ PENGATURAN LIMIT EXTEND ══ -->
     <div class="glass-card p-5 mb-4">
         <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">⏱️ Pengaturan Limit Extend</h3>
@@ -1812,6 +1854,8 @@
             </button>
         </div>
     </div>
+</div><!-- /setting-col-right -->
+</div><!-- /setting-desktop-grid -->
 </div>
 
 </div><!-- /staff-scroll-content -->
@@ -3114,7 +3158,13 @@
         fnbPanel.classList.toggle('hidden', tab !== 'fnb');
         settingPanel.classList.toggle('hidden', tab !== 'setting');
         statsPanel.classList.toggle('hidden', tab !== 'stats');
-        tabRow.style.display = (tab === 'setting' || tab === 'stats') ? 'none' : '';
+        // Sembunyikan tab row saat stats/setting, tampilkan saat beranda
+        var hideTabRow = (tab === 'setting' || tab === 'stats');
+        if (hideTabRow) {
+            tabRow.style.cssText = 'display:none !important; visibility:hidden; height:0; overflow:hidden; padding:0; margin:0;';
+        } else {
+            tabRow.style.cssText = '';
+        }
         // Re-adjust scroll top karena tinggi header berubah
         setTimeout(adjustScrollTop, 0);
 
