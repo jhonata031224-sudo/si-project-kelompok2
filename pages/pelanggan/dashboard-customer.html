@@ -441,6 +441,149 @@
         /* Smooth transition */
         body, body * { transition: background-color .2s, color .15s, border-color .2s; }
 
+    /* ══ DESKTOP LAYOUT (≥768px) ══════════════════════════════════ */
+    @media (min-width: 768px) {
+      body { padding-bottom: 0; }
+      body::before { background-size: 52px 52px; }
+
+      /* Wrapper utama */
+      .cust-layout { display: flex; min-height: 100vh; }
+
+      /* Sidebar */
+      .cust-sidebar {
+        position: fixed; top: 0; left: 0; bottom: 0;
+        width: 220px; z-index: 60;
+        background: rgba(8,12,18,.98);
+        border-right: 1px solid rgba(255,255,255,.07);
+        display: flex; flex-direction: column;
+        padding: 0 12px 20px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .cust-sidebar-logo {
+        display: flex; align-items: center; gap: 10px;
+        padding: 20px 8px 18px;
+        font-size: 14px; font-weight: 800;
+        letter-spacing: -.3px; text-transform: uppercase;
+        border-bottom: 1px solid rgba(255,255,255,.06);
+        margin-bottom: 10px;
+      }
+      .cust-sidebar-logo .logo-icon {
+        width: 32px; height: 32px; border-radius: 9px;
+        background: rgba(0,217,255,.12); border: 1px solid rgba(0,217,255,.2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; color: var(--cyan); flex-shrink: 0;
+      }
+      .cust-sidebar-logo .logo-cyan { color: var(--cyan); }
+      .sidebar-nav-item {
+        display: flex; align-items: center; gap: 10px;
+        padding: 10px 12px; border-radius: 10px;
+        font-size: 12px; font-weight: 700; color: #6b7280;
+        cursor: pointer; transition: all .18s;
+        text-decoration: none; margin-bottom: 2px;
+        border: none; background: transparent; width: 100%;
+        font-family: inherit; text-align: left;
+      }
+      .sidebar-nav-item i { width: 15px; text-align: center; font-size: 13px; flex-shrink: 0; }
+      .sidebar-nav-item:hover { background: rgba(255,255,255,.04); color: #9ca3af; }
+      .sidebar-nav-item.active { background: rgba(0,217,255,.08); color: var(--cyan); }
+      .sidebar-spacer { flex: 1; }
+      .sidebar-logout {
+        display: flex; align-items: center; gap: 10px;
+        padding: 10px 12px; border-radius: 10px;
+        font-size: 12px; font-weight: 700;
+        color: #f78166; cursor: pointer; transition: all .18s;
+        border: 1px solid rgba(247,129,102,.18);
+        background: rgba(247,129,102,.06); width: 100%;
+        font-family: inherit; text-align: left; margin-top: 4px;
+      }
+      .sidebar-logout:hover { background: rgba(247,129,102,.14); }
+      .sidebar-logout i { width: 15px; text-align: center; font-size: 13px; }
+
+      /* Main content area */
+      .cust-main-content {
+        margin-left: 220px; flex: 1; min-width: 0;
+        overflow-y: auto;
+      }
+
+      /* Header */
+      header {
+        margin-left: 0;
+        padding: 14px 28px;
+      }
+
+      /* Main content */
+      main {
+        padding: 28px 32px 40px;
+        max-width: 900px;
+      }
+
+      /* Sembunyikan bottom nav & FAB bantuan di desktop */
+      nav { display: none !important; }
+      .fab-bantuan { display: none !important; }
+
+      /* Sembunyikan tombol tema & keluar di header (sudah ada di sidebar) */
+      #btn-theme, .btn-out-hdr { display: none !important; }
+
+      /* History drawer jadi modal centered di desktop */
+      .hist-drawer {
+        left: 220px;
+        border-radius: 20px 20px 0 0;
+        max-width: none;
+      }
+
+      /* Bottom sheet → modal centered di desktop */
+      .bsheet-overlay { background: rgba(0,0,0,.65) !important; }
+      .bsheet {
+        left: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) scale(.96) !important;
+        width: 420px !important;
+        border-radius: 20px !important;
+        padding: 0 20px 24px !important;
+        box-shadow: 0 24px 64px rgba(0,0,0,.6) !important;
+        opacity: 0;
+        pointer-events: none;
+        transition: transform .25s cubic-bezier(.32,1,.4,1), opacity .2s !important;
+      }
+      .bsheet.show {
+        transform: translate(-50%, -50%) scale(1) !important;
+        opacity: 1 !important;
+        pointer-events: all !important;
+      }
+      .bsheet-handle { display: none !important; }
+
+      /* Select bar adjust */
+      .select-bar { left: calc(220px + 50%); transform: translateX(-50%); }
+
+      /* FAB Bantuan di desktop — posisi di sidebar area, ganti jadi tombol di sidebar */
+    }
+
+    @media (max-width: 767px) {
+      .cust-sidebar { display: none !important; }
+      .cust-layout { display: block; }
+    }
+
+    /* Light mode sidebar */
+    body.light-mode .cust-sidebar {
+      background: #ffffff !important;
+      border-right-color: rgba(0,0,0,.08) !important;
+    }
+    body.light-mode .cust-sidebar-logo .logo-icon {
+      background: rgba(2,132,199,.1) !important;
+      border-color: rgba(2,132,199,.2) !important;
+      color: #0284c7 !important;
+    }
+    body.light-mode .cust-sidebar-logo .logo-cyan { color: #0284c7 !important; }
+    body.light-mode .sidebar-nav-item { color: #94a3b8 !important; }
+    body.light-mode .sidebar-nav-item:hover { background: rgba(0,0,0,.04) !important; color: #64748b !important; }
+    body.light-mode .sidebar-nav-item.active { background: rgba(2,132,199,.08) !important; color: #0284c7 !important; }
+    body.light-mode .sidebar-logout { background: rgba(234,88,12,.06) !important; border-color: rgba(234,88,12,.18) !important; color: #ea580c !important; }
+    body.light-mode .sidebar-logout:hover { background: rgba(234,88,12,.12) !important; }
+
+
     /* ── Konfirmasi Terima ── */
     .btn-konfirmasi-terima{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:10px;padding:9px 14px;border-radius:10px;border:1px solid rgba(0,217,255,.3);background:linear-gradient(90deg,rgba(0,217,255,.12),rgba(0,217,255,.06));color:#00d9ff;font-size:11px;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.3px;font-family:inherit;}
     .btn-konfirmasi-terima:hover{background:linear-gradient(90deg,rgba(0,217,255,.22),rgba(0,217,255,.12));box-shadow:0 0 12px rgba(0,217,255,.2);}
@@ -495,6 +638,38 @@
     </style>
 </head>
 <body>
+
+<div class="cust-layout">
+
+<!-- ── SIDEBAR DESKTOP ── -->
+<aside class="cust-sidebar">
+  <div class="cust-sidebar-logo">
+    <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
+    PRINCE<span class="logo-cyan">GAMES</span>
+  </div>
+  <a class="sidebar-nav-item active" id="sb-beranda" onclick="navGoBeranda();setSidebarActive('sb-beranda')">
+    <i class="fas fa-th-large"></i> Beranda
+  </a>
+  <a class="sidebar-nav-item" id="sb-pesan" onclick="klikFabPesan();setSidebarActive('sb-pesan')">
+    <i class="fas fa-gamepad"></i> Pesan
+  </a>
+  <a class="sidebar-nav-item" id="sb-pesanan" onclick="navKlikPesanan(this);setSidebarActive('sb-pesanan')">
+    <i class="fas fa-bag-shopping"></i> Pesanan
+  </a>
+  <div class="sidebar-spacer"></div>
+  <a href="https://wa.me/6285769033135" target="_blank" class="sidebar-nav-item" style="color:#22c55e">
+    <i class="ti ti-brand-whatsapp"></i> Bantuan
+  </a>
+  <button onclick="toggleTheme()" class="sidebar-nav-item" id="sb-theme">
+    <i id="theme-icon-sidebar" class="fas fa-sun"></i> Ganti Tema
+  </button>
+  <button class="sidebar-logout" onclick="doLogout()">
+    <i class="fas fa-right-from-bracket"></i> Keluar
+  </button>
+</aside>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="cust-main-content">
 
 <header>
   <div style="display:flex;align-items:center;">
@@ -2023,19 +2198,27 @@
         const saved = localStorage.getItem('pg_theme') || 'dark';
         if (saved === 'light') {
             document.body.classList.add('light-mode');
-            const icon = document.getElementById('theme-icon');
-            if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+            syncThemeIcons(true);
         }
     })();
+
+    function syncThemeIcons(isLight) {
+        ['theme-icon','theme-icon-sidebar'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) { el.classList.toggle('fa-sun', !isLight); el.classList.toggle('fa-moon', isLight); }
+        });
+    }
+
+    window.setSidebarActive = function(id) {
+        document.querySelectorAll('.cust-sidebar .sidebar-nav-item').forEach(function(el){ el.classList.remove('active'); });
+        var el = document.getElementById(id);
+        if (el) el.classList.add('active');
+    };
 
     window.toggleTheme = function() {
         const isLight = document.body.classList.toggle('light-mode');
         localStorage.setItem('pg_theme', isLight ? 'light' : 'dark');
-        const icon = document.getElementById('theme-icon');
-        if (icon) {
-            icon.classList.toggle('fa-sun',  !isLight);
-            icon.classList.toggle('fa-moon',  isLight);
-        }
+        syncThemeIcons(isLight);
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 toast: true, position: 'top', icon: 'success',
@@ -2048,6 +2231,12 @@
     };
 
   // ── ANIMASI KLIK FAB PESAN ───────────────────────────────────────────
+  // Tutup bsheet saat navigasi sidebar diklik
+  const _origNavGoBeranda = window.navGoBeranda;
+  window.navGoBeranda = function() { tutupBookingSheet(); if(_origNavGoBeranda) _origNavGoBeranda(); };
+  const _origNavKlikPesanan = window.navKlikPesanan;
+  window.navKlikPesanan = function(el) { tutupBookingSheet(); if(_origNavKlikPesanan) _origNavKlikPesanan(el); };
+
   window.klikFabPesan = function() {
     const fab = document.getElementById('nav-fab-pesan');
     fab.classList.remove('clicked');
@@ -2067,5 +2256,7 @@
   };
 
 </script>
+</div><!-- end cust-main-content -->
+</div><!-- end cust-layout -->
 </body>
 </html>
