@@ -831,7 +831,7 @@
     unsubKonfirmasi = listenKonfirmasiNotif(user.uid);
     // Auto-buka riwayat jika diarahkan dari halaman lain (?history=1)
     if (new URLSearchParams(window.location.search).get('history') === '1') {
-      setTimeout(() => navGoPesanan(), 600);
+      setTimeout(() => { bukaHistory(); switchHistTab('pesanan'); }, 600);
     }
   });
 

@@ -641,7 +641,7 @@
                     confirmButtonText: 'Lihat Riwayat',
                     confirmButtonColor: '#f59e0b',
                     ...swalBg()
-                }).then(r => { if (r.isConfirmed) location.href = "dashboard-customer.html?history=1"; else location.href = '../pelanggan/dashboard-customer.html'; });
+                }).then(r => { if (r.isConfirmed) location.href = "../pelanggan/dashboard-customer.html?history=1"; else location.href = '../pelanggan/dashboard-customer.html'; });
             } catch(e) {
                 Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalBg() });
             }

@@ -64,6 +64,10 @@ function injectCSS() {
             animation:cnSlideIn .35s cubic-bezier(.34,1.56,.64,1) both;
             pointer-events:all; cursor:pointer;
         }
+        body.light-mode .cn-t {
+            background:#ffffff;
+            box-shadow:0 8px 30px rgba(0,0,0,.15);
+        }
         .cn-t.ok   { border:1px solid rgba(34,197,94,.4); }
         .cn-t.pay  { border:1px solid rgba(251,146,60,.4); }
         .cn-t.no   { border:1px solid rgba(239,68,68,.35); }
@@ -76,6 +80,7 @@ function injectCSS() {
         .cn-t.pay .cn-ttl { color:#fb923c; }
         .cn-t.no  .cn-ttl { color:#ef4444; }
         .cn-t .cn-sub { font-size:10px;color:#9ca3af;margin-top:2px; }
+        body.light-mode .cn-t .cn-sub { color:#64748b; }
 
         .cn-popup      { border:1px solid rgba(34,197,94,.25) !important; border-radius:22px !important; max-width:350px !important; }
         .cn-popup-pay  { border:1px solid rgba(251,146,60,.3) !important; border-radius:22px !important; max-width:350px !important; }
@@ -101,6 +106,18 @@ function toast(variant, icon, title, sub) {
 
 // ── Popup besar ───────────────────────────────────────────────────────────────
 function popup(variant, item, itemType) {
+    const light = localStorage.getItem('pg_theme') === 'light';
+
+    // ── Warna adaptif dark/light ──
+    const bg         = light ? '#ffffff' : '#0a1628';
+    const textMain   = light ? '#1a202c' : '#ffffff';
+    const textMuted  = light ? '#64748b' : '#9ca3af';
+    const textLabel  = light ? '#94a3b8' : '#6b7280';
+    const cancelBtn  = light ? '#e2e8f0' : '#1f2937';
+    const cancelText = light ? '#475569' : '#9ca3af';
+    const detailBg   = light ? 'rgba(0,0,0,.03)' : 'rgba(255,255,255,.04)';
+    const strongCol  = light ? '#1a202c' : '#ffffff';
+
     const isBooking = itemType === 'booking';
     const label     = isBooking ? 'Booking' : 'Rental Bawa Pulang';
     const nama      = item.console || 'Unit';
@@ -112,18 +129,20 @@ function popup(variant, item, itemType) {
         : '—';
 
     // ── Baris detail reusable ──
-    const row = (label, val, color = '#fff') =>
+    const row = (lbl, val, color) =>
         `<div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:10px;color:#6b7280;font-weight:700">${label}</span>
-            <span style="font-size:12px;font-weight:800;color:${color}">${val}</span>
+            <span style="font-size:10px;color:${textLabel};font-weight:700">${lbl}</span>
+            <span style="font-size:12px;font-weight:800;color:${color || textMain}">${val}</span>
         </div>`;
 
     if (variant === 'ok' || variant === 'pay') {
         const isOk       = variant === 'ok';
         const accent     = isOk ? '#22c55e' : '#fb923c';
-        const borderRgba = isOk ? 'rgba(34,197,94,.15)' : 'rgba(251,146,60,.2)';
+        const borderRgba = isOk
+            ? (light ? 'rgba(34,197,94,.2)'   : 'rgba(34,197,94,.15)')
+            : (light ? 'rgba(251,146,60,.25)' : 'rgba(251,146,60,.2)');
         const popupClass = isOk ? 'cn-popup' : 'cn-popup-pay';
-        const icoColor   = isOk ? 'rgba(34,197,94,.08)' : 'rgba(251,146,60,.08)';
+        const icoColor   = isOk ? 'rgba(34,197,94,.1)' : 'rgba(251,146,60,.1)';
         const icoBorder  = isOk ? 'rgba(34,197,94,.4)' : 'rgba(251,146,60,.4)';
         const icoEl      = isOk
             ? `<i class="fas fa-circle-check" style="font-size:30px;color:${accent}"></i>`
@@ -141,12 +160,12 @@ function popup(variant, item, itemType) {
             : [row('KONSOL', nama), row('DURASI', dur), row('BATAS KEMBALI', batas, '#f59e0b')];
 
         Swal.fire({
-            background: '#0a1628', color: '#fff',
+            background: bg, color: textMain,
             showConfirmButton: true, showCancelButton: true,
             confirmButtonText: isOk ? '✓ Lihat Detail' : '💳 Menuju Pembayaran',
             cancelButtonText: 'Tutup',
             confirmButtonColor: accent,
-            cancelButtonColor: '#1f2937',
+            cancelButtonColor: cancelBtn,
             allowOutsideClick: false,
             customClass: { popup: popupClass },
             html: `
@@ -156,20 +175,29 @@ function popup(variant, item, itemType) {
                         ${icoEl}
                     </div>
                     <p style="font-size:18px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px;color:${accent}">${headline}</p>
-                    <p style="font-size:11px;color:#9ca3af;margin-bottom:16px">${subline}</p>
-                    <div style="background:rgba(255,255,255,.04);border:1px solid ${borderRgba};border-radius:12px;padding:12px 14px;
+                    <p style="font-size:11px;color:${textMuted};margin-bottom:16px">${subline}</p>
+                    <div style="background:${detailBg};border:1px solid ${borderRgba};border-radius:12px;padding:12px 14px;
                          display:flex;flex-direction:column;gap:9px">
                         ${detailRows.join('')}
                     </div>
                     <p style="font-size:10px;color:#f59e0b;margin-top:14px;font-weight:600">${catatan}</p>
                 </div>
             `
-        }).then(r => { if (r.isConfirmed) window.location.href = 'dashboard-customer.html?history=1'; });
+        }).then(r => {
+            if (r.isConfirmed) {
+                // Cari path ke dashboard-customer.html dari lokasi file saat ini
+                const base = window.location.pathname.includes('/pelanggan/')
+                    ? 'dashboard-customer.html'
+                    : 'pages/pelanggan/dashboard-customer.html';
+                window.location.href = base + '?history=1';
+            }
+        });
 
     } else {
         // Ditolak
+        const redBorder = light ? 'rgba(239,68,68,.25)' : 'rgba(239,68,68,.35)';
         Swal.fire({
-            background: '#0a1628', color: '#fff',
+            background: bg, color: textMain,
             showConfirmButton: true,
             confirmButtonText: 'Mengerti',
             confirmButtonColor: '#ef4444',
@@ -177,13 +205,13 @@ function popup(variant, item, itemType) {
             customClass: { popup: 'cn-popup-no' },
             html: `
                 <div style="text-align:center;padding:6px 0">
-                    <div style="width:68px;height:68px;border-radius:50%;background:rgba(239,68,68,.08);border:2px solid rgba(239,68,68,.35);
+                    <div style="width:68px;height:68px;border-radius:50%;background:rgba(239,68,68,.08);border:2px solid ${redBorder};
                          display:flex;align-items:center;justify-content:center;margin:0 auto 14px;animation:cnBounce .5s ease">
                         <i class="fas fa-circle-xmark" style="font-size:30px;color:#ef4444"></i>
                     </div>
                     <p style="font-size:18px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px;color:#ef4444">${label} Ditolak</p>
-                    <p style="font-size:11px;color:#9ca3af;margin-bottom:12px">
-                        Pesanan <strong style="color:#fff">${nama}</strong> tidak dapat diproses.
+                    <p style="font-size:11px;color:${textMuted};margin-bottom:12px">
+                        Pesanan <strong style="color:${strongCol}">${nama}</strong> tidak dapat diproses.
                     </p>
                     <p style="font-size:11px;color:#f59e0b;font-weight:600">💬 Hubungi staff untuk info lebih lanjut.</p>
                 </div>
