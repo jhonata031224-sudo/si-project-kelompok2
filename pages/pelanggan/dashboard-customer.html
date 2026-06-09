@@ -282,6 +282,17 @@
     .hb-aktif{background:rgba(0,217,255,.12);color:var(--cyan);border:1px solid rgba(0,217,255,.25);}
     .hb-batal{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25);}
     .hb-pending{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.25);}
+    .hcard-reject-reason{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:9px 11px;margin-top:9px;display:flex;gap:9px;align-items:flex-start;}
+    .hcard-reject-icon{width:28px;height:28px;border-radius:8px;background:rgba(239,68,68,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .hcard-reject-icon i{font-size:12px;color:#f87171;}
+    .hcard-reject-body{flex:1;}
+    .hcard-reject-lbl{font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#f87171;margin-bottom:3px;}
+    .hcard-reject-text{font-size:11px;color:#fca5a5;line-height:1.5;font-style:italic;}
+    body.light-mode .hcard-reject-reason{background:rgba(220,38,38,.05);border-color:rgba(220,38,38,.18);}
+    body.light-mode .hcard-reject-text{color:#b91c1c;}
+    body.light-mode .hcard-reject-lbl{color:#dc2626;}
+    body.light-mode .hcard-reject-icon{background:rgba(220,38,38,.1);}
+    body.light-mode .hcard-reject-icon i{color:#dc2626;}
     .hcard-row{display:flex;justify-content:space-between;margin-bottom:3px;}
     .hcard-lbl{font-size:10px;color:#6b7280;}
     .hcard-val{font-size:10px;font-weight:700;color:#d1d5db;}
@@ -1735,6 +1746,25 @@
         const extendBadge = ec > 0
           ? `<div class="hcard-row" style="margin-top:2px"><span class="hcard-lbl"><i class="fas fa-plus-circle" style="font-size:8px;margin-right:3px;color:#00d9ff"></i>Extend</span><span class="hcard-val" style="color:#00d9ff;font-weight:800">${ec}x tambah waktu</span></div>`
           : '';
+        const isDitolak = (item.status || '').toLowerCase().includes('ditolak');
+        const alasanTolak = item.rejectionReason || item.cancelReason || '';
+        const rejectBlock = isDitolak && alasanTolak
+          ? `<div class="hcard-reject-reason">
+               <div class="hcard-reject-icon"><i class="fas fa-ban"></i></div>
+               <div class="hcard-reject-body">
+                 <div class="hcard-reject-lbl">Alasan Penolakan</div>
+                 <div class="hcard-reject-text">"${alasanTolak}"</div>
+               </div>
+             </div>`
+          : isDitolak
+          ? `<div class="hcard-reject-reason">
+               <div class="hcard-reject-icon"><i class="fas fa-ban"></i></div>
+               <div class="hcard-reject-body">
+                 <div class="hcard-reject-lbl">Alasan Penolakan</div>
+                 <div class="hcard-reject-text" style="color:#6b7280;font-style:normal;">Tidak ada alasan yang diberikan.</div>
+               </div>
+             </div>`
+          : '';
         html += `<div class="hcard" style="animation-delay:${(gi + i) * .04}s">
           <div class="hcard-top">
             <div>
@@ -1746,6 +1776,7 @@
           <div class="hcard-row"><span class="hcard-lbl"><i class="fas fa-clock" style="font-size:8px;margin-right:3px;"></i>Jam Bermain</span><span class="hcard-val">${jam}</span></div>
           <div class="hcard-row"><span class="hcard-lbl"><i class="fas fa-hourglass-half" style="font-size:8px;margin-right:3px;"></i>Durasi</span><span class="hcard-val">${durasi}</span></div>
           ${extendBadge}
+          ${rejectBlock}
           <div class="hcard-row"><span class="hcard-lbl"><i class="fas fa-wallet" style="font-size:8px;margin-right:3px;"></i>Total Bayar</span><span class="hcard-total">${total}</span></div>
           <div style="display:flex;gap:8px;margin-top:10px">
             <button onclick='cetakStruk(${JSON.stringify(item)}, "${cat}")' style="flex:1;background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2);color:#00d9ff;border-radius:12px;padding:9px 0;font-size:10px;font-weight:700;letter-spacing:.08em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;font-family:inherit;" onmouseover="this.style.background='rgba(0,217,255,0.18)'" onmouseout="this.style.background='rgba(0,217,255,0.08)'"><i class="fas fa-file-pdf" style="font-size:11px;"></i> Struk</button>

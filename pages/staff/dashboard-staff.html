@@ -4372,19 +4372,65 @@
 
 
     window.tolakPermintaan = async function(col, id, custName) {
+        const isLight = document.body.classList.contains('light-mode');
+        const chipStyle = (active) => `
+            display:inline-block;cursor:pointer;padding:7px 12px;border-radius:20px;font-size:11px;font-weight:700;
+            margin:3px;border:1px solid ${active ? '#ef4444' : (isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.12)')};
+            background:${active ? 'rgba(239,68,68,0.2)' : (isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)')};
+            color:${active ? '#f87171' : (isLight ? '#64748b' : '#9ca3af')};
+            transition:all .15s;
+        `;
+        const quickReasons = [
+            'Unit sudah dipesan orang lain',
+            'Jadwal bentrok',
+            'Unit sedang maintenance',
+            'Slot penuh',
+            'Pelanggan tidak bisa dihubungi',
+        ];
+        var selectedReason = '';
+
+        const buildChips = () => quickReasons.map((r,i) =>
+            `<span id="chip-tp-${i}" onclick="window._tpSelectChip(${i})" style="${chipStyle(selectedReason===r)}">${r}</span>`
+        ).join('');
+
+        window._tpSelectChip = function(idx) {
+            selectedReason = (selectedReason === quickReasons[idx]) ? '' : quickReasons[idx];
+            quickReasons.forEach((r, i) => {
+                const c = document.getElementById('chip-tp-'+i);
+                if (c) c.style.cssText = chipStyle(selectedReason === r);
+            });
+            const inp = document.getElementById('swal-tolak-custom');
+            if (inp && selectedReason) inp.value = '';
+        };
+
         var res = await Swal.fire({
             title: 'Tolak Permintaan?',
-            html: 'Tolak permintaan dari <strong>' + custName + '</strong>?<br><span style="color:#9ca3af;font-size:12px">Pastikan sudah menghubungi pelanggan terlebih dahulu.</span>',
+            html: `
+                <div style="font-size:12px;color:#9ca3af;margin-bottom:12px;">
+                    Tolak permintaan dari <strong style="color:${isLight?'#0f172a':'#fff'}">${custName}</strong>?<br>
+                    <span style="font-size:11px;">Pastikan sudah menghubungi pelanggan terlebih dahulu.</span>
+                </div>
+                <div style="text-align:left;margin-bottom:8px;">
+                    <div style="font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#f87171;margin-bottom:6px;">⚡ Pilih Alasan Cepat</div>
+                    <div id="chip-tp-wrap" style="line-height:2;">${buildChips()}</div>
+                </div>
+                <div style="text-align:left;margin-top:10px;">
+                    <div style="font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6b7280;margin-bottom:6px;">✏️ Atau Tulis Sendiri</div>
+                    <textarea id="swal-tolak-custom" placeholder="Tulis alasan lain..." rows="2"
+                        style="width:100%;background:${isLight?'#f1f5f9':'#1a2030'};border:1px solid ${isLight?'rgba(0,0,0,0.12)':'rgba(255,255,255,0.1)'};color:${isLight?'#0f172a':'#fff'};border-radius:8px;padding:10px;font-size:12px;resize:none;font-family:inherit;outline:none;"></textarea>
+                </div>
+            `,
             icon: 'warning',
-            input: 'text',
-            inputPlaceholder: 'Alasan penolakan (opsional)',
             showCancelButton: true,
             confirmButtonText: '✕ Tolak',
             cancelButtonText: 'Batal',
             confirmButtonColor: '#ef4444',
             cancelButtonColor: '#374151',
             ...swalTheme(),
-            inputAttributes: { style: 'background:#1a2030;border:1px solid rgba(255,255,255,0.1);color:white;border-radius:8px;padding:10px;font-size:13px;' }
+            preConfirm: () => {
+                const custom = document.getElementById('swal-tolak-custom').value.trim();
+                return selectedReason || custom || 'Tidak ada alasan';
+            }
         });
         if (!res.isConfirmed) return;
 
@@ -4393,10 +4439,10 @@
                 status: 'Ditolak',
                 rejectedAt: new Date().toISOString(),
                 rejectedBy: 'staff',
-                rejectionReason: res.value || 'Tidak ada alasan'
+                rejectionReason: res.value
             });
             Swal.fire({ toast: true, position: 'top', icon: 'info', title: 'Permintaan ditolak', showConfirmButton: false, timer: 2000, ...swalTheme() });
-            tambahNotif('❌ Ditolak: ' + custName + ' (' + (col === 'bookings' ? 'Booking' : 'Rental') + ') — ' + (res.value || '-'));
+            tambahNotif('❌ Ditolak: ' + custName + ' (' + (col === 'bookings' ? 'Booking' : 'Rental') + ') — ' + res.value);
         } catch(e) {
             Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, ...swalTheme() });
         }
@@ -4968,19 +5014,64 @@
 
     // ── Tolak waiting list ────────────────────────────────────────────
     window.tolakWaiting = async function(col, id, custName) {
+        const isLight = document.body.classList.contains('light-mode');
+        const chipStyle = (active) => `
+            display:inline-block;cursor:pointer;padding:7px 12px;border-radius:20px;font-size:11px;font-weight:700;
+            margin:3px;border:1px solid ${active ? '#ef4444' : (isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.12)')};
+            background:${active ? 'rgba(239,68,68,0.2)' : (isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)')};
+            color:${active ? '#f87171' : (isLight ? '#64748b' : '#9ca3af')};
+            transition:all .15s;
+        `;
+        const quickReasons = [
+            'Unit sudah dipesan orang lain',
+            'Jadwal bentrok',
+            'Unit sedang maintenance',
+            'Slot penuh',
+            'Pelanggan tidak bisa dihubungi',
+        ];
+        var selectedReason = '';
+
+        window._twSelectChip = function(idx) {
+            selectedReason = (selectedReason === quickReasons[idx]) ? '' : quickReasons[idx];
+            quickReasons.forEach((r, i) => {
+                const c = document.getElementById('chip-tw-'+i);
+                if (c) c.style.cssText = chipStyle(selectedReason === r);
+            });
+            const inp = document.getElementById('swal-waiting-custom');
+            if (inp && selectedReason) inp.value = '';
+        };
+
+        const buildChips = () => quickReasons.map((r,i) =>
+            `<span id="chip-tw-${i}" onclick="window._twSelectChip(${i})" style="${chipStyle(false)}">${r}</span>`
+        ).join('');
+
         var res = await Swal.fire({
             title: 'Tolak Antrian?',
-            html: 'Tolak antrian waiting list dari <strong>' + custName + '</strong>?',
+            html: `
+                <div style="font-size:12px;color:#9ca3af;margin-bottom:12px;">
+                    Tolak antrian waiting list dari <strong style="color:${isLight?'#0f172a':'#fff'}">${custName}</strong>?
+                </div>
+                <div style="text-align:left;margin-bottom:8px;">
+                    <div style="font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#f87171;margin-bottom:6px;">⚡ Pilih Alasan Cepat</div>
+                    <div id="chip-tw-wrap" style="line-height:2;">${buildChips()}</div>
+                </div>
+                <div style="text-align:left;margin-top:10px;">
+                    <div style="font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6b7280;margin-bottom:6px;">✏️ Atau Tulis Sendiri</div>
+                    <textarea id="swal-waiting-custom" placeholder="Tulis alasan lain..." rows="2"
+                        style="width:100%;background:${isLight?'#f1f5f9':'#1a2030'};border:1px solid ${isLight?'rgba(0,0,0,0.12)':'rgba(255,255,255,0.1)'};color:${isLight?'#0f172a':'#fff'};border-radius:8px;padding:10px;font-size:12px;resize:none;font-family:inherit;outline:none;"></textarea>
+                </div>
+            `,
             icon: 'warning',
-            input: 'text',
-            inputPlaceholder: 'Alasan penolakan (opsional)',
             showCancelButton: true,
             confirmButtonText: '✕ Tolak Antrian',
             cancelButtonText: 'Batal',
             confirmButtonColor: '#ef4444',
             cancelButtonColor: '#374151',
             ...swalTheme(),
-            inputAttributes: { style: 'background:#1a2030;border:1px solid rgba(255,255,255,0.1);color:white;border-radius:8px;padding:10px;font-size:13px;' }
+            preConfirm: () => {
+                const custom = document.getElementById('swal-waiting-custom').value.trim();
+                return selectedReason || custom || 'Antrian dibatalkan staff';
+            }
         });
         if (!res.isConfirmed) return;
         try {
@@ -4988,9 +5079,9 @@
                 status: 'Ditolak',
                 rejectedAt: new Date().toISOString(),
                 rejectedBy: 'staff',
-                rejectionReason: res.value || 'Antrian dibatalkan staff'
+                rejectionReason: res.value
             });
-            tambahNotif('❌ Waiting List Ditolak: ' + custName);
+            tambahNotif('❌ Waiting List Ditolak: ' + custName + ' — ' + res.value);
             Swal.fire({ toast:true, position:'top', icon:'info', title:'Antrian ditolak', showConfirmButton:false, timer:2000, ...swalTheme() });
         } catch(e) {
             Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalTheme() });
