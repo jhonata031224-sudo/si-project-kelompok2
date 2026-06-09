@@ -155,18 +155,41 @@
     body.light-mode .btn-batal-sel{background:rgba(0,0,0,.05);border-color:rgba(0,0,0,.12);color:#64748b;}
     body.light-mode .btn-hapus-sel{background:#dc2626;}
 
-    nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,12,18,.98);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:10px 0 18px;display:flex;justify-content:space-around;align-items:center;z-index:100;}
-    .nav-it{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 20px;}
-    .nav-it i{font-size:18px;color:#374151;}
-    .nav-it span{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#374151;}
-    .nav-it.on i,.nav-it.on span{color:var(--cyan);}
+    nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,12,18,.98);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:8px 0 20px;display:flex;justify-content:space-around;align-items:flex-end;z-index:100;}
+    .nav-it{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 28px;transition:transform .2s cubic-bezier(.34,1.56,.64,1);}
+    .nav-it i{font-size:20px;color:#374151;transition:color .2s ease,transform .2s cubic-bezier(.34,1.56,.64,1),filter .2s ease;}
+    .nav-it span{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#374151;transition:color .2s ease;}
+    .nav-it:hover i{color:var(--cyan);transform:translateY(-2px) scale(1.15);filter:drop-shadow(0 0 6px rgba(0,217,255,0.5));}
+    .nav-it:hover span{color:var(--cyan);}
+    .nav-it:active{transform:scale(.88);}
+    .nav-it:active i{transform:scale(.9);}
+    .nav-it.on i{color:var(--cyan);filter:drop-shadow(0 0 5px rgba(0,217,255,0.45));}
+    .nav-it.on span{color:var(--cyan);}
+    @keyframes navPop{0%{transform:scale(1)}40%{transform:scale(1.25) translateY(-3px)}70%{transform:scale(.95)}100%{transform:scale(1)}}
+    .nav-it.pop i{animation:navPop .35s cubic-bezier(.34,1.56,.64,1) both;}
 
-    /* ── FAB Booking Button ── */
-    .nav-fab-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;position:relative;top:-14px;}
-    .nav-fab{width:54px;height:54px;border-radius:16px;background:var(--cyan);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,217,255,0.45);border:none;cursor:pointer;transition:transform .15s,box-shadow .15s;flex-shrink:0;}
-    .nav-fab:active{transform:scale(.92);box-shadow:0 2px 10px rgba(0,217,255,0.3);}
-    .nav-fab i{font-size:22px;color:#000;}
-    .nav-fab-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);}
+    /* ── FAB Booking Button (pill besar seperti SS) ── */
+    .nav-fab-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;top:-10px;}
+    .nav-fab{width:110px;height:50px;border-radius:18px;background:var(--cyan);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(0,217,255,0.5);border:none;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease;flex-shrink:0;gap:8px;}
+    .nav-fab:hover{transform:scale(1.06) translateY(-2px);box-shadow:0 8px 30px rgba(0,217,255,0.65);}
+    .nav-fab:active{transform:scale(.91);box-shadow:0 2px 12px rgba(0,217,255,0.3);}
+    @keyframes fabPulse{0%{box-shadow:0 4px 24px rgba(0,217,255,0.5)}50%{box-shadow:0 4px 32px rgba(0,217,255,0.85),0 0 0 8px rgba(0,217,255,0.12)}100%{box-shadow:0 4px 24px rgba(0,217,255,0.5)}}
+    .nav-fab.clicked{animation:fabPulse .4s ease both;}
+    .nav-fab i{font-size:20px;color:#000;transition:transform .2s cubic-bezier(.34,1.56,.64,1);}
+    .nav-fab:hover i{transform:scale(1.1) rotate(-8deg);}
+    .nav-fab:active i{transform:scale(.9);}
+    .nav-fab-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#000;}
+
+    /* ── FAB Bantuan mengambang ── */
+    .fab-bantuan{position:fixed;right:16px;bottom:90px;z-index:200;display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;cursor:pointer;}
+    .fab-bantuan i{width:52px;height:52px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:24px;color:#000;box-shadow:0 4px 20px rgba(0,217,255,0.45);transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease;}
+    .fab-bantuan:hover i{transform:scale(1.12) translateY(-2px);box-shadow:0 8px 28px rgba(0,217,255,0.65);}
+    .fab-bantuan:active i{transform:scale(.88);box-shadow:0 2px 10px rgba(0,217,255,0.25);}
+    @keyframes bantPulse{0%{box-shadow:0 4px 20px rgba(0,217,255,0.45)}50%{box-shadow:0 4px 28px rgba(0,217,255,0.8),0 0 0 8px rgba(0,217,255,0.1)}100%{box-shadow:0 4px 20px rgba(0,217,255,0.45)}}
+    .fab-bantuan.clicked i{animation:bantPulse .4s ease both;}
+    .fab-bantuan span{font-size:8px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);transition:color .2s;}
+    body.light-mode .fab-bantuan i{background:#0284c7;box-shadow:0 4px 20px rgba(2,132,199,0.4);color:#fff;}
+    body.light-mode .fab-bantuan span{color:#0284c7;}
 
     /* ── Bottom Sheet Pilihan ── */
     .bsheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;opacity:0;pointer-events:none;transition:opacity .25s;}
@@ -199,10 +222,13 @@
     body.light-mode nav{background:rgba(255,255,255,.97);border-top-color:rgba(0,0,0,.08);}
     body.light-mode .nav-it i{color:#94a3b8;}
     body.light-mode .nav-it span{color:#94a3b8;}
-    body.light-mode .nav-it.on i,body.light-mode .nav-it.on span{color:#0284c7;}
-    body.light-mode .nav-fab{background:#0284c7;box-shadow:0 4px 20px rgba(2,132,199,0.35);}
+    body.light-mode .nav-it:hover i{color:#0284c7;filter:drop-shadow(0 0 5px rgba(2,132,199,0.4));}
+    body.light-mode .nav-it:hover span{color:#0284c7;}
+    body.light-mode .nav-it.on i{color:#0284c7;filter:drop-shadow(0 0 5px rgba(2,132,199,0.35));}
+    body.light-mode .nav-it.on span{color:#0284c7;}
+    body.light-mode .nav-fab{background:#0284c7;box-shadow:0 4px 24px rgba(2,132,199,0.45);}
     body.light-mode .nav-fab i{color:#fff;}
-    body.light-mode .nav-fab-label{color:#0284c7;}
+    body.light-mode .nav-fab-label{color:#fff;}
     body.light-mode .bsheet{background:#f8fafc;border-color:rgba(0,0,0,.08);}
     body.light-mode .bsheet-title{color:#1a202c;}
     body.light-mode .bsheet-opt{background:#ffffff;border-color:rgba(0,0,0,.08);}
@@ -212,7 +238,7 @@
     /* ── History Modal ── */
     .hist-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;opacity:0;pointer-events:none;transition:opacity .25s;}
     .hist-overlay.show{opacity:1;pointer-events:all;}
-    .hist-drawer{position:fixed;bottom:0;left:0;right:0;z-index:301;background:#0d1219;border-top:1px solid var(--border);border-radius:20px 20px 0 0;padding:0 0 90px;max-height:92vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.4,1);}
+    .hist-drawer{position:fixed;bottom:0;left:0;right:0;z-index:301;background:#0d1219;border-top:1px solid var(--border);border-radius:20px 20px 0 0;padding:0 0 90px;max-height:92vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.4,1);overflow:hidden;}
     .hist-drawer.show{transform:translateY(0);}
     .hist-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin:10px auto 0;}
     .hist-head{padding:14px 16px 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
@@ -465,6 +491,7 @@
     body.light-mode .mk-foto-area{border-color:rgba(2,132,199,.3);background:rgba(2,132,199,.02);}
     body.light-mode .mk-foto-label span{color:#94a3b8;}
     body.light-mode .mk-btn-submit{background:#0284c7;color:#fff;}
+
     </style>
 </head>
 <body>
@@ -594,35 +621,7 @@
 
   </div><!-- end #page-beranda -->
 
-  <!-- PAGE: PESANAN -->
-  <div id="page-pesanan" style="display:none;">
 
-  <div class="sec-box" style="margin-bottom:16px;">
-    <div class="sec-head">
-      <div class="sec-title"><i class="fas fa-check-circle"></i> Booking (<span id="bk-count">0</span>)</div>
-      <button class="btn-hapus-all" id="bk-hapus-btn" style="display:none" onclick="masukModeSeleksi('bk')">
-        <i class="fas fa-trash-can"></i> Hapus
-      </button>
-    </div>
-    <div class="bk-empty" id="bk-empty">
-      Belum ada booking. Yuk booking sesi pertamamu!
-    </div>
-    <div id="bk-list" style="display:none;"></div>
-  </div>
-
-  <!-- RIWAYAT RENTAL BAWA PULANG -->
-  <div class="sec-box" style="margin-bottom:16px;">
-    <div class="sec-head">
-      <div class="sec-title"><i class="fas fa-house"></i> Rental Bawa Pulang (<span id="rent-count">0</span>)</div>
-      <button class="btn-hapus-all" id="rent-hapus-btn" style="display:none" onclick="masukModeSeleksi('rent')">
-        <i class="fas fa-trash-can"></i> Hapus
-      </button>
-    </div>
-    <div class="bk-empty" id="rent-empty">Belum ada riwayat rental bawa pulang.</div>
-    <div id="rent-list"></div>
-  </div>
-
-  </div><!-- end #page-pesanan -->
 
   <!-- ── MODAL KONFIRMASI TERIMA UNIT ── -->
   <div class="modal-kt" id="modal-kt" onclick="tutupModalKT(event)">
@@ -678,28 +677,26 @@
     <i class="fas fa-home"></i>
     <span>Beranda</span>
   </div>
-  <div class="nav-it" onclick="bukaHistory()">
-    <i class="fas fa-clock-rotate-left"></i>
-    <span>Riwayat</span>
-  </div>
 
   <!-- FAB Booking Tengah -->
-  <div class="nav-fab-wrap" onclick="bukaBookingSheet()">
-    <button class="nav-fab" aria-label="Booking">
+  <div class="nav-fab-wrap" onclick="klikFabPesan()">
+    <button class="nav-fab" id="nav-fab-pesan" aria-label="Booking">
       <i class="fas fa-gamepad"></i>
+      <span class="nav-fab-label">Pesan</span>
     </button>
-    <span class="nav-fab-label">Pesan</span>
   </div>
 
-  <div class="nav-it" id="nav-pesanan" onclick="navGoPesanan()">
-    <i class="fas fa-receipt"></i>
+  <div class="nav-it" id="nav-pesanan" onclick="navKlikPesanan(this)">
+    <i class="fas fa-bag-shopping"></i>
     <span>Pesanan</span>
   </div>
-  <div class="nav-it" onclick="location.href='https://wa.me/6285769033135'">
-    <i class="ti ti-brand-whatsapp" style="font-size:18px;"></i>
-    <span>Bantuan</span>
-  </div>
 </nav>
+
+<!-- ── FAB Bantuan (floating fixed) ── -->
+<a href="https://wa.me/6285769033135" class="fab-bantuan" id="fab-bantuan" onclick="klikFabBantuan(event)" aria-label="Bantuan WhatsApp">
+  <i class="ti ti-brand-whatsapp"></i>
+  <span>BANTUAN</span>
+</a>
 
 <!-- ── Bottom Sheet Pilihan Booking ── -->
 <div class="bsheet-overlay" id="bsheet-overlay" onclick="tutupBookingSheet()"></div>
@@ -735,27 +732,65 @@
     <div class="hist-title"><i class="fas fa-clock-rotate-left" style="color:var(--cyan);margin-right:7px;font-size:13px;"></i>Riwayat <span>Saya</span></div>
     <button class="hist-close" onclick="tutupHistory()"><i class="fas fa-xmark"></i></button>
   </div>
-  <div class="hist-stats">
-    <div class="hstat hstat-total"><div class="hstat-val" id="hs-total">0</div><div class="hstat-lbl">Total</div></div>
-    <div class="hstat hstat-selesai"><div class="hstat-val" id="hs-selesai">0</div><div class="hstat-lbl">Selesai</div></div>
-    <div class="hstat hstat-aktif"><div class="hstat-val" id="hs-aktif">0</div><div class="hstat-lbl">Aktif</div></div>
-    <div class="hstat hstat-batal"><div class="hstat-val" id="hs-batal">0</div><div class="hstat-lbl">Batal</div></div>
+
+  <!-- Tab Switcher Riwayat / Pesanan -->
+  <div style="display:flex;gap:0;margin:10px 16px 0;background:rgba(255,255,255,0.04);border-radius:11px;padding:3px;border:1px solid var(--border);">
+    <button id="htab-riwayat" class="unit-tab active" onclick="switchHistTab('riwayat')">
+      <i class="fas fa-clock-rotate-left"></i> Riwayat
+    </button>
+    <button id="htab-pesanan" class="unit-tab" onclick="switchHistTab('pesanan')">
+      <i class="fas fa-receipt"></i> Pesanan (<span id="bk-count">0</span>/<span id="rent-count">0</span>)
+    </button>
   </div>
-  <div class="hist-total-paid">
-    <div>
-      <div class="hist-total-paid-lbl">Total Yang Sudah Dibayar</div>
-      <div class="hist-total-paid-sub" id="hs-selesai-count">0 transaksi selesai</div>
+
+  <!-- Panel Riwayat -->
+  <div id="hpanel-riwayat" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="hist-stats">
+      <div class="hstat hstat-total"><div class="hstat-val" id="hs-total">0</div><div class="hstat-lbl">Total</div></div>
+      <div class="hstat hstat-selesai"><div class="hstat-val" id="hs-selesai">0</div><div class="hstat-lbl">Selesai</div></div>
+      <div class="hstat hstat-aktif"><div class="hstat-val" id="hs-aktif">0</div><div class="hstat-lbl">Aktif</div></div>
+      <div class="hstat hstat-batal"><div class="hstat-val" id="hs-batal">0</div><div class="hstat-lbl">Batal</div></div>
     </div>
-    <div class="hist-total-paid-val" id="hs-total-paid">Rp 0</div>
+    <div class="hist-total-paid">
+      <div>
+        <div class="hist-total-paid-lbl">Total Yang Sudah Dibayar</div>
+        <div class="hist-total-paid-sub" id="hs-selesai-count">0 transaksi selesai</div>
+      </div>
+      <div class="hist-total-paid-val" id="hs-total-paid">Rp 0</div>
+    </div>
+    <div class="hist-filters">
+      <button class="hfil hfil-semua on" onclick="filterHistory('Semua',this)"><span class="hfil-dot"></span> Semua</button>
+      <button class="hfil hfil-selesai" onclick="filterHistory('Selesai',this)"><span class="hfil-dot"></span> Selesai</button>
+      <button class="hfil hfil-batal" onclick="filterHistory('Batal',this)"><span class="hfil-dot"></span> Batal</button>
+      <button class="hfil hfil-pending" onclick="filterHistory('Pending',this)"><span class="hfil-dot"></span> Pending</button>
+    </div>
+    <div class="hist-body" id="hist-body">
+      <div class="hist-empty"><i class="fas fa-box-open"></i>Belum ada riwayat.</div>
+    </div>
   </div>
-  <div class="hist-filters">
-    <button class="hfil hfil-semua on" onclick="filterHistory('Semua',this)"><span class="hfil-dot"></span> Semua</button>
-    <button class="hfil hfil-selesai" onclick="filterHistory('Selesai',this)"><span class="hfil-dot"></span> Selesai</button>
-    <button class="hfil hfil-batal" onclick="filterHistory('Batal',this)"><span class="hfil-dot"></span> Batal</button>
-    <button class="hfil hfil-pending" onclick="filterHistory('Pending',this)"><span class="hfil-dot"></span> Pending</button>
-  </div>
-  <div class="hist-body" id="hist-body">
-    <div class="hist-empty"><i class="fas fa-box-open"></i>Belum ada riwayat.</div>
+
+  <!-- Panel Pesanan (Booking + Rental aktif) -->
+  <div id="hpanel-pesanan" style="display:none;flex:1;overflow-y:auto;padding:12px 16px 16px;">
+    <div class="sec-box" style="margin-bottom:14px;">
+      <div class="sec-head">
+        <div class="sec-title"><i class="fas fa-check-circle"></i> Booking</div>
+        <button class="btn-hapus-all" id="bk-hapus-btn" style="display:none" onclick="masukModeSeleksi('bk')">
+          <i class="fas fa-trash-can"></i> Hapus
+        </button>
+      </div>
+      <div class="bk-empty" id="bk-empty">Belum ada booking. Yuk booking sesi pertamamu!</div>
+      <div id="bk-list" style="display:none;"></div>
+    </div>
+    <div class="sec-box" style="margin-bottom:14px;">
+      <div class="sec-head">
+        <div class="sec-title"><i class="fas fa-house"></i> Rental Bawa Pulang</div>
+        <button class="btn-hapus-all" id="rent-hapus-btn" style="display:none" onclick="masukModeSeleksi('rent')">
+          <i class="fas fa-trash-can"></i> Hapus
+        </button>
+      </div>
+      <div class="bk-empty" id="rent-empty">Belum ada riwayat rental bawa pulang.</div>
+      <div id="rent-list"></div>
+    </div>
   </div>
 </div>
 
@@ -1301,23 +1336,45 @@
     chevron.classList.toggle('open', !isOpen);
   };
 
+  // ── Helper animasi pop navbar ────────────────────────────────────────
+  function navPop(el) {
+    el.classList.remove('pop');
+    void el.offsetWidth; // reflow trigger
+    el.classList.add('pop');
+    el.addEventListener('animationend', () => el.classList.remove('pop'), { once: true });
+  }
+
   // ── NAVIGASI HALAMAN ─────────────────────────────────────────────────
   window.navGoBeranda = function() {
     document.getElementById('page-beranda').style.display = '';
-    document.getElementById('page-pesanan').style.display = 'none';
-    document.getElementById('nav-beranda').classList.add('on');
-    document.getElementById('nav-pesanan').classList.remove('on');
+    const navEl = document.getElementById('nav-beranda');
+    navEl.classList.add('on');
+    navPop(navEl);
   };
 
+  // navGoPesanan kini membuka drawer riwayat di tab Pesanan
   window.navGoPesanan = function() {
-    document.getElementById('page-beranda').style.display = 'none';
-    document.getElementById('page-pesanan').style.display = '';
-    document.getElementById('nav-pesanan').classList.add('on');
-    document.getElementById('nav-beranda').classList.remove('on');
+    bukaHistory();
+    switchHistTab('pesanan');
+  };
+
+  window.navKlikPesanan = function(el) {
+    navPop(el);
+    bukaHistory();
+    switchHistTab('pesanan');
   };
 
   // ── HISTORY MODAL ────────────────────────────────────────────────────
   let histFilter = 'Semua';
+
+  window.switchHistTab = function(tab) {
+    const isRiwayat = tab === 'riwayat';
+    document.getElementById('htab-riwayat').className = 'unit-tab' + (isRiwayat ? ' active' : '');
+    document.getElementById('htab-pesanan').className = 'unit-tab' + (!isRiwayat ? ' active' : '');
+    document.getElementById('hpanel-riwayat').style.display = isRiwayat ? 'flex' : 'none';
+    document.getElementById('hpanel-pesanan').style.display = isRiwayat ? 'none' : 'block';
+    if (isRiwayat) { renderHistoryStats(); renderHistoryList(); }
+  };
 
   window.bukaHistory = function() {
     document.getElementById('hist-overlay').classList.add('show');
@@ -1989,6 +2046,25 @@
             });
         }
     };
+
+  // ── ANIMASI KLIK FAB PESAN ───────────────────────────────────────────
+  window.klikFabPesan = function() {
+    const fab = document.getElementById('nav-fab-pesan');
+    fab.classList.remove('clicked');
+    void fab.offsetWidth;
+    fab.classList.add('clicked');
+    fab.addEventListener('animationend', () => fab.classList.remove('clicked'), { once: true });
+    bukaBookingSheet();
+  };
+
+  // ── ANIMASI KLIK FAB BANTUAN ─────────────────────────────────────────
+  window.klikFabBantuan = function(e) {
+    const fab = document.getElementById('fab-bantuan');
+    fab.classList.remove('clicked');
+    void fab.offsetWidth;
+    fab.classList.add('clicked');
+    // Biarkan link href berjalan normal setelah animasi singkat
+  };
 
 </script>
 </body>
