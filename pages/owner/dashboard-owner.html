@@ -59,7 +59,7 @@
         .chart-date-input{
             background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
             border-radius:8px;color:#e6edf3;font-size:10px;font-weight:700;font-family:inherit;
-            padding:5px 8px;width:110px;flex-shrink:0;outline:none;transition:border-color .2s;
+            padding:5px 8px;width:110px;outline:none;transition:border-color .2s;
         }
         .chart-date-input:focus{border-color:rgba(0,217,255,0.4)}
         .chart-date-input::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
@@ -188,9 +188,10 @@
             .chart-section { padding:14px 14px; }
 
             /* Chart date row */
-            .chart-date-row { flex-wrap:wrap; gap:6px; }
-            .chart-date-input { width:calc(50% - 16px); min-width:0; }
+            .chart-date-row { flex-direction:column; gap:6px; }
+            .chart-date-input { width:100%; min-width:0; flex-shrink:1; font-size:11px; box-sizing:border-box; }
             .chart-date-sep { display:none; }
+            .chart-date-clear { width:100%; text-align:center; }
 
             /* Collapsible header untuk section mobile */
             .mobile-collapse-header {
