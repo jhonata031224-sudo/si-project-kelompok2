@@ -736,6 +736,15 @@
 
     window.doLogout = () => handleLogout('../auth/login-owner.html');
 
+    // ── SweetAlert theme helper ────────────────────────────────────────
+    function swalTheme() {
+        const isLight = document.body.classList.contains('light-mode');
+        return {
+            background: isLight ? '#ffffff' : '#0d1117',
+            color:      isLight ? '#1a202c' : '#e6edf3',
+        };
+    }
+
     window.goToStaffView = async () => {
         const result = await Swal.fire({
             title: '👔 Masuk sebagai Staff?',
@@ -746,8 +755,7 @@
             cancelButtonColor: '#374151',
             confirmButtonText: '<i class="fas fa-users-gear"></i> Ya, buka Staff View',
             cancelButtonText: 'Batal',
-            background: '#0d1117',
-            color: '#e6edf3'
+            ...swalTheme()
         });
         if (result.isConfirmed) {
             sessionStorage.setItem('owner_viewing_staff', '1');
@@ -1246,12 +1254,12 @@
             cancelButtonColor: '#374151',
             confirmButtonText: 'Hapus Permanen',
             cancelButtonText: 'Batal',
-            background: '#0d1117', color: '#e6edf3'
+            ...swalTheme()
         });
 
         if (inputKonfirm !== 'RESET') {
             if (inputKonfirm !== undefined) {
-                Swal.fire({ icon: 'error', title: 'Konfirmasi Salah', text: 'Ketik RESET dengan huruf kapital.', background: '#0d1117', color: '#e6edf3' });
+                Swal.fire({ icon: 'error', title: 'Konfirmasi Salah', text: 'Ketik RESET dengan huruf kapital.', ...swalTheme() });
             }
             return;
         }
@@ -1275,13 +1283,13 @@
 
         const totalToDelete = toDelete.length + toDeleteOrders.length;
         if (!totalToDelete) {
-            Swal.fire({ icon: 'info', title: 'Tidak ada data', text: 'Tidak ada data untuk periode ini.', background: '#0d1117', color: '#e6edf3' });
+            Swal.fire({ icon: 'info', title: 'Tidak ada data', text: 'Tidak ada data untuk periode ini.', ...swalTheme() });
             return;
         }
 
         // Hapus batch pendapatan + orders
         try {
-            Swal.fire({ title: 'Menghapus...', html: `<p style="color:#9ca3af">Menghapus ${toDelete.length} pendapatan & ${toDeleteOrders.length} data F&B...</p>`, allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#0d1117', color: '#e6edf3' });
+            Swal.fire({ title: 'Menghapus...', html: `<p style="color:#9ca3af">Menghapus ${toDelete.length} pendapatan & ${toDeleteOrders.length} data F&B...</p>`, allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
 
             // Gabung semua dokumen yang dihapus dengan koleksi masing-masing
             const allToDelete = [
@@ -1301,11 +1309,11 @@
             Swal.fire({
                 icon: 'success', title: 'Reset Berhasil!',
                 html: `<p style="color:#9ca3af">${toDelete.length} data pendapatan & ${toDeleteOrders.length} data F&B telah dihapus.<br>Laporan otomatis terupdate.</p>`,
-                background: '#0d1117', color: '#e6edf3', timer: 3000, showConfirmButton: false
+                ...swalTheme(), timer: 3000, showConfirmButton: false
             });
         } catch (e) {
             console.error(e);
-            Swal.fire({ icon: 'error', title: 'Gagal Reset', text: e.message, background: '#0d1117', color: '#e6edf3' });
+            Swal.fire({ icon: 'error', title: 'Gagal Reset', text: e.message, ...swalTheme() });
         }
     };
 
@@ -1355,7 +1363,7 @@
                     title: `⚠️ ${u.id} — Booking kadaluarsa`,
                     html: `<span style="font-size:11px;color:#9ca3af">Jadwal ${u.customerName||'-'} terlewat ${Math.round(lewat/60000)} menit. Unit direset ke Tersedia.</span>`,
                     showConfirmButton: false, timer: 5000,
-                    background: '#0d1117', color: '#e6edf3'
+                    ...swalTheme()
                 });
             } catch(e) { console.error('cleanup unit gagal', e); autoCleanedUnits.delete(u.id); }
         }
@@ -1571,12 +1579,12 @@
             cancelButtonText: 'Batal',
             confirmButtonColor: '#ff4d4f',
             cancelButtonColor: '#374151',
-            background: '#0d1117', color: '#e6edf3'
+            ...swalTheme()
         });
         if (!isConfirmed) return;
 
         try {
-            Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#0d1117', color: '#e6edf3' });
+            Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
 
             // Ambil data item untuk tahu unit yang dipakai
             var itemDoc = await getDoc(doc(db, colName, itemId));
@@ -1603,10 +1611,10 @@
                 title: label + ' Dihapus',
                 text: nama + ' telah dihapus dan unit direset.',
                 timer: 2200, showConfirmButton: false,
-                background: '#0d1117', color: '#e6edf3'
+                ...swalTheme()
             });
         } catch(e) {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, background: '#0d1117', color: '#e6edf3' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, ...swalTheme() });
         }
     };
 
@@ -1621,7 +1629,7 @@
         });
 
         if (!filtered.length) {
-            Swal.fire({ icon: 'info', title: 'Tidak Ada Data', text: 'Tidak ada item untuk dihapus.', background: '#0d1117', color: '#e6edf3', timer: 2000, showConfirmButton: false });
+            Swal.fire({ icon: 'info', title: 'Tidak Ada Data', text: 'Tidak ada item untuk dihapus.', ...swalTheme(), timer: 2000, showConfirmButton: false });
             return;
         }
 
@@ -1635,12 +1643,12 @@
             cancelButtonText: 'Batal',
             confirmButtonColor: '#ff4d4f',
             cancelButtonColor: '#374151',
-            background: '#0d1117', color: '#e6edf3'
+            ...swalTheme()
         });
         if (!isConfirmed) return;
 
         try {
-            Swal.fire({ title: 'Menghapus...', html: '<p style="color:#9ca3af">Memproses ' + filtered.length + ' item...</p>', allowOutsideClick: false, didOpen: () => Swal.showLoading(), background: '#0d1117', color: '#e6edf3' });
+            Swal.fire({ title: 'Menghapus...', html: '<p style="color:#9ca3af">Memproses ' + filtered.length + ' item...</p>', allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
 
             var batch = writeBatch(db);
             var batchCount = 0;
@@ -1683,10 +1691,10 @@
                 title: 'Berhasil Dihapus!',
                 text: filtered.length + ' item telah dihapus dan semua unit direset ke Tersedia.',
                 timer: 2500, showConfirmButton: false,
-                background: '#0d1117', color: '#e6edf3'
+                ...swalTheme()
             });
         } catch(e) {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, background: '#0d1117', color: '#e6edf3' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, ...swalTheme() });
         }
     };
 

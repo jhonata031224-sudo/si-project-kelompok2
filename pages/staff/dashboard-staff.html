@@ -498,42 +498,43 @@
         body.light-mode .stat-chip-lbl { color: #475569 !important; }
 
         /* ── DATE FILTER ── */
-        .srev-date-row { display:flex; align-items:center; gap:6px; margin-top:10px; flex-wrap:wrap; }
+        .srev-date-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            flex-wrap: nowrap;
+        }
         .srev-date-input {
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 8px;
             color: #e6edf3;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             font-family: inherit;
-            padding: 8px 10px;
-            flex: 1 1 120px;
-            min-width: 120px;
-            min-height: 40px;
+            padding: 7px 6px;
+            flex: 1 1 0;
+            min-width: 0;
+            min-height: 36px;
+            max-width: 100%;
             outline: none;
             transition: border-color .2s;
             -webkit-appearance: none;
             appearance: none;
             box-sizing: border-box;
         }
-        @media (max-width: 480px) {
-            .srev-date-row { flex-wrap: wrap; gap: 8px; }
-            .srev-date-input {
-                font-size: 14px;
-                flex: 1 1 120px;
-                min-width: 0;
-                padding: 10px 8px;
-                min-height: 44px;
-            }
-            .srev-date-sep { display: none; }
-            .srev-date-clear { min-height: 44px; padding: 10px 14px; flex-shrink: 0; }
-        }
         .srev-date-input:focus { border-color: rgba(0,217,255,0.4); }
-        .srev-date-input::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
+        .srev-date-input::-webkit-calendar-picker-indicator {
+            filter: invert(0.6);
+            cursor: pointer;
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
         body.light-mode .srev-date-input { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: #1e293b; }
         body.light-mode .srev-date-input::-webkit-calendar-picker-indicator { filter: none; }
-        .srev-date-sep { font-size: 10px; color: #4b5563; font-weight: 700; flex-shrink:0; }
+        .srev-date-sep { font-size: 10px; color: #4b5563; font-weight: 700; flex-shrink: 0; }
         .srev-date-apply {
             background: rgba(0,217,255,0.1);
             border: 1px solid rgba(0,217,255,0.25);
@@ -553,15 +554,32 @@
             border: 1px solid rgba(255,255,255,0.07);
             color: #6b7280;
             border-radius: 8px;
-            padding: 5px 8px;
+            padding: 0;
+            width: 32px;
+            height: 36px;
             font-size: 10px;
             font-weight: 800;
             cursor: pointer;
             font-family: inherit;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: .2s;
         }
         .srev-date-clear:hover { border-color: rgba(255,255,255,0.15); color: #9ca3af; }
+        body.light-mode .srev-date-clear { border-color: rgba(0,0,0,0.1); }
+        /* Mobile: pastikan tetap 1 baris, font lebih kecil */
+        @media (max-width: 480px) {
+            .srev-date-row { gap: 4px; }
+            .srev-date-input {
+                font-size: 11px;
+                padding: 7px 4px;
+                min-height: 34px;
+            }
+            .srev-date-sep { display: none; }
+            .srev-date-clear { width: 30px; height: 34px; font-size: 9px; }
+        }
         body.light-mode .staff-session-row { border-color: rgba(0,0,0,0.05) !important; }
         /* Theme toggle button */
         .btn-theme-toggle {
@@ -945,6 +963,19 @@
                 z-index: 10;
             }
 
+            /* Revenue filter pills: selalu bisa diklik di desktop */
+            .srev-pills,
+            .srev-pill,
+            #srev-card-main .srev-pills,
+            #srev-card-main .srev-pill,
+            .srev-card .srev-pills,
+            .srev-card .srev-pill {
+                pointer-events: all !important;
+                position: relative;
+                z-index: 20;
+                cursor: pointer !important;
+            }
+
             /* Setelan panel */
             /* Setelan panel 2-column desktop layout */
             #setelan-desktop-grid {
@@ -1065,7 +1096,7 @@
 
     <!-- Shift Info Card (desktop sidebar) -->
     <div class="staff-sidebar-shift-card" id="sidebar-shift-card">
-        <div class="staff-sidebar-shift-name" id="sidebar-shift-name">Shift Aktif</div>
+        <div class="staff-sidebar-shift-name" id="sidebar-shift-name">Sesi Aktif</div>
         <div class="staff-sidebar-shift-time" id="sidebar-shift-time">--:-- – --:--</div>
         <div class="staff-sidebar-shift-date" id="sidebar-shift-date"></div>
     </div>
@@ -1109,7 +1140,7 @@
         <div>
             <div class="flex items-center gap-2 mb-0.5">
                 <div id="shift-dot" class="w-2 h-2 rounded-full bg-green-400" style="animation:pulse-green 2s infinite"></div>
-                <span id="shift-label" class="text-[10px] font-black uppercase tracking-widest text-green-400">Shift Aktif</span>
+                <span id="shift-label" class="text-[10px] font-black uppercase tracking-widest text-green-400">Sesi Aktif</span>
             </div>
             <h1 class="text-xl font-black tracking-tight text-white">Halo, <span id="staff-greeting-name" class="text-cyan-400">Staff</span> </h1>
             <p id="staff-header-time" class="text-[11px] font-bold text-gray-500 mt-0.5"></p>
@@ -1673,31 +1704,31 @@
 
 <div id="setelan-desktop-grid">
 <div id="setelan-col-left">
-    <!-- ══ KETERANGAN SHIFT ══ -->
+    <!-- ══ KETERANGAN SESI ══ -->
     <div class="glass-card p-5 mb-4">
-        <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">🕐 Keterangan Shift</h3>
+        <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">🕐 Keterangan Sesi</h3>
         <div id="setelan-shift-info" class="bg-white/[0.03] rounded-2xl p-4 mb-3">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-black" id="setelan-shift-nama">—</p>
-                    <p class="text-[11px] text-gray-400 mt-1" id="setelan-shift-jam">Belum memilih shift</p>
+                    <p class="text-[11px] text-gray-400 mt-1" id="setelan-shift-jam">Belum memilih sesi</p>
                     <p class="text-[10px] text-gray-500 mt-1" id="setelan-shift-tgl">—</p>
                 </div>
                 <div id="setelan-shift-ikon" style="font-size:32px">—</div>
             </div>
         </div>
         <button onclick="gantiShift()" class="w-full py-3 rounded-xl font-black text-[11px] uppercase" style="background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.3);color:#00d9ff">
-            <i class="fas fa-exchange-alt mr-2"></i>Ganti Shift Hari Ini
+            <i class="fas fa-exchange-alt mr-2"></i>Ganti Sesi Hari Ini
         </button>
     </div>
 
-    <!-- ══ PENGATURAN JAM SHIFT ══ -->
+    <!-- ══ PENGATURAN JAM SESI ══ -->
     <div class="glass-card p-5 mb-4">
-        <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">⏰ Pengaturan Jam Shift</h3>
+        <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">⏰ Pengaturan Jam Sesi</h3>
 
-        <!-- Shift 1 -->
+        <!-- Sesi 1 -->
         <div class="bg-white/[0.03] rounded-2xl p-4 mb-3">
-            <p class="text-sm font-black mb-3" style="color:#ffd54f">☀️ Shift 1 – Pagi/Sore</p>
+            <p class="text-sm font-black mb-3" style="color:#ffd54f">☀️ Sesi 1 – Pagi/Sore</p>
             <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:8px">
                 <div style="flex:1;min-width:0">
                     <p class="text-[10px] text-gray-500 mb-1 uppercase font-bold tracking-wider">Mulai</p>
@@ -1715,9 +1746,9 @@
             </div>
         </div>
 
-        <!-- Shift 2 -->
+        <!-- Sesi 2 -->
         <div class="bg-white/[0.03] rounded-2xl p-4 mb-3">
-            <p class="text-sm font-black mb-3" style="color:#818cf8">🌙 Shift 2 – Sore/Malam</p>
+            <p class="text-sm font-black mb-3" style="color:#818cf8">🌙 Sesi 2 – Sore/Malam</p>
             <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:8px">
                 <div style="flex:1;min-width:0">
                     <p class="text-[10px] text-gray-500 mb-1 uppercase font-bold tracking-wider">Mulai</p>
@@ -1736,7 +1767,7 @@
         </div>
 
         <button onclick="simpanJamShift()" class="w-full py-3 rounded-xl font-black text-[11px] uppercase" style="background:#10b981;color:#000">
-            <i class="fas fa-save mr-2"></i>Simpan Jam Shift
+            <i class="fas fa-save mr-2"></i>Simpan Jam Sesi
         </button>
     </div>
 
@@ -1780,7 +1811,7 @@
         <!-- Toggle notif popup -->
         <div class="bg-white/[0.03] rounded-2xl p-4 flex justify-between items-center">
             <div>
-                <p class="text-sm font-black">💬 Popup Peringatan</p>
+                <p class="text-sm font-black">🔖 Lencana Peringatan</p>
                 <p class="text-[10px] text-gray-500 mt-0.5">Toast notifikasi saat waktu hampir habis</p>
             </div>
             <button id="toggle-popup" onclick="togglePopup()" class="w-12 h-6 rounded-full transition-all relative" style="background:#10b981">
@@ -2025,9 +2056,9 @@
                 const s2e = localStorage.getItem('pg_shift2_end')   || '20:00';
                 const s1sh = parseInt(s1s), s1eh = parseInt(s1e);
                 const s2sh = parseInt(s2s), s2eh = parseInt(s2e);
-                if (h >= s1sh && h < s1eh)       { shift = 'Shift 1 · ' + s1s + '–' + s1e; color = '#fbbf24'; }
-                else if (h >= s2sh && h < s2eh)  { shift = 'Shift 2 · ' + s2s + '–' + s2e; color = '#3fb950'; }
-                else                              { shift = 'Di Luar Jam Shift'; color = '#9ca3af'; }
+                if (h >= s1sh && h < s1eh)       { shift = 'Sesi 1 · ' + s1s + '–' + s1e; color = '#fbbf24'; }
+                else if (h >= s2sh && h < s2eh)  { shift = 'Sesi 2 · ' + s2s + '–' + s2e; color = '#3fb950'; }
+                else                              { shift = 'Di Luar Jam Sesi'; color = '#9ca3af'; }
             }
             if (shiftEl)  { shiftEl.textContent = shift; shiftEl.style.color = color; }
             if (shiftDot) shiftDot.style.background = color;
@@ -2322,7 +2353,7 @@
             <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
                 <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#9ca3af">
                     <i class="fas fa-user" style="font-size:10px;width:12px"></i>
-                    Customer: <span style="color:#e6edf3">${unit.customerName||'-'}</span>
+                    Pelanggan: <span style="color:#e6edf3">${unit.customerName||'-'}</span>
                 </div>
                 ${isPlaying || isDipesan ? `
                 <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#9ca3af">
@@ -2912,8 +2943,8 @@
             if (sTgl)  sTgl.textContent  = 'Tanggal: ' + shiftTgl;
             if (sIkon) sIkon.textContent = shift === '1' ? '☀️' : '🌙';
         } else {
-            if (sNama) sNama.textContent = 'Belum memilih shift';
-            if (sJam)  sJam.textContent  = 'Pilih shift terlebih dahulu';
+            if (sNama) sNama.textContent = 'Belum memilih sesi';
+            if (sJam)  sJam.textContent  = 'Pilih sesi terlebih dahulu';
             if (sTgl)  sTgl.textContent  = '';
             if (sIkon) sIkon.textContent = '—';
         }
@@ -2948,7 +2979,7 @@
         const _shift = sessionStorage.getItem("staff_shift");
         if (_shift) {
             const _jam   = _shift === "1" ? s1s + " - " + s1e : s2s + " - " + s2e;
-            const _nama  = _shift === "1" ? "Shift 1 - Pagi/Sore" : "Shift 2 - Sore/Malam";
+            const _nama  = _shift === "1" ? "Sesi 1 - Pagi/Sore" : "Sesi 2 - Sore/Malam";
             const _warna = _shift === "1" ? "#ffd54f" : "#818cf8";
             sessionStorage.setItem("staff_shift_nama", _nama);
             sessionStorage.setItem("staff_shift_jam",  _jam);
@@ -2961,7 +2992,7 @@
             if (lbl) { lbl.textContent = _nama + " � " + _jam; lbl.style.color = _warna; }
             if (dot) dot.style.background = _warna;
         }
-        Swal.fire({ toast:true, position:'top', icon:'success', title:'Jam shift berhasil disimpan!', showConfirmButton:false, timer:2000, ...(swalThemeAlt()) });
+        Swal.fire({ toast:true, position:'top', icon:'success', title:'Jam sesi berhasil disimpan!', showConfirmButton:false, timer:2000, ...(swalThemeAlt()) });
     };
 
     window.gantiShift = async function() {
@@ -2970,12 +3001,12 @@
         const s2s = localStorage.getItem('pg_shift2_start') || '16:00';
         const s2e = localStorage.getItem('pg_shift2_end')   || '22:00';
         const { value: pilihan } = await Swal.fire({
-            title: '🔄 Ganti Shift',
+            title: '🔄 Ganti Sesi',
             html: `<div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
                 <button onclick="document.getElementById('swal-inp').value='1';document.querySelectorAll('.swl-sb').forEach(b=>b.style.opacity='0.5');this.style.opacity='1';this.style.borderColor='#ffd54f'"
-                    class="swl-sb" style="padding:14px;border-radius:12px;background:rgba(255,213,79,0.08);border:1.5px solid rgba(255,213,79,0.2);color:#ffd54f;font-size:14px;font-weight:800;cursor:pointer">☀️ Shift 1 – Pagi/Sore (${s1s}–${s1e})</button>
+                    class="swl-sb" style="padding:14px;border-radius:12px;background:rgba(255,213,79,0.08);border:1.5px solid rgba(255,213,79,0.2);color:#ffd54f;font-size:14px;font-weight:800;cursor:pointer">☀️ Sesi 1 – Pagi/Sore (${s1s}–${s1e})</button>
                 <button onclick="document.getElementById('swal-inp').value='2';document.querySelectorAll('.swl-sb').forEach(b=>b.style.opacity='0.5');this.style.opacity='1';this.style.borderColor='#818cf8'"
-                    class="swl-sb" style="padding:14px;border-radius:12px;background:rgba(129,140,248,0.08);border:1.5px solid rgba(129,140,248,0.2);color:#818cf8;font-size:14px;font-weight:800;cursor:pointer">🌙 Shift 2 – Sore/Malam (${s2s}–${s2e})</button>
+                    class="swl-sb" style="padding:14px;border-radius:12px;background:rgba(129,140,248,0.08);border:1.5px solid rgba(129,140,248,0.2);color:#818cf8;font-size:14px;font-weight:800;cursor:pointer">🌙 Sesi 2 – Sore/Malam (${s2s}–${s2e})</button>
                 <input id="swal-inp" type="hidden" value="">
             </div>`,
             showCancelButton: true,
@@ -2986,12 +3017,12 @@
             ...(swalThemeAlt()),
             preConfirm: () => {
                 const v = document.getElementById('swal-inp').value;
-                if (!v) { Swal.showValidationMessage('Pilih salah satu shift'); return false; }
+                if (!v) { Swal.showValidationMessage('Pilih salah satu sesi'); return false; }
                 return v;
             }
         });
         if (!pilihan) return;
-        const nama = pilihan === '1' ? 'Shift 1 – Pagi/Sore' : 'Shift 2 – Sore/Malam';
+        const nama = pilihan === '1' ? 'Sesi 1 – Pagi/Sore' : 'Sesi 2 – Sore/Malam';
         const jam  = pilihan === '1' ? s1s + ' – ' + s1e : s2s + ' – ' + s2e;
         const ikon = pilihan === '1' ? '☀️' : '🌙';
         const warna = pilihan === '1' ? '#ffd54f' : '#818cf8';
@@ -3012,7 +3043,7 @@
         if (sJam)  sJam.textContent  = jam;
         if (sTgl)  sTgl.textContent  = 'Tanggal: ' + today;
         if (sIkon) sIkon.textContent = ikon;
-        Swal.fire({ toast:true, position:'top', icon:'success', title:'Shift berhasil diganti!', showConfirmButton:false, timer:2000, ...(swalThemeAlt()) });
+        Swal.fire({ toast:true, position:'top', icon:'success', title:'Sesi berhasil diganti!', showConfirmButton:false, timer:2000, ...(swalThemeAlt()) });
     };
     (function() {
         const isOwnerView = sessionStorage.getItem('owner_viewing_staff') === '1';
@@ -5958,7 +5989,7 @@
 
             if (sName) {
                 const ikon = shift === '1' ? '☀️' : (shift === '2' ? '🌙' : '');
-                sName.textContent = shift ? (ikon + ' ' + (shiftNama || 'Shift ' + shift)) : 'Shift Aktif';
+                sName.textContent = shift ? (ikon + ' ' + (shiftNama || 'Sesi ' + shift)) : 'Sesi Aktif';
             }
             if (sTime) sTime.textContent = shiftJam || '--:-- – --:--';
             if (sDate) sDate.textContent = shiftTgl ? 'Tanggal: ' + shiftTgl : '';

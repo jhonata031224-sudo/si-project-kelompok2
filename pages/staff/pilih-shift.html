@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Prince Games – Pilih Shift</title>
+    <title>Prince Games – Pilih Sesi</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -145,8 +145,8 @@
     </div>
 
     <div class="header">
-        <h1>Pilih <span>Shift</span> Kerja</h1>
-        <p>Pilih shift sesuai jadwal kamu hari ini sebelum masuk ke dashboard</p>
+        <h1>Pilih <span>Sesi</span> Kerja</h1>
+        <p>Pilih sesi sesuai jadwal kamu hari ini sebelum masuk ke dashboard</p>
     </div>
 
     <div style="text-align:center">
@@ -162,7 +162,7 @@
         <div class="shift-card shift-1" id="card-shift1" onclick="pilihShift(1)">
             <div class="shift-icon">☀️</div>
             <div class="shift-info">
-                <div class="shift-label">Shift 1</div>
+                <div class="shift-label">Sesi 1</div>
                 <div class="shift-name">Pagi – Sore</div>
                 <div class="shift-time">
                     <i class="fas fa-clock"></i>
@@ -177,7 +177,7 @@
         <div class="shift-card shift-2" id="card-shift2" onclick="pilihShift(2)">
             <div class="shift-icon">🌙</div>
             <div class="shift-info">
-                <div class="shift-label">Shift 2</div>
+                <div class="shift-label">Sesi 2</div>
                 <div class="shift-name">Sore – Malam</div>
                 <div class="shift-time">
                     <i class="fas fa-clock"></i>
@@ -195,7 +195,7 @@
     </button>
 
     <div class="footer-note">
-        Pilihan shift akan tercatat untuk laporan hari ini
+        Pilihan sesi akan tercatat untuk laporan hari ini
     </div>
 
 </div>
@@ -214,7 +214,7 @@
 
     if (shiftAktif) {
         const badge = document.getElementById('badge-shift' + shiftAktif);
-        badge.outerHTML = `<div class="shift-active-now"><span class="dot"></span> Shift aktif sekarang</div>`;
+        badge.outerHTML = `<div class="shift-active-now"><span class="dot"></span> Sesi aktif sekarang</div>`;
     }
 
     function pilihShift(nomor) {
@@ -279,7 +279,7 @@
         }
 
         const { isConfirmed } = await Swal.fire({
-            title: info.ikon + ' Konfirmasi Shift',
+            title: info.ikon + ' Konfirmasi Sesi',
             html: `Halo <b>${namaStaff}</b>!<br>Kamu akan masuk dengan<br><b>${info.nama}</b><br><span style="font-size:12px;color:#9ca3af">${info.jam}</span>`,
             icon: 'question',
             showCancelButton: true,
