@@ -1102,6 +1102,8 @@
     // Mulai listener notif konfirmasi booking & rental
     if (unsubKonfirmasi) unsubKonfirmasi();
     unsubKonfirmasi = listenKonfirmasiNotif(user.uid);
+    // Mulai listener notif extend dari staff
+    listenExtendNotif(user.uid);
     // Auto-buka riwayat jika diarahkan dari halaman lain (?history=1)
     if (new URLSearchParams(window.location.search).get('history') === '1') {
       setTimeout(() => { bukaHistory(); switchHistTab('pesanan'); }, 600);
@@ -2347,6 +2349,134 @@
             });
         }
     };
+
+  // ── NOTIF EXTEND DARI STAFF ──────────────────────────────────────────
+  // Dipanggil setelah staff konfirmasi tambahan waktu dari card unit
+  let _extendNotifUnsub = null;
+  const _shownExtendNotifs = new Set(); // hindari duplikat dalam satu sesi
+
+  function listenExtendNotif(uid) {
+    if (_extendNotifUnsub) _extendNotifUnsub();
+    // Query simple tanpa composite index — filter read & type di client
+    const q = query(
+      collection(db, 'customerNotifications'),
+      where('customerId', '==', uid)
+    );
+    _extendNotifUnsub = onSnapshot(q, snap => {
+      snap.docChanges().forEach(async change => {
+        if (change.type !== 'added') return;
+        const data = change.doc.data();
+        const docId = change.doc.id;
+
+        // Hanya proses extend_approved / extend_rejected yang belum dibaca
+        if (data.type !== 'extend_approved' && data.type !== 'extend_rejected') return;
+        if (data.read === true) return;
+        if (_shownExtendNotifs.has(docId)) return;
+        _shownExtendNotifs.add(docId);
+
+        // Tandai sudah dibaca supaya tidak muncul ulang jika reload
+        try {
+          await updateDoc(doc(db, 'customerNotifications', docId), { read: true });
+        } catch(e) { console.warn('Gagal mark notif:', e); }
+
+        const isLight = document.body.classList.contains('light-mode');
+        const bg    = isLight ? '#ffffff' : '#0d1520';
+        const color = isLight ? '#1a2332' : '#e8edf5';
+        const muted = isLight ? '#64748b' : '#9ca3af';
+        const sub   = isLight ? '#0f172a' : '#e6edf3';
+
+        // ── APPROVED ──────────────────────────────────────────────────
+        if (data.type === 'extend_approved') {
+          // Suara notif berhasil (4 nada naik)
+          try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const playTone = (freq, startTime, dur, vol=0.4) => {
+              const osc = ctx.createOscillator(); const gain = ctx.createGain();
+              osc.connect(gain); gain.connect(ctx.destination);
+              osc.type = 'sine'; osc.frequency.value = freq;
+              gain.gain.setValueAtTime(0, startTime);
+              gain.gain.linearRampToValueAtTime(vol, startTime + 0.02);
+              gain.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
+              osc.start(startTime); osc.stop(startTime + dur);
+            };
+            const t = ctx.currentTime;
+            playTone(523, t, 0.18); playTone(659, t+0.18, 0.18);
+            playTone(784, t+0.36, 0.18); playTone(1047, t+0.54, 0.35, 0.3);
+          } catch(e) {}
+
+          Swal.fire({
+            icon: 'success',
+            title: '⏱️ Waktu Main Ditambah!',
+            html: `
+              <div style="text-align:center;line-height:1.9">
+                <div style="font-size:12px;color:${muted};margin-bottom:12px">
+                  Staff telah mengkonfirmasi tambahan waktu bermainmu
+                </div>
+                <div style="background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.22);border-radius:14px;padding:16px;margin-bottom:12px">
+                  <div style="font-size:32px;font-weight:900;color:#00d9ff;letter-spacing:-1px;line-height:1">
+                    +${data.extendJam || 1} Jam
+                  </div>
+                  <div style="font-size:11px;color:${muted};margin-top:6px">
+                    ${data.unitType || ''} · ${data.unitId || ''}
+                  </div>
+                </div>
+                <div style="font-size:13px;color:${sub};margin-bottom:4px">
+                  ⏰ Selesai pukul <strong style="color:#4ade80">${data.jamSelesaiBaru || '-'}</strong>
+                </div>
+                <div style="font-size:11px;color:${muted};margin-top:6px">
+                  Dikonfirmasi oleh: ${data.staffNama || 'Staff'}
+                </div>
+              </div>`,
+            confirmButtonText: 'Sip, Lanjut Main! 🎮',
+            confirmButtonColor: '#00d9ff',
+            background: bg, color,
+            timer: 15000, timerProgressBar: true
+          });
+
+        // ── REJECTED ──────────────────────────────────────────────────
+        } else if (data.type === 'extend_rejected') {
+          // Suara notif ditolak (2 nada turun)
+          try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const playTone = (freq, startTime, dur, vol=0.35) => {
+              const osc = ctx.createOscillator(); const gain = ctx.createGain();
+              osc.connect(gain); gain.connect(ctx.destination);
+              osc.type = 'sine'; osc.frequency.value = freq;
+              gain.gain.setValueAtTime(0, startTime);
+              gain.gain.linearRampToValueAtTime(vol, startTime + 0.02);
+              gain.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
+              osc.start(startTime); osc.stop(startTime + dur);
+            };
+            const t = ctx.currentTime;
+            playTone(440, t, 0.22); playTone(330, t+0.25, 0.3);
+          } catch(e) {}
+
+          Swal.fire({
+            icon: 'error',
+            title: '❌ Permintaan Tambahan Ditolak',
+            html: `
+              <div style="text-align:center;line-height:1.9">
+                <div style="font-size:12px;color:${muted};margin-bottom:12px">
+                  Staff tidak dapat menyetujui tambahan waktu saat ini
+                </div>
+                <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:14px;padding:14px;margin-bottom:12px">
+                  <div style="font-size:13px;font-weight:700;color:#f87171">
+                    ${data.unitType || ''} · ${data.unitId || ''}
+                  </div>
+                </div>
+                <div style="font-size:11px;color:${muted}">
+                  Hubungi staff jika ada pertanyaan
+                </div>
+              </div>`,
+            confirmButtonText: 'Mengerti',
+            confirmButtonColor: '#ef4444',
+            background: bg, color,
+            timer: 10000, timerProgressBar: true
+          });
+        }
+      });
+    }, err => { console.warn('Extend notif listener error:', err); });
+  }
 
   // ── ANIMASI KLIK FAB PESAN ───────────────────────────────────────────
   // Tutup bsheet saat navigasi sidebar diklik

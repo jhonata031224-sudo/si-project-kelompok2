@@ -2770,7 +2770,7 @@
 
         // STEP 1: Konfirmasi pembayaran dulu — staf WAJIB pilih metode bayar
         let selectedPay = null;
-        const { isConfirmed } = await Swal.fire({
+        const { isConfirmed, value: swalValue } = await Swal.fire({
             title: `Tambahan +1 Jam — ${unit?.type || id}`,
             html: `
                 <p style="color:#9ca3af;font-size:12px;margin-bottom:14px">
@@ -2812,11 +2812,11 @@
         window._extendPay = null; // reset global
 
         if (!isConfirmed) {
-            Swal.fire({ toast:true, position:'top', icon:'info', title:'Tambahan dibatalkan', showConfirmButton:false, timer:1500 });
+            Swal.fire({ toast:true, position:'top', icon:'info', title:'Tambahan dibatalkan', showConfirmButton:false, timer:1500, ...swalTheme() });
             return;
         }
 
-        const payMethod = isConfirmed;
+        const payMethod = swalValue; // 'Cash' atau 'Ewallet' dari preConfirm
         const now = new Date().toISOString();
 
         try {
@@ -2844,8 +2844,26 @@
                 extendCount: extendCount + 1
             });
 
+            // STEP 4: Kirim notifikasi ke pelanggan (jika ada customerId)
+            if (unit?.customerId) {
+                const newEnd = new Date(currentEnd + 3600000);
+                const jamSelesai = newEnd.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+                await addDoc(collection(db, 'customerNotifications'), {
+                    customerId: unit.customerId,
+                    type:       'extend_approved',
+                    unitId:     id,
+                    unitType:   unit?.type || '-',
+                    extendJam:  1,
+                    biaya:      rate,
+                    jamSelesaiBaru: jamSelesai,
+                    staffNama:  sessionStorage.getItem('staff_nama_display') || 'Staff',
+                    createdAt:  now,
+                    read:       false
+                });
+            }
+
             tambahNotif(`⏱ Tambahan ${id} (+1 Jam) — ${payMethod} — Rp ${rate.toLocaleString('id-ID')}`);
-            Swal.fire({ toast:true, position:'top', icon:'success', title:`+1 Jam | ${payMethod} Tercatat`, showConfirmButton:false, timer:2000 });
+            Swal.fire({ toast:true, position:'top', icon:'success', title:`+1 Jam | ${payMethod} Tercatat`, showConfirmButton:false, timer:2000, ...swalTheme() });
         } catch(e) {
             console.error('Tambahan error:', e);
             Swal.fire({ icon:'error', title:'Gagal Tambahan', text:'Terjadi kesalahan. Coba lagi.', ...swalTheme() });
@@ -4484,7 +4502,7 @@
         // Konfirmasi bayar dulu — sama seperti tambahWaktu manual
         window._extendPay = null;
         const { isConfirmed } = await Swal.fire({
-            title: 'Approve Tambahan — ' + unitId,
+            title: 'Setujui Tambahan — ' + unitId,
             html: '<p style="color:#9ca3af;font-size:12px;margin-bottom:10px">Pastikan pelanggan sudah bayar:</p>' +
                   '<p style="color:#00d9ff;font-size:18px;font-weight:900;margin-bottom:14px">Rp ' + rate.toLocaleString('id-ID') + '</p>' +
                   '<div style="display:flex;flex-direction:column;gap:8px">' +
@@ -4558,8 +4576,26 @@
                 payMethod
             });
 
+            // Kirim notifikasi ke pelanggan
+            if (unitData.customerId) {
+                const newEnd = new Date(currentEnd + 3600000);
+                const jamSelesai = newEnd.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+                await addDoc(collection(db, 'customerNotifications'), {
+                    customerId: unitData.customerId,
+                    type:       'extend_approved',
+                    unitId,
+                    unitType:   unitData.type || '-',
+                    extendJam:  1,
+                    biaya:      rate,
+                    jamSelesaiBaru: jamSelesai,
+                    staffNama:  sessionStorage.getItem('staff_nama_display') || 'Staff',
+                    createdAt:  now,
+                    read:       false
+                });
+            }
+
             tambahNotif('⏱ Tambahan Disetujui: ' + unitId + ' (+1 Jam) — ' + payMethod + ' — Rp ' + rate.toLocaleString('id-ID'));
-            Swal.fire({ toast:true, position:'top', icon:'success', title:'+1 Jam | Tambahan Disetujui', showConfirmButton:false, timer:2000 });
+            Swal.fire({ toast:true, position:'top', icon:'success', title:'+1 Jam | Tambahan Disetujui', showConfirmButton:false, timer:2000, ...swalTheme() });
         } catch(e) {
             Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalTheme() });
         }
@@ -4580,11 +4616,29 @@
         if (!isConfirmed) return;
 
         try {
+            const unitSnap = await getDoc(doc(db, 'units', unitId));
+            const unitData = unitSnap.exists() ? unitSnap.data() : {};
+            const now = new Date().toISOString();
+
             await updateDoc(doc(db, 'extendRequests', reqId), {
                 status:     'Rejected',
-                rejectedAt: new Date().toISOString()
+                rejectedAt: now
             });
-            Swal.fire({ toast:true, position:'top', icon:'info', title:'Permintaan Tambahan Ditolak', showConfirmButton:false, timer:2000 });
+
+            // Kirim notif tolak ke pelanggan
+            if (unitData.customerId) {
+                await addDoc(collection(db, 'customerNotifications'), {
+                    customerId: unitData.customerId,
+                    type:       'extend_rejected',
+                    unitId,
+                    unitType:   unitData.type || '-',
+                    staffNama:  sessionStorage.getItem('staff_nama_display') || 'Staff',
+                    createdAt:  now,
+                    read:       false
+                });
+            }
+
+            Swal.fire({ toast:true, position:'top', icon:'info', title:'Permintaan Tambahan Ditolak', showConfirmButton:false, timer:2000, ...swalTheme() });
             tambahNotif('❌ Tambahan Ditolak: ' + unitId);
         } catch(e) {
             Swal.fire({ icon:'error', title:'Gagal', text:e.message, ...swalTheme() });
