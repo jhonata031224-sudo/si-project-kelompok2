@@ -555,62 +555,55 @@
             return;
         }
 
-        // List bernomor HTML — jika 1 item: tanpa nomor, jika >1: pakai angka
-        function buatListHTML(arr, color) {
-            if (!arr.length) return '<span class="text-gray-600">-</span>';
-            if (arr.length === 1) return '<span style="color:' + color + '">' + arr[0] + '</span>';
-            return arr.map((x, i) =>
-                '<span style="color:' + color + '">' + (i+1) + '. ' + x + '</span>'
-            ).join('<br>');
-        }
-
-        let rows = filteredSesi.slice(0, 50).map(d => {
+        const data50 = filteredSesi.slice(0, 50);
+        let rows = data50.map((d, i) => {
             const tanggal  = d.tanggal || (d.createdAt||'').slice(0,10) || '-';
             const unitId   = d.unitId || '-';
             const durasi   = hitungDurasi(d.startTime, d.stopTime);
             const exts     = getExtendSesi(unitId, tanggal);
             const extTotal = exts.reduce((s,e) => s + (e.biaya||0), 0);
             const fnbs     = getFnbSesi(unitId, tanggal);
+            const fnbLines = fnbs.flatMap(f => (f.items||[]).map(x => x.name + ' x' + x.qty));
             const fnbTotal = fnbs.reduce((s,f) => s + (f.total||0), 0);
 
-            // Extend: 1 baris per extend entry
-            const extLines = exts.map(e => '+1 jam — ' + fmt(e.biaya||0) + (e.payMethod ? ' (' + e.payMethod + ')' : ''));
-            const extHTML  = exts.length > 0
-                ? buatListHTML(extLines, '#f97316') + '<br><span class="text-gray-500 text-[9px]">Total: ' + fmt(extTotal) + '</span>'
-                : '<span class="text-gray-600">-</span>';
+            // Badge Extend ringkas
+            const extBadge = exts.length > 0
+                ? '<span style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.3);color:#f97316;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;white-space:nowrap">+' + exts.length + 'x &nbsp;' + fmt(extTotal) + '</span>'
+                : '<span style="color:#374151">—</span>';
 
-            // F&B: 1 baris per item menu
-            const fnbLines = fnbs.flatMap(f => (f.items||[]).map(i => i.name + ' x' + i.qty));
-            const fnbHTML  = fnbLines.length > 0
-                ? buatListHTML(fnbLines, '#facc15') + '<br><span class="text-gray-500 text-[9px]">Total: ' + fmt(fnbTotal) + '</span>'
-                : '<span class="text-gray-600">-</span>';
+            // Badge F&B ringkas
+            const fnbBadge = fnbLines.length > 0
+                ? '<span style="background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.25);color:#facc15;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;white-space:nowrap">' + fnbLines.length + ' item &nbsp;' + fmt(fnbTotal) + '</span>'
+                : '<span style="color:#374151">—</span>';
 
-            return '<tr class="hover:bg-white/[0.02]">' +
-                '<td class="table-cell text-gray-400 text-[10px] text-center">' + tanggal + '</td>' +
-                '<td class="table-cell text-center"><span class="font-bold text-cyan-400">' + unitId + '</span><br><span class="text-gray-600 text-[9px]">' + (d.unitType||'') + '</span></td>' +
+            return '<tr class="hover:bg-white/[0.02]" style="border-bottom:1px solid rgba(255,255,255,0.04)">' +
+                '<td class="table-cell text-gray-500 text-[10px] text-center" style="white-space:nowrap">' + (i+1) + '</td>' +
+                '<td class="table-cell text-gray-400 text-[10px] text-center" style="white-space:nowrap">' + tanggal + '</td>' +
+                '<td class="table-cell text-center" style="white-space:nowrap"><span class="font-bold text-cyan-400" style="font-size:11px">' + unitId + '</span> <span class="text-gray-600" style="font-size:9px">' + (d.unitType||'') + '</span></td>' +
                 '<td class="table-cell text-[11px] text-center">' + (d.customerName||d.namaCustomer||'-') + '</td>' +
-                '<td class="table-cell text-gray-400 text-[10px] text-center">' + (d.startTime||'-') + '</td>' +
-                '<td class="table-cell text-gray-400 text-[10px] text-center">' + (d.stopTime||'-') + '</td>' +
-                '<td class="table-cell text-center text-[10px]" style="color:#a3e635">' + durasi + '</td>' +
-                '<td class="table-cell text-[10px]">' + extHTML + '</td>' +
-                '<td class="table-cell text-[10px]">' + fnbHTML + '</td>' +
-                '<td class="table-cell font-medium text-green-400 text-center">' + fmt(d.price) + '</td>' +
+                '<td class="table-cell text-gray-400 text-[10px] text-center" style="white-space:nowrap">' + (d.startTime||'-') + ' — ' + (d.stopTime||'-') + '</td>' +
+                '<td class="table-cell text-center" style="color:#a3e635;font-size:10px;white-space:nowrap">' + durasi + '</td>' +
+                '<td class="table-cell text-center">' + extBadge + '</td>' +
+                '<td class="table-cell text-center">' + fnbBadge + '</td>' +
+                '<td class="table-cell font-bold text-green-400 text-center" style="white-space:nowrap">' + fmt(d.price) + '</td>' +
             '</tr>';
         }).join('');
-        wrap.innerHTML = '<div style="overflow-x:auto"><table class="w-full text-left" style="min-width:700px">' +
-            '<thead><tr>' +
+
+        wrap.innerHTML = '<table class="w-full text-left" style="border-collapse:collapse">' +
+            '<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.07)">' +
+            '<th class="table-header text-center">#</th>' +
             '<th class="table-header text-center">Tanggal</th>' +
             '<th class="table-header text-center">Unit</th>' +
             '<th class="table-header text-center">Customer</th>' +
-            '<th class="table-header text-center">Mulai</th>' +
-            '<th class="table-header text-center">Selesai</th>' +
+            '<th class="table-header text-center">Jam</th>' +
             '<th class="table-header text-center">Durasi</th>' +
             '<th class="table-header text-center">Extend</th>' +
             '<th class="table-header text-center">F&B</th>' +
             '<th class="table-header text-center">Total Bayar</th>' +
-            '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+            '</tr></thead><tbody>' + rows + '</tbody></table>' +
             (filteredSesi.length > 50 ? '<p class="text-center text-[10px] text-gray-600 py-3">+' + (filteredSesi.length-50) + ' baris lainnya di ekspor</p>' : '');
     }
+
 
     function renderTabelFnb() {
         const wrap = document.getElementById('tab-fnb');
@@ -1007,16 +1000,21 @@
                 c('No',             { header:true, bold:true, center:true, sz:9 }),
                 c('Tanggal',        { header:true, bold:true, center:true, sz:9 }),
                 c('Unit',           { header:true, bold:true, center:true, sz:9 }),
-                c('Nama Pelanggan', { header:true, bold:true, sz:9 }),
+                c('Nama Pelanggan', { header:true, bold:true, center:true, sz:9 }),
                 c('Jam Mulai',      { header:true, bold:true, center:true, sz:9 }),
                 c('Jam Selesai',    { header:true, bold:true, center:true, sz:9 }),
                 c('Durasi',         { header:true, bold:true, center:true, sz:9 }),
-                c('Extend (x)',     { header:true, bold:true, center:true, sz:9 }),
-                c('Biaya Extend',   { header:true, bold:true, right:true, sz:9 }),
-                c('Menu F&B',       { header:true, bold:true, sz:9 }),
-                c('Biaya F&B',      { header:true, bold:true, right:true, sz:9 }),
-                c('Total Bayar',    { header:true, bold:true, right:true, sz:9 }),
+                c('Detail Extend',  { header:true, bold:true, center:true, sz:9 }),
+                c('Detail F&B',     { header:true, bold:true, center:true, sz:9 }),
+                c('Total Bayar',    { header:true, bold:true, center:true, sz:9 }),
             ]);
+
+            // Helper list bernomor untuk Excel (pakai \n)
+            function xlsList(arr) {
+                if (!arr.length) return '-';
+                if (arr.length === 1) return arr[0];
+                return arr.map((x, i) => (i+1) + '. ' + x).join('\n');
+            }
 
             // Data rows
             filteredSesi.forEach((d, i) => {
@@ -1028,24 +1026,40 @@
                 const extCount = exts.length;
                 const extTotal = exts.reduce((s,e) => s+(e.biaya||0), 0);
                 const fnbs     = getFnbSesi(unitId, tanggal);
-                const fnbLabel = fnbs.length
-                    ? fnbs.flatMap(f => (f.items||[]).map(ii => ii.name + ' x' + ii.qty)).join(', ') || (fnbs.length + ' pesanan')
-                    : '-';
+                const fnbLines = fnbs.flatMap(f => (f.items||[]).map(ii => ii.name + ' x' + ii.qty));
                 const fnbTotal = fnbs.reduce((s,f) => s+(f.total||0), 0);
+
+                // Extend: list bernomor + total di baris terakhir
+                const extLines = exts.map(e => '+1 jam — Rp ' + (e.biaya||0).toLocaleString('id-ID') + (e.payMethod ? ' (' + e.payMethod + ')' : ''));
+                const extXls   = extCount > 0
+                    ? xlsList(extLines) + '\nTotal: Rp ' + extTotal.toLocaleString('id-ID')
+                    : '-';
+
+                // F&B: list bernomor + total
+                const fnbXls   = fnbLines.length > 0
+                    ? xlsList(fnbLines) + '\nTotal: Rp ' + fnbTotal.toLocaleString('id-ID')
+                    : '-';
+
                 const opt = isAlt ? { alt:true } : {};
+                const wrap = { wrapText: true, vertical: 'top' };
+
+                function cw(v, extra = {}) {
+                    const cell = c(v, { sz:9, ...opt, ...extra });
+                    cell.s.alignment = { ...(cell.s.alignment||{}), wrapText: true, vertical: 'top' };
+                    return cell;
+                }
+
                 rows.push([
-                    c(i+1,                                 { center:true, sz:9, ...opt }),
-                    c(tanggal,                             { center:true, sz:9, ...opt }),
-                    c((d.unitId||'-') + ' (' + (d.unitType||'-') + ')', { center:true, sz:9, ...opt }),
-                    c(d.customerName || d.namaCustomer || '-', { sz:9, ...opt }),
-                    c(d.startTime || '-',                  { center:true, sz:9, ...opt }),
-                    c(d.stopTime  || '-',                  { center:true, sz:9, ...opt }),
-                    c(durasi,                              { center:true, sz:9, ...opt }),
-                    c(extCount > 0 ? extCount : '-',       { center:true, sz:9, ...opt }),
-                    c(extCount > 0 ? extTotal : '-',       { right:true, sz:9, ...(extCount>0?{numFmt:'"Rp "#,##0'}:{}), ...opt }),
-                    c(fnbLabel,                            { sz:9, ...opt }),
-                    c(fnbs.length > 0 ? fnbTotal : '-',   { right:true, sz:9, ...(fnbs.length>0?{numFmt:'"Rp "#,##0'}:{}), ...opt }),
-                    c(d.price || 0,                        { right:true, bold:true, sz:9, numFmt:'"Rp "#,##0', ...opt }),
+                    cw(i+1,                                              { center:true }),
+                    cw(tanggal,                                          { center:true }),
+                    cw((d.unitId||'-') + ' (' + (d.unitType||'-') + ')',{ center:true }),
+                    cw(d.customerName || d.namaCustomer || '-'),
+                    cw(d.startTime || '-',                               { center:true }),
+                    cw(d.stopTime  || '-',                               { center:true }),
+                    cw(durasi,                                           { center:true }),
+                    cw(extXls),
+                    cw(fnbXls),
+                    cw(fmt(d.price || 0),                               { center:true, bold:true }),
                 ]);
             });
 
@@ -1053,19 +1067,18 @@
             rows.push([
                 c('', { total:true }), c('', { total:true }), c('', { total:true }),
                 c('', { total:true }), c('', { total:true }), c('', { total:true }),
-                c('', { total:true }), c('', { total:true }), c('', { total:true }),
-                c('', { total:true }),
+                c('', { total:true }), c('', { total:true }),
                 c('SUBTOTAL', { total:true, bold:true, right:true, sz:9 }),
-                c(totalSesi,  { total:true, bold:true, right:true, sz:10, numFmt:'"Rp "#,##0' }),
+                c(totalSesi,  { total:true, bold:true, center:true, sz:10, numFmt:'"Rp "#,##0' }),
             ]);
 
             const ws = XLSX.utils.aoa_to_sheet(rows);
-            ws['!cols'] = [{ wch:5 },{ wch:14 },{ wch:14 },{ wch:26 },{ wch:12 },{ wch:12 },{ wch:12 },{ wch:10 },{ wch:16 },{ wch:32 },{ wch:16 },{ wch:18 }];
+            ws['!cols'] = [{ wch:5 },{ wch:14 },{ wch:18 },{ wch:22 },{ wch:10 },{ wch:10 },{ wch:12 },{ wch:36 },{ wch:36 },{ wch:18 }];
             ws['!merges'] = [
-                { s:{r:0,c:0}, e:{r:0,c:11} },
-                { s:{r:1,c:0}, e:{r:1,c:11} },
-                { s:{r:2,c:0}, e:{r:2,c:11} },
-                { s:{r:3,c:0}, e:{r:3,c:11} },
+                { s:{r:0,c:0}, e:{r:0,c:9} },
+                { s:{r:1,c:0}, e:{r:1,c:9} },
+                { s:{r:2,c:0}, e:{r:2,c:9} },
+                { s:{r:3,c:0}, e:{r:3,c:9} },
             ];
             XLSX.utils.book_append_sheet(wb, ws, 'Sesi Gaming');
         }
