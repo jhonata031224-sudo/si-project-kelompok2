@@ -155,16 +155,54 @@
         .btn-activate:hover { filter: brightness(1.1); }
         .income-toast {
             position:fixed; top:20px; left:50%; transform:translateX(-50%);
-            background:linear-gradient(135deg,#065f46,#047857);
-            border:1px solid #10b981; border-radius:12px;
+            background:#0d1520;
+            border:1px solid rgba(0,217,255,0.25); border-radius:12px;
             padding:10px 20px; font-size:12px; font-weight:700;
-            color:#6ee7b7; z-index:9999; animation:slideDown 0.4s ease; white-space:nowrap;
+            color:#00d9ff; z-index:9999; animation:slideDown 0.4s ease; white-space:nowrap;
+            box-shadow: 0 4px 20px rgba(0,217,255,0.12);
+        }
+        body.light-mode .income-toast {
+            background:#f0f9ff;
+            border-color:rgba(14,165,233,0.35);
+            color:#0284c7;
+            box-shadow: 0 4px 20px rgba(2,132,199,0.12);
         }
         @keyframes slideDown { from{opacity:0;top:-20px} to{opacity:1;top:20px} }
         .btn-keluar-staff { display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px; background:rgba(247,129,102,0.08); border:1px solid rgba(247,129,102,0.2); color:#f78166; font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .2s; }
         .btn-keluar-staff:hover { background:rgba(247,129,102,0.18); }
         .btn-owner-back { display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,0.08); color:#9ca3af; font-size:10px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .2s; }
         .btn-owner-back:hover { background:rgba(255,255,255,0.04); color:#e6edf3; border-color:rgba(255,255,255,0.15); }
+        /* SweetAlert2 custom button styles */
+        .swal2-container .swal-cancel-outline {
+            background: transparent !important;
+            border: 1.5px solid rgba(255,255,255,0.15) !important;
+            color: #9ca3af !important;
+            transition: all .2s !important;
+        }
+        .swal2-container .swal-cancel-outline:hover {
+            border-color: rgba(255,255,255,0.35) !important;
+            color: #e6edf3 !important;
+            background: rgba(255,255,255,0.04) !important;
+        }
+        body.light-mode .swal2-container .swal-cancel-outline {
+            border: 1.5px solid rgba(0,0,0,0.15) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .swal2-container .swal-cancel-outline:hover {
+            border-color: rgba(0,0,0,0.3) !important;
+            color: #334155 !important;
+            background: rgba(0,0,0,0.04) !important;
+        }
+        .swal2-container .swal-confirm-red {
+            background: #ef4444 !important;
+            border: none !important;
+            box-shadow: 0 4px 14px rgba(239,68,68,0.35) !important;
+            transition: all .2s !important;
+        }
+        .swal2-container .swal-confirm-red:hover {
+            background: #dc2626 !important;
+            box-shadow: 0 6px 20px rgba(239,68,68,0.45) !important;
+        }
 
         /* ── Staff KPI Dashboard ── */
         :root {
@@ -2203,13 +2241,41 @@
         });
     }
 
-    // ── Toast ─────────────────────────────────────────────────────────
+    // ── Toast (queue – tidak saling tumpuk) ───────────────────────────
+    const _incomeToastQueue = [];
+    let   _incomeToastActive = false;
+
     function showIncomeToast(unitId, amount) {
+        _incomeToastQueue.push({ unitId, amount });
+        if (!_incomeToastActive) _nextIncomeToast();
+    }
+
+    function _nextIncomeToast() {
+        if (!_incomeToastQueue.length) { _incomeToastActive = false; return; }
+        _incomeToastActive = true;
+        const { unitId, amount } = _incomeToastQueue.shift();
+
         const el = document.createElement('div');
         el.className = 'income-toast';
-        el.innerHTML = `<i class="fas fa-circle-check mr-2"></i>Pendapatan Masuk \u00B7 ${unitId} \u00B7 Rp ${amount.toLocaleString('id-ID')}`;
+        el.style.cursor = 'pointer';
+        el.innerHTML = `<i class="fas fa-arrow-trend-up" style="margin-right:8px;font-size:11px"></i>Pendapatan Masuk &nbsp;&middot;&nbsp; <b>${unitId}</b> &nbsp;&middot;&nbsp; Rp ${amount.toLocaleString('id-ID')}`;
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), 3500);
+
+        // Klik → tutup & lanjut ke antrian berikutnya segera
+        el.addEventListener('click', () => dismiss(true));
+
+        let dismissed = false;
+        function dismiss(fast) {
+            if (dismissed) return;
+            dismissed = true;
+            el.style.transition = 'opacity .25s';
+            el.style.opacity = '0';
+            setTimeout(() => { el.remove(); _nextIncomeToast(); }, fast ? 260 : 420);
+        }
+
+        // Auto-dismiss setelah 3 detik
+        const autoTimer = setTimeout(() => dismiss(false), 3000);
+        el.addEventListener('click', () => clearTimeout(autoTimer), { once: true });
     }
 
     // ── Format timer ──────────────────────────────────────────────────
@@ -2334,7 +2400,7 @@
                        </button>`
                 }
                 <button onclick="selesaiSesi('${unit.id}')" style="flex:1;padding:12px;border-radius:12px;font-size:10px;font-weight:900;background:#ef4444;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
-                    <i class="fas fa-pause" style="font-size:11px"></i> Stop
+                    <i class="fas fa-pause" style="font-size:11px"></i> Hentikan
                 </button>`;
         }
 
@@ -2464,10 +2530,21 @@
                     if (suaraAktif) bunyiWarningWaktu();
                     tambahNotif(`⚠️ Waktu hampir habis: ${uid} — sisa ±${menit} menit!`);
                     if (popupAktif) Swal.fire({
-                        toast: true, position: 'top', icon: 'warning',
-                        title: `⚠️ ${uid} — Sisa ±${menit} menit!`,
+                        toast: true, position: 'top',
+                        html: `<div style="display:flex;align-items:center;gap:10px">
+                                 <div style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">⚠️</div>
+                                 <div>
+                                   <div style="font-size:12px;font-weight:800;color:#f59e0b">Waktu Hampir Habis</div>
+                                   <div style="font-size:11px;opacity:.85;color:#fcd34d">${uid} — sisa ±${menit} menit</div>
+                                 </div>
+                               </div>`,
                         showConfirmButton: false, timer: 6000, timerProgressBar: true,
-                        background: document.body.classList.contains('light-mode') ? '#fffbeb' : '#1a1000', color: '#d97706'
+                        background: document.body.classList.contains('light-mode') ? '#fffbeb' : '#150f00',
+                        color: '#f59e0b',
+                        didOpen: (toast) => {
+                            toast.style.border = '1px solid rgba(245,158,11,0.3)';
+                            toast.style.borderRadius = '12px';
+                        }
                     });
                 }
                 if (text === 'SELESAI' && !autoStopped.has(uid)) {
@@ -2737,14 +2814,24 @@
         if (!unit) return;
         const nama = unit.customerName && unit.customerName !== '-' ? unit.customerName : 'Walk-in';
         const { isConfirmed } = await Swal.fire({
-            title: 'Stop Sesi?',
+            title: '<span style="color:#ef4444">⏹ Hentikan Sesi?</span>',
             html: `<div style="text-align:center">
-                     <p style="font-size:15px;font-weight:800;color:#fff;margin-bottom:6px">${id} — ${nama}</p>
-                     <p style="color:#9ca3af;font-size:12px">Rp ${(unit.price||0).toLocaleString('id-ID')} akan dicatat ke pendapatan.</p>
+                     <p style="font-size:15px;font-weight:800;margin-bottom:6px">${id} — ${nama}</p>
+                     <p style="font-size:12px;margin-bottom:10px;opacity:.7">Rp ${(unit.price||0).toLocaleString('id-ID')} akan dicatat ke pendapatan.</p>
+                     <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:8px 12px;font-size:11px;color:#f87171">
+                       ⚠️ Sesi akan dihentikan dan tidak bisa diurungkan.
+                     </div>
                    </div>`,
-            icon: 'warning', showCancelButton: true,
-            confirmButtonColor: '#ef4444', cancelButtonColor: '#374151',
-            confirmButtonText: '⏹ Ya, STOP', cancelButtonText: 'Batal',
+            icon: null,
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: 'transparent',
+            customClass: {
+                cancelButton: 'swal-cancel-outline',
+                confirmButton: 'swal-confirm-red',
+            },
+            confirmButtonText: '⏹ Ya, Hentikan',
+            cancelButtonText: 'Batal',
             ...swalTheme()
         });
         if (isConfirmed) {
@@ -2753,6 +2840,23 @@
             await resetUnit(id);
             tambahNotif(`⏹ Sesi Dihentikan: ${id} · ${nama}`);
             setTimeout(() => autoStopped.delete(id), 8000);
+            Swal.fire({
+                toast: true, position: 'top',
+                html: `<div style="display:flex;align-items:center;gap:10px">
+                         <div style="width:32px;height:32px;border-radius:8px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">⏹</div>
+                         <div>
+                           <div style="font-size:12px;font-weight:800">Sesi Dihentikan</div>
+                           <div style="font-size:11px;opacity:.7">${id} · ${nama} · Rp ${(unit.price||0).toLocaleString('id-ID')}</div>
+                         </div>
+                       </div>`,
+                showConfirmButton: false, timer: 3000, timerProgressBar: true,
+                background: document.body.classList.contains('light-mode') ? '#fff5f5' : '#1a0a0a',
+                color: document.body.classList.contains('light-mode') ? '#7f1d1d' : '#fca5a5',
+                didOpen: (toast) => {
+                    toast.style.border = '1px solid rgba(239,68,68,0.3)';
+                    toast.style.borderRadius = '12px';
+                }
+            });
         }
     };
 
