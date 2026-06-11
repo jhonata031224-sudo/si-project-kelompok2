@@ -502,6 +502,40 @@
     }
 
     const fmt = n => 'Rp ' + (n || 0).toLocaleString('id-ID');
+    // Helper total F&B: cek semua kemungkinan field
+    function getFnbTotal(d) {
+        return d.total || d.totalHarga || d.grandTotal || 
+               ((d.items||[]).reduce((s,x) => s + ((x.harga||x.price||0)*(x.qty||x.jumlah||1)), 0)) || 0;
+    }
+    // Helper flatten: 1 order -> banyak baris per item
+    function flattenFnbRows(list) {
+        const result = [];
+        list.forEach(d => {
+            const tgl = (d.createdAt||d.tanggal||'').slice(0,10)||'-';
+            const items = d.items || [];
+            if (items.length > 0) {
+                items.forEach(x => {
+                    result.push({
+                        tanggal: tgl,
+                        nama: x.name || x.nama || x.itemName || '-',
+                        qty: x.qty || x.jumlah || 1,
+                        harga: (x.harga||x.price||0) * (x.qty||x.jumlah||1),
+                        _order: d
+                    });
+                });
+            } else {
+                // fallback flat
+                result.push({
+                    tanggal: tgl,
+                    nama: d.namaItem||d.itemName||d.nama||'-',
+                    qty: d.qty||d.jumlah||'-',
+                    harga: getFnbTotal(d),
+                    _order: d
+                });
+            }
+        });
+        return result;
+    }
 
     // Default: 30 hari terakhir
     const today = new Date();
@@ -520,7 +554,11 @@
             return unitOk && dateOk;
         });
 
-        filteredFnb = allFnb.filter(d => {
+        // Gabungkan orders + fnb_orders, deduplicate by id
+        const allFnbCombined = [...allFnb, ...allFnbOrders].filter((d, idx, arr) =>
+            arr.findIndex(x => x.id === d.id) === idx
+        );
+        filteredFnb = allFnbCombined.filter(d => {
             const tgl    = (d.createdAt || d.tanggal || '').slice(0, 10);
             const dateOk = (!from || tgl >= from) && (!to || tgl <= to);
             return dateOk;
@@ -533,7 +571,7 @@
 
     function updateKPI() {
         const totalSesi  = filteredSesi.reduce((s, d) => s + (d.price || 0), 0);
-        const totalFnb   = filteredFnb.reduce((s, d) => s + (d.totalHarga || d.total || d.grandTotal || 0), 0);
+        const totalFnb   = filteredFnb.reduce((s, d) => s + getFnbTotal(d), 0);
         const grandTotal = totalSesi + totalFnb;
 
         document.getElementById('kpi-sesi').textContent      = fmt(totalSesi);
@@ -566,9 +604,14 @@
             const fnbLines = fnbs.flatMap(f => (f.items||[]).map(x => x.name + ' x' + x.qty));
             const fnbTotal = fnbs.reduce((s,f) => s + (f.total||0), 0);
 
-            // Badge Extend ringkas
+            // Badge Tambahan ringkas
+            const extPayMethods = [...new Set(exts.map(e => {
+                const pm = e.payMethod;
+                if (!pm || pm === true) return 'Cash';
+                return String(pm);
+            }))].join('/');
             const extBadge = exts.length > 0
-                ? '<span style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.3);color:#f97316;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;white-space:nowrap">+' + exts.length + 'x &nbsp;' + fmt(extTotal) + '</span>'
+                ? '<span style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.3);color:#f97316;border-radius:5px;padding:2px 8px;font-size:10px;font-weight:700;white-space:nowrap">+' + exts.length + 'x · ' + fmt(extTotal) + ' · ' + extPayMethods + '</span>'
                 : '<span style="color:#374151">—</span>';
 
             // Badge F&B ringkas
@@ -597,7 +640,7 @@
             '<th class="table-header text-center">Customer</th>' +
             '<th class="table-header text-center">Jam</th>' +
             '<th class="table-header text-center">Durasi</th>' +
-            '<th class="table-header text-center">Extend</th>' +
+            '<th class="table-header text-center">Tambahan</th>' +
             '<th class="table-header text-center">F&B</th>' +
             '<th class="table-header text-center">Total Bayar</th>' +
             '</tr></thead><tbody>' + rows + '</tbody></table>' +
@@ -611,19 +654,21 @@
             wrap.innerHTML = '<div class="empty-box"><i class="fas fa-utensils"></i><p>Tidak ada data F&B<br>untuk filter ini.</p></div>';
             return;
         }
-        let rows = filteredFnb.slice(0, 50).map(d =>
+        const flat = flattenFnbRows(filteredFnb);
+        const show = flat.slice(0, 50);
+        let rows = show.map((r, i) =>
             '<tr class="hover:bg-white/[0.02]">' +
-            '<td class="table-cell text-gray-400 text-[10px]">' + ((d.createdAt||d.tanggal||'').slice(0,10)||'-') + '</td>' +
-            '<td class="table-cell text-[11px]">' + (d.namaItem||d.itemName||d.nama||'-') + '</td>' +
-            '<td class="table-cell text-gray-400">' + (d.qty||d.jumlah||'-') + '</td>' +
-            '<td class="table-cell font-medium text-yellow-400">' + fmt(d.totalHarga||d.total||d.grandTotal||0) + '</td>' +
+            '<td class="table-cell text-gray-400 text-[10px]">' + r.tanggal + '</td>' +
+            '<td class="table-cell text-[11px]">' + r.nama + '</td>' +
+            '<td class="table-cell text-gray-400 text-center">' + r.qty + '</td>' +
+            '<td class="table-cell font-medium text-yellow-400">' + fmt(r.harga) + '</td>' +
             '</tr>'
         ).join('');
         wrap.innerHTML = '<table class="w-full text-left">' +
             '<thead><tr>' +
             '<th class="table-header">Tanggal</th><th class="table-header">Item</th><th class="table-header">Qty</th><th class="table-header">Total</th>' +
             '</tr></thead><tbody>' + rows + '</tbody></table>' +
-            (filteredFnb.length > 50 ? '<p class="text-center text-[10px] text-gray-600 py-3">+' + (filteredFnb.length-50) + ' baris lainnya di ekspor</p>' : '');
+            (flat.length > 50 ? '<p class="text-center text-[10px] text-gray-600 py-3">+' + (flat.length-50) + ' baris lainnya di ekspor</p>' : '');
     }
 
     window.switchTab = (tab) => {
@@ -676,7 +721,7 @@
         const doc = new jsPDF({ unit: 'mm', format: 'a4' });
         const W = 210;
         const totalSesi  = filteredSesi.reduce((s,d) => s+(d.price||0), 0);
-        const totalFnb   = filteredFnb.reduce((s,d) => s+(d.totalHarga||d.total||d.grandTotal||0), 0);
+        const totalFnb   = filteredFnb.reduce((s,d) => s+getFnbTotal(d), 0);
         const grandTotal = totalSesi + totalFnb;
         const tglCetak   = new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' });
         const noLaporan  = 'PG-' + new Date().getFullYear() + '-' + String(new Date().getMonth()+1).padStart(2,'0') + '-' + String(new Date().getDate()).padStart(2,'0');
@@ -774,7 +819,7 @@
             curY += 5;
             doc.autoTable({
                 startY: curY,
-                head: [['No', 'Tanggal', 'Unit', 'Customer', 'Mulai', 'Selesai', 'Durasi', 'Extend', 'F&B', 'Total Bayar']],
+                head: [['No', 'Tanggal', 'Unit', 'Customer', 'Mulai', 'Selesai', 'Durasi', 'Tambahan', 'F&B', 'Total Bayar']],
                 body: filteredSesi.map((d, i) => {
                     const tanggal  = d.tanggal || (d.createdAt||'').slice(0,10) || '-';
                     const unitId   = d.unitId || '-';
@@ -785,8 +830,12 @@
                     const fnbs     = getFnbSesi(unitId, tanggal);
                     const fnbTotal = fnbs.reduce((s,f) => s+(f.total||0), 0);
 
-                    // Extend: list bernomor untuk PDF
-                    const extLines = exts.map(e => '+1 jam — ' + fmt(e.biaya||0) + (e.payMethod ? ' (' + e.payMethod + ')' : ''));
+                    // Tambahan: ringkas untuk PDF
+                    const extLines = exts.map(e => {
+                        const pm = e.payMethod;
+                        const pmStr = (!pm || pm === true) ? 'Cash' : String(pm);
+                        return '+1 jam  ' + fmt(e.biaya||0) + '  ' + pmStr;
+                    });
                     const extPDF   = extCount > 0
                         ? (extCount === 1
                             ? extLines[0] + '\nTotal: ' + fmt(extTotal)
@@ -863,20 +912,22 @@
         /* ── TABEL F&B ───────────────────────────── */
         if (filteredFnb.length) {
             if (curY > 235) { doc.addPage(); curY = 20; }
+            const flatFnb = flattenFnbRows(filteredFnb);
+            const totalFnbFlat = flatFnb.reduce((s,r) => s+r.harga, 0);
             doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(0,0,0);
-            doc.text('DETAIL PESANAN F&B  (' + filteredFnb.length + ' data)', 14, curY);
+            doc.text('DETAIL PESANAN F&B  (' + flatFnb.length + ' item dari ' + filteredFnb.length + ' order)', 14, curY);
             curY += 5;
             doc.autoTable({
                 startY: curY,
-                head: [['No', 'Tanggal', 'Nama Item', 'Qty', 'Total Bayar']],
-                body: filteredFnb.map((d, i) => [
+                head: [['No', 'Tanggal', 'Nama Item', 'Qty', 'Total']],
+                body: flatFnb.map((r, i) => [
                     i+1,
-                    (d.createdAt||d.tanggal||'').slice(0,10)||'-',
-                    d.namaItem||d.itemName||d.nama||'-',
-                    d.qty||d.jumlah||'-',
-                    fmt(d.totalHarga||d.total||d.grandTotal||0)
+                    r.tanggal,
+                    r.nama,
+                    r.qty,
+                    fmt(r.harga)
                 ]),
-                foot: [['', '', '', 'SUBTOTAL', fmt(totalFnb)]],
+                foot: [['', '', '', 'SUBTOTAL', fmt(totalFnbFlat)]],
                 styles: {
                     fontSize: 7.5,
                     textColor: [0,0,0],
@@ -946,7 +997,7 @@
     window.unduhExcel = () => {
         if (!filteredSesi.length && !filteredFnb.length) return warn('Data Kosong', 'Tidak ada data untuk diunduh.');
         const totalSesi  = filteredSesi.reduce((s,d) => s+(d.price||0), 0);
-        const totalFnb   = filteredFnb.reduce((s,d) => s+(d.totalHarga||d.total||d.grandTotal||0), 0);
+        const totalFnb   = filteredFnb.reduce((s,d) => s+getFnbTotal(d), 0);
         const grandTotal = totalSesi + totalFnb;
         const wb = XLSX.utils.book_new();
         const tglCetak  = new Date().toLocaleString('id-ID');
@@ -1004,7 +1055,7 @@
                 c('Jam Mulai',      { header:true, bold:true, center:true, sz:9 }),
                 c('Jam Selesai',    { header:true, bold:true, center:true, sz:9 }),
                 c('Durasi',         { header:true, bold:true, center:true, sz:9 }),
-                c('Detail Extend',  { header:true, bold:true, center:true, sz:9 }),
+                c('Tambahan',       { header:true, bold:true, center:true, sz:9 }),
                 c('Detail F&B',     { header:true, bold:true, center:true, sz:9 }),
                 c('Total Bayar',    { header:true, bold:true, center:true, sz:9 }),
             ]);
@@ -1029,8 +1080,12 @@
                 const fnbLines = fnbs.flatMap(f => (f.items||[]).map(ii => ii.name + ' x' + ii.qty));
                 const fnbTotal = fnbs.reduce((s,f) => s+(f.total||0), 0);
 
-                // Extend: list bernomor + total di baris terakhir
-                const extLines = exts.map(e => '+1 jam — Rp ' + (e.biaya||0).toLocaleString('id-ID') + (e.payMethod ? ' (' + e.payMethod + ')' : ''));
+                // Tambahan: ringkas satu baris per extend + total
+                const extLines = exts.map(e => {
+                    const pm = e.payMethod;
+                    const pmStr = (!pm || pm === true) ? 'Cash' : String(pm);
+                    return '+1 jam  Rp ' + (e.biaya||0).toLocaleString('id-ID') + '  ' + pmStr;
+                });
                 const extXls   = extCount > 0
                     ? xlsList(extLines) + '\nTotal: Rp ' + extTotal.toLocaleString('id-ID')
                     : '-';
@@ -1085,6 +1140,8 @@
 
         // ── SHEET F&B ─────────────────────────────────────────────────────────
         if (filteredFnb.length) {
+            const flatFnbXl = flattenFnbRows(filteredFnb);
+            const totalFnbXl = flatFnbXl.reduce((s,r) => s+r.harga, 0);
             const rows = [];
             rows.push([noBorderCell('PRINCE GAMES', { bold: true, sz: 14 })]);
             rows.push([noBorderCell('Laporan Pesanan F&B', { sz: 11 })]);
@@ -1097,26 +1154,26 @@
                 c('Tanggal',     { header:true, bold:true, center:true, sz:9 }),
                 c('Nama Item',   { header:true, bold:true, sz:9 }),
                 c('Qty',         { header:true, bold:true, center:true, sz:9 }),
-                c('Total Bayar', { header:true, bold:true, right:true, sz:9 }),
+                c('Total',       { header:true, bold:true, right:true, sz:9 }),
             ]);
 
-            filteredFnb.forEach((d, i) => {
+            flatFnbXl.forEach((r, i) => {
                 const isAlt = i % 2 === 1;
                 rows.push([
-                    c(i+1,                                                          { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
-                    c((d.createdAt||d.tanggal||'').slice(0,10)||'-',                { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
-                    c(d.namaItem||d.itemName||d.nama||'-',                          { sz:9, ...(isAlt?{alt:true}:{}) }),
-                    c(d.qty||d.jumlah||'-',                                         { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
-                    c(d.totalHarga||d.total||d.grandTotal||0,                       { right:true, bold:true, sz:9, numFmt:'"Rp "#,##0', ...(isAlt?{alt:true}:{}) }),
+                    c(i+1,      { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
+                    c(r.tanggal,{ center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
+                    c(r.nama,   { sz:9, ...(isAlt?{alt:true}:{}) }),
+                    c(r.qty,    { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
+                    c(r.harga,  { right:true, bold:true, sz:9, numFmt:'"Rp "#,##0', ...(isAlt?{alt:true}:{}) }),
                 ]);
             });
 
             rows.push([
-                c('',         { total:true }),
-                c('',         { total:true }),
-                c('',         { total:true }),
-                c('SUBTOTAL', { total:true, bold:true, right:true, sz:9 }),
-                c(totalFnb,   { total:true, bold:true, right:true, sz:10, numFmt:'"Rp "#,##0' }),
+                c('',           { total:true }),
+                c('',           { total:true }),
+                c('',           { total:true }),
+                c('SUBTOTAL',   { total:true, bold:true, right:true, sz:9 }),
+                c(totalFnbXl,   { total:true, bold:true, right:true, sz:10, numFmt:'"Rp "#,##0' }),
             ]);
 
             const ws = XLSX.utils.aoa_to_sheet(rows);
@@ -1181,7 +1238,7 @@
     // ── BAGIKAN RINGKASAN ─────────────────────────────────────────────────────
     window.bagikanRingkasan = async () => {
         const totalSesi  = filteredSesi.reduce((s,d) => s+(d.price||0), 0);
-        const totalFnb   = filteredFnb.reduce((s,d) => s+(d.totalHarga||d.total||d.grandTotal||0), 0);
+        const totalFnb   = filteredFnb.reduce((s,d) => s+getFnbTotal(d), 0);
         const grandTotal = totalSesi + totalFnb;
         if (!filteredSesi.length && !filteredFnb.length) return toast('info', 'Tidak ada data untuk dibagikan.');
 
