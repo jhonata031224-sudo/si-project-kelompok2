@@ -456,9 +456,50 @@
 <script type="module">
     import { db, collection, onSnapshot, query, orderBy, handleLogout} from '../../assets/js/auth.js';
 
-    let allSesi = [], allFnb = [];
+    let allSesi = [], allFnb = [], allExtend = [], allFnbOrders = [];
     let unitFilter = 'semua';
     let filteredSesi = [], filteredFnb = [];
+
+    // Helper: hitung durasi booking dari startTime & stopTime string "HH:MM"
+    // Normalise "HH.MM" atau "HH:MM" → [jam, menit]
+    function parseJam(t) {
+        if (!t || t === '-') return null;
+        const str = String(t).replace('.', ':');
+        const parts = str.split(':').map(Number);
+        if (parts.length < 2 || isNaN(parts[0]) || isNaN(parts[1])) return null;
+        return parts;
+    }
+
+    function hitungDurasi(startTime, stopTime) {
+        const s = parseJam(startTime);
+        const e = parseJam(stopTime);
+        if (!s || !e) return '-';
+        try {
+            let menit = (e[0] * 60 + e[1]) - (s[0] * 60 + s[1]);
+            if (menit < 0) menit += 24 * 60;
+            const jam = Math.floor(menit / 60);
+            const sisa = menit % 60;
+            if (menit <= 0) return '-';
+            if (jam === 0) return sisa + ' mnt';
+            return sisa > 0 ? jam + ' jam ' + sisa + ' mnt' : jam + ' jam';
+        } catch(e) { return '-'; }
+    }
+
+    // Helper: cari extend log untuk sesi tertentu (unitId + tanggal)
+    function getExtendSesi(unitId, tanggal) {
+        return allExtend.filter(e =>
+            e.unitId === unitId &&
+            (e.createdAt || '').slice(0, 10) === tanggal
+        );
+    }
+
+    // Helper: cari fnb orders untuk sesi tertentu (unitId + tanggal)
+    function getFnbSesi(unitId, tanggal) {
+        return allFnbOrders.filter(f =>
+            f.unitId === unitId &&
+            (f.createdAt || '').slice(0, 10) === tanggal
+        );
+    }
 
     const fmt = n => 'Rp ' + (n || 0).toLocaleString('id-ID');
 
@@ -513,19 +554,61 @@
             wrap.innerHTML = '<div class="empty-box"><i class="fas fa-inbox"></i><p>Tidak ada data sesi<br>untuk filter ini.</p></div>';
             return;
         }
-        let rows = filteredSesi.slice(0, 50).map(d =>
-            '<tr class="hover:bg-white/[0.02]">' +
-            '<td class="table-cell text-gray-400 text-[10px]">' + (d.tanggal || (d.createdAt||'').slice(0,10) || '-') + '</td>' +
-            '<td class="table-cell"><span class="font-bold text-cyan-400">' + (d.unitId||'-') + '</span> <span class="text-gray-600 text-[10px]">' + (d.unitType||'') + '</span></td>' +
-            '<td class="table-cell text-[11px]">' + (d.customerName || d.namaCustomer || '-') + '</td>' +
-            '<td class="table-cell text-gray-400 text-[10px]">' + (d.stopTime || '-') + '</td>' +
-            '<td class="table-cell font-medium text-green-400">' + fmt(d.price) + '</td>' +
-            '</tr>'
-        ).join('');
-        wrap.innerHTML = '<table class="w-full text-left">' +
+
+        // List bernomor HTML — jika 1 item: tanpa nomor, jika >1: pakai angka
+        function buatListHTML(arr, color) {
+            if (!arr.length) return '<span class="text-gray-600">-</span>';
+            if (arr.length === 1) return '<span style="color:' + color + '">' + arr[0] + '</span>';
+            return arr.map((x, i) =>
+                '<span style="color:' + color + '">' + (i+1) + '. ' + x + '</span>'
+            ).join('<br>');
+        }
+
+        let rows = filteredSesi.slice(0, 50).map(d => {
+            const tanggal  = d.tanggal || (d.createdAt||'').slice(0,10) || '-';
+            const unitId   = d.unitId || '-';
+            const durasi   = hitungDurasi(d.startTime, d.stopTime);
+            const exts     = getExtendSesi(unitId, tanggal);
+            const extTotal = exts.reduce((s,e) => s + (e.biaya||0), 0);
+            const fnbs     = getFnbSesi(unitId, tanggal);
+            const fnbTotal = fnbs.reduce((s,f) => s + (f.total||0), 0);
+
+            // Extend: 1 baris per extend entry
+            const extLines = exts.map(e => '+1 jam — ' + fmt(e.biaya||0) + (e.payMethod ? ' (' + e.payMethod + ')' : ''));
+            const extHTML  = exts.length > 0
+                ? buatListHTML(extLines, '#f97316') + '<br><span class="text-gray-500 text-[9px]">Total: ' + fmt(extTotal) + '</span>'
+                : '<span class="text-gray-600">-</span>';
+
+            // F&B: 1 baris per item menu
+            const fnbLines = fnbs.flatMap(f => (f.items||[]).map(i => i.name + ' x' + i.qty));
+            const fnbHTML  = fnbLines.length > 0
+                ? buatListHTML(fnbLines, '#facc15') + '<br><span class="text-gray-500 text-[9px]">Total: ' + fmt(fnbTotal) + '</span>'
+                : '<span class="text-gray-600">-</span>';
+
+            return '<tr class="hover:bg-white/[0.02]">' +
+                '<td class="table-cell text-gray-400 text-[10px] text-center">' + tanggal + '</td>' +
+                '<td class="table-cell text-center"><span class="font-bold text-cyan-400">' + unitId + '</span><br><span class="text-gray-600 text-[9px]">' + (d.unitType||'') + '</span></td>' +
+                '<td class="table-cell text-[11px] text-center">' + (d.customerName||d.namaCustomer||'-') + '</td>' +
+                '<td class="table-cell text-gray-400 text-[10px] text-center">' + (d.startTime||'-') + '</td>' +
+                '<td class="table-cell text-gray-400 text-[10px] text-center">' + (d.stopTime||'-') + '</td>' +
+                '<td class="table-cell text-center text-[10px]" style="color:#a3e635">' + durasi + '</td>' +
+                '<td class="table-cell text-[10px]">' + extHTML + '</td>' +
+                '<td class="table-cell text-[10px]">' + fnbHTML + '</td>' +
+                '<td class="table-cell font-medium text-green-400 text-center">' + fmt(d.price) + '</td>' +
+            '</tr>';
+        }).join('');
+        wrap.innerHTML = '<div style="overflow-x:auto"><table class="w-full text-left" style="min-width:700px">' +
             '<thead><tr>' +
-            '<th class="table-header">Tanggal</th><th class="table-header">Unit</th><th class="table-header">Customer</th><th class="table-header">Stop</th><th class="table-header">Total</th>' +
-            '</tr></thead><tbody>' + rows + '</tbody></table>' +
+            '<th class="table-header text-center">Tanggal</th>' +
+            '<th class="table-header text-center">Unit</th>' +
+            '<th class="table-header text-center">Customer</th>' +
+            '<th class="table-header text-center">Mulai</th>' +
+            '<th class="table-header text-center">Selesai</th>' +
+            '<th class="table-header text-center">Durasi</th>' +
+            '<th class="table-header text-center">Extend</th>' +
+            '<th class="table-header text-center">F&B</th>' +
+            '<th class="table-header text-center">Total Bayar</th>' +
+            '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
             (filteredSesi.length > 50 ? '<p class="text-center text-[10px] text-gray-600 py-3">+' + (filteredSesi.length-50) + ' baris lainnya di ekspor</p>' : '');
     }
 
@@ -573,6 +656,12 @@
 
     onSnapshot(query(collection(db, 'orders'), orderBy('createdAt', 'desc')),
         snap => { allFnb = snap.docs.map(d => ({ id: d.id, ...d.data() })); applyFilter(); });
+
+    onSnapshot(query(collection(db, 'extendLog'), orderBy('createdAt', 'desc')),
+        snap => { allExtend = snap.docs.map(d => ({ id: d.id, ...d.data() })); applyFilter(); });
+
+    onSnapshot(query(collection(db, 'fnb_orders'), orderBy('createdAt', 'desc')),
+        snap => { allFnbOrders = snap.docs.map(d => ({ id: d.id, ...d.data() })); applyFilter(); });
 
     function getLabelFilter() {
         const from = document.getElementById('date-from').value;
@@ -692,51 +781,86 @@
             curY += 5;
             doc.autoTable({
                 startY: curY,
-                head: [['No', 'Tanggal', 'Unit ID', 'Tipe', 'Nama Pelanggan', 'Jam Selesai', 'Total Bayar']],
-                body: filteredSesi.map((d, i) => [
-                    i+1,
-                    d.tanggal || (d.createdAt||'').slice(0,10) || '-',
-                    d.unitId || '-',
-                    d.unitType || '-',
-                    d.customerName || d.namaCustomer || '-',
-                    d.stopTime || '-',
-                    fmt(d.price || 0)
-                ]),
-                foot: [['', '', '', '', '', 'SUBTOTAL', fmt(totalSesi)]],
+                head: [['No', 'Tanggal', 'Unit', 'Customer', 'Mulai', 'Selesai', 'Durasi', 'Extend', 'F&B', 'Total Bayar']],
+                body: filteredSesi.map((d, i) => {
+                    const tanggal  = d.tanggal || (d.createdAt||'').slice(0,10) || '-';
+                    const unitId   = d.unitId || '-';
+                    const durasi   = hitungDurasi(d.startTime, d.stopTime);
+                    const exts     = getExtendSesi(unitId, tanggal);
+                    const extCount = exts.length;
+                    const extTotal = exts.reduce((s,e) => s+(e.biaya||0), 0);
+                    const fnbs     = getFnbSesi(unitId, tanggal);
+                    const fnbTotal = fnbs.reduce((s,f) => s+(f.total||0), 0);
+
+                    // Extend: list bernomor untuk PDF
+                    const extLines = exts.map(e => '+1 jam — ' + fmt(e.biaya||0) + (e.payMethod ? ' (' + e.payMethod + ')' : ''));
+                    const extPDF   = extCount > 0
+                        ? (extCount === 1
+                            ? extLines[0] + '\nTotal: ' + fmt(extTotal)
+                            : extLines.map((x,i) => (i+1) + '. ' + x).join('\n') + '\nTotal: ' + fmt(extTotal))
+                        : '-';
+
+                    // F&B: list bernomor untuk PDF
+                    const fnbLines = fnbs.flatMap(f => (f.items||[]).map(ii => ii.name + ' x' + ii.qty));
+                    const fnbPDF   = fnbLines.length > 0
+                        ? (fnbLines.length === 1
+                            ? fnbLines[0] + '\nTotal: ' + fmt(fnbTotal)
+                            : fnbLines.map((x,i) => (i+1) + '. ' + x).join('\n') + '\nTotal: ' + fmt(fnbTotal))
+                        : '-';
+
+                    return [
+                        i+1,
+                        tanggal,
+                        (d.unitId||'-') + ' (' + (d.unitType||'-') + ')',
+                        d.customerName || d.namaCustomer || '-',
+                        d.startTime || '-',
+                        d.stopTime  || '-',
+                        durasi,
+                        extPDF,
+                        fnbPDF,
+                        fmt(d.price || 0)
+                    ];
+                }),
+                foot: [['', '', '', '', '', '', '', '', 'SUBTOTAL', fmt(totalSesi)]],
                 styles: {
-                    fontSize: 7.5,
+                    fontSize: 6.5,
                     textColor: [0,0,0],
                     fillColor: false,
                     lineColor: [0,0,0],
                     lineWidth: 0.25,
-                    cellPadding: { top: 3, bottom: 3, left: 3, right: 3 },
+                    cellPadding: { top: 2.5, bottom: 2.5, left: 2.5, right: 2.5 },
                     valign: 'middle',
+                    overflow: 'linebreak',
                 },
                 headStyles: {
                     fillColor: [220,220,220],
                     textColor: [0,0,0],
                     fontStyle: 'bold',
-                    fontSize: 7.5,
+                    fontSize: 6.5,
                     lineColor: [0,0,0],
                     lineWidth: 0.3,
+                    halign: 'center',
                 },
                 alternateRowStyles: { fillColor: [245,245,245] },
                 footStyles: {
                     fillColor: [210,210,210],
                     textColor: [0,0,0],
                     fontStyle: 'bold',
-                    fontSize: 8,
+                    fontSize: 7.5,
                     lineColor: [0,0,0],
                     lineWidth: 0.3,
                 },
                 columnStyles: {
-                    0: { cellWidth: 8,  halign: 'center' },
-                    1: { cellWidth: 24 },
-                    2: { cellWidth: 18, halign: 'center' },
-                    3: { cellWidth: 16, halign: 'center' },
-                    4: { cellWidth: 40 },
-                    5: { cellWidth: 22, halign: 'center' },
-                    6: { cellWidth: 30, halign: 'right', fontStyle: 'bold' },
+                    0: { cellWidth: 7,  halign: 'center' },
+                    1: { cellWidth: 20, halign: 'center' },
+                    2: { cellWidth: 20, halign: 'center' },
+                    3: { cellWidth: 28, halign: 'center' },
+                    4: { cellWidth: 14, halign: 'center' },
+                    5: { cellWidth: 14, halign: 'center' },
+                    6: { cellWidth: 16, halign: 'center' },
+                    7: { cellWidth: 18 },
+                    8: { cellWidth: 24 },
+                    9: { cellWidth: 21, halign: 'center', fontStyle: 'bold' },
                 },
                 margin: { left: 14, right: 14 },
             });
@@ -876,51 +1000,72 @@
             rows.push([noBorderCell('Laporan Sesi Gaming', { sz: 11 })]);
             rows.push([noBorderCell('No. Laporan : ' + noLaporan + '   |   Dicetak : ' + tglCetak, { sz: 9 })]);
             rows.push([noBorderCell('Periode     : ' + (from||'...') + ' s/d ' + (to||'...') + '   |   Unit : ' + unitLabel, { sz: 9 })]);
-            rows.push(emptyRow(7));
+            rows.push(emptyRow(10));
 
             // Header tabel
             rows.push([
                 c('No',             { header:true, bold:true, center:true, sz:9 }),
                 c('Tanggal',        { header:true, bold:true, center:true, sz:9 }),
-                c('Unit ID',        { header:true, bold:true, center:true, sz:9 }),
-                c('Tipe',           { header:true, bold:true, center:true, sz:9 }),
+                c('Unit',           { header:true, bold:true, center:true, sz:9 }),
                 c('Nama Pelanggan', { header:true, bold:true, sz:9 }),
+                c('Jam Mulai',      { header:true, bold:true, center:true, sz:9 }),
                 c('Jam Selesai',    { header:true, bold:true, center:true, sz:9 }),
+                c('Durasi',         { header:true, bold:true, center:true, sz:9 }),
+                c('Extend (x)',     { header:true, bold:true, center:true, sz:9 }),
+                c('Biaya Extend',   { header:true, bold:true, right:true, sz:9 }),
+                c('Menu F&B',       { header:true, bold:true, sz:9 }),
+                c('Biaya F&B',      { header:true, bold:true, right:true, sz:9 }),
                 c('Total Bayar',    { header:true, bold:true, right:true, sz:9 }),
             ]);
 
             // Data rows
             filteredSesi.forEach((d, i) => {
-                const isAlt = i % 2 === 1;
+                const isAlt    = i % 2 === 1;
+                const tanggal  = d.tanggal || (d.createdAt||'').slice(0,10) || '-';
+                const unitId   = d.unitId || '-';
+                const durasi   = hitungDurasi(d.startTime, d.stopTime);
+                const exts     = getExtendSesi(unitId, tanggal);
+                const extCount = exts.length;
+                const extTotal = exts.reduce((s,e) => s+(e.biaya||0), 0);
+                const fnbs     = getFnbSesi(unitId, tanggal);
+                const fnbLabel = fnbs.length
+                    ? fnbs.flatMap(f => (f.items||[]).map(ii => ii.name + ' x' + ii.qty)).join(', ') || (fnbs.length + ' pesanan')
+                    : '-';
+                const fnbTotal = fnbs.reduce((s,f) => s+(f.total||0), 0);
+                const opt = isAlt ? { alt:true } : {};
                 rows.push([
-                    c(i+1,                                                    { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
-                    c(d.tanggal || (d.createdAt||'').slice(0,10) || '-',      { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
-                    c(d.unitId || '-',                                        { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
-                    c(d.unitType || '-',                                      { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
-                    c(d.customerName || d.namaCustomer || '-',                { sz:9, ...(isAlt?{alt:true}:{}) }),
-                    c(d.stopTime || '-',                                      { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
-                    c(d.price || 0,                                           { right:true, bold:true, sz:9, numFmt:'"Rp "#,##0', ...(isAlt?{alt:true}:{}) }),
+                    c(i+1,                                 { center:true, sz:9, ...opt }),
+                    c(tanggal,                             { center:true, sz:9, ...opt }),
+                    c((d.unitId||'-') + ' (' + (d.unitType||'-') + ')', { center:true, sz:9, ...opt }),
+                    c(d.customerName || d.namaCustomer || '-', { sz:9, ...opt }),
+                    c(d.startTime || '-',                  { center:true, sz:9, ...opt }),
+                    c(d.stopTime  || '-',                  { center:true, sz:9, ...opt }),
+                    c(durasi,                              { center:true, sz:9, ...opt }),
+                    c(extCount > 0 ? extCount : '-',       { center:true, sz:9, ...opt }),
+                    c(extCount > 0 ? extTotal : '-',       { right:true, sz:9, ...(extCount>0?{numFmt:'"Rp "#,##0'}:{}), ...opt }),
+                    c(fnbLabel,                            { sz:9, ...opt }),
+                    c(fnbs.length > 0 ? fnbTotal : '-',   { right:true, sz:9, ...(fnbs.length>0?{numFmt:'"Rp "#,##0'}:{}), ...opt }),
+                    c(d.price || 0,                        { right:true, bold:true, sz:9, numFmt:'"Rp "#,##0', ...opt }),
                 ]);
             });
 
             // Subtotal
             rows.push([
-                c('',         { total:true }),
-                c('',         { total:true }),
-                c('',         { total:true }),
-                c('',         { total:true }),
-                c('',         { total:true }),
+                c('', { total:true }), c('', { total:true }), c('', { total:true }),
+                c('', { total:true }), c('', { total:true }), c('', { total:true }),
+                c('', { total:true }), c('', { total:true }), c('', { total:true }),
+                c('', { total:true }),
                 c('SUBTOTAL', { total:true, bold:true, right:true, sz:9 }),
                 c(totalSesi,  { total:true, bold:true, right:true, sz:10, numFmt:'"Rp "#,##0' }),
             ]);
 
             const ws = XLSX.utils.aoa_to_sheet(rows);
-            ws['!cols'] = [{ wch:5 },{ wch:14 },{ wch:14 },{ wch:12 },{ wch:30 },{ wch:14 },{ wch:20 }];
+            ws['!cols'] = [{ wch:5 },{ wch:14 },{ wch:14 },{ wch:26 },{ wch:12 },{ wch:12 },{ wch:12 },{ wch:10 },{ wch:16 },{ wch:32 },{ wch:16 },{ wch:18 }];
             ws['!merges'] = [
-                { s:{r:0,c:0}, e:{r:0,c:6} },
-                { s:{r:1,c:0}, e:{r:1,c:6} },
-                { s:{r:2,c:0}, e:{r:2,c:6} },
-                { s:{r:3,c:0}, e:{r:3,c:6} },
+                { s:{r:0,c:0}, e:{r:0,c:11} },
+                { s:{r:1,c:0}, e:{r:1,c:11} },
+                { s:{r:2,c:0}, e:{r:2,c:11} },
+                { s:{r:3,c:0}, e:{r:3,c:11} },
             ];
             XLSX.utils.book_append_sheet(wb, ws, 'Sesi Gaming');
         }
