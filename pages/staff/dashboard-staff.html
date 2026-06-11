@@ -706,7 +706,9 @@
             /* Reset semua warisan mobile fixed */
             body {
                 overflow: auto !important;
+                overflow-x: hidden !important;
                 height: auto !important;
+                max-height: none !important;
                 padding-bottom: 0 !important;
                 display: flex;
                 flex-direction: column;
@@ -744,6 +746,10 @@
                 max-width: 1200px;
                 margin-left: auto;
                 margin-right: auto;
+                pointer-events: all !important;
+                z-index: auto !important;
+                height: auto !important;
+                max-height: none !important;
             }
             #stats-panel {
                 position: static !important;
@@ -1012,6 +1018,20 @@
                 position: relative;
                 z-index: 20;
                 cursor: pointer !important;
+            }
+
+            /* ── Semua tombol & elemen interaktif di main content TIDAK pernah terblokir ── */
+            #staff-main-content button,
+            #staff-main-content input,
+            #staff-main-content select,
+            #staff-main-content textarea,
+            #staff-main-content [onclick],
+            #staff-main-content .btn-action,
+            #staff-main-content .tab-btn,
+            #staff-main-content .glass-card {
+                pointer-events: all !important;
+                position: relative;
+                z-index: auto;
             }
 
             /* Setelan panel */
@@ -2038,11 +2058,30 @@
         const sp  = document.getElementById('stats-panel');
         const stg = document.getElementById('setelan-panel');
         if (!hdr || !scr) return;
-        // Desktop: semua elemen static, jangan set top
+        // Desktop: reset semua inline style warisan mobile agar tidak blocking klik
         if (window.innerWidth >= 768) {
+            // scroll content
             scr.style.top = '';
-            if (sp)  { sp.style.top = ''; sp.style.left = ''; sp.style.right = ''; sp.style.bottom = ''; sp.style.position = ''; }
-            if (stg) { stg.style.top = ''; stg.style.left = ''; stg.style.right = ''; stg.style.bottom = ''; stg.style.position = ''; stg.style.inset = ''; }
+            scr.style.bottom = '';
+            scr.style.left = '';
+            scr.style.right = '';
+            scr.style.position = '';
+            scr.style.height = '';
+            scr.style.maxHeight = '';
+            scr.style.overflow = '';
+            scr.style.pointerEvents = '';
+            // stats panel
+            if (sp)  {
+                sp.style.top = ''; sp.style.left = ''; sp.style.right = '';
+                sp.style.bottom = ''; sp.style.position = ''; sp.style.inset = '';
+                sp.style.height = ''; sp.style.overflow = '';
+            }
+            // setelan panel
+            if (stg) {
+                stg.style.top = ''; stg.style.left = ''; stg.style.right = '';
+                stg.style.bottom = ''; stg.style.position = ''; stg.style.inset = '';
+                stg.style.height = ''; stg.style.overflow = '';
+            }
             return;
         }
         const h = hdr.getBoundingClientRect().height;
@@ -2241,7 +2280,7 @@
         });
     }
 
-    // ── Toast (queue – tidak saling tumpuk) ───────────────────────────
+    // ── Toast (queue – tidak saling tumpuk, klik untuk tutup) ─────────
     const _incomeToastQueue = [];
     let   _incomeToastActive = false;
 
@@ -2258,24 +2297,22 @@
         const el = document.createElement('div');
         el.className = 'income-toast';
         el.style.cursor = 'pointer';
+        el.title = 'Klik untuk tutup';
         el.innerHTML = `<i class="fas fa-arrow-trend-up" style="margin-right:8px;font-size:11px"></i>Pendapatan Masuk &nbsp;&middot;&nbsp; <b>${unitId}</b> &nbsp;&middot;&nbsp; Rp ${amount.toLocaleString('id-ID')}`;
         document.body.appendChild(el);
-
-        // Klik → tutup & lanjut ke antrian berikutnya segera
-        el.addEventListener('click', () => dismiss(true));
 
         let dismissed = false;
         function dismiss(fast) {
             if (dismissed) return;
             dismissed = true;
+            clearTimeout(autoTimer);
             el.style.transition = 'opacity .25s';
             el.style.opacity = '0';
             setTimeout(() => { el.remove(); _nextIncomeToast(); }, fast ? 260 : 420);
         }
 
-        // Auto-dismiss setelah 3 detik
+        el.addEventListener('click', () => dismiss(true));
         const autoTimer = setTimeout(() => dismiss(false), 3000);
-        el.addEventListener('click', () => clearTimeout(autoTimer), { once: true });
     }
 
     // ── Format timer ──────────────────────────────────────────────────
