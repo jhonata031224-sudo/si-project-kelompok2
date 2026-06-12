@@ -1119,7 +1119,7 @@
             chartBvR = new Chart(ctx, {
                 type: 'line',
                 data: { labels: labels.map(fmtTgl), datasets: [lineDataset('Booking', bkTotals, '#00d9ff'), lineDataset('Rental', rntTotals, '#a855f7')] },
-                options: (function(){ const cd=getChartDefaults(); return { ...cd, plugins: { ...cd.plugins, tooltip: { ...cd.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } } }; })()
+                options: (function(){ const cd=getChartDefaults(); return { ...cd, plugins: { ...cd.plugins, tooltip: { ...cd.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } }, scales: { ...cd.scales, y: { ...cd.scales.y, ticks: { ...cd.scales.y.ticks, callback: v => v + ' unit' } } } }; })()
             });
             return;
         }
@@ -1142,7 +1142,7 @@
                     lineDataset('Rental',  rntTotals, '#a855f7')
                 ]
             },
-            options: (function(){ const cd=getChartDefaults(); return { ...cd, plugins: { ...cd.plugins, tooltip: { ...cd.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } } }; })()
+            options: (function(){ const cd=getChartDefaults(); return { ...cd, plugins: { ...cd.plugins, tooltip: { ...cd.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } }, scales: { ...cd.scales, y: { ...cd.scales.y, ticks: { ...cd.scales.y.ticks, callback: v => v + ' unit' } } } }; })()
         });
     }
 

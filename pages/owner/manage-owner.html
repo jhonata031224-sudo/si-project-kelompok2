@@ -530,6 +530,20 @@
         body.light-mode h1, body.light-mode h2, body.light-mode h3 { color: #0f172a !important; }
         body.light-mode .page-title h1 { color: #0f172a !important; }
         body.light-mode .page-title p { color: #64748b !important; }
+
+        /* ── KELOLA TABS ── */
+        .kelola-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+        .kelola-tab {
+            flex: 1; padding: 10px 14px; border-radius: 11px; font-size: 12px; font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif; cursor: pointer; text-align: center;
+            border: 1px solid var(--border); background: transparent; color: var(--muted);
+            transition: all .2s;
+        }
+        .kelola-tab.active { background: rgba(0,217,255,0.12); border-color: rgba(0,217,255,0.4); color: #00d9ff; }
+        #kelola-tab-fnb.active { background: rgba(227,179,65,0.12); border-color: rgba(227,179,65,0.4); color: var(--yellow); }
+        .kelola-tab-content { display: none; }
+        .kelola-tab-content.active { display: block; }
+        body.light-mode .kelola-tab { border-color: rgba(0,0,0,0.1); }
         body.light-mode .type-name, body.light-mode .type-info h3 { color: #0f172a !important; }
         body.light-mode .type-info p, body.light-mode .menu-info p { color: #64748b !important; }
         body.light-mode .unit-name { color: #0f172a !important; }
@@ -657,6 +671,26 @@
         <p>Kelola tipe konsol, unit, dan menu F&B</p>
     </div>
 
+    <!-- ── TAB SWITCHER ── -->
+    <div class="kelola-tabs">
+        <button class="kelola-tab active" id="kelola-tab-unit" onclick="switchKelolaTab('unit')">
+            <i class="fas fa-gamepad"></i> Unit & Booking
+        </button>
+        <button class="kelola-tab" id="kelola-tab-fnb" onclick="switchKelolaTab('fnb')">
+            <i class="fas fa-utensils"></i> F&B
+        </button>
+    </div>
+    <script>
+        function switchKelolaTab(tab){
+            document.getElementById('tab-unit').classList.toggle('active', tab==='unit');
+            document.getElementById('tab-fnb').classList.toggle('active', tab==='fnb');
+            document.getElementById('kelola-tab-unit').classList.toggle('active', tab==='unit');
+            document.getElementById('kelola-tab-fnb').classList.toggle('active', tab==='fnb');
+        }
+    </script>
+
+    <div id="tab-unit" class="kelola-tab-content active">
+
     <!-- ── TIPE KONSOL ── -->
     <div class="section">
         <div class="section-card">
@@ -757,6 +791,10 @@
         </div>
     </div>
 
+    </div>
+
+    <div id="tab-fnb" class="kelola-tab-content">
+
     <!-- ── MENU F&B ── -->
     <div class="section">
         <div class="section-card">
@@ -792,6 +830,8 @@
                 <button class="btn-add yellow" onclick="addMenu()"><i class="fas fa-plus"></i> Simpan Menu</button>
             </div>
         </div>
+    </div>
+
     </div>
 </div>
 
