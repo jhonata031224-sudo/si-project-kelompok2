@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Prince Games – Pembayaran Booking</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    :root{
+      --bg:#07090f;--card:rgba(14,18,28,.95);--card2:rgba(18,14,32,.92);
+      --cyan:#00d9ff;--cyan-dim:rgba(0,217,255,.08);--cyan-mid:rgba(0,217,255,.18);--cyan-glow:rgba(0,217,255,.35);
+      --purple:#a855f7;--purple-dim:rgba(168,85,247,.08);--purple-mid:rgba(168,85,247,.18);--purple-glow:rgba(168,85,247,.4);
+      --green:#22c55e;--green-dim:rgba(34,197,94,.08);--green-glow:rgba(34,197,94,.3);
+      --border:rgba(255,255,255,.06);--border-c:rgba(0,217,255,.2);--border-p:rgba(168,85,247,.22);--border-g:rgba(34,197,94,.2);
+      --text:#e2e8f0;--muted:#6b7280;
+    }
+    body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,217,255,.014) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,255,.014) 1px,transparent 1px);background-size:44px 44px;}
+    body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 55% 38% at 15% 0%,rgba(0,217,255,.09) 0%,transparent 70%),radial-gradient(ellipse 45% 30% at 88% 5%,rgba(168,85,247,.07) 0%,transparent 70%);}
+    header{position:sticky;top:0;z-index:50;background:rgba(7,9,15,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:12px;}
+    .btn-back{width:34px;height:34px;border-radius:9px;background:var(--cyan-dim);border:1px solid var(--border-c);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--cyan);font-size:13px;transition:.2s;}
+    .logo{font-size:14px;font-weight:800;letter-spacing:-.3px;text-transform:uppercase;}
+    .logo-cyan{color:var(--cyan);}.logo-dot{color:var(--purple);}
+    .header-badge{margin-left:auto;font-size:9px;font-weight:700;padding:4px 10px;border-radius:6px;background:var(--green-dim);border:1px solid var(--border-g);color:var(--green);text-transform:uppercase;letter-spacing:.08em;}
+    main{padding:20px 16px 60px;position:relative;z-index:1;max-width:480px;margin:0 auto;}
+    .page-title{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;background:linear-gradient(90deg,var(--green) 0%,var(--cyan) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .page-sub{font-size:11px;color:var(--muted);margin-bottom:18px;line-height:1.5;}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,var(--border-g),var(--border-c),transparent);margin-bottom:16px;}
+    .summary-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px;position:relative;overflow:hidden;}
+    .summary-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--cyan));}
+    .summary-row{display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;margin-bottom:9px;gap:8px;}
+    .summary-lbl{color:var(--muted);font-weight:600;flex-shrink:0;}.summary-val{font-weight:700;text-align:right;}
+    .summary-hr{height:1px;background:var(--border);margin:10px 0;}
+    .summary-total-row{display:flex;justify-content:space-between;align-items:center;}
+    .summary-total-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+    .summary-total-val{font-size:21px;font-weight:800;color:var(--cyan);letter-spacing:-.5px;text-shadow:0 0 20px var(--cyan-glow);}
+    .fnb-section{display:none;}.fnb-section.show{display:block;}
+    .fnb-item{display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:4px;}
+    .fnb-item span:last-child{color:var(--cyan);font-weight:700;}
+    .fnb-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px;}
+    .sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .sec-label::before{content:'';width:12px;height:1px;background:linear-gradient(90deg,var(--green),var(--cyan));}
+    .pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;}
+    .pay-opt{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px 12px;cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:5px;}
+    .pay-opt.sel-cyan{border-color:var(--cyan);background:var(--cyan-dim);box-shadow:0 0 20px rgba(0,217,255,.1);}
+    .pay-opt.sel-purple{border-color:var(--purple);background:var(--purple-dim);box-shadow:0 0 20px rgba(168,85,247,.12);}
+    .pay-opt .pay-icon{font-size:24px;line-height:1;}.pay-opt .pay-name{font-size:12px;font-weight:800;}
+    .pay-opt .pay-desc{font-size:9px;color:var(--muted);text-align:center;line-height:1.45;}
+    .info-box{border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:11px;line-height:1.65;display:none;}
+    .info-box.show{display:block;animation:fadeUp .25s ease;}
+    .info-box i{margin-right:5px;}
+    .info-ewallet{background:var(--cyan-dim);border:1px solid var(--border-c);color:#a5f3fc;}
+    .info-cash{background:var(--purple-dim);border:1px solid var(--border-p);color:#d8b4fe;}
+    .dana-panel{background:var(--card);border:1px solid var(--border-c);border-radius:16px;padding:20px 16px;margin-bottom:16px;text-align:center;display:none;position:relative;overflow:hidden;}
+    .dana-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple));}
+    .dana-panel.show{display:block;animation:fadeUp .3s ease;}
+    .dana-hdr{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;}
+    .d-dot{width:8px;height:8px;border-radius:50%;}
+    .d-dot.c{background:var(--cyan);box-shadow:0 0 8px var(--cyan-glow);}
+    .d-dot.p{background:var(--purple);box-shadow:0 0 8px var(--purple-glow);}
+    .dana-hdr-lbl{font-size:12px;font-weight:800;}.dana-hdr-lbl span{color:var(--cyan);}
+    .dana-num-wrap{background:var(--cyan-dim);border:1px solid var(--border-c);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+    .dana-number{font-size:20px;font-weight:800;letter-spacing:.08em;color:var(--cyan);text-shadow:0 0 16px var(--cyan-glow);text-align:center;}
+    .copy-btn{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:7px 12px;border-radius:8px;background:var(--purple-dim);border:1px solid var(--border-p);color:var(--purple);cursor:pointer;font-family:inherit;transition:.15s;white-space:nowrap;}
+    .dana-name{font-size:11px;color:var(--muted);margin-bottom:16px;}
+    .dana-qr-wrap{background:#fff;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 0 28px var(--cyan-glow);width:fit-content;}
+    .dana-qr-wrap img{width:136px;height:136px;display:block;}
+    .dana-note{font-size:10px;color:var(--muted);line-height:1.6;margin-bottom:14px;}
+    .nominal-chip{display:inline-block;background:linear-gradient(90deg,var(--cyan-dim),var(--purple-dim));border-radius:8px;padding:6px 14px;font-size:13px;font-weight:800;color:var(--cyan);letter-spacing:-.3px;text-shadow:0 0 12px var(--cyan-glow);border:1px solid var(--border-c);margin:4px 0 14px;}
+    .dana-steps{text-align:left;}
+    .dana-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:9px;font-size:11px;color:#94a3b8;}
+    .step-num{min-width:20px;height:20px;border-radius:50%;background:var(--cyan-dim);border:1px solid var(--border-c);color:var(--cyan);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px;flex-shrink:0;}
+    .step-num.p{background:var(--purple-dim);border-color:var(--border-p);color:var(--purple);}
+    .dana-step strong{color:var(--text);}
+    .cash-panel{background:var(--card2);border:1px solid var(--border-p);border-radius:16px;padding:20px 16px;margin-bottom:16px;display:none;position:relative;overflow:hidden;}
+    .cash-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple),var(--cyan));}
+    .cash-panel.show{display:block;animation:fadeUp .3s ease;}
+    .cash-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+    .cash-icon-wrap{width:42px;height:42px;border-radius:12px;background:var(--purple-dim);border:1px solid var(--border-p);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 14px var(--purple-glow);flex-shrink:0;}
+    .cash-title{font-size:14px;font-weight:800;}.cash-sub{font-size:10px;color:var(--purple);margin-top:2px;}
+    .session-box{background:linear-gradient(135deg,var(--purple-dim),var(--cyan-dim));border:1px solid var(--border-p);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+    .session-icon{width:36px;height:36px;border-radius:10px;background:var(--purple-mid);border:1px solid var(--border-p);display:flex;align-items:center;justify-content:center;color:var(--purple);font-size:14px;flex-shrink:0;box-shadow:0 0 12px var(--purple-glow);}
+    .session-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--purple);margin-bottom:3px;}
+    .session-val{font-size:12px;font-weight:800;}
+    .cash-note{font-size:11px;color:#94a3b8;line-height:1.65;}.cash-note strong{color:var(--purple);}
+    .tnc-box{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px;}
+    .tnc-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .tnc-title i{color:var(--green);}
+    .tnc-item{display:flex;align-items:flex-start;gap:8px;font-size:10px;color:#64748b;margin-bottom:6px;line-height:1.55;}
+    .tnc-item i{color:var(--green);font-size:8px;margin-top:3px;flex-shrink:0;}
+    .agree-wrap{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;cursor:pointer;}
+    .agree-box{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border-c);background:var(--cyan-dim);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;margin-top:1px;}
+    .agree-box.checked{background:var(--cyan);border-color:var(--cyan);}
+    .agree-box.checked i{display:block;}.agree-box i{display:none;color:#000;font-size:10px;}
+    .agree-text{font-size:11px;color:#94a3b8;line-height:1.6;}.agree-text strong{color:var(--text);}
+    .btn-confirm{width:100%;padding:17px;border-radius:14px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:9px;transition:.15s;position:relative;overflow:hidden;}
+    .btn-confirm::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:translateX(-100%);transition:.5s;}
+    .btn-confirm:hover::before{transform:translateX(100%);}
+    .btn-ewallet{background:linear-gradient(90deg,var(--cyan),#007bff);color:#000;box-shadow:0 0 28px var(--cyan-glow);}
+    .btn-cash{background:linear-gradient(90deg,var(--purple),#7c3aed);color:#fff;box-shadow:0 0 28px var(--purple-glow);}
+    .btn-confirm:disabled{opacity:.35;cursor:not-allowed;filter:none;box-shadow:none;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+    @keyframes pulse-c{0%,100%{box-shadow:0 0 20px var(--cyan-glow)}50%{box-shadow:0 0 44px var(--cyan-glow)}}
+    @keyframes pulse-p{0%,100%{box-shadow:0 0 20px var(--purple-glow)}50%{box-shadow:0 0 44px var(--purple-glow)}}
+    @keyframes pulse-g{0%,100%{box-shadow:0 0 20px var(--green-glow)}50%{box-shadow:0 0 44px var(--green-glow)}}
+    #success-screen{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+    #success-screen.show{display:flex;animation:fadeUp .4s ease;}
+    .success-card{background:var(--card);border:1px solid var(--border);border-radius:28px;padding:38px 28px;max-width:360px;width:100%;text-align:center;position:relative;overflow:hidden;}
+    .success-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--cyan));}
+    .success-glow{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:200px;height:200px;border-radius:50%;pointer-events:none;}
+    .s-icon{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 18px;position:relative;z-index:1;}
+    .si-c{background:var(--cyan-dim);border:1.5px solid var(--border-c);color:var(--cyan);animation:pulse-c 2.5s infinite;}
+    .si-p{background:var(--purple-dim);border:1.5px solid var(--border-p);color:var(--purple);animation:pulse-p 2.5s infinite;}
+    .s-title{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px;position:relative;z-index:1;}
+    .s-desc{font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:8px;position:relative;z-index:1;}
+    .s-pill{display:inline-block;font-size:10px;font-weight:700;padding:5px 14px;border-radius:20px;margin:6px 0 18px;position:relative;z-index:1;}
+    .sp-c{background:var(--cyan-dim);border:1px solid var(--border-c);color:var(--cyan);}
+    .sp-p{background:var(--purple-dim);border:1px solid var(--border-p);color:var(--purple);}
+    .s-info{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:18px;font-size:11px;color:#94a3b8;line-height:1.6;text-align:left;position:relative;z-index:1;}
+    .s-info strong{color:var(--text);}
+    .btn-row{display:flex;gap:10px;position:relative;z-index:1;}
+    .btn-row button{flex:1;padding:14px;border-radius:12px;border:none;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;}
+    .btn-hist{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);}
+    .btn-dash{background:linear-gradient(90deg,var(--green),var(--cyan));color:#000;box-shadow:0 0 18px var(--green-glow);}
+
+    /* ── LIGHT MODE ── */
+    body.light-mode{
+      --bg:#f1f5f9;
+      --card:#ffffff;
+      --card2:#f0fff4;
+      --border:rgba(0,0,0,.08);
+      --border-c:rgba(2,132,199,.25);
+      --border-p:rgba(124,58,237,.22);
+      --border-g:rgba(21,128,61,.2);
+      --text:#1a202c;
+      --muted:#64748b;
+      --cyan:#0284c7;
+      --cyan-dim:rgba(2,132,199,.08);
+      --cyan-mid:rgba(2,132,199,.18);
+      --cyan-glow:rgba(2,132,199,.25);
+      --purple:#7c3aed;
+      --purple-dim:rgba(124,58,237,.08);
+      --purple-mid:rgba(124,58,237,.18);
+      --purple-glow:rgba(124,58,237,.25);
+      --green:#16a34a;
+      --green-dim:rgba(21,128,61,.08);
+      --green-glow:rgba(21,128,61,.2);
+    }
+    body.light-mode header{background:rgba(248,250,252,.97)!important;}
+    body.light-mode .btn-hist{background:rgba(0,0,0,.04)!important;}
+    body.light-mode .info-ewallet{color:#0369a1!important;}
+    body.light-mode .info-cash{color:#6d28d9!important;}
+    body.light-mode .btn-dash{color:#fff!important;}
+  </style>
+</head>
+<body>
+<script>(function(){if(localStorage.getItem('pg_theme')==='light')document.body.classList.add('light-mode');})();</script>
+<header>
+  <button class="btn-back" onclick="history.back()"><i class="fas fa-chevron-left"></i></button>
+  <span class="logo">Prince<span class="logo-dot">.</span><span class="logo-cyan">Games</span></span>
+  <span class="header-badge">Booking Sesi</span>
+</header>
+<main>
+  <div class="page-title">Pembayaran Booking</div>
+  <div class="page-sub">Pilih metode pembayaran untuk sesi gaming kamu</div>
+  <div class="divider"></div>
+  <div class="summary-card">
+    <div class="summary-row"><span class="summary-lbl">Konsol</span><span class="summary-val" id="s-console">-</span></div>
+    <div class="summary-row"><span class="summary-lbl">Durasi</span><span class="summary-val" id="s-duration">-</span></div>
+    <div class="summary-row"><span class="summary-lbl">Tanggal</span><span class="summary-val" id="s-date">-</span></div>
+    <div class="summary-row"><span class="summary-lbl">Jam mulai</span><span class="summary-val" id="s-time">-</span></div>
+    <div class="summary-row"><span class="summary-lbl">Pelanggan</span><span class="summary-val" id="s-name">-</span></div>
+    <div class="summary-hr"></div>
+    <div class="fnb-section" id="fnb-section">
+      <div class="fnb-label">Pre-order F&B</div>
+      <div id="fnb-list"></div>
+      <div class="summary-row" style="margin-top:4px;"><span class="summary-lbl">Subtotal F&B</span><span class="summary-val" id="s-fnb-total" style="color:var(--cyan)">-</span></div>
+      <div class="summary-hr"></div>
+    </div>
+    <div class="summary-row" style="margin-bottom:0"><span class="summary-lbl">Biaya sesi</span><span class="summary-val" id="s-session-cost">-</span></div>
+    <div class="summary-hr" style="margin-top:10px;"></div>
+    <div class="summary-total-row"><span class="summary-total-lbl">Total Bayar</span><span class="summary-total-val" id="s-total">Rp 0</span></div>
+  </div>
+  <div class="sec-label">Metode Pembayaran</div>
+  <div class="pay-grid">
+    <div class="pay-opt sel-cyan" id="opt-ewallet" onclick="selectPay('ewallet')">
+      <div class="pay-icon">💳</div><div class="pay-name">E-Wallet</div>
+      <div class="pay-desc">Transfer DANA, langsung konfirmasi</div>
+    </div>
+    <div class="pay-opt" id="opt-cash" onclick="selectPay('cash')">
+      <div class="pay-icon">💵</div><div class="pay-name">Cash</div>
+      <div class="pay-desc">Bayar tunai saat datang ke toko</div>
+    </div>
+  </div>
+  <div class="info-box info-ewallet show" id="info-ewallet">
+    <i class="fas fa-bolt"></i><strong>Konfirmasi instan:</strong> Setelah transfer, klik konfirmasi dan booking langsung aktif.
+  </div>
+  <div class="info-box info-cash" id="info-cash">
+    <i class="fas fa-store"></i><strong>Bayar di tempat:</strong> Datang ke Prince Games sesuai jadwal booking dan bayar tunai di kasir.
+  </div>
+  <div class="dana-panel show" id="dana-panel">
+    <div class="dana-hdr"><div class="d-dot c"></div><div class="dana-hdr-lbl">Transfer ke <span>DANA</span></div><div class="d-dot p"></div></div>
+    <div class="dana-num-wrap">
+      <span class="dana-number" id="dana-number-display">085769033135</span>
+      <button class="copy-btn" onclick="copyDana()"><i class="fas fa-copy"></i> Salin</button>
+    </div>
+    <div class="dana-name">a/n Prince Games</div>
+    <div class="dana-qr-wrap">
+      <a href="https://wa.me/6285769033135" target="_blank">
+        <img id="dana-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https%3A%2F%2Fwa.me%2F6285769033135&color=0a0a0a&bgcolor=ffffff" alt="QR WhatsApp" style="width:160px;height:160px;display:block;">
+      </a>
+    </div>
+    <div class="nominal-chip" id="dana-nominal">Rp 0</div>
+    <div class="dana-note">📱 Scan QR untuk chat admin via WhatsApp</div>
+    <div class="dana-steps" id="dana-steps-wrap"></div>
+  </div>
+  <div class="cash-panel" id="cash-panel">
+    <div class="cash-head">
+      <div class="cash-icon-wrap">💵</div>
+      <div><div class="cash-title">Bayar di Toko</div><div class="cash-sub">Booking tersimpan, bayar saat datang</div></div>
+    </div>
+    <div class="session-box">
+      <div class="session-icon"><i class="fas fa-calendar-check"></i></div>
+      <div><div class="session-lbl">Jadwal sesimu</div><div class="session-val" id="cash-session-info">-</div></div>
+    </div>
+    <div class="cash-note">Datang ke <strong>Prince Games</strong> sesuai jadwal, tunjukkan konfirmasi booking ini, dan bayar di kasir.</div>
+  </div>
+  <div class="tnc-box">
+    <div class="tnc-title"><i class="fas fa-file-contract"></i> Syarat &amp; Ketentuan Booking</div>
+    <div class="tnc-item"><i class="fas fa-circle"></i><span>Booking berlaku sesuai tanggal &amp; jam yang dipilih. Keterlambatan lebih dari <strong>15 menit</strong> dianggap tidak hadir.</span></div>
+    <div class="tnc-item"><i class="fas fa-circle"></i><span>Pembatalan wajib diinformasikan minimal <strong>1 jam sebelumnya</strong> via WhatsApp.</span></div>
+    <div class="tnc-item"><i class="fas fa-circle"></i><span>Kerusakan akibat kelalaian pelanggan <strong>menjadi tanggung jawab pelanggan</strong>.</span></div>
+    <div class="tnc-item"><i class="fas fa-circle"></i><span>Pre-order F&amp;B yang sudah dikonfirmasi <strong>tidak dapat dibatalkan</strong>.</span></div>
+  </div>
+  <div class="agree-wrap" onclick="toggleAgree()">
+    <div class="agree-box" id="agree-box"><i class="fas fa-check"></i></div>
+    <div class="agree-text">Saya menyetujui <strong>syarat &amp; ketentuan</strong> booking di atas.</div>
+  </div>
+  <button class="btn-confirm btn-ewallet" id="btn-confirm" onclick="confirmPayment()" disabled>
+    <i class="fas fa-bolt" id="btn-icon"></i>
+    <span id="btn-label">Konfirmasi Pembayaran E-Wallet</span>
+  </button>
+</main>
+<div id="success-screen">
+  <div class="success-card">
+    <div class="success-glow" id="s-glow"></div>
+    <div class="s-icon" id="s-icon"><i class="fas fa-check"></i></div>
+    <div class="s-title" id="s-title">Booking Dikonfirmasi!</div>
+    <div class="s-desc" id="s-desc">Sesi gaming kamu sudah terjadwal.</div>
+    <div class="s-pill" id="s-pill">Status: Aktif</div>
+    <div class="s-info" id="s-info"></div>
+    <div class="btn-row">
+      <button class="btn-hist" onclick="location.href='../pelanggan/dashboard-customer.html?history=1'"><i class="fas fa-bag-shopping mr-1"></i> Pesanan</button>
+      <button class="btn-dash" onclick="location.href='../pelanggan/dashboard-customer.html'"><i class="fas fa-home mr-1"></i> Dashboard</button>
+    </div>
+  </div>
+</div>
+<script type="module">
+  import { db, auth, collection, addDoc } from '../../assets/js/auth.js';
+  import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+  import { getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+  // ── Cek ketersediaan unit real-time ──
+  async function checkUnitAvailable(consoleType) {
+    const snap = await getDocs(query(collection(db, 'units'),
+      where('type', '==', consoleType),
+      where('status', '==', 'Tersedia')
+    ));
+    return snap.size;
+  }
+
+  // ── Hitung antrian list aktif ──
+  async function countWaitingList(consoleType) {
+    const snap = await getDocs(query(collection(db, 'bookings'),
+      where('console', '==', consoleType),
+      where('status', '==', 'Antrian List')
+    ));
+    return snap.size;
+  }
+
+  // ── Cari konsol lain yang masih tersedia ──
+  async function cariUnitLainTersedia(excludeConsole) {
+    const tipes = ['PS3', 'PS4', 'PS5'].filter(t => t !== excludeConsole);
+    const hasil = [];
+    for (const t of tipes) {
+      const n = await checkUnitAvailable(t);
+      if (n > 0) hasil.push(t);
+    }
+    return hasil;
+  }
+
+  // Simpan user aktif agar userId selalu up-to-date saat submit
+  let _currentUser = null;
+  onAuthStateChanged(auth, u => { _currentUser = u; });
+
+  // ── Helper swalBg: ikuti light/dark mode ──
+  const swalBg = () => localStorage.getItem('pg_theme') === 'light'
+    ? { background: '#ffffff', color: '#1a202c' }
+    : { background: '#11171f', color: '#fff' };
+  const swalBtn = () => localStorage.getItem('pg_theme') === 'light' ? '#0284c7' : '#00d9ff';
+
+  // ── Ganti dengan nomor DANA Prince Games ──
+  const DANA_NUMBER = '085769033135';
+
+  // ── Baca sessionStorage 'pendingBooking' (BUKAN pendingRental) ──
+  const raw = sessionStorage.getItem('pendingBooking');
+  if (!raw) {
+    Swal.fire({
+      icon:'error', title:'Sesi tidak valid',
+      text:'Silakan mulai booking ulang.',
+      ...swalBg(), confirmButtonColor:swalBtn()
+    }).then(() => location.href = '../pelanggan/booking.html');
+    throw new Error('No pending booking data');
+  }
+  const bk = JSON.parse(raw);
+
+  let selectedPay = 'ewallet';
+  let isAgreed    = false;
+
+  function fmtDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  }
+
+  // Isi ringkasan
+  document.getElementById('s-console').textContent      = bk.console;
+  document.getElementById('s-duration').textContent     = bk.duration + ' Jam';
+  document.getElementById('s-date').textContent         = fmtDate(bk.date);
+  document.getElementById('s-time').textContent         = bk.time + ' WIB';
+  document.getElementById('s-name').textContent         = bk.custName;
+  const sessionCost = bk.rate * bk.duration;
+  document.getElementById('s-session-cost').textContent = 'Rp ' + sessionCost.toLocaleString('id-ID');
+  document.getElementById('s-total').textContent        = 'Rp ' + bk.grandTotal.toLocaleString('id-ID');
+  document.getElementById('cash-session-info').textContent = bk.console + ' · ' + bk.duration + ' Jam · ' + bk.date + ' ' + bk.time;
+
+  if (bk.fnbOrders && bk.fnbOrders.length > 0) {
+    document.getElementById('fnb-section').classList.add('show');
+    const fnbList = document.getElementById('fnb-list');
+    bk.fnbOrders.forEach(item => {
+      fnbList.innerHTML += '<div class="fnb-item"><span>' + item.name + ' x' + item.qty + '</span><span>Rp ' + item.subtotal.toLocaleString('id-ID') + '</span></div>';
+    });
+    document.getElementById('s-fnb-total').textContent = 'Rp ' + bk.fnbTotal.toLocaleString('id-ID');
+  }
+
+  function updateDanaPanel() {
+    document.getElementById('dana-number-display').textContent = DANA_NUMBER;
+    document.getElementById('dana-nominal').textContent        = 'Rp ' + bk.grandTotal.toLocaleString('id-ID');
+    document.getElementById('dana-steps-wrap').innerHTML =
+      '<div class="dana-step"><div class="step-num">1</div><span>Buka aplikasi <strong>DANA</strong></span></div>' +
+      '<div class="dana-step"><div class="step-num">2</div><span>Pilih <strong>Kirim Uang</strong> &rarr; masukkan <strong>' + DANA_NUMBER + '</strong></span></div>' +
+      '<div class="dana-step"><div class="step-num">3</div><span>Masukkan nominal: <strong>Rp ' + bk.grandTotal.toLocaleString('id-ID') + '</strong></span></div>' +
+      '<div class="dana-step"><div class="step-num p">4</div><span>Selesaikan transfer, lalu klik tombol konfirmasi</span></div>';
+  }
+  updateDanaPanel();
+
+  window.selectPay = function(type) {
+    selectedPay = type;
+    document.getElementById('opt-cash').classList.remove('sel-cyan','sel-purple');
+    document.getElementById('opt-ewallet').classList.remove('sel-cyan','sel-purple');
+    type === 'cash'
+      ? document.getElementById('opt-cash').classList.add('sel-purple')
+      : document.getElementById('opt-ewallet').classList.add('sel-cyan');
+    document.getElementById('info-cash').classList.toggle('show', type === 'cash');
+    document.getElementById('info-ewallet').classList.toggle('show', type === 'ewallet');
+    document.getElementById('dana-panel').classList.toggle('show', type === 'ewallet');
+    document.getElementById('cash-panel').classList.toggle('show', type === 'cash');
+    const btn = document.getElementById('btn-confirm');
+    if (type === 'ewallet') {
+      btn.className = 'btn-confirm btn-ewallet';
+      document.getElementById('btn-label').textContent = 'Konfirmasi Pembayaran E-Wallet';
+      document.getElementById('btn-icon').className    = 'fas fa-bolt';
+    } else {
+      btn.className = 'btn-confirm btn-cash';
+      document.getElementById('btn-label').textContent = 'Konfirmasi Booking Cash';
+      document.getElementById('btn-icon').className    = 'fas fa-store';
+    }
+    if (isAgreed) btn.disabled = false;
+  };
+
+  window.toggleAgree = function() {
+    isAgreed = !isAgreed;
+    document.getElementById('agree-box').classList.toggle('checked', isAgreed);
+    document.getElementById('btn-confirm').disabled = !isAgreed;
+  };
+
+  window.copyDana = function() {
+    navigator.clipboard.writeText(DANA_NUMBER).then(() => {
+      Swal.fire({ toast:true, position:'top', icon:'success', title:'Nomor DANA disalin!', showConfirmButton:false, timer:1800, ...swalBg() });
+    });
+  };
+
+  window.confirmPayment = async function() {
+    if (!isAgreed) return;
+    const isEwallet = selectedPay === 'ewallet';
+    const btnEl = document.getElementById('btn-confirm');
+    btnEl.disabled = true;
+
+    const res = await Swal.fire({
+      title: isEwallet ? 'Sudah transfer?' : 'Konfirmasi booking cash?',
+      html: isEwallet
+        ? 'Pastikan sudah transfer <strong style="color:#00d9ff">Rp ' + bk.grandTotal.toLocaleString('id-ID') + '</strong> ke DANA <strong>' + DANA_NUMBER + '</strong>.'
+        : 'Booking <strong>' + bk.console + '</strong> selama <strong>' + bk.duration + ' jam</strong> akan disimpan. Datang ke toko sesuai jadwal.',
+      icon:'question', showCancelButton:true,
+      confirmButtonText: isEwallet ? 'Ya, sudah transfer' : 'Ya, konfirmasi',
+      cancelButtonText: 'Kembali',
+      ...swalBg(), confirmButtonColor:swalBtn(), cancelButtonColor:'#374151'
+    });
+
+    if (!res.isConfirmed) { btnEl.disabled = false; return; }
+
+    // ── Cek ulang ketersediaan unit (anti race condition) ──
+    Swal.fire({ title:'Mengecek ketersediaan unit...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), ...swalBg() });
+    const availableNow = await checkUnitAvailable(bk.console);
+    Swal.close();
+
+    if (availableNow === 0) {
+      // Unit sudah diambil orang lain duluan — cek antrian list
+      const waitCount = await countWaitingList(bk.console);
+
+      if (waitCount >= 2) {
+        // Antrian list juga penuh — sarankan konsol lain
+        const unitLain = await cariUnitLainTersedia(bk.console);
+        const saranHtml = unitLain.length > 0
+          ? '<br><br>💡 Konsol tersedia saat ini: <strong style="color:#00d9ff">' + unitLain.join(', ') + '</strong>'
+          : '<br><br>Semua tipe konsol juga penuh saat ini.';
+        await Swal.fire({
+          icon: 'error',
+          title: '😔 Booking Tidak Bisa Diproses',
+          html: '<p style="color:#9ca3af;font-size:13px">Unit <strong>' + bk.console + '</strong> baru saja diambil pelanggan lain, dan antrian antrian list sudah penuh (2 orang).</p>' + saranHtml,
+          confirmButtonText: unitLain.length > 0 ? 'Pilih Konsol Lain' : 'Kembali',
+          confirmButtonColor: swalBtn(),
+          ...swalBg()
+        });
+        btnEl.disabled = false;
+        history.back();
+        return;
+      }
+
+      // Masih ada slot antrian list — tawarkan
+      const posisi = waitCount + 1;
+      const { isConfirmed: mauWaiting } = await Swal.fire({
+        icon: 'warning',
+        title: '⚡ Unit Baru Saja Diambil!',
+        html:
+          '<p style="color:#9ca3af;font-size:12px;margin-bottom:10px">' +
+            'Saat kamu konfirmasi, unit <strong>' + bk.console + '</strong> sudah lebih dulu dipesan pelanggan lain.' +
+          '</p>' +
+          '<div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:12px;margin-bottom:10px">' +
+            '<p style="font-size:14px;font-weight:800;color:#f59e0b">Masuk Antrian List Posisi #' + posisi + '</p>' +
+            '<p style="color:#9ca3af;font-size:11px;margin-top:4px">Staff akan konfirmasi begitu unit tersedia. Cek riwayat untuk update status.</p>' +
+          '</div>' +
+          '<p style="color:#6b7280;font-size:11px">Atau kembali untuk memilih konsol lain.</p>',
+        showCancelButton: true,
+        confirmButtonText: '✋ Masuk Antrian List',
+        cancelButtonText: 'Pilih Konsol Lain',
+        confirmButtonColor: '#f59e0b',
+        cancelButtonColor: '#374151',
+        ...swalBg()
+      });
+
+      if (!mauWaiting) {
+        btnEl.disabled = false;
+        history.back();
+        return;
+      }
+
+      // Simpan sebagai Antrian List
+      Swal.fire({ title:'Mendaftar antrian...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), ...swalBg() });
+      try {
+        await addDoc(collection(db, 'bookings'), {
+          type          : 'sesi',
+          console       : bk.console,
+          rate          : bk.rate,
+          duration      : bk.duration,
+          date          : bk.date,
+          time          : bk.time,
+          fnbOrders     : bk.fnbOrders || [],
+          fnbTotal      : bk.fnbTotal || 0,
+          grandTotal    : bk.grandTotal,
+          paymentMethod : isEwallet ? 'Ewallet (DANA)' : 'Cash',
+          paymentStatus : isEwallet ? 'Lunas' : 'Belum Bayar',
+          customerName  : bk.custName,
+          customerPhone : bk.custPhone,
+          status        : 'Antrian List',
+          waitingPos    : posisi,
+          userId        : (_currentUser && _currentUser.uid) || bk.userId || null,
+          userEmail     : (_currentUser && _currentUser.email) || bk.userEmail || null,
+          createdAt     : new Date().toISOString()
+        });
+        sessionStorage.removeItem('pendingBooking');
+        Swal.fire({
+          icon: 'success',
+          title: '✅ Berhasil Masuk Antrian!',
+          html: 'Kamu di posisi <strong style="color:#f59e0b">#' + posisi + '</strong> antrian list unit <strong>' + bk.console + '</strong>.<br><span style="color:#9ca3af;font-size:11px">Staff akan mengkonfirmasi saat unit tersedia.</span>',
+          confirmButtonText: 'Lihat Riwayat',
+          confirmButtonColor: '#f59e0b',
+          ...swalBg()
+        }).then(r => {
+          location.href = r.isConfirmed
+            ? '../pelanggan/dashboard-customer.html?history=1'
+            : '../pelanggan/dashboard-customer.html';
+        });
+      } catch(e) {
+        Swal.fire({ icon:'error', title:'Gagal mendaftar antrian', text:e.message, ...swalBg() });
+        btnEl.disabled = false;
+      }
+      return;
+    }
+
+    // ── Unit tersedia — lanjut simpan booking normal ──
+    Swal.fire({ title:'Menyimpan booking...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), ...swalBg() });
+
+    try {
+      await addDoc(collection(db, 'bookings'), {
+        type          : 'sesi',
+        console       : bk.console,
+        rate          : bk.rate,
+        duration      : bk.duration,
+        date          : bk.date,
+        time          : bk.time,
+        fnbOrders     : bk.fnbOrders || [],
+        fnbTotal      : bk.fnbTotal || 0,
+        grandTotal    : bk.grandTotal,
+        paymentMethod : isEwallet ? 'Ewallet (DANA)' : 'Cash',
+        paymentStatus : isEwallet ? 'Lunas' : 'Belum Bayar',
+        customerName  : bk.custName,
+        customerPhone : bk.custPhone,
+        status        : 'Menunggu Konfirmasi Staff',
+        userId        : (_currentUser && _currentUser.uid) || bk.userId || null,
+        userEmail     : (_currentUser && _currentUser.email) || bk.userEmail || null,
+        createdAt     : new Date().toISOString()
+      });
+      sessionStorage.removeItem('pendingBooking');
+      Swal.close();
+      const icon = document.getElementById('s-icon');
+      const glow = document.getElementById('s-glow');
+      const info = document.getElementById('s-info');
+      if (isEwallet) {
+        icon.className = 's-icon si-c'; icon.innerHTML = '<i class="fas fa-check"></i>';
+        glow.style.background = 'radial-gradient(circle,rgba(0,217,255,.1) 0%,transparent 70%)';
+        document.getElementById('s-title').textContent = 'Booking Terkirim!';
+        document.getElementById('s-desc').textContent = 'Menunggu konfirmasi staff. Kami akan segera memverifikasi pesananmu.';
+        document.getElementById('s-pill').textContent = 'Status: Menunggu Konfirmasi Staff'; document.getElementById('s-pill').className = 's-pill sp-p';
+        info.innerHTML = 'Datang ke <strong>Prince Games</strong> sesuai jadwal.' + (bk.fnbOrders && bk.fnbOrders.length > 0 ? ' Pre-order F&B sudah kami catat.' : '');
+      } else {
+        icon.className = 's-icon si-p'; icon.innerHTML = '<i class="fas fa-calendar-check"></i>';
+        glow.style.background = 'radial-gradient(circle,rgba(168,85,247,.1) 0%,transparent 70%)';
+        document.getElementById('s-title').textContent = 'Booking Terkirim!';
+        document.getElementById('s-desc').textContent = 'Menunggu konfirmasi staff. Kami akan segera memverifikasi pesananmu.';
+        // pill sudah diset di atas
+        info.innerHTML = 'Datang ke <strong>Prince Games</strong> pada <strong>' + bk.date + ' jam ' + bk.time + '</strong> dan bayar di kasir. Booking dibatalkan otomatis jika tidak hadir.';
+      }
+      document.getElementById('success-screen').classList.add('show');
+    } catch (err) {
+      console.error(err);
+      btnEl.disabled = false;
+      Swal.fire({ icon:'error', title:'Gagal menyimpan', text:err.message, ...swalBg(), confirmButtonColor:swalBtn() });
+    }
+  };
+
+  selectPay('ewallet');
+</script>
+</body>
+</html>

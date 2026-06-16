@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Prince Games – Pembayaran Rental</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+    :root{
+      --bg:#07090f;
+      --card:rgba(14,18,28,.95);
+      --card2:rgba(18,14,32,.92);
+      --cyan:#00d9ff;
+      --cyan-dim:rgba(0,217,255,.08);
+      --cyan-mid:rgba(0,217,255,.18);
+      --cyan-glow:rgba(0,217,255,.35);
+      --purple:#a855f7;
+      --purple-dim:rgba(168,85,247,.08);
+      --purple-mid:rgba(168,85,247,.18);
+      --purple-glow:rgba(168,85,247,.4);
+      --green:#22c55e;
+      --green-dim:rgba(34,197,94,.08);
+      --green-glow:rgba(34,197,94,.3);
+      --orange:#f97316;
+      --orange-dim:rgba(249,115,22,.08);
+      --orange-glow:rgba(249,115,22,.3);
+      --border:rgba(255,255,255,.06);
+      --border-c:rgba(0,217,255,.2);
+      --border-p:rgba(168,85,247,.22);
+      --border-g:rgba(34,197,94,.2);
+      --border-o:rgba(249,115,22,.22);
+      --text:#e2e8f0;
+      --muted:#6b7280;
+    }
+
+    body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,217,255,.014) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,255,.014) 1px,transparent 1px);background-size:44px 44px;}
+    body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 55% 38% at 15% 0%,rgba(168,85,247,.09) 0%,transparent 70%),radial-gradient(ellipse 45% 30% at 88% 5%,rgba(0,217,255,.07) 0%,transparent 70%),radial-gradient(ellipse 40% 30% at 80% 95%,rgba(168,85,247,.07) 0%,transparent 70%);}
+
+    header{position:sticky;top:0;z-index:50;background:rgba(7,9,15,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:12px;}
+    .btn-back{width:34px;height:34px;border-radius:9px;background:var(--purple-dim);border:1px solid var(--border-p);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--purple);font-size:13px;transition:.2s;}
+    .btn-back:active{opacity:.7;}
+    .logo{font-size:14px;font-weight:800;letter-spacing:-.3px;text-transform:uppercase;}
+    .logo-cyan{color:var(--cyan);}
+    .logo-dot{color:var(--purple);}
+    .header-badge{margin-left:auto;font-size:9px;font-weight:700;padding:4px 10px;border-radius:6px;background:var(--cyan-dim);border:1px solid var(--border-c);color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;}
+
+    main{padding:20px 16px 60px;position:relative;z-index:1;max-width:480px;margin:0 auto;}
+
+    .page-title{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;background:linear-gradient(90deg,var(--cyan) 0%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .page-sub{font-size:11px;color:var(--muted);margin-bottom:18px;line-height:1.5;}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,var(--border-c),var(--border-p),transparent);margin-bottom:16px;}
+
+    /* SUMMARY */
+    .summary-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px;position:relative;overflow:hidden;}
+    .summary-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple));}
+    .summary-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:9px;}
+    .summary-lbl{color:var(--muted);font-weight:600;}
+    .summary-val{font-weight:700;}
+    .summary-hr{height:1px;background:var(--border);margin:10px 0;}
+    .summary-total-row{display:flex;justify-content:space-between;align-items:center;}
+    .summary-total-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+    .summary-total-val{font-size:21px;font-weight:800;color:var(--cyan);letter-spacing:-.5px;text-shadow:0 0 20px var(--cyan-glow);}
+
+    /* SECTION LABEL */
+    .sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .sec-label::before{content:'';width:12px;height:1px;background:linear-gradient(90deg,var(--cyan),var(--purple));}
+
+    /* DELIVERY OPTIONS */
+    .delivery-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;}
+    .del-opt{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px 12px;cursor:pointer;transition:.22s;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;overflow:hidden;}
+    .del-opt .del-icon{font-size:26px;line-height:1;}
+    .del-opt .del-name{font-size:13px;font-weight:800;}
+    .del-opt .del-desc{font-size:9px;color:var(--muted);text-align:center;line-height:1.5;}
+    .del-opt.sel-cyan{border-color:var(--cyan);background:var(--cyan-dim);box-shadow:0 0 20px rgba(0,217,255,.1);}
+    .del-opt.sel-green{border-color:var(--green);background:var(--green-dim);box-shadow:0 0 20px rgba(34,197,94,.1);}
+
+    /* DELIVERY FEE BANNER */
+    .fee-banner{display:none;background:var(--orange-dim);border:1px solid var(--border-o);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:11px;color:#fdba74;line-height:1.6;animation:fadeUp .25s ease;}
+    .fee-banner.show{display:flex;gap:10px;align-items:flex-start;}
+    .fee-banner i{margin-top:2px;color:var(--orange);flex-shrink:0;}
+
+    /* JAMINAN BOX — hanya muncul kalau cash + antar */
+    .jaminan-box{display:none;background:linear-gradient(135deg,rgba(249,115,22,.06),rgba(168,85,247,.06));border:1px solid var(--border-o);border-radius:14px;padding:16px;margin-bottom:16px;animation:fadeUp .25s ease;}
+    .jaminan-box.show{display:block;}
+    .jaminan-title{font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .jaminan-item{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:#94a3b8;margin-bottom:7px;line-height:1.5;}
+    .jaminan-item strong{color:var(--text);}
+    .jaminan-num{min-width:18px;height:18px;border-radius:50%;background:var(--orange-dim);border:1px solid var(--border-o);color:var(--orange);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+
+    /* PAYMENT OPTIONS */
+    .pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;}
+    .pay-opt{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px 12px;cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;overflow:hidden;}
+    .pay-opt.sel-cyan{border-color:var(--cyan);background:var(--cyan-dim);box-shadow:0 0 20px rgba(0,217,255,.1);}
+    .pay-opt.sel-purple{border-color:var(--purple);background:var(--purple-dim);box-shadow:0 0 20px rgba(168,85,247,.12);}
+    .pay-opt .pay-icon{font-size:24px;line-height:1;}
+    .pay-opt .pay-name{font-size:12px;font-weight:800;}
+    .pay-opt .pay-desc{font-size:9px;color:var(--muted);text-align:center;line-height:1.45;}
+    .pay-badge{position:absolute;top:8px;right:8px;font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;}
+    .badge-c{background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--border-c);}
+    .badge-p{background:var(--purple-dim);color:var(--purple);border:1px solid var(--border-p);}
+    .badge-off{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border);}
+    .pay-opt.disabled{opacity:.35;cursor:not-allowed;pointer-events:none;}
+
+    /* INFO BOX */
+    .info-box{border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:11px;line-height:1.65;display:none;}
+    .info-box.show{display:block;animation:fadeUp .25s ease;}
+    .info-box i{margin-right:5px;}
+    .info-ewallet{background:var(--cyan-dim);border:1px solid var(--border-c);color:#a5f3fc;}
+    .info-cash{background:var(--purple-dim);border:1px solid var(--border-p);color:#d8b4fe;}
+
+    /* DANA PANEL */
+    .dana-panel{background:var(--card);border:1px solid var(--border-c);border-radius:16px;padding:20px 16px;margin-bottom:16px;text-align:center;display:none;position:relative;overflow:hidden;flex-direction:column;align-items:center;}
+    .dana-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple));}
+    .dana-panel.show{display:flex;animation:fadeUp .3s ease;}
+    .dana-hdr{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;}
+    .d-dot{width:8px;height:8px;border-radius:50%;}
+    .d-dot.c{background:var(--cyan);box-shadow:0 0 8px var(--cyan-glow);}
+    .d-dot.p{background:var(--purple);box-shadow:0 0 8px var(--purple-glow);}
+    .dana-hdr-lbl{font-size:12px;font-weight:800;}
+    .dana-hdr-lbl span{color:var(--cyan);}
+    .dana-num-wrap{background:var(--cyan-dim);border:1px solid var(--border-c);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;}
+    .dana-number{font-size:20px;font-weight:800;letter-spacing:.08em;color:var(--cyan);text-shadow:0 0 16px var(--cyan-glow);text-align:center;}
+    .copy-btn{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:7px 12px;border-radius:8px;background:var(--purple-dim);border:1px solid var(--border-p);color:var(--purple);cursor:pointer;font-family:inherit;transition:.15s;white-space:nowrap;}
+    .copy-btn:active{opacity:.7;}
+    .dana-name{font-size:11px;color:var(--muted);margin-bottom:16px;}
+    .dana-qr-wrap{background:#fff;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 0 28px var(--cyan-glow);width:fit-content;text-align:center;}
+    .dana-qr-wrap img{width:136px;height:136px;display:block;}
+    .dana-note{font-size:10px;color:var(--muted);line-height:1.6;margin-bottom:14px;}
+    .nominal-chip{display:inline-block;background:linear-gradient(90deg,var(--cyan-dim),var(--purple-dim));border-radius:8px;padding:6px 14px;font-size:13px;font-weight:800;color:var(--cyan);letter-spacing:-.3px;text-shadow:0 0 12px var(--cyan-glow);border:1px solid var(--border-c);margin:4px 0 14px;}
+    .dana-steps{text-align:left;}
+    .dana-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:9px;font-size:11px;color:#94a3b8;}
+    .step-num{min-width:20px;height:20px;border-radius:50%;background:var(--cyan-dim);border:1px solid var(--border-c);color:var(--cyan);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px;flex-shrink:0;}
+    .step-num.p{background:var(--purple-dim);border-color:var(--border-p);color:var(--purple);}
+    .dana-step strong{color:var(--text);}
+
+    /* CASH PANEL */
+    .cash-panel{background:var(--card2);border:1px solid var(--border-p);border-radius:16px;padding:20px 16px;margin-bottom:16px;display:none;position:relative;overflow:hidden;}
+    .cash-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple),var(--cyan));}
+    .cash-panel.show{display:block;animation:fadeUp .3s ease;}
+    .cash-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+    .cash-icon-wrap{width:42px;height:42px;border-radius:12px;background:var(--purple-dim);border:1px solid var(--border-p);display:flex;align-items:center;justify-content:20px;font-size:20px;box-shadow:0 0 14px var(--purple-glow);flex-shrink:0;align-items:center;justify-content:center;}
+    .cash-title{font-size:14px;font-weight:800;}
+    .cash-sub{font-size:10px;color:var(--purple);margin-top:2px;}
+    .deadline-box{background:linear-gradient(135deg,var(--purple-dim),var(--cyan-dim));border:1px solid var(--border-p);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+    .deadline-icon{width:36px;height:36px;border-radius:10px;background:var(--purple-mid);border:1px solid var(--border-p);display:flex;align-items:center;justify-content:center;color:var(--purple);font-size:14px;flex-shrink:0;box-shadow:0 0 12px var(--purple-glow);}
+    .deadline-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--purple);margin-bottom:3px;}
+    .deadline-val{font-size:14px;font-weight:800;}
+    .cash-note{font-size:11px;color:#94a3b8;line-height:1.65;}
+    .cash-note strong{color:var(--purple);}
+    .status-tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;margin-top:10px;background:var(--purple-dim);border:1px solid var(--border-p);color:var(--purple);}
+
+    /* SYARAT & KETENTUAN */
+    .tnc-box{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px;}
+    .tnc-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .tnc-title i{color:var(--cyan);}
+    .tnc-item{display:flex;align-items:flex-start;gap:8px;font-size:10px;color:#64748b;margin-bottom:6px;line-height:1.55;}
+    .tnc-item i{color:var(--cyan);font-size:8px;margin-top:3px;flex-shrink:0;}
+
+    /* CHECKBOX AGREE */
+    .agree-wrap{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;cursor:pointer;}
+    .agree-box{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border-c);background:var(--cyan-dim);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;margin-top:1px;}
+    .agree-box.checked{background:var(--cyan);border-color:var(--cyan);}
+    .agree-box.checked i{display:block;}
+    .agree-box i{display:none;color:#000;font-size:10px;}
+    .agree-text{font-size:11px;color:#94a3b8;line-height:1.6;}
+    .agree-text strong{color:var(--text);}
+
+    /* CONFIRM BTN */
+    .btn-confirm{width:100%;padding:17px;border-radius:14px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:9px;transition:.15s;position:relative;overflow:hidden;}
+    .btn-confirm::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:translateX(-100%);transition:.5s;}
+    .btn-confirm:hover::before{transform:translateX(100%);}
+    .btn-ewallet{background:linear-gradient(90deg,var(--cyan),#007bff);color:#000;box-shadow:0 0 28px var(--cyan-glow);}
+    .btn-cash{background:linear-gradient(90deg,var(--purple),#7c3aed);color:#fff;box-shadow:0 0 28px var(--purple-glow);}
+    .btn-confirm:active{filter:brightness(.88);}
+    .btn-confirm:disabled{opacity:.35;cursor:not-allowed;filter:none;box-shadow:none;}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+    @keyframes pulse-c{0%,100%{box-shadow:0 0 20px var(--cyan-glow)}50%{box-shadow:0 0 44px var(--cyan-glow)}}
+    @keyframes pulse-p{0%,100%{box-shadow:0 0 20px var(--purple-glow)}50%{box-shadow:0 0 44px var(--purple-glow)}}
+    @keyframes pulse-g{0%,100%{box-shadow:0 0 20px var(--green-glow)}50%{box-shadow:0 0 44px var(--green-glow)}}
+
+    /* SUCCESS */
+    #success-screen{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+    #success-screen.show{display:flex;animation:fadeUp .4s ease;}
+    .success-card{background:var(--card);border:1px solid var(--border);border-radius:28px;padding:38px 28px;max-width:360px;width:100%;text-align:center;position:relative;overflow:hidden;}
+    .success-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--purple));}
+    .success-glow{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:200px;height:200px;border-radius:50%;pointer-events:none;}
+    .s-icon{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 18px;position:relative;z-index:1;}
+    .si-c{background:var(--cyan-dim);border:1.5px solid var(--border-c);color:var(--cyan);animation:pulse-c 2.5s infinite;}
+    .si-p{background:var(--purple-dim);border:1.5px solid var(--border-p);color:var(--purple);animation:pulse-p 2.5s infinite;}
+    .si-g{background:var(--green-dim);border:1.5px solid var(--border-g);color:var(--green);animation:pulse-g 2.5s infinite;}
+    .s-title{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px;position:relative;z-index:1;}
+    .s-desc{font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:8px;position:relative;z-index:1;}
+    .s-pill{display:inline-block;font-size:10px;font-weight:700;padding:5px 14px;border-radius:20px;margin:6px 0 18px;position:relative;z-index:1;}
+    .sp-c{background:var(--cyan-dim);border:1px solid var(--border-c);color:var(--cyan);}
+    .sp-p{background:var(--purple-dim);border:1px solid var(--border-p);color:var(--purple);}
+    .sp-g{background:var(--green-dim);border:1px solid var(--border-g);color:var(--green);}
+    .s-info{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:18px;font-size:11px;color:#94a3b8;line-height:1.6;text-align:left;position:relative;z-index:1;}
+    .s-info strong{color:var(--text);}
+    .btn-row{display:flex;gap:10px;position:relative;z-index:1;}
+    .btn-row button{flex:1;padding:14px;border-radius:12px;border:none;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;}
+    .btn-hist{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);}
+    .btn-dash{background:linear-gradient(90deg,var(--cyan),var(--purple));color:#fff;box-shadow:0 0 18px var(--cyan-glow);}
+
+    /* ── LIGHT MODE ── */
+    body.light-mode{
+      --bg:#f1f5f9;
+      --card:#ffffff;
+      --card2:#f8f0ff;
+      --border:rgba(0,0,0,.08);
+      --border-c:rgba(2,132,199,.25);
+      --border-p:rgba(124,58,237,.22);
+      --border-g:rgba(21,128,61,.2);
+      --border-o:rgba(194,65,12,.2);
+      --text:#1a202c;
+      --muted:#64748b;
+      --cyan:#0284c7;
+      --cyan-dim:rgba(2,132,199,.08);
+      --cyan-mid:rgba(2,132,199,.18);
+      --cyan-glow:rgba(2,132,199,.25);
+      --purple:#7c3aed;
+      --purple-dim:rgba(124,58,237,.08);
+      --purple-mid:rgba(124,58,237,.18);
+      --purple-glow:rgba(124,58,237,.25);
+      --green:#16a34a;
+      --green-dim:rgba(21,128,61,.08);
+      --green-glow:rgba(21,128,61,.2);
+      --orange:#ea580c;
+      --orange-dim:rgba(234,88,12,.08);
+      --orange-glow:rgba(234,88,12,.2);
+    }
+    body.light-mode header{background:rgba(248,250,252,.97)!important;}
+    body.light-mode body::before{background-image:linear-gradient(rgba(2,132,199,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(2,132,199,.025) 1px,transparent 1px)!important;}
+    body.light-mode .btn-hist{background:rgba(0,0,0,.04)!important;}
+    body.light-mode .info-ewallet{color:#0369a1!important;}
+    body.light-mode .info-cash{color:#6d28d9!important;}
+  </style>
+</head>
+<body>
+<script>(function(){if(localStorage.getItem('pg_theme')==='light')document.body.classList.add('light-mode');})();</script>
+
+<header>
+  <button class="btn-back" onclick="history.back()"><i class="fas fa-chevron-left"></i></button>
+  <span class="logo">Prince<span class="logo-dot">·</span><span class="logo-cyan">Games</span></span>
+  <span class="header-badge">🎮 Rental</span>
+</header>
+
+<main>
+  <div class="page-title">Pembayaran Rental</div>
+  <div class="page-sub" id="page-sub">Pilih metode pengiriman & pembayaran</div>
+  <div class="divider"></div>
+
+  <!-- RINGKASAN ORDER -->
+  <div class="summary-card">
+    <div class="summary-row">
+      <span class="summary-lbl">Konsol</span>
+      <span class="summary-val" id="s-console">—</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-lbl">Durasi sewa</span>
+      <span class="summary-val" id="s-duration">—</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-lbl">Mulai – Selesai</span>
+      <span class="summary-val" id="s-period" style="text-align:right;max-width:60%;">—</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-lbl">Pelanggan</span>
+      <span class="summary-val" id="s-name">—</span>
+    </div>
+    <div class="summary-row" id="s-addr-row">
+      <span class="summary-lbl">Alamat</span>
+      <span class="summary-val" id="s-address" style="text-align:right;max-width:60%;font-size:11px;">—</span>
+    </div>
+    <div class="summary-hr"></div>
+    <div class="summary-row" style="margin-bottom:0">
+      <span class="summary-lbl">Biaya sewa</span>
+      <span class="summary-val" id="s-rental-cost">—</span>
+    </div>
+    <div class="summary-row" id="s-delivery-row" style="display:none;margin-bottom:0;margin-top:6px;">
+      <span class="summary-lbl" style="color:var(--orange)">Ongkir</span>
+      <span class="summary-val" id="s-delivery-cost" style="color:var(--orange)">—</span>
+    </div>
+    <div class="summary-hr" style="margin-top:10px;"></div>
+    <div class="summary-total-row">
+      <span class="summary-total-lbl">Total Bayar</span>
+      <span class="summary-total-val" id="s-total">Rp 0</span>
+    </div>
+  </div>
+
+  <!-- PILIHAN PENGIRIMAN -->
+  <div class="sec-label">Cara Terima Unit</div>
+  <div class="delivery-grid">
+    <div class="del-opt sel-green" id="del-pickup" onclick="selectDelivery('pickup')">
+      <div class="del-icon">🏪</div>
+      <div class="del-name">Ambil Sendiri</div>
+      <div class="del-desc">Datang ke toko, ambil langsung</div>
+    </div>
+    <div class="del-opt" id="del-antar" onclick="selectDelivery('antar')">
+      <div class="del-icon">🛵</div>
+      <div class="del-name">Diantar</div>
+      <div class="del-desc">Unit dikirim ke alamatmu</div>
+    </div>
+  </div>
+
+  <!-- BIAYA ANTAR BANNER -->
+  <div class="fee-banner" id="fee-banner">
+    <i class="fas fa-motorcycle"></i>
+    <span>Biaya antar <strong id="fee-amount" style="color:var(--orange)">Rp 0</strong> dihitung berdasarkan jarakmu dari toko. Pastikan alamat benar di step sebelumnya. Biaya ditambahkan ke total.</span>
+  </div>
+
+  <!-- SYARAT & KETENTUAN -->
+  <div class="tnc-box">
+    <div class="tnc-title"><i class="fas fa-file-contract"></i> Syarat & Ketentuan Rental</div>
+    <div class="tnc-item"><i class="fas fa-circle"></i><span>Konsol <strong>wajib dikembalikan</strong> sesuai waktu yang disepakati. Keterlambatan dikenakan denda <strong>Rp 5.000/jam</strong>.</span></div>
+    <div class="tnc-item"><i class="fas fa-circle"></i><span>Kerusakan akibat kelalaian pelanggan <strong>menjadi tanggung jawab pelanggan</strong> sepenuhnya.</span></div>
+    <div class="tnc-item"><i class="fas fa-circle"></i><span>Konsol tidak boleh dipindahtangankan atau dibawa ke luar kota tanpa izin.</span></div>
+    <div class="tnc-item" id="tnc-dp" style="display:none;"><i class="fas fa-circle" style="color:var(--orange)"></i><span style="color:#fdba74">Untuk Cash + Antar: wajib transfer <strong>DP 50%</strong> via e-wallet terlebih dahulu sebelum unit dikirim.</span></div>
+    <div class="tnc-item" id="tnc-ktp"><i class="fas fa-circle" style="color:var(--purple)"></i><span style="color:#d8b4fe">Pelanggan wajib menunjukkan <strong>KTP asli</strong> saat mengambil/menerima unit sebagai jaminan identitas.</span></div>
+  </div>
+
+  <!-- JAMINAN BOX (muncul kalau cash + antar) -->
+  <div class="jaminan-box" id="jaminan-box">
+    <div class="jaminan-title"><i class="fas fa-shield-exclamation"></i> Perlindungan Penipuan</div>
+    <div class="jaminan-item">
+      <div class="jaminan-num">1</div>
+      <span>Karena unit diantar, wajib membayar <strong>DP 50%</strong> via DANA sebelum kurir berangkat.</span>
+    </div>
+    <div class="jaminan-item">
+      <div class="jaminan-num">2</div>
+      <span>Sisa <strong>50% + ongkir</strong> dibayar tunai saat unit tiba di lokasi.</span>
+    </div>
+    <div class="jaminan-item">
+      <div class="jaminan-num">3</div>
+      <span>Foto KTP dikirim via WhatsApp ke admin sebelum kurir berangkat.</span>
+    </div>
+    <div class="jaminan-item">
+      <div class="jaminan-num">4</div>
+      <span>Admin akan konfirmasi ulang via WhatsApp sebelum pengiriman dimulai.</span>
+    </div>
+  </div>
+
+  <!-- METODE BAYAR -->
+  <div class="sec-label">Metode Pembayaran</div>
+  <div class="pay-grid">
+    <div class="pay-opt" id="opt-cash" onclick="selectPay('cash')">
+      <span class="pay-badge badge-p" id="cash-badge">Hari ini</span>
+      <div class="pay-icon">💵</div>
+      <div class="pay-name">Cash</div>
+      <div class="pay-desc" id="cash-desc">Bayar langsung saat ambil/terima</div>
+    </div>
+    <div class="pay-opt sel-cyan" id="opt-ewallet" onclick="selectPay('ewallet')">
+      <span class="pay-badge badge-c">Semua hari</span>
+      <div class="pay-icon">📱</div>
+      <div class="pay-name">E-Wallet</div>
+      <div class="pay-desc">DANA — konfirmasi instan</div>
+    </div>
+  </div>
+
+  <!-- INFO BOX -->
+  <div class="info-box info-cash" id="info-cash"></div>
+  <div class="info-box info-ewallet show" id="info-ewallet">
+    <i class="fas fa-shield-alt"></i>
+    Transfer DANA ke nomor di bawah sesuai nominal, lalu klik <strong>Konfirmasi Pembayaran</strong>. Status rental aktif setelah dikonfirmasi.
+  </div>
+
+  <!-- PANEL DANA (E-WALLET) -->
+  <div class="dana-panel show" id="dana-panel">
+    <div class="dana-hdr">
+      <div class="d-dot c"></div>
+      <div class="dana-hdr-lbl">Transfer via <span>DANA</span></div>
+      <div class="d-dot p"></div>
+    </div>
+    <div class="dana-num-wrap">
+      <div class="dana-number">0857-6903-3135</div>
+      <button class="copy-btn" onclick="copyDana()"><i class="fas fa-copy"></i> Salin</button>
+    </div>
+    <div class="dana-name">A/N: <strong style="color:var(--text)">Prince Games</strong></div>
+    <div class="dana-qr-wrap" style="margin-left:auto;margin-right:auto;">
+      <a href="https://wa.me/6285769033135" target="_blank">
+        <img id="dana-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https%3A%2F%2Fwa.me%2F6285769033135&color=0a0a0a&bgcolor=ffffff" alt="QR WhatsApp" style="width:160px;height:160px;display:block;" />
+      </a>
+    </div>
+    <div class="dana-note">📱 Scan QR untuk langsung chat admin via WhatsApp</div>
+    <div class="nominal-chip" id="dana-nominal">Rp 0</div>
+    <div id="dp-note" style="display:none;font-size:10px;color:var(--orange);margin-bottom:10px;">
+      ⚠️ Ini adalah DP 50%. Sisa dibayar tunai saat unit tiba.
+    </div>
+    <div class="dana-steps" id="dana-steps-wrap"></div>
+  </div>
+
+  <!-- CASH PANEL -->
+  <div class="cash-panel" id="cash-panel">
+    <div class="cash-head">
+      <div class="cash-icon-wrap">💵</div>
+      <div>
+        <div class="cash-title" id="cash-panel-title">Bayar di Tempat</div>
+        <div class="cash-sub" id="cash-panel-sub">Status rental: Menunggu</div>
+      </div>
+    </div>
+    <div class="deadline-box" id="deadline-section">
+      <div class="deadline-icon"><i class="fas fa-clock"></i></div>
+      <div>
+        <div class="deadline-lbl" id="deadline-lbl">Batas waktu pengambilan</div>
+        <div class="deadline-val" id="cash-deadline">—</div>
+      </div>
+    </div>
+    <div class="cash-note" id="cash-note-text">
+      Booking tersimpan dengan status <strong>Sementara</strong>. Datang ke toko dan ambil unit sebelum batas waktu. Slot dilepas otomatis jika tidak check-in.
+    </div>
+    <div class="status-tag"><i class="fas fa-hourglass-half" style="font-size:9px"></i> Menunggu Pengambilan</div>
+  </div>
+
+  <!-- AGREE CHECKBOX -->
+  <div class="agree-wrap" onclick="toggleAgree()" id="agree-wrap">
+    <div class="agree-box" id="agree-box">
+      <i class="fas fa-check"></i>
+    </div>
+    <div class="agree-text">Saya telah membaca dan menyetujui <strong>syarat & ketentuan</strong> rental. Saya bertanggung jawab penuh atas konsol selama masa sewa.</div>
+  </div>
+
+  <!-- TOMBOL KONFIRMASI -->
+  <button class="btn-confirm btn-ewallet" id="btn-confirm" onclick="confirmPayment()" disabled>
+    <i class="fas fa-check-circle"></i>
+    <span id="btn-label">Konfirmasi Pembayaran E-Wallet</span>
+  </button>
+</main>
+
+<!-- SUCCESS SCREEN -->
+<div id="success-screen">
+  <div class="success-card">
+    <div class="success-glow" id="s-glow"></div>
+    <div class="s-icon si-c" id="s-icon"><i class="fas fa-check"></i></div>
+    <div class="s-title" id="s-title">Rental Dikonfirmasi!</div>
+    <div class="s-desc" id="s-desc">—</div>
+    <div class="s-pill sp-c" id="s-pill">—</div>
+    <div class="s-info" id="s-info"></div>
+    <div class="btn-row">
+      <button class="btn-hist" onclick="location.href='dashboard-customer.html?history=1'">History</button>
+      <button class="btn-dash" onclick="location.href='../pelanggan/dashboard-customer.html'">Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { db } from '../../assets/js/auth.js';
+  import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+  const DANA_NUMBER    = '085769033135';
+  const DELIVERY_FEE   = 15000; // Rp 15.000 ongkir flat (bisa disesuaikan)
+  const MAX_CASH_HOURS = 2;     // Batas ambil cash: 2 jam sejak order
+
+  // ───── Ambil data dari sessionStorage ─────
+  const raw = sessionStorage.getItem('pendingRental');
+  if (!raw) {
+    Swal.fire({
+      icon:'error', title:'Sesi tidak valid',
+      text:'Silakan mulai rental ulang.',
+      background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff'
+    }).then(() => location.href = '../pelanggan/rental-bawapulang.html');
+    throw new Error('No pending rental data');
+  }
+  const rn = JSON.parse(raw);
+
+  // ───── State ─────
+  let selectedDelivery = 'pickup';
+  let selectedPay      = 'ewallet';
+  let isAgreed         = false;
+
+  // ───── Hitung waktu ─────
+  const startDt    = new Date(rn.startTime);
+  const endDt      = new Date(rn.endTime);
+  const rentalCost = rn.total;
+  const deadlineMs = Date.now() + MAX_CASH_HOURS * 3600 * 1000;
+  const deadlineStr = new Date(deadlineMs).toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+
+  function fmtDt(d) {
+    return d.toLocaleString('id-ID', { weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+  }
+
+  // ───── Isi ringkasan ─────
+  document.getElementById('s-console').textContent   = rn.console;
+  document.getElementById('s-duration').textContent  = rn.duration + ' Jam';
+  document.getElementById('s-period').textContent    = fmtDt(startDt) + ' – ' + fmtDt(endDt);
+  document.getElementById('s-name').textContent      = rn.customerName;
+  document.getElementById('s-address').textContent   = rn.customerAddress || '—';
+  document.getElementById('s-rental-cost').textContent = 'Rp ' + rentalCost.toLocaleString('id-ID');
+  updateTotal();
+
+  // ───── DELIVERY ─────
+  window.selectDelivery = function(type) {
+    selectedDelivery = type;
+
+    document.getElementById('del-pickup').className = 'del-opt' + (type === 'pickup' ? ' sel-green' : '');
+    document.getElementById('del-antar').className  = 'del-opt' + (type === 'antar'  ? ' sel-cyan' : '');
+
+    const feeBanner  = document.getElementById('fee-banner');
+    const jaminanBox = document.getElementById('jaminan-box');
+    const tncDp      = document.getElementById('tnc-dp');
+    const addrRow    = document.getElementById('s-addr-row');
+    const delivRow   = document.getElementById('s-delivery-row');
+
+    if (type === 'antar') {
+      document.getElementById('fee-amount').textContent = 'Rp ' + DELIVERY_FEE.toLocaleString('id-ID');
+      feeBanner.classList.add('show');
+      addrRow.style.display   = 'flex';
+      delivRow.style.display  = 'flex';
+      document.getElementById('s-delivery-cost').textContent = 'Rp ' + DELIVERY_FEE.toLocaleString('id-ID');
+      tncDp.style.display = selectedPay === 'cash' ? 'flex' : 'none';
+    } else {
+      feeBanner.classList.remove('show');
+      addrRow.style.display   = 'none';
+      delivRow.style.display  = 'none';
+      tncDp.style.display     = 'none';
+    }
+
+    // Jaminan box hanya kalau cash + antar
+    jaminanBox.classList.toggle('show', type === 'antar' && selectedPay === 'cash');
+    updateCashPanel();
+    updateTotal();
+    updateDanaPanel();
+  };
+
+  // ───── PAYMENT ─────
+  window.selectPay = function(type) {
+    selectedPay = type;
+
+    const oc = document.getElementById('opt-cash');
+    const oe = document.getElementById('opt-ewallet');
+    oc.classList.remove('sel-cyan','sel-purple');
+    oe.classList.remove('sel-cyan','sel-purple');
+    type === 'cash' ? oc.classList.add('sel-purple') : oe.classList.add('sel-cyan');
+
+    document.getElementById('info-cash').classList.toggle('show', type === 'cash');
+    document.getElementById('info-ewallet').classList.toggle('show', type === 'ewallet');
+    document.getElementById('dana-panel').classList.toggle('show', type === 'ewallet');
+    document.getElementById('cash-panel').classList.toggle('show', type === 'cash');
+
+    const jaminanBox = document.getElementById('jaminan-box');
+    const tncDp      = document.getElementById('tnc-dp');
+
+    jaminanBox.classList.toggle('show', type === 'cash' && selectedDelivery === 'antar');
+    tncDp.style.display = (type === 'cash' && selectedDelivery === 'antar') ? 'flex' : 'none';
+
+    const btn = document.getElementById('btn-confirm');
+    if (type === 'ewallet') {
+      btn.className = 'btn-confirm btn-ewallet';
+      document.getElementById('btn-label').textContent = 'Konfirmasi Pembayaran E-Wallet';
+    } else {
+      btn.className = 'btn-confirm btn-cash';
+      const isAntar = selectedDelivery === 'antar';
+      document.getElementById('btn-label').textContent = isAntar
+        ? 'Konfirmasi & Bayar DP 50%'
+        : 'Konfirmasi Rental Cash';
+    }
+
+    updateCashInfo();
+    updateCashPanel();
+    updateDanaPanel();
+  };
+
+  function updateTotal() {
+    const fee   = selectedDelivery === 'antar' ? DELIVERY_FEE : 0;
+    const total = rentalCost + fee;
+    document.getElementById('s-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+    return total;
+  }
+
+  function getGrandTotal() {
+    return rentalCost + (selectedDelivery === 'antar' ? DELIVERY_FEE : 0);
+  }
+
+  function updateCashInfo() {
+    const box  = document.getElementById('info-cash');
+    const isAntar = selectedDelivery === 'antar';
+    if (isAntar) {
+      box.innerHTML = `<i class="fas fa-exclamation-triangle"></i><strong>Antar + Cash:</strong> Wajib transfer DP 50% (Rp ${(Math.ceil(rentalCost * 0.5)).toLocaleString('id-ID')}) via DANA sebelum kurir berangkat. Sisa dibayar tunai saat unit tiba.`;
+    } else {
+      box.innerHTML = `<i class="fas fa-hourglass-half"></i><strong>Batas ambil: pukul ${deadlineStr} WIB.</strong> Datang & ambil unit sebelum batas waktu. Order dibatalkan otomatis jika melewati batas.`;
+    }
+  }
+
+  function updateCashPanel() {
+    const isAntar = selectedDelivery === 'antar';
+    document.getElementById('cash-panel-title').textContent = isAntar ? 'Antar + Bayar Sebagian' : 'Ambil & Bayar di Toko';
+    document.getElementById('cash-panel-sub').textContent   = isAntar ? 'DP 50% via DANA, sisa cash' : 'Status rental: Sementara';
+    document.getElementById('deadline-lbl').textContent     = isAntar ? 'Admin konfirmasi via WA dalam' : 'Batas waktu pengambilan';
+    document.getElementById('cash-deadline').textContent    = isAntar ? '30 menit' : 'Sebelum pukul ' + deadlineStr + ' WIB';
+    document.getElementById('cash-note-text').innerHTML     = isAntar
+      ? 'Admin akan menghubungi via <strong>WhatsApp</strong> untuk konfirmasi sebelum kurir berangkat. Pastikan nomor WA aktif.'
+      : 'Rental tersimpan dengan status <strong>Sementara</strong>. Datang ke Prince Games dan ambil unit sebelum batas waktu.';
+  }
+
+  function updateDanaPanel() {
+    const isAntar    = selectedDelivery === 'antar';
+    const isCash     = selectedPay === 'cash';
+    const grandTotal = getGrandTotal();
+    const transferAmt = (isAntar && isCash) ? Math.ceil(rentalCost * 0.5) : grandTotal;
+
+    document.getElementById('dana-nominal').textContent = 'Rp ' + transferAmt.toLocaleString('id-ID');
+    document.getElementById('dp-note').style.display = (isAntar && isCash) ? 'block' : 'none';
+
+    const steps = document.getElementById('dana-steps-wrap');
+    steps.innerHTML = `
+      <div class="dana-step"><div class="step-num">1</div><span>Buka aplikasi <strong>DANA</strong> di ponsel Anda</span></div>
+      <div class="dana-step"><div class="step-num">2</div><span>Pilih <strong>Kirim Uang</strong> → masukkan <strong>${DANA_NUMBER}</strong></span></div>
+      <div class="dana-step"><div class="step-num">3</div><span>Masukkan nominal: <strong>Rp ${transferAmt.toLocaleString('id-ID')}</strong>${isAntar && isCash ? ' (DP 50%)' : ''}</span></div>
+      ${isAntar ? `<div class="dana-step"><div class="step-num">4</div><span>Kirim foto <strong>KTP</strong> via WhatsApp ke admin</span></div>
+      <div class="dana-step"><div class="step-num p">5</div><span>Tunggu konfirmasi admin, lalu klik tombol di bawah</span></div>` :
+      `<div class="dana-step"><div class="step-num p">4</div><span>Selesaikan transfer, lalu klik tombol konfirmasi di bawah</span></div>`}
+    `;
+  }
+
+  // ───── AGREE ─────
+  window.toggleAgree = function() {
+    isAgreed = !isAgreed;
+    const box = document.getElementById('agree-box');
+    box.classList.toggle('checked', isAgreed);
+    document.getElementById('btn-confirm').disabled = !isAgreed;
+  };
+
+  // ───── COPY ─────
+  window.copyDana = function() {
+    navigator.clipboard.writeText(DANA_NUMBER).then(() => {
+      Swal.fire({ toast:true, position:'top', icon:'success', title:'Nomor DANA disalin!', showConfirmButton:false, timer:1800, background:'#11171f', color:'#fff' });
+    });
+  };
+
+  // ───── CONFIRM ─────
+  window.confirmPayment = async function() {
+    if (!isAgreed) return;
+
+    const isEwallet  = selectedPay === 'ewallet';
+    const isAntar    = selectedDelivery === 'antar';
+    const grandTotal = getGrandTotal();
+    const dpAmount   = Math.ceil(rentalCost * 0.5);
+    const btnEl      = document.getElementById('btn-confirm');
+    btnEl.disabled   = true;
+
+    // ── Konfirmasi dialog ──
+    let confirmHtml = '';
+    if (isEwallet) {
+      confirmHtml = `Pastikan sudah transfer <strong style="color:#00d9ff">Rp ${grandTotal.toLocaleString('id-ID')}</strong> ke DANA <strong>${DANA_NUMBER}</strong>.`;
+    } else if (isAntar) {
+      confirmHtml = `Pastikan sudah transfer <strong style="color:#00d9ff">DP Rp ${dpAmount.toLocaleString('id-ID')}</strong> ke DANA <strong>${DANA_NUMBER}</strong> dan sudah kirim foto KTP via WhatsApp. Sisa Rp ${(grandTotal - dpAmount).toLocaleString('id-ID')} dibayar saat unit tiba.`;
+    } else {
+      confirmHtml = `Order rental cash <strong>${rn.console}</strong> akan disimpan. Datang & ambil unit sebelum pukul <strong>${deadlineStr} WIB</strong>.`;
+    }
+
+    const res = await Swal.fire({
+      title: isEwallet ? 'Sudah transfer?' : (isAntar ? 'Sudah DP & kirim KTP?' : 'Konfirmasi rental cash?'),
+      html: confirmHtml,
+      icon: 'question', showCancelButton: true,
+      confirmButtonText: isEwallet ? 'Ya, sudah transfer' : (isAntar ? 'Ya, sudah DP' : 'Ya, konfirmasi'),
+      cancelButtonText: 'Kembali',
+      background: '#11171f', color: '#fff', confirmButtonColor: '#00d9ff', cancelButtonColor: '#374151'
+    });
+
+    if (!res.isConfirmed) { btnEl.disabled = false; return; }
+
+    Swal.fire({ title:'Menyimpan rental...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), background:'#11171f', color:'#fff' });
+
+    try {
+      // Tentukan paymentStatus
+      let paymentStatus = '';
+      if (isEwallet)          paymentStatus = 'Lunas';
+      else if (isAntar)       paymentStatus = 'DP Dibayar';
+      else                    paymentStatus = 'Belum Bayar';
+
+      // Tentukan status rental — selalu menunggu konfirmasi staff dulu
+      let rentalStatus = 'Menunggu Konfirmasi Staff';
+
+      await addDoc(collection(db, 'rentals'), {
+        type              : 'bawa_pulang',
+        console           : rn.console,
+        rate              : rn.rate,
+        duration          : rn.duration,
+        rentalCost        : rentalCost,
+        deliveryMethod    : isAntar ? 'Diantar' : 'Ambil Sendiri',
+        deliveryFee       : isAntar ? DELIVERY_FEE : 0,
+        grandTotal        : grandTotal,
+        dpAmount          : (isAntar && !isEwallet) ? dpAmount : 0,
+        paymentMethod     : isEwallet ? 'Ewallet (DANA)' : 'Cash',
+        paymentStatus     : paymentStatus,
+        customerName      : rn.customerName,
+        customerPhone     : rn.customerPhone,
+        customerAddress   : rn.customerAddress || '',
+        startTime         : rn.startTime,
+        endTime           : rn.endTime,
+        status            : rentalStatus,
+        cashDeadline      : (!isEwallet && !isAntar) ? new Date(deadlineMs).toISOString() : null,
+        userId            : rn.userId || null,
+        userEmail         : rn.userEmail || null,
+        createdAt         : new Date().toISOString()
+      });
+
+      sessionStorage.removeItem('pendingRental');
+      Swal.close();
+      showSuccess(isEwallet, isAntar, grandTotal, dpAmount);
+    } catch (err) {
+      console.error(err);
+      btnEl.disabled = false;
+      Swal.fire({ icon:'error', title:'Gagal menyimpan', text:err.message, background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff' });
+    }
+  };
+
+  function showSuccess(isEwallet, isAntar, grandTotal, dpAmount) {
+    const icon  = document.getElementById('s-icon');
+    const glow  = document.getElementById('s-glow');
+    const info  = document.getElementById('s-info');
+
+    if (isEwallet) {
+      icon.className = 's-icon si-c'; icon.innerHTML = '<i class="fas fa-check"></i>';
+      glow.style.background = 'radial-gradient(circle,rgba(0,217,255,.1) 0%,transparent 70%)';
+      document.getElementById('s-title').textContent = 'Pesanan Terkirim!';
+      document.getElementById('s-desc').textContent  = 'Menunggu konfirmasi staff. Kami akan segera memverifikasi permintaan rentalmu.';
+      document.getElementById('s-pill').textContent  = '⏳ Status: Menunggu Konfirmasi Staff';
+      document.getElementById('s-pill').className    = 's-pill sp-p';
+      info.innerHTML = `Pesanan rentalmu sedang direview staff Prince Games. Kamu akan mendapat notifikasi setelah dikonfirmasi. Hubungi kami via WhatsApp jika butuh bantuan.`;
+    }
+
+    document.getElementById('success-screen').classList.add('show');
+  }
+
+  // ───── INIT ─────
+  // Expose ke window
+  window.selectPay      = selectPay;
+  window.selectDelivery = selectDelivery;
+  window.toggleAgree    = toggleAgree;
+  window.copyDana       = copyDana;
+  window.confirmPayment = confirmPayment;
+
+  // Default: ewallet + pickup
+  selectDelivery('pickup');
+  selectPay('ewallet');
+  updateCashInfo();
+  updateCashPanel();
+</script>
+</body>
+</html>

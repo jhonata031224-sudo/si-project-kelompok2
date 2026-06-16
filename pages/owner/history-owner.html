@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prince Games - Riwayat & Analitik</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html.light-mode-pre body { background: #f0f4f8 !important; }
+        html.light-mode-pre { background: #f0f4f8; }
+
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { background-color: #06090f; color: white; font-family: 'Plus Jakarta Sans', sans-serif; padding-bottom: 100px; }
+        .topbar{position:sticky;top:0;z-index:100;background:#0d1117;border-bottom:1px solid rgba(255,255,255,0.07);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;}
+        .logo{display:flex;align-items:center;gap:7px;font-weight:800;font-size:14px;letter-spacing:-.3px}
+        .logo-icon{width:32px;height:32px;background:rgba(0,217,255,0.12);border:1px solid rgba(0,217,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#00d9ff;font-size:14px}
+        .logo span{color:#00d9ff}
+        .role-badge{background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2);border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;color:#00d9ff;letter-spacing:.5px}
+        .nav-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:#161b22;border:1px solid rgba(255,255,255,0.08);font-size:11px;font-weight:600;color:#7d8590;cursor:pointer;transition:all .2s;font-family:inherit}
+        .nav-btn:hover{color:#e6edf3;border-color:rgba(255,255,255,0.15)}
+        .btn-keluar{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.2);color:#f78166}
+        .btn-keluar:hover{background:rgba(247,129,102,0.15);color:#f78166}
+        .btn-staff-view{background:transparent;border:1px solid rgba(255,255,255,0.08);color:#7d8590;font-size:10px;padding:4px 9px}
+        .btn-staff-view:hover{background:rgba(255,255,255,0.04);color:#e6edf3;border-color:rgba(255,255,255,0.15)}
+        .btn-theme-toggle{width:32px;height:32px;border-radius:8px;background:#161b22;border:1px solid rgba(255,255,255,0.08);color:#7d8590;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s}
+        .btn-theme-toggle:hover{color:#e6edf3;border-color:rgba(255,255,255,0.15)}
+        .logo-icon{width:32px;height:32px;background:rgba(0,217,255,0.12);border:1px solid rgba(0,217,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:14px;}
+        .logo-text{font-size:13px;font-weight:900;letter-spacing:.3px;color:#e8edf5;}
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#0d1117;border-top:1px solid rgba(255,255,255,0.07);padding:10px 8px 24px;display:flex;justify-content:space-around;z-index:200;border-radius:22px 22px 0 0;}
+        .bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 14px;border-radius:12px;text-decoration:none;}
+        .bnav-item i{font-size:18px;}
+        .bnav-item span{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;}
+        .bnav-item.inactive{color:#4b5563;}
+        .bnav-item.active{color:#00d9ff;}
+        .glass-card{background:rgba(17,23,31,0.9);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.05);border-radius:20px;}
+        .filter-btn{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:6px 16px;border-radius:10px;font-size:11px;font-weight:700;transition:all 0.2s;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+        .filter-btn.active{background:#00d9ff;color:#000;border-color:#00d9ff;}
+        .table-header{color:#475569;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;}
+        .table-cell{font-size:11px;font-weight:600;padding:12px 8px;}
+        .empty-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px;gap:8px;}
+        .empty-box i{font-size:28px;color:#1e293b;}
+        .empty-box p{font-size:11px;color:#374151;font-weight:700;text-align:center;}
+        .delete-btn{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171;width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;font-size:10px;flex-shrink:0;}
+        .delete-btn:hover{background:rgba(239,68,68,.25);border-color:rgba(239,68,68,.4);color:#ef4444;}
+        .delete-all-btn{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171;padding:5px 12px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+        .delete-all-btn:hover{background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.4);}
+        /* Modal */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px;}
+        .modal-box{background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px;max-width:340px;width:100%;text-align:center;}
+        .modal-icon{width:52px;height:52px;border-radius:14px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:20px;color:#ef4444;}
+        .modal-title{font-size:15px;font-weight:800;margin-bottom:6px;}
+        .modal-desc{font-size:11px;color:#6b7280;margin-bottom:20px;line-height:1.5;}
+        .modal-actions{display:flex;gap:10px;}
+        .modal-cancel-btn{flex:1;padding:10px;border-radius:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#9ca3af;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;}
+        .modal-cancel-btn:hover{background:rgba(255,255,255,.09);}
+        .modal-confirm-btn{flex:1;padding:10px;border-radius:11px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;}
+        .modal-confirm-btn:hover{background:rgba(239,68,68,.3);}
+
+        /* Modal light mode */
+        body.light-mode .modal-box {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .modal-title { color: #0f172a !important; }
+        body.light-mode .modal-desc  { color: #64748b !important; }
+        body.light-mode .modal-cancel-btn {
+            background: #f1f5f9 !important;
+            border-color: rgba(0,0,0,0.1) !important;
+            color: #475569 !important;
+        }
+        body.light-mode .modal-cancel-btn:hover { background: #e2e8f0 !important; }
+        body.light-mode .modal-overlay { background: rgba(0,0,0,0.45) !important; }
+
+        /* ═══════════════════════════════════════════════════════════════
+           RESPONSIVE DESKTOP — Prince Games Owner Panel
+           Sidebar di ≥768px, bottom nav di <768px
+        ═══════════════════════════════════════════════════════════════ */
+        @media (min-width: 768px) {
+            .bottom-nav, .bnav-item span { display: none !important; }
+            body { padding-bottom: 0 !important; display: flex; flex-direction: column; min-height: 100vh; }
+            .owner-layout { display: flex; min-height: 100vh; flex: 1; }
+            .owner-sidebar {
+                display: flex !important;
+                flex-direction: column;
+                width: 220px;
+                min-width: 220px;
+                background: #0d1117;
+                border-right: 1px solid rgba(255,255,255,0.07);
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                padding: 20px 12px 20px;
+                z-index: 50;
+                gap: 4px;
+            }
+            .sidebar-logo {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 800;
+                font-size: 14px;
+                color: #e8edf5;
+                padding: 0 8px 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+                margin-bottom: 8px;
+            }
+            .sidebar-logo .logo-icon {
+                width: 32px; height: 32px;
+                background: rgba(0,217,255,0.12);
+                border: 1px solid rgba(0,217,255,0.3);
+                border-radius: 8px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 14px; color: #00d9ff;
+            }
+            .sidebar-logo .logo-cyan { color: #00d9ff; }
+            .sidebar-nav-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 500;
+                color: var(--muted, #6b7a8d);
+                text-decoration: none;
+                transition: all 0.15s;
+                cursor: pointer;
+            }
+            .sidebar-nav-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .sidebar-nav-item.active { background: rgba(0,217,255,0.08); color: #00d9ff; }
+            .sidebar-nav-item i { width: 16px; text-align: center; font-size: 13px; }
+            .sidebar-spacer { flex: 1; }
+            .sidebar-keluar {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 500;
+                color: #f78166;
+                cursor: pointer;
+                border: none;
+                background: rgba(247,129,102,0.06);
+                border: 1px solid rgba(247,129,102,0.15);
+                font-family: inherit;
+                transition: all 0.15s;
+                width: 100%;
+            }
+            .sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
+            .sidebar-staff-view { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-size:12px; font-weight:500; color:var(--muted, #6b7a8d); cursor:pointer; border:1px solid rgba(255,255,255,0.06); background:transparent; font-family:inherit; transition:all 0.15s; width:100%; margin-bottom:6px; text-decoration:none; }
+            .sidebar-staff-view:hover { background:rgba(255,255,255,0.04); color:#9ca3af; }
+            .owner-main-content { flex: 1; min-width: 0; overflow-y: auto; padding: 28px 40px 80px; max-width: 1100px; margin: 0 auto; }
+            .topbar { max-width: 100% !important; }
+            /* Widen content area on desktop */
+            .p-5 > .max-w-\[450px\],
+            .p-5 > .max-w-\[480px\],
+            .p-5 > .max-w-\[500px\] { max-width: 900px !important; }
+        }
+        @media (max-width: 767px) {
+            .owner-sidebar { display: none !important; }
+            .owner-layout { display: block; }
+            .owner-main-content { display: block; padding: 16px 16px 100px; max-width: 100%; }
+        }
+    
+        /* ══════════════════════════════════════
+           LIGHT MODE — FULL OVERRIDE
+        ══════════════════════════════════════ */
+        body.light-mode {
+            --bg: #f0f4f8;
+            --surface: #ffffff;
+            --card: #f8fafc;
+            --card2: #f1f5f9;
+            --border: rgba(0,0,0,0.08);
+            --text: #0f172a;
+            --muted: #64748b;
+            --muted2: #94a3b8;
+        }
+        body.light-mode { background: #f0f4f8 !important; color: #0f172a !important; }
+        body.light-mode html { background: #f0f4f8 !important; }
+
+        /* Sidebar */
+        body.light-mode .owner-sidebar {
+            background: #ffffff !important;
+            border-right: 1px solid rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .sidebar-logo { border-color: rgba(0,0,0,0.08) !important; color: #0f172a !important; }
+        body.light-mode .sidebar-nav-item { color: #94a3b8 !important; }
+        body.light-mode .sidebar-nav-item:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
+        body.light-mode .sidebar-nav-item.active { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
+        body.light-mode .sidebar-staff-view { color: #94a3b8 !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .sidebar-staff-view:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
+        body.light-mode .sidebar-keluar { background: rgba(239,68,68,0.07) !important; border-color: rgba(239,68,68,0.15) !important; }
+
+        /* Layout & wrappers */
+        body.light-mode .owner-main-content { background: #f0f4f8 !important; }
+        body.light-mode .scroll-area { background: #f0f4f8 !important; }
+        body.light-mode .p-5 { background: #f0f4f8 !important; }
+
+        /* Cards / sections */
+        body.light-mode .section-card,
+        body.light-mode .section,
+        body.light-mode .glass-card,
+        body.light-mode .kpi-card,
+        body.light-mode .card,
+        body.light-mode .stat-card,
+        body.light-mode [class*="glass"],
+        body.light-mode [class*="card"] {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            color: #0f172a !important;
+        }
+
+        /* Section headers & borders */
+        body.light-mode .section-header { border-color: rgba(0,0,0,0.07) !important; }
+        body.light-mode .type-row { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode .type-row:last-child { border-color: transparent !important; }
+        body.light-mode .menu-row { border-color: rgba(0,0,0,0.06) !important; }
+
+        /* Text */
+        body.light-mode h1, body.light-mode h2, body.light-mode h3 { color: #0f172a !important; }
+        body.light-mode .page-title h1 { color: #0f172a !important; }
+        body.light-mode .page-title p { color: #64748b !important; }
+        body.light-mode .type-name, body.light-mode .type-info h3 { color: #0f172a !important; }
+        body.light-mode .type-info p, body.light-mode .menu-info p { color: #64748b !important; }
+        body.light-mode .unit-name { color: #0f172a !important; }
+        body.light-mode .menu-name { color: #0f172a !important; }
+        body.light-mode .menu-price { color: #64748b !important; }
+        body.light-mode .sec-title { color: #0f172a !important; }
+
+        /* Unit cards */
+        body.light-mode .unit-card {
+            background: #f8fafc !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .unit-card:hover { background: #f1f5f9 !important; }
+
+        /* Inputs / forms */
+        body.light-mode .form-input,
+        body.light-mode input[type="text"],
+        body.light-mode input[type="number"],
+        body.light-mode input[type="date"],
+        body.light-mode select,
+        body.light-mode textarea {
+            background: #f8fafc !important;
+            border-color: rgba(0,0,0,0.12) !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .form-field label { color: #64748b !important; }
+
+        /* Buttons */
+        body.light-mode .btn-icon { 
+            background: #f1f5f9 !important; 
+            border-color: rgba(0,0,0,0.08) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .add-trigger { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode .filter-btn { 
+            background: #f1f5f9 !important; 
+            border-color: rgba(0,0,0,0.1) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .filter-btn.active { background: #00d9ff !important; color: #000 !important; }
+
+        /* Tables */
+        body.light-mode table, body.light-mode th, body.light-mode td { color: #0f172a !important; }
+        body.light-mode th { color: #64748b !important; }
+        body.light-mode tr { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode .table-header { color: #94a3b8 !important; }
+        body.light-mode .table-cell { color: #0f172a !important; border-color: rgba(0,0,0,0.05) !important; }
+
+        /* Bottom nav */
+        body.light-mode .bottom-nav {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .bnav-item.inactive, body.light-mode .nav-item.inactive { color: #cbd5e1 !important; }
+
+        /* Topbar */
+        body.light-mode .topbar { background: #ffffff !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .nav-btn { background: #f1f5f9 !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
+        body.light-mode .btn-theme-toggle { background: #f1f5f9 !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
+        body.light-mode .role-badge { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
+
+        body.light-mode .cancel-accordion {
+            background: #fff !important;
+            border-color: rgba(239,68,68,.2) !important;
+        }
+        body.light-mode .cancel-accordion:hover { border-color: rgba(239,68,68,.4) !important; }
+        body.light-mode .cancel-accordion-inner { color: #0f172a !important; }
+        body.light-mode .cancel-accordion-body { background: #fff !important; }
+
+        /* Misc */
+        body.light-mode .empty-box p { color: #94a3b8 !important; }
+        body.light-mode .loading-pulse { color: #94a3b8 !important; }
+        body.light-mode input[type="date"] { color-scheme: light; }
+        body.light-mode #sesi-date-from,
+        body.light-mode #sesi-date-to {
+            background: #f8fafc !important;
+            border-color: rgba(0,0,0,0.12) !important;
+            color: #0f172a !important;
+        }
+        body.light-mode #sesi-pagination { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode [class*="text-gray"] { color: #64748b !important; }
+        body.light-mode [class*="text-white"] { color: #0f172a !important; }
+        body.light-mode [class*="bg-white/"] { background: rgba(0,0,0,0.04) !important; }
+        body.light-mode [class*="border-white/"] { border-color: rgba(0,0,0,0.08) !important; }
+
+        
+        /* ── SHOW MORE BUTTON ── */
+        .cancel-show-more-btn {
+            width: 100%;
+            padding: 13px 18px;
+            border-radius: 16px;
+            background: #11171f;
+            border: 1px dashed rgba(255,255,255,0.1);
+            color: #9ca3af;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            transition: all .2s;
+            letter-spacing: .04em;
+        }
+        .cancel-show-more-btn:hover {
+            border-color: rgba(239,68,68,0.35);
+            color: #ef4444;
+        }
+        body.light-mode .cancel-show-more-btn {
+            background: #f8fafc !important;
+            border-color: rgba(0,0,0,0.1) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .cancel-show-more-btn:hover {
+            border-color: rgba(239,68,68,0.4) !important;
+            color: #ef4444 !important;
+        }
+
+        /* ── CANCELLATION ACCORDION ── */
+        .cancel-accordion {
+            border: 1px solid rgba(239,68,68,.2);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            background: rgba(239,68,68,.03);
+            transition: all 0.2s;
+        }
+        .cancel-accordion:hover { border-color: rgba(239,68,68,.35); }
+        .cancel-accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 14px;
+            cursor: pointer;
+            user-select: none;
+            gap: 10px;
+        }
+        .cancel-accordion-header:active { background: rgba(239,68,68,.06); }
+        .cancel-accordion-chevron {
+            width: 26px; height: 26px;
+            border-radius: 8px;
+            background: rgba(239,68,68,.1);
+            border: 1px solid rgba(239,68,68,.2);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.25s ease;
+            color: #ef4444; font-size: 11px;
+        }
+        .cancel-accordion.open .cancel-accordion-chevron {
+            transform: rotate(180deg);
+        }
+        .cancel-accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .cancel-accordion.open .cancel-accordion-body {
+            max-height: 600px;
+        }
+        .cancel-accordion-inner {
+            padding: 0 14px 14px;
+            border-top: 1px solid rgba(239,68,68,.1);
+        }
+        .cancel-summary-chip {
+            font-size: 9px; font-weight: 800;
+            padding: 2px 8px; border-radius: 5px;
+            border: 1px solid;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 767px) {
+            /* Prevent horizontal overflow on mobile */
+            .owner-main-content > *,
+            .owner-main-content .glass-card,
+            .owner-main-content [class*="card"],
+            .owner-main-content .section {
+                max-width: 100% !important;
+                overflow-x: hidden;
+            }
+            table { font-size: 10px !important; }
+            .table-cell { padding: 8px 6px !important; font-size: 10px !important; }
+            .table-header { padding: 8px 6px !important; }
+            /* Grid cols max 2 on mobile */
+            .grid-cols-3 { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        </style>
+    <script>
+        (function(){
+            if(localStorage.getItem('pg_theme')==='light')
+                document.documentElement.classList.add('light-mode-pre');
+        })();
+    </script>
+</head>
+<body>
+<div class="owner-layout">
+    <aside class="owner-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
+            PRINCE <span class="logo-cyan">GAMES</span>
+        </div>
+            <a href="../owner/dashboard-owner.html" class="sidebar-nav-item"><i class="fas fa-th-large"></i> Beranda</a>
+            <a href="../owner/manage-owner.html" class="sidebar-nav-item"><i class="fas fa-tools"></i> Kelola</a>
+            <a href="../owner/history-owner.html" class="sidebar-nav-item active"><i class="fas fa-history"></i> Riwayat</a>
+            <a href="../owner/export-owner.html" class="sidebar-nav-item"><i class="fas fa-file-export"></i> Laporan</a>
+        <div class="sidebar-spacer"></div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 8px;border-radius:4px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;text-transform:uppercase;margin-bottom:8px;display:inline-block">OWNER</div>
+        <button class="sidebar-staff-view" onclick="goToStaffView()">
+            <i class="fas fa-users-gear"></i> Staff View
+        </button>
+        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left;margin-bottom:6px">
+            <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
+        </button>
+        <button class="sidebar-keluar" onclick="doLogout()">
+            <i class="fas fa-right-from-bracket"></i> Keluar
+        </button>
+    </aside>
+<div class="owner-main-content">
+    <div>
+
+        <div class="mb-8">
+            <h1 class="text-2xl font-black uppercase tracking-tight">Riwayat & Analitik</h1>
+            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Laporan Pendapatan, Sesi, dan Pesanan F&B</p>
+        </div>
+
+        <!-- Filter -->
+        <div class="glass-card p-5 mb-6">
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                    <label class="text-[9px] text-gray-500 font-bold uppercase ml-1">Dari</label>
+                    <input type="date" id="date-from" class="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-xs text-white outline-none mt-1">
+                </div>
+                <div>
+                    <label class="text-[9px] text-gray-500 font-bold uppercase ml-1">Sampai</label>
+                    <input type="date" id="date-to" class="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-xs text-white outline-none mt-1">
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button class="filter-btn active" onclick="setUnitFilter('semua', this)">Semua</button>
+                <button class="filter-btn" onclick="setUnitFilter('PS3', this)">PS3</button>
+                <button class="filter-btn" onclick="setUnitFilter('PS4', this)">PS4</button>
+                <button class="filter-btn" onclick="setUnitFilter('PS5', this)">PS5</button>
+            </div>
+        </div>
+
+        <!-- KPI: Total Pendapatan & F&B -->
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="glass-card p-4">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-[9px] text-gray-500 font-black uppercase">Total Pendapatan</p>
+                    <i class="fas fa-chart-line text-green-400 text-[10px]"></i>
+                </div>
+                <h2 class="text-xl font-black" id="total-pendapatan">Rp 0</h2>
+                <p class="text-[9px] text-gray-600 mt-1" id="total-pendapatan-sub">Belum ada transaksi</p>
+            </div>
+            <div class="glass-card p-4">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-[9px] text-gray-500 font-black uppercase">Pendapatan F&B</p>
+                    <i class="fas fa-utensils text-yellow-400 text-[10px]"></i>
+                </div>
+                <h2 class="text-xl font-black" id="total-fnb">Rp 0</h2>
+                <p class="text-[9px] text-gray-600 mt-1" id="total-fnb-sub">Belum ada pesanan</p>
+            </div>
+        </div>
+
+        <!-- Tabel Detail Sesi -->
+        <div class="glass-card p-2 overflow-hidden mb-8">
+            <div class="p-3 flex justify-between items-start flex-wrap gap-2">
+                <div>
+                    <h3 class="text-xs font-black uppercase tracking-widest mb-1">Detail Sesi Terbaru</h3>
+                    <p class="text-[9px] text-gray-600" id="sesi-count">Memuat data...</p>
+                </div>
+                <button class="delete-all-btn" id="delete-all-btn" style="display:none" onclick="confirmDeleteAll()">
+                    <i class="fas fa-trash-alt"></i> Hapus Semua
+                </button>
+            </div>
+            <!-- Filter tanggal khusus sesi -->
+            <div class="px-3 pb-3 flex flex-wrap gap-2 items-end border-b border-white/5">
+                <div class="flex-1 min-w-[110px]">
+                    <label class="text-[9px] text-gray-500 font-bold uppercase ml-1">Dari</label>
+                    <input type="date" id="sesi-date-from" class="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-xs text-white outline-none mt-1">
+                </div>
+                <div class="flex-1 min-w-[110px]">
+                    <label class="text-[9px] text-gray-500 font-bold uppercase ml-1">Sampai</label>
+                    <input type="date" id="sesi-date-to" class="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-xs text-white outline-none mt-1">
+                </div>
+                <button onclick="resetSesiDateFilter()" class="filter-btn" style="align-self:flex-end;padding:7px 14px" title="Reset filter tanggal sesi">
+                    <i class="fas fa-rotate-left"></i>
+                </button>
+            </div>
+            <div class="overflow-x-auto" id="sesi-table-wrap">
+                <div class="empty-box">
+                    <i class="fas fa-clock"></i>
+                    <p>Memuat data dari server...</p>
+                </div>
+            </div>
+            <!-- Pagination -->
+            <div id="sesi-pagination" style="display:none" class="flex items-center justify-between px-4 py-3 border-t border-white/5">
+                <button id="sesi-prev-btn" onclick="sesiChangePage(-1)" class="filter-btn" style="padding:5px 14px">
+                    <i class="fas fa-chevron-left mr-1"></i> Prev
+                </button>
+                <span id="sesi-page-info" class="text-[10px] text-gray-500 font-bold"></span>
+                <button id="sesi-next-btn" onclick="sesiChangePage(1)" class="filter-btn" style="padding:5px 14px">
+                    Next <i class="fas fa-chevron-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ═══ LAPORAN PEMBATALAN ═══ -->
+        <div class="mb-3">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-sm font-black uppercase tracking-widest" style="color:#ef4444"><i class="fas fa-ban mr-2"></i>Laporan Pembatalan</h3>
+                    <p class="text-[9px] text-gray-500 mt-0.5">Semua booking &amp; rental yang dibatalkan (pelanggan &amp; staff)</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-lg font-black" id="cancel-count" style="color:#ef4444">0</p>
+                    <p class="text-[9px] text-gray-500">total batal</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Pembatalan -->
+        <div class="grid grid-cols-3 gap-3 mb-4">
+            <div class="glass-card p-3 text-center" style="border-color:rgba(239,68,68,.2)">
+                <p class="text-lg font-black" id="cancel-by-customer" style="color:#ef4444">0</p>
+                <p class="text-[9px] text-gray-500 font-bold uppercase mt-1">Oleh Pelanggan</p>
+            </div>
+            <div class="glass-card p-3 text-center" style="border-color:rgba(245,158,11,.2)">
+                <p class="text-lg font-black" id="cancel-by-staff" style="color:#f59e0b">0</p>
+                <p class="text-[9px] text-gray-500 font-bold uppercase mt-1">Oleh Staff</p>
+            </div>
+            <div class="glass-card p-3 text-center" style="border-color:rgba(239,68,68,.15)">
+                <p class="text-lg font-black" id="cancel-lost-revenue" style="color:#ef4444">Rp 0</p>
+                <p class="text-[9px] text-gray-500 font-bold uppercase mt-1">Potensi Hilang</p>
+            </div>
+        </div>
+
+        <!-- Filter Pembatalan -->
+        <div class="flex gap-2 mb-4 flex-wrap">
+            <button class="filter-btn active" id="cf-semua" onclick="setCancelFilter('semua',this)">Semua</button>
+            <button class="filter-btn" id="cf-pelanggan" onclick="setCancelFilter('customer',this)">Oleh Pelanggan</button>
+            <button class="filter-btn" id="cf-staff" onclick="setCancelFilter('staff',this)">Oleh Staff</button>
+            <button class="filter-btn" id="cf-booking" onclick="setCancelFilter('booking',this)">Booking</button>
+            <button class="filter-btn" id="cf-rental" onclick="setCancelFilter('rental',this)">Rental</button>
+        </div>
+
+        <!-- List Pembatalan -->
+        <div id="cancel-list" class="space-y-3 mb-10">
+            <div class="empty-box">
+                <i class="fas fa-spinner fa-spin" style="color:#00d9ff"></i>
+                <p>Memuat data pembatalan...</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ═══ MODAL KONFIRMASI HAPUS ═══ -->
+<div class="modal-overlay" id="delete-modal" style="display:none">
+    <div class="modal-box">
+        <div class="modal-icon"><i class="fas fa-trash-alt"></i></div>
+        <div class="modal-title" id="modal-title">Hapus Sesi?</div>
+        <div class="modal-desc" id="modal-desc">Data sesi ini akan dihapus permanen dari database dan tidak dapat dikembalikan.</div>
+        <div class="modal-actions">
+            <button class="modal-cancel-btn" onclick="closeDeleteModal()">Batal</button>
+            <button class="modal-confirm-btn" id="modal-confirm-btn">Ya, Hapus</button>
+        </div>
+    </div>
+</div>
+
+<nav class="bottom-nav">
+    <a href="../owner/dashboard-owner.html" class="bnav-item inactive"><i class="fas fa-th-large"></i><span>Beranda</span></a>
+    <a href="../owner/manage-owner.html" class="bnav-item inactive"><i class="fas fa-tools"></i><span>Kelola</span></a>
+    <div class="bnav-item active"><i class="fas fa-history"></i><span>Riwayat</span></div>
+    <a href="../owner/export-owner.html" class="bnav-item inactive"><i class="fas fa-file-export"></i><span>Laporan</span></a>
+</nav>
+
+<script type="module">
+    import { db, collection, onSnapshot, query, orderBy, handleLogout, deleteDoc, doc } from '../../assets/js/auth.js';
+
+    const fmt = n => 'Rp ' + (n || 0).toLocaleString('id-ID');
+
+    // Set default tanggal: 30 hari lalu s/d hari ini
+    const today = new Date();
+    const from30 = new Date(); from30.setDate(today.getDate() - 30);
+    document.getElementById('date-from').value = from30.toISOString().slice(0,10);
+    document.getElementById('date-to').value   = today.toISOString().slice(0,10);
+
+    let allPendapatan = [];
+    let allFnb        = [];
+    let unitFilter    = 'semua';
+
+    // ── Pagination state ─────────────────────────────────────────────
+    let sesiPage = 1;
+    const SESI_PER_PAGE = 10;
+    let _lastFilteredSesi = [];
+
+    // ── Init filter tanggal sesi (default: 30 hari) ──────────────────
+    document.getElementById('sesi-date-from').value = from30.toISOString().slice(0,10);
+    document.getElementById('sesi-date-to').value   = today.toISOString().slice(0,10);
+
+    window.resetSesiDateFilter = () => {
+        const t = new Date(); const f = new Date(); f.setDate(t.getDate()-30);
+        document.getElementById('sesi-date-from').value = f.toISOString().slice(0,10);
+        document.getElementById('sesi-date-to').value   = t.toISOString().slice(0,10);
+        sesiPage = 1;
+        applyFilter();
+    };
+
+    window.sesiChangePage = (dir) => {
+        const totalPages = Math.ceil(_lastFilteredSesi.length / SESI_PER_PAGE);
+        sesiPage = Math.max(1, Math.min(totalPages, sesiPage + dir));
+        renderSesiTable(_lastFilteredSesi);
+    };
+
+    function renderSesiTable(list) {
+        const wrap         = document.getElementById('sesi-table-wrap');
+        const pagination   = document.getElementById('sesi-pagination');
+        const deleteAllBtn = document.getElementById('delete-all-btn');
+        const totalPages   = Math.ceil(list.length / SESI_PER_PAGE);
+
+        document.getElementById('sesi-count').textContent =
+            list.length ? `${list.length} sesi ditemukan` : '';
+
+        if (!list.length) {
+            deleteAllBtn.style.display = 'none';
+            pagination.style.display  = 'none';
+            wrap.innerHTML = `
+                <div class="empty-box">
+                    <i class="fas fa-inbox"></i>
+                    <p>Belum ada sesi yang tercatat<br>untuk rentang & filter ini.</p>
+                </div>`;
+            return;
+        }
+
+        deleteAllBtn.style.display = 'flex';
+        window._filteredSesiIds = list.map(d => d.id);
+
+        const start    = (sesiPage - 1) * SESI_PER_PAGE;
+        const pageData = list.slice(start, start + SESI_PER_PAGE);
+
+        wrap.innerHTML = `
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b border-white/5">
+                        <th class="table-header p-3">Tanggal</th>
+                        <th class="table-header p-3">Unit</th>
+                        <th class="table-header p-3">Customer</th>
+                        <th class="table-header p-3">Stop</th>
+                        <th class="table-header p-3">Total</th>
+                        <th class="table-header p-3"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${pageData.map(d => `
+                        <tr class="border-b border-white/5 hover:bg-white/[0.02]" id="row-${d.id}">
+                            <td class="table-cell text-gray-400">${d.tanggal||'-'}</td>
+                            <td class="table-cell font-bold text-cyan-400">${d.unitId||'-'} <span class="text-gray-600 font-normal">${d.unitType||''}</span></td>
+                            <td class="table-cell">${d.customerName||'-'}</td>
+                            <td class="table-cell text-gray-400">${d.stopTime||'-'}</td>
+                            <td class="table-cell font-black text-green-400">${fmt(d.price)}</td>
+                            <td class="table-cell">
+                                <button class="delete-btn" onclick="confirmDeleteSesi('${d.id}','${(d.customerName||'-').replace(/'/g,"\\'")}','${d.tanggal||'-'}')" title="Hapus sesi ini">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>`;
+
+        if (totalPages > 1) {
+            pagination.style.display = 'flex';
+            document.getElementById('sesi-page-info').textContent =
+                `Hal. ${sesiPage} / ${totalPages} · ${list.length} total`;
+            document.getElementById('sesi-prev-btn').disabled = sesiPage === 1;
+            document.getElementById('sesi-next-btn').disabled = sesiPage === totalPages;
+            document.getElementById('sesi-prev-btn').style.opacity = sesiPage === 1 ? '0.4' : '1';
+            document.getElementById('sesi-next-btn').style.opacity = sesiPage === totalPages ? '0.4' : '1';
+        } else {
+            pagination.style.display = 'none';
+        }
+    }
+
+    // ── Filter & Render ──────────────────────────────────────────────
+    function applyFilter() {
+        const from     = document.getElementById('date-from').value;
+        const to       = document.getElementById('date-to').value;
+        const sesiFrom = document.getElementById('sesi-date-from').value;
+        const sesiTo   = document.getElementById('sesi-date-to').value;
+
+        // Filter pendapatan sesi — pakai filter tanggal sesi sendiri + unit filter
+        const filteredSesi = allPendapatan.filter(d => {
+            const tgl    = d.tanggal || '';
+            const unitOk = unitFilter === 'semua' || (d.unitType||'').toUpperCase() === unitFilter;
+            const dateOk = (!sesiFrom || tgl >= sesiFrom) && (!sesiTo || tgl <= sesiTo);
+            return unitOk && dateOk;
+        });
+
+        // Filter F&B — pakai filter tanggal global
+        const filteredFnb = allFnb.filter(d => {
+            const tgl = (d.createdAt||'').slice(0,10);
+            return (!from || tgl >= from) && (!to || tgl <= to);
+        });
+
+        // ── Total Pendapatan Sesi ────────────────────────────────────
+        const totalSesi = filteredSesi.reduce((s,d) => s + (d.price||0), 0);
+        document.getElementById('total-pendapatan').textContent = fmt(totalSesi);
+        document.getElementById('total-pendapatan-sub').textContent =
+            filteredSesi.length ? `${filteredSesi.length} transaksi sesi` : 'Belum ada transaksi';
+
+        // ── Total F&B ────────────────────────────────────────────────
+        const totalFnb = filteredFnb.reduce((s,d) => s + (d.totalHarga||d.total||d.grandTotal||0), 0);
+        document.getElementById('total-fnb').textContent = fmt(totalFnb);
+        document.getElementById('total-fnb-sub').textContent =
+            filteredFnb.length ? `${filteredFnb.length} pesanan` : 'Belum ada pesanan';
+
+        // ── Render tabel sesi dengan pagination ──────────────────────
+        _lastFilteredSesi = filteredSesi;
+        sesiPage = 1;
+        renderSesiTable(filteredSesi);
+    }
+
+
+    // ── Listen pendapatan (sesi dari staff) ──────────────────────────
+    onSnapshot(
+        query(collection(db, 'pendapatan'), orderBy('createdAt', 'desc')),
+        snap => {
+            allPendapatan = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            applyFilter();
+        }
+    );
+
+    // ── Listen F&B (dari collection orders / fnb) ────────────────────
+    // Coba beberapa nama collection yang umum dipakai
+    onSnapshot(
+        query(collection(db, 'orders'), orderBy('createdAt', 'desc')),
+        snap => {
+            allFnb = snap.docs.map(d => d.data());
+            applyFilter();
+        }
+    );
+
+    // ── Filter handlers ──────────────────────────────────────────────
+    window.setUnitFilter = (val, el) => {
+        unitFilter = val;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        applyFilter();
+    };
+
+    document.getElementById('date-from').addEventListener('change', applyFilter);
+    document.getElementById('date-to').addEventListener('change', applyFilter);
+    document.getElementById('sesi-date-from').addEventListener('change', () => { sesiPage = 1; applyFilter(); });
+    document.getElementById('sesi-date-to').addEventListener('change', () => { sesiPage = 1; applyFilter(); });
+
+    window.doLogout = () => handleLogout('../auth/login-owner.html');
+
+    window.goToStaffView = async () => {
+        const result = await Swal.fire({
+            title: '👔 Masuk sebagai Staff?',
+            html: `Anda akan diarahkan ke <b>Dashboard Staff</b>.<br><span style="font-size:12px;color:#9ca3af">Aksi ini tidak akan keluar dari akun Owner.</span>`,
+            icon: 'question', showCancelButton: true,
+            confirmButtonColor: '#bc8cff', cancelButtonColor: '#374151',
+            confirmButtonText: '<i class="fas fa-users-gear"></i> Ya, buka Staff View',
+            cancelButtonText: 'Batal', background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff'
+        });
+        if (result.isConfirmed) {
+            sessionStorage.setItem('owner_viewing_staff', '1');
+            window.location.href = '../staff/dashboard-staff.html';
+        }
+    };
+
+    (function initTheme() {
+        const saved = localStorage.getItem('pg_theme') || 'dark';
+        if (saved === 'light') {
+            document.body.classList.add('light-mode');
+            document.documentElement.classList.remove('light-mode-pre');
+            ['theme-icon','theme-icon-sidebar'].forEach(id => {
+                const icon = document.getElementById(id);
+                if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+            });
+        } else {
+            document.documentElement.classList.remove('light-mode-pre');
+        }
+    })();
+
+    window.toggleTheme = function() {
+        const isLight = document.body.classList.toggle('light-mode');
+        localStorage.setItem('pg_theme', isLight ? 'light' : 'dark');
+        ['theme-icon','theme-icon-sidebar'].forEach(id => {
+            const icon = document.getElementById(id);
+            if (icon) {
+                icon.classList.toggle('fa-sun',  !isLight);
+                icon.classList.toggle('fa-moon',  isLight);
+            }
+        });
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true, position: 'top', icon: 'success',
+                title: isLight ? '☀️ Light mode aktif' : '🌙 Dark mode aktif',
+                showConfirmButton: false, timer: 1500,
+                background: isLight ? '#fff' : '#11171f',
+                color:      isLight ? '#1a202c' : '#fff'
+            });
+        }
+    };
+
+    // ── HAPUS SESI ────────────────────────────────────────────────────
+    let _pendingDeleteAction = null;
+
+    window.closeDeleteModal = () => {
+        document.getElementById('delete-modal').style.display = 'none';
+        _pendingDeleteAction = null;
+    };
+
+    window.confirmDeleteSesi = (id, customerName, tanggal) => {
+        document.getElementById('modal-title').textContent = 'Hapus Sesi Ini?';
+        document.getElementById('modal-desc').textContent =
+            `Sesi "${customerName}" pada ${tanggal} akan dihapus permanen dari database dan tidak dapat dikembalikan.`;
+        _pendingDeleteAction = async () => {
+            try {
+                await deleteDoc(doc(db, 'pendapatan', id));
+                // Row will disappear via onSnapshot listener automatically
+            } catch(e) {
+                alert('Gagal menghapus: ' + e.message);
+            }
+        };
+        document.getElementById('modal-confirm-btn').onclick = async () => {
+            document.getElementById('modal-confirm-btn').textContent = 'Menghapus...';
+            document.getElementById('modal-confirm-btn').disabled = true;
+            await _pendingDeleteAction();
+            closeDeleteModal();
+            document.getElementById('modal-confirm-btn').textContent = 'Ya, Hapus';
+            document.getElementById('modal-confirm-btn').disabled = false;
+        };
+        document.getElementById('delete-modal').style.display = 'flex';
+    };
+
+    window.confirmDeleteAll = () => {
+        const ids = window._filteredSesiIds || [];
+        if (!ids.length) return;
+        document.getElementById('modal-title').textContent = `Hapus ${ids.length} Sesi?`;
+        document.getElementById('modal-desc').textContent =
+            `Semua ${ids.length} sesi yang tampil saat ini akan dihapus permanen dari database. Tindakan ini tidak dapat dibatalkan.`;
+        _pendingDeleteAction = async () => {
+            try {
+                await Promise.all(ids.map(id => deleteDoc(doc(db, 'pendapatan', id))));
+            } catch(e) {
+                alert('Gagal menghapus: ' + e.message);
+            }
+        };
+        document.getElementById('modal-confirm-btn').onclick = async () => {
+            document.getElementById('modal-confirm-btn').textContent = 'Menghapus...';
+            document.getElementById('modal-confirm-btn').disabled = true;
+            await _pendingDeleteAction();
+            closeDeleteModal();
+            document.getElementById('modal-confirm-btn').textContent = 'Ya, Hapus';
+            document.getElementById('modal-confirm-btn').disabled = false;
+        };
+        document.getElementById('delete-modal').style.display = 'flex';
+    };
+
+    // Tutup modal jika klik overlay
+    document.getElementById('delete-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+
+    // ── LAPORAN PEMBATALAN ─────────────────────────────────────────────
+    let allCancellations = [];
+    let cancelFilter = 'semua';
+
+    onSnapshot(
+        query(collection(db, 'cancellations'), orderBy('cancelledAt', 'desc')),
+        snap => {
+            allCancellations = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderCancellations();
+        }
+    );
+
+    window.setCancelFilter = (val, el) => {
+        cancelFilter = val;
+        document.querySelectorAll('[id^="cf-"]').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        renderCancellations();
+    };
+
+    function renderCancellations() {
+        const from = document.getElementById('date-from').value;
+        const to   = document.getElementById('date-to').value;
+
+        let list = allCancellations.filter(c => {
+            const tgl = (c.cancelledAt || c.createdAt || '').slice(0,10);
+            const dateOk = (!from || tgl >= from) && (!to || tgl <= to);
+            if (!dateOk) return false;
+            if (cancelFilter === 'semua') return true;
+            if (cancelFilter === 'customer') return c.cancelledBy === 'customer';
+            if (cancelFilter === 'staff')    return c.cancelledBy === 'staff';
+            if (cancelFilter === 'booking')  return c.type === 'booking';
+            if (cancelFilter === 'rental')   return c.type === 'rental';
+            return true;
+        });
+
+        // Update KPI
+        document.getElementById('cancel-count').textContent = list.length;
+        document.getElementById('cancel-by-customer').textContent = list.filter(c=>c.cancelledBy==='customer').length;
+        document.getElementById('cancel-by-staff').textContent    = list.filter(c=>c.cancelledBy==='staff').length;
+        const lostRevenue = list.reduce((s,c) => s+(Number(c.totalAmount)||0), 0);
+        document.getElementById('cancel-lost-revenue').textContent = fmt(lostRevenue);
+
+        const container = document.getElementById('cancel-list');
+        if (!list.length) {
+            container.innerHTML = `
+                <div class="empty-box">
+                    <i class="fas fa-check-circle" style="color:#10b981"></i>
+                    <p>Tidak ada pembatalan${cancelFilter!=='semua'?' untuk filter ini':''} dalam rentang tanggal ini</p>
+                </div>`;
+            return;
+        }
+
+        function buildCancelCard(c) {
+            const isCustomer = c.cancelledBy === 'customer';
+            const typeLabel  = c.type === 'booking' ? 'Booking Sesi' : 'Rental Bawa Pulang';
+            const typeIcon   = c.type === 'booking' ? 'fa-gamepad' : 'fa-box-open';
+            const cancellerColor = isCustomer ? '#ef4444' : '#f59e0b';
+            const cancellerLabel = isCustomer ? '👤 Pelanggan' : '👷 Staff';
+            const tglBatal = c.cancelledAt
+                ? new Date(c.cancelledAt).toLocaleString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+                : '—';
+            return `
+            <div style="background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-left:4px solid ${cancellerColor};border-radius:14px;padding:14px;position:relative;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <div style="width:34px;height:34px;border-radius:9px;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center">
+                            <i class="fas ${typeIcon}" style="color:#ef4444;font-size:12px"></i>
+                        </div>
+                        <div>
+                            <p style="font-size:13px;font-weight:800;letter-spacing:-.2px">${c.customerName || '—'}</p>
+                            <p style="font-size:10px;color:#6b7280;font-weight:600">${typeLabel} · ${c.console || '—'}</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+                        <span style="font-size:9px;font-weight:800;padding:3px 9px;border-radius:6px;background:${isCustomer?'rgba(239,68,68,.12)':'rgba(245,158,11,.12)'};color:${cancellerColor};border:1px solid ${isCustomer?'rgba(239,68,68,.25)':'rgba(245,158,11,.25)'}">
+                            ${cancellerLabel}
+                        </span>
+                        <button onclick="confirmDeleteCancel('${c.id}','${(c.customerName||'—').replace(/'/g,"\\'")}')"
+                            style="width:26px;height:26px;border-radius:7px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;font-size:10px;flex-shrink:0"
+                            onmouseover="this.style.background='rgba(239,68,68,.22)';this.style.borderColor='rgba(239,68,68,.4)'"
+                            onmouseout="this.style.background='rgba(239,68,68,.08)';this.style.borderColor='rgba(239,68,68,.2)'"
+                            title="Hapus riwayat ini">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div style="background:rgba(255,255,255,.03);border-radius:10px;padding:10px;margin-bottom:10px;font-size:11px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                    <div><span style="color:#6b7280">Waktu Batal</span><br><strong>${tglBatal}</strong></div>
+                    <div><span style="color:#6b7280">Potensi Hilang</span><br><strong style="color:#ef4444">${fmt(c.totalAmount||0)}</strong></div>
+                    ${c.assignedUnit ? `<div><span style="color:#6b7280">Unit Dibebaskan</span><br><strong style="color:#00d9ff">${c.assignedUnit}</strong></div>` : ''}
+                    ${c.cancelledByName ? `<div><span style="color:#6b7280">Dibatalkan oleh</span><br><strong>${c.cancelledByName}</strong></div>` : ''}
+                </div>
+                <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:8px;padding:8px 10px;font-size:10px;color:#fca5a5">
+                    <i class="fas fa-comment-alt" style="margin-right:5px;opacity:.7"></i>
+                    <strong>Alasan:</strong> ${c.cancelReason || '—'}
+                </div>
+            </div>`;
+        }
+
+        // Card pertama selalu tampil
+        const firstCard = buildCancelCard(list[0]);
+        const hiddenList = list.slice(1);
+        const isOpen = window._cancelDropdownOpen || false;
+
+        let hiddenHTML = '';
+        if (hiddenList.length > 0) {
+            const hiddenCards = hiddenList.map(c => buildCancelCard(c)).join('');
+            hiddenHTML = `
+                <button id="cancel-dropdown-btn" onclick="toggleCancelDropdown()"
+                    class="cancel-show-more-btn">
+                    <i class="fas fa-chevron-down" id="cancel-dropdown-icon" style="transition:transform .25s;${isOpen?'transform:rotate(180deg)':''}"></i>
+                    <span id="cancel-dropdown-label">${isOpen ? 'Sembunyikan' : 'Lihat ' + hiddenList.length + ' lainnya'}</span>
+                </button>
+                <div id="cancel-hidden-list" style="display:${isOpen?'flex':'none'};flex-direction:column;gap:12px">
+                    ${hiddenCards}
+                </div>`;
+        }
+
+        container.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px">${firstCard}</div>${hiddenHTML}`;
+    }
+
+    // ── HAPUS SATU CARD PEMBATALAN ─────────────────────────────────────
+    window.confirmDeleteCancel = (id, name) => {
+        document.getElementById('modal-title').textContent = 'Hapus Riwayat Ini?';
+        document.getElementById('modal-desc').textContent =
+            `Riwayat pembatalan "${name}" akan dihapus permanen dari database dan tidak dapat dikembalikan.`;
+        document.getElementById('modal-confirm-btn').onclick = async () => {
+            document.getElementById('modal-confirm-btn').textContent = 'Menghapus...';
+            document.getElementById('modal-confirm-btn').disabled = true;
+            try {
+                await deleteDoc(doc(db, 'cancellations', id));
+            } catch(e) {
+                alert('Gagal menghapus: ' + e.message);
+            }
+            closeDeleteModal();
+            document.getElementById('modal-confirm-btn').textContent = 'Ya, Hapus';
+            document.getElementById('modal-confirm-btn').disabled = false;
+        };
+        document.getElementById('delete-modal').style.display = 'flex';
+    };
+
+    // ── TOGGLE DROPDOWN PEMBATALAN ─────────────────────────────────────
+    window._cancelDropdownOpen = false;
+    window.toggleCancelDropdown = function() {
+        window._cancelDropdownOpen = !window._cancelDropdownOpen;
+        const hidden = document.getElementById('cancel-hidden-list');
+        const icon   = document.getElementById('cancel-dropdown-icon');
+        const label  = document.getElementById('cancel-dropdown-label');
+        if (!hidden) return;
+        hidden.style.display = window._cancelDropdownOpen ? 'flex' : 'none';
+        if (icon)  icon.style.transform = window._cancelDropdownOpen ? 'rotate(180deg)' : '';
+        if (label) {
+            const count = hidden.children.length;
+            label.textContent = window._cancelDropdownOpen ? 'Sembunyikan' : 'Lihat ' + count + ' lainnya';
+        }
+    };
+
+    // Re-render pembatalan saat filter tanggal berubah
+    const origApplyFilter = applyFilter;
+    document.getElementById('date-from').removeEventListener('change', origApplyFilter);
+    document.getElementById('date-to').removeEventListener('change', origApplyFilter);
+    document.getElementById('date-from').addEventListener('change', () => { applyFilter(); renderCancellations(); });
+    document.getElementById('date-to').addEventListener('change', () => { applyFilter(); renderCancellations(); });
+</script>
+</div></div>
+</body>
+</html>

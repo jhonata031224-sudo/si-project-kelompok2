@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug – Raw Firestore Data</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #080c12; color: #e2e8f0; font-family: monospace; padding: 16px; }
+    h2 { color: #00d9ff; margin-bottom: 12px; font-size: 16px; }
+    h3 { color: #f59e0b; margin: 16px 0 8px; font-size: 13px; }
+    .card { background: #0d1320; border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 12px; margin-bottom: 10px; font-size: 11px; line-height: 1.8; }
+    .key { color: #a855f7; }
+    .val { color: #86efac; }
+    .id  { color: #00d9ff; font-weight: bold; font-size: 12px; margin-bottom: 6px; }
+    .empty { color: #6b7280; font-style: italic; padding: 20px; text-align: center; }
+    .user-info { background: #111827; border: 1px solid rgba(0,217,255,.2); border-radius: 8px; padding: 10px; margin-bottom: 16px; font-size: 12px; }
+    .user-info span { color: #00d9ff; }
+    .section { margin-bottom: 24px; }
+    .count { font-size: 10px; color: #6b7280; margin-bottom: 8px; }
+    button { background: #00d9ff; color: #000; border: none; border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: bold; cursor: pointer; margin: 4px; }
+    button.red { background: #ef4444; color: #fff; }
+  </style>
+</head>
+<body>
+<h2>🔍 Debug – Raw Firestore Data</h2>
+<div id="user-info" class="user-info">Menunggu auth...</div>
+<div>
+  <button onclick="loadAll()">🔄 Refresh Semua</button>
+  <button class="red" onclick="loadAllBookings()">📋 Semua Bookings (no filter)</button>
+</div>
+<div id="output"></div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+  import { getFirestore, collection, getDocs, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+  const app = initializeApp({
+    apiKey: "AIzaSyAqa9FTlNuVXGHnINFN1qz8-aoGTrn-0g4",
+    authDomain: "prince-games-f170a.firebaseapp.com",
+    projectId: "prince-games-f170a",
+    storageBucket: "prince-games-f170a.firebasestorage.app",
+    messagingSenderId: "245728198046",
+    appId: "1:245728198046:web:b6136e05459f23a96677f5"
+  });
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  let currentUser = null;
+
+  onAuthStateChanged(auth, u => {
+    currentUser = u;
+    if (u) {
+      document.getElementById('user-info').innerHTML =
+        `✅ Login sebagai: <span>${u.email}</span><br>
+         UID: <span>${u.uid}</span>`;
+      loadAll();
+    } else {
+      document.getElementById('user-info').innerHTML = '❌ Tidak login – buka halaman ini setelah login di tab lain';
+    }
+  });
+
+  function renderDoc(d) {
+    const v = d.data();
+    let rows = `<div class="id">📄 Doc ID: ${d.id}</div>`;
+    for (const [k, val] of Object.entries(v)) {
+      let display = typeof val === 'object' && val !== null
+        ? JSON.stringify(val).substring(0, 120)
+        : String(val);
+      rows += `<span class="key">${k}</span>: <span class="val">${display}</span><br>`;
+    }
+    return `<div class="card">${rows}</div>`;
+  }
+
+  window.loadAll = async () => {
+    if (!currentUser) return;
+    const uid   = currentUser.uid;
+    const email = currentUser.email;
+    const uname = email.replace('@prince.com','');
+    const out   = document.getElementById('output');
+    out.innerHTML = '<div class="empty">Memuat...</div>';
+
+    let html = '';
+
+    // ── BOOKINGS ──────────────────────────────────────────
+    html += '<div class="section"><h3>📋 BOOKINGS – by userId</h3>';
+    try {
+      const s1 = await getDocs(query(collection(db,'bookings'), where('userId','==',uid)));
+      html += `<div class="count">${s1.size} dokumen</div>`;
+      if (s1.empty) html += '<div class="empty">Kosong</div>';
+      s1.forEach(d => html += renderDoc(d));
+    } catch(e) { html += `<div class="empty">Error: ${e.message}</div>`; }
+    html += '</div>';
+
+    html += '<div class="section"><h3>📋 BOOKINGS – by userEmail</h3>';
+    try {
+      const s2 = await getDocs(query(collection(db,'bookings'), where('userEmail','==',email)));
+      html += `<div class="count">${s2.size} dokumen</div>`;
+      if (s2.empty) html += '<div class="empty">Kosong</div>';
+      s2.forEach(d => html += renderDoc(d));
+    } catch(e) { html += `<div class="empty">Error: ${e.message}</div>`; }
+    html += '</div>';
+
+    html += `<div class="section"><h3>📋 BOOKINGS – by customerName = "${uname}"</h3>`;
+    try {
+      const s3 = await getDocs(query(collection(db,'bookings'), where('customerName','==',uname)));
+      html += `<div class="count">${s3.size} dokumen</div>`;
+      if (s3.empty) html += '<div class="empty">Kosong</div>';
+      s3.forEach(d => html += renderDoc(d));
+    } catch(e) { html += `<div class="empty">Error: ${e.message}</div>`; }
+    html += '</div>';
+
+    // ── ALL BOOKINGS (last 10) ─────────────────────────────
+    html += '<div class="section"><h3>📋 SEMUA BOOKINGS (10 terbaru – no filter)</h3>';
+    try {
+      const s4 = await getDocs(query(collection(db,'bookings'), limit(10)));
+      html += `<div class="count">${s4.size} dokumen (max 10)</div>`;
+      if (s4.empty) html += '<div class="empty">Collection bookings kosong!</div>';
+      s4.forEach(d => html += renderDoc(d));
+    } catch(e) { html += `<div class="empty">Error: ${e.message}</div>`; }
+    html += '</div>';
+
+    // ── RENTALS ───────────────────────────────────────────
+    html += '<div class="section"><h3>🎮 RENTALS – by userId</h3>';
+    try {
+      const r1 = await getDocs(query(collection(db,'rentals'), where('userId','==',uid)));
+      html += `<div class="count">${r1.size} dokumen</div>`;
+      if (r1.empty) html += '<div class="empty">Kosong</div>';
+      r1.forEach(d => html += renderDoc(d));
+    } catch(e) { html += `<div class="empty">Error: ${e.message}</div>`; }
+    html += '</div>';
+
+    html += '<div class="section"><h3>🎮 SEMUA RENTALS (5 terbaru)</h3>';
+    try {
+      const r2 = await getDocs(query(collection(db,'rentals'), limit(5)));
+      html += `<div class="count">${r2.size} dokumen</div>`;
+      if (r2.empty) html += '<div class="empty">Kosong</div>';
+      r2.forEach(d => html += renderDoc(d));
+    } catch(e) { html += `<div class="empty">Error: ${e.message}</div>`; }
+    html += '</div>';
+
+    out.innerHTML = html;
+  };
+
+  window.loadAllBookings = async () => {
+    const out = document.getElementById('output');
+    out.innerHTML = '<div class="empty">Memuat semua bookings...</div>';
+    let html = '<div class="section"><h3>📋 SEMUA BOOKINGS (tanpa filter, 20 terbaru)</h3>';
+    try {
+      const snap = await getDocs(query(collection(db,'bookings'), limit(20)));
+      html += `<div class="count">Total ditampilkan: ${snap.size}</div>`;
+      if (snap.empty) {
+        html += '<div class="empty">⚠️ Collection bookings KOSONG atau tidak ada akses!</div>';
+      }
+      snap.forEach(d => html += renderDoc(d));
+    } catch(e) {
+      html += `<div class="empty">❌ Error: ${e.message}</div>`;
+    }
+    html += '</div>';
+    out.innerHTML = html;
+  };
+</script>
+</body>
+</html>
