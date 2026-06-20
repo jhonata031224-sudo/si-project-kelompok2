@@ -1087,14 +1087,35 @@
             .req-card .flex > .btn-reject,
             .req-card .flex > .btn-activate { flex: 0 0 auto !important; }
 
-            /* Notif panel */
+            /* Notif panel — dropdown dari header, center horizontal */
+            #notif-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                z-index: 9998;
+            }
+            #notif-overlay.show { display: block; }
+
+            @keyframes notifDropDown {
+                from { opacity:0; transform:translateX(-50%) translateY(-10px) scale(0.97) }
+                to   { opacity:1; transform:translateX(-50%) translateY(0)     scale(1) }
+            }
+
             #notif-panel {
                 position: fixed !important;
-                top: 70px !important;
-                left: calc(220px + 20px) !important;
+                top: 16px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
                 right: auto !important;
-                width: 380px !important;
+                width: min(440px, calc(100vw - 48px)) !important;
+                max-height: 70vh !important;
                 z-index: 9999 !important;
+                border-radius: 20px !important;
+                box-shadow: 0 12px 48px rgba(0,0,0,.55) !important;
+                animation: notifDropDown .22s cubic-bezier(.32,1,.4,1);
+            }
+            body.light-mode #notif-panel {
+                box-shadow: 0 12px 36px rgba(0,0,0,.15) !important;
             }
 
             /* History Drawer: centered modal */
@@ -1124,6 +1145,118 @@
             .hdcard-grid { grid-template-columns: repeat(3, 1fr) !important; }
         }
 
+
+        /* ── SIDEBAR: Tab nav & unit filter (desktop only) ── */
+        .staff-sidebar-section-label {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: #4b5563;
+            padding: 0 12px;
+            margin-bottom: 4px;
+            margin-top: 6px;
+        }
+        body.light-mode .staff-sidebar-section-label { color: #94a3b8 !important; }
+
+        .staff-sidebar-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.06);
+            margin: 8px 0;
+        }
+        body.light-mode .staff-sidebar-divider { background: rgba(0,0,0,0.07) !important; }
+
+        /* Tab nav items di sidebar (desktop) */
+        .snav-tab-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #6b7280;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            width: 100%;
+            text-align: left;
+            transition: all 0.15s;
+            position: relative;
+        }
+        .snav-tab-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+        .snav-tab-item.snav-tab-active {
+            background: rgba(0,217,255,0.08);
+            color: #00d9ff;
+        }
+        .snav-tab-item i { width: 16px; text-align: center; font-size: 13px; }
+        body.light-mode .snav-tab-item { color: #94a3b8 !important; }
+        body.light-mode .snav-tab-item:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
+        body.light-mode .snav-tab-item.snav-tab-active { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
+
+        /* Badge notif dot di sidebar tab items */
+        .snav-tab-dot {
+            display: none;
+            width: 7px; height: 7px;
+            background: #f59e0b;
+            border-radius: 50%;
+            margin-left: auto;
+            animation: pulse-red 1s infinite;
+            flex-shrink: 0;
+        }
+        .snav-tab-dot.show { display: block; }
+
+        /* Filter PS di sidebar */
+        .snav-ps-filter {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 0 4px;
+        }
+        .snav-ps-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            background: none;
+            border: 1px solid transparent;
+            font-family: inherit;
+            width: 100%;
+            text-align: left;
+            transition: all 0.15s;
+            color: #6b7280;
+        }
+        .snav-ps-btn:hover { background: rgba(255,255,255,0.04); }
+        .snav-ps-btn.snav-ps-active { background: rgba(0,0,0,0.15); }
+        .snav-ps-count {
+            margin-left: auto;
+            font-size: 9px;
+            font-weight: 800;
+            background: rgba(255,255,255,0.06);
+            border-radius: 20px;
+            padding: 1px 7px;
+            flex-shrink: 0;
+        }
+        body.light-mode .snav-ps-btn { color: #64748b !important; }
+        body.light-mode .snav-ps-btn:hover { background: rgba(0,0,0,0.04) !important; }
+        body.light-mode .snav-ps-btn.snav-ps-active { background: rgba(0,0,0,0.07) !important; }
+        body.light-mode .snav-ps-count { background: rgba(0,0,0,0.07) !important; }
+
+        /* Di desktop: sembunyikan tab-switcher-row & unit-filter-bar di header */
+        @media (min-width: 768px) {
+            #tab-switcher-row { display: none !important; }
+            #unit-filter-bar  { display: none !important; }
+            #sidebar-tab-nav, #sidebar-ps-section { display: flex !important; flex-direction: column; }
+        }
+        /* Di mobile: sembunyikan elemen sidebar tab ini */
+        @media (max-width: 767px) {
+            #sidebar-tab-nav, #sidebar-ps-section { display: none !important; }
+        }
     </style>
     <link rel="stylesheet" href="../../assets/css/mobile-fix.css">
 </head>
@@ -1151,6 +1284,58 @@
         <i class="fas fa-sliders"></i> Setelan
     </button>
     <div class="staff-sidebar-spacer"></div>
+
+    <!-- DIVIDER -->
+    <div class="staff-sidebar-divider"></div>
+
+    <!-- Tab Nav di Sidebar (desktop) -->
+    <div id="sidebar-tab-nav">
+        <div class="staff-sidebar-section-label">Menu</div>
+        <button class="snav-tab-item snav-tab-active" id="snav-tab-unit" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarSwitchTab('unit')">
+            <i class="fas fa-gamepad"></i> Unit
+        </button>
+        <button class="snav-tab-item" id="snav-tab-fnb" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarSwitchTab('fnb')">
+            <i class="fas fa-utensils"></i> F&B
+        </button>
+        <button class="snav-tab-item" id="snav-tab-antrian" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarSwitchTab('antrian')">
+            <i class="fas fa-hourglass-half"></i> Antrian
+            <span class="snav-tab-dot" id="snav-antrian-dot"></span>
+        </button>
+        <button class="snav-tab-item" id="snav-tab-req" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarSwitchTab('req')">
+            <i class="fas fa-inbox"></i> Permintaan
+            <span class="snav-tab-dot" id="snav-req-dot"></span>
+        </button>
+    </div>
+
+    <!-- PS Filter di Sidebar (desktop, tampil saat tab Unit aktif) -->
+    <div id="sidebar-ps-section">
+        <div class="staff-sidebar-divider"></div>
+        <div class="staff-sidebar-section-label">Filter Unit</div>
+        <div class="snav-ps-filter">
+            <button class="snav-ps-btn snav-ps-active" id="snav-uf-semua" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('semua', this)">
+                <i class="fas fa-th-large" style="color:#9ca3af;width:14px;text-align:center"></i>
+                Semua
+                <span class="snav-ps-count" id="snav-count-semua">0</span>
+            </button>
+            <button class="snav-ps-btn" id="snav-uf-ps5" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS5', this)">
+                <i class="fas fa-gamepad" style="color:#ffbf00;width:14px;text-align:center"></i>
+                PS5
+                <span class="snav-ps-count" id="snav-count-ps5">0</span>
+            </button>
+            <button class="snav-ps-btn" id="snav-uf-ps4" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS4', this)">
+                <i class="fas fa-gamepad" style="color:#a78bfa;width:14px;text-align:center"></i>
+                PS4
+                <span class="snav-ps-count" id="snav-count-ps4">0</span>
+            </button>
+            <button class="snav-ps-btn" id="snav-uf-ps3" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS3', this)">
+                <i class="fas fa-gamepad" style="color:#9ca3af;width:14px;text-align:center"></i>
+                PS3
+                <span class="snav-ps-count" id="snav-count-ps3">0</span>
+            </button>
+        </div>
+    </div>
+
+
 
     <!-- Shift Info Card (desktop sidebar) -->
     <div class="staff-sidebar-shift-card" id="sidebar-shift-card">
@@ -1677,7 +1862,8 @@
     </div>
 </div>
 
-<div id="notif-panel" class="hidden fixed top-20 right-4 left-4 z-[100] glass-card p-5 shadow-2xl border-cyan-400/20 max-h-[400px] overflow-y-auto">
+<div id="notif-overlay" onclick="tutupNotif()"></div>
+<div id="notif-panel" class="hidden glass-card p-5 overflow-y-auto" style="position:relative">
     <div class="flex justify-between items-center mb-4 pb-2 border-b border-white/5">
         <h3 class="text-xs font-black uppercase tracking-widest">Aktivitas Terbaru</h3>
         <button onclick="hapusSemuaNotif()" class="text-[10px] font-bold text-red-500 uppercase">Hapus Semua</button>
@@ -3061,7 +3247,25 @@
             if (sbEmpty) sbEmpty.style.display = historyNotif.length ? 'none' : 'block';
         }
     }
-    window.toggleNotif      = () => document.getElementById('notif-panel').classList.toggle('hidden');
+    function bukaNotif() {
+        const panel   = document.getElementById('notif-panel');
+        const overlay = document.getElementById('notif-overlay');
+        panel.classList.remove('hidden');
+        if (overlay) overlay.classList.add('show');
+        panel.scrollTop = 0;
+    }
+
+    window.tutupNotif = function() {
+        const panel   = document.getElementById('notif-panel');
+        const overlay = document.getElementById('notif-overlay');
+        panel.classList.add('hidden');
+        if (overlay) overlay.classList.remove('show');
+    };
+
+    window.toggleNotif = function() {
+        const panel = document.getElementById('notif-panel');
+        if (panel.classList.contains('hidden')) { bukaNotif(); } else { tutupNotif(); }
+    };
     window.hapusSemuaNotif  = () => { historyNotif = []; updateNotifList(); };
     // ── SHIFT GUARD & INFO ────────────────────────────────────────────
     (function() {
@@ -3259,6 +3463,7 @@
 
     // ── TAB SWITCHER ──────────────────────────────────────────────────
     window.switchTab = function(tab) {
+        if (typeof tutupNotif === 'function') tutupNotif();
         var unitGrid     = document.getElementById('unit-grid');
         var reqPanel     = document.getElementById('req-panel');
         var waitingPanel = document.getElementById('antrian-panel');
@@ -6123,6 +6328,7 @@
     };
 
     window.bukaHistoryDrawer = function() {
+        if (typeof tutupNotif === 'function') tutupNotif();
         hdStartListeners();
         document.getElementById('hist-overlay').classList.add('show');
         document.getElementById('hist-drawer').classList.add('show');
@@ -6151,6 +6357,7 @@
 
     // ── DESKTOP SIDEBAR TAB SWITCH ─────────────────────────────────────
     window.desktopSwitchTab = function(tab, btn) {
+        if (typeof tutupNotif === 'function') tutupNotif();
         // Tutup history drawer jika sedang terbuka
         const drawer = document.getElementById('hist-drawer');
         if (drawer && drawer.classList.contains('show')) {
