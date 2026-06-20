@@ -455,6 +455,21 @@
             .sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
             .sidebar-staff-view { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-size:12px; font-weight:700; color:#4b5563; cursor:pointer; border:1px solid rgba(255,255,255,0.06); background:transparent; font-family:inherit; transition:all 0.15s; width:100%; margin-bottom:6px; text-decoration:none; }
             .sidebar-staff-view:hover { background:rgba(255,255,255,0.04); color:#9ca3af; }
+            /* Sub-menu Kelola: Unit & Booking / F&B, dipindah ke sidebar saat desktop */
+            .sidebar-kelola-tabs { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 8px 12px; padding-left: 12px; border-left: 2px solid rgba(255,255,255,0.07); }
+            .sidebar-kelola-tab {
+                display: flex; align-items: center; gap: 8px;
+                padding: 8px 10px; border-radius: 8px;
+                font-size: 11px; font-weight: 600;
+                color: #6b7280; background: transparent; border: none;
+                cursor: pointer; text-align: left; font-family: inherit;
+                transition: all .15s; width: 100%;
+            }
+            .sidebar-kelola-tab:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .sidebar-kelola-tab.active { background: rgba(0,217,255,0.08); color: #00d9ff; }
+            #sidebar-kelola-tab-fnb.active { background: rgba(227,179,65,0.1); color: var(--yellow); }
+            /* Tab pill di atas konten sudah dipindah ke sidebar, sembunyikan duplikatnya */
+            .kelola-tabs { display: none !important; }
             .owner-main-content { flex: 1; min-width: 0; overflow-y: auto; padding: 28px 40px 80px 40px; max-width: 1100px; margin: 0 auto; width: 100%; box-sizing: border-box; }
             .topbar { max-width: 100% !important; }
             /* Widen content area on desktop */
@@ -493,6 +508,10 @@
         body.light-mode .sidebar-nav-item { color: #94a3b8 !important; }
         body.light-mode .sidebar-nav-item:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
         body.light-mode .sidebar-nav-item.active { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
+        body.light-mode .sidebar-kelola-tabs { border-left-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .sidebar-kelola-tab { color: #94a3b8 !important; }
+        body.light-mode .sidebar-kelola-tab:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
+        body.light-mode .sidebar-kelola-tab.active { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
         body.light-mode .sidebar-staff-view { color: #94a3b8 !important; border-color: rgba(0,0,0,0.08) !important; }
         body.light-mode .sidebar-staff-view:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
         body.light-mode .sidebar-keluar { background: rgba(239,68,68,0.07) !important; border-color: rgba(239,68,68,0.15) !important; }
@@ -647,6 +666,14 @@
         </div>
             <a href="../owner/dashboard-owner.html" class="sidebar-nav-item"><i class="fas fa-th-large"></i> Beranda</a>
             <a href="../owner/manage-owner.html" class="sidebar-nav-item active"><i class="fas fa-tools"></i> Kelola</a>
+            <div class="sidebar-kelola-tabs">
+                <button class="sidebar-kelola-tab active" id="sidebar-kelola-tab-unit" onclick="switchKelolaTab('unit')">
+                    <i class="fas fa-gamepad"></i> Unit & Booking
+                </button>
+                <button class="sidebar-kelola-tab" id="sidebar-kelola-tab-fnb" onclick="switchKelolaTab('fnb')">
+                    <i class="fas fa-utensils"></i> F&B
+                </button>
+            </div>
             <a href="../owner/history-owner.html" class="sidebar-nav-item"><i class="fas fa-history"></i> Riwayat</a>
             <a href="../owner/export-owner.html" class="sidebar-nav-item"><i class="fas fa-file-export"></i> Laporan</a>
         <div class="sidebar-spacer"></div>
@@ -686,6 +713,8 @@
             document.getElementById('tab-fnb').classList.toggle('active', tab==='fnb');
             document.getElementById('kelola-tab-unit').classList.toggle('active', tab==='unit');
             document.getElementById('kelola-tab-fnb').classList.toggle('active', tab==='fnb');
+            document.getElementById('sidebar-kelola-tab-unit').classList.toggle('active', tab==='unit');
+            document.getElementById('sidebar-kelola-tab-fnb').classList.toggle('active', tab==='fnb');
         }
     </script>
 
@@ -1497,7 +1526,7 @@ renderMenu();
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 toast: true, position: 'top', icon: 'success',
-                title: isLight ? '☀️ Light mode aktif' : '🌙 Dark mode aktif',
+                title: isLight ? '☀️ Mode Terang aktif' : '🌙 Mode Gelap aktif',
                 showConfirmButton: false, timer: 1500,
                 background: isLight ? '#fff' : '#11171f',
                 color:      isLight ? '#1a202c' : '#fff'

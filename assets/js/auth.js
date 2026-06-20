@@ -42,23 +42,23 @@ window.forgotPassword = async (role = 'staff') => {
 
     const inputFieldHtml = isPelanggan ? `
         <div style="margin-bottom:14px;text-align:left">
-            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Username</label>
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Nama Pengguna</label>
             <div style="position:relative;display:flex;align-items:center">
                 <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
                     <i class="fas fa-user"></i>
                 </span>
-                <input id="swal-fp-username" type="text" placeholder="Masukkan username kamu"
+                <input id="swal-fp-username" type="text" placeholder="Masukkan Nama Pengguna kamu"
                     autocomplete="username"
                     style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 14px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
             </div>
         </div>
         <div style="text-align:left">
-            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">New Password</label>
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Kata Sandi Baru</label>
             <div style="position:relative;display:flex;align-items:center">
                 <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
                     <i class="fas fa-lock"></i>
                 </span>
-                <input id="swal-fp-newpass" type="password" placeholder="Password baru"
+                <input id="swal-fp-newpass" type="password" placeholder="Kata Sandi baru"
                     style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 38px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
                 <button type="button" onclick="(function(){const i=document.getElementById('swal-fp-newpass');i.type=i.type==='password'?'text':'password';this.querySelector('i').className=i.type==='password'?'fas fa-eye':'fas fa-eye-slash'}).call(this)"
                     style="position:absolute;right:12px;background:none;border:none;color:#8899aa;cursor:pointer;padding:4px;font-size:14px;display:flex;align-items:center">
@@ -67,12 +67,12 @@ window.forgotPassword = async (role = 'staff') => {
             </div>
         </div>
         <div style="margin-top:14px;text-align:left">
-            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Confirm Password</label>
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Konfirmasi Kata Sandi</label>
             <div style="position:relative;display:flex;align-items:center">
                 <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
                     <i class="fas fa-lock"></i>
                 </span>
-                <input id="swal-fp-confirmpass" type="password" placeholder="Ulangi password baru"
+                <input id="swal-fp-confirmpass" type="password" placeholder="Ulangi Kata Sandi baru"
                     style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 38px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
                 <button type="button" onclick="(function(){const i=document.getElementById('swal-fp-confirmpass');i.type=i.type==='password'?'text':'password';this.querySelector('i').className=i.type==='password'?'fas fa-eye':'fas fa-eye-slash'}).call(this)"
                     style="position:absolute;right:12px;background:none;border:none;color:#8899aa;cursor:pointer;padding:4px;font-size:14px;display:flex;align-items:center">
@@ -87,18 +87,18 @@ window.forgotPassword = async (role = 'staff') => {
                 <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
                     <i class="fas fa-envelope"></i>
                 </span>
-                <input id="swal-fp-email" type="email" placeholder="contoh@email.com"
+                <input id="swal-fp-email" type="email" placeholder="contoh@gmail.com"
                     autocomplete="email"
                     style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 14px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
             </div>
         </div>
         <div style="text-align:left">
-            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">New Password</label>
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Kata Sandi Baru</label>
             <div style="position:relative;display:flex;align-items:center">
                 <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
                     <i class="fas fa-lock"></i>
                 </span>
-                <input id="swal-fp-newpass" type="password" placeholder="Password baru"
+                <input id="swal-fp-newpass" type="password" placeholder="Kata Sandi baru"
                     style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 38px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
                 <button type="button" onclick="(function(){const i=document.getElementById('swal-fp-newpass');i.type=i.type==='password'?'text':'password';this.querySelector('i').className=i.type==='password'?'fas fa-eye':'fas fa-eye-slash'}).call(this)"
                     style="position:absolute;right:12px;background:none;border:none;color:#8899aa;cursor:pointer;padding:4px;font-size:14px;display:flex;align-items:center">
@@ -107,12 +107,12 @@ window.forgotPassword = async (role = 'staff') => {
             </div>
         </div>
         <div style="margin-top:14px;text-align:left">
-            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Confirm Password</label>
+            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#8899aa;margin-bottom:6px">Konfirmasi Kata Sandi</label>
             <div style="position:relative;display:flex;align-items:center">
                 <span style="position:absolute;left:13px;color:#8899aa;font-size:13px;pointer-events:none">
                     <i class="fas fa-lock"></i>
                 </span>
-                <input id="swal-fp-confirmpass" type="password" placeholder="Ulangi password baru"
+                <input id="swal-fp-confirmpass" type="password" placeholder="Ulangi Kata Sandi baru"
                     style="width:100%;box-sizing:border-box;background:${bg.inputBg};border:1px solid ${bg.border};border-radius:10px;padding:12px 38px 12px 38px;color:${bg.color};font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s">
                 <button type="button" onclick="(function(){const i=document.getElementById('swal-fp-confirmpass');i.type=i.type==='password'?'text':'password';this.querySelector('i').className=i.type==='password'?'fas fa-eye':'fas fa-eye-slash'}).call(this)"
                     style="position:absolute;right:12px;background:none;border:none;color:#8899aa;cursor:pointer;padding:4px;font-size:14px;display:flex;align-items:center">
@@ -123,9 +123,9 @@ window.forgotPassword = async (role = 'staff') => {
     `;
 
     const { value: formData } = await Swal.fire({
-        title: 'Reset Password',
+        title: 'Atur Ulang Kata Sandi',
         html: `<div style="margin-top:4px">${inputFieldHtml}</div>`,
-        confirmButtonText: 'SUBMIT',
+        confirmButtonText: 'Simpan',
         confirmButtonColor: '#00d9ff',
         showCancelButton: true,
         cancelButtonText: 'Batal',
