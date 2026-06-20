@@ -73,7 +73,23 @@
         @media (min-width: 768px) {
             body { display: flex; flex-direction: column; align-items: center; }
             .topbar { width: 100%; max-width: 100%; }
-            .hero, .card, .perks, .version-bar { max-width: 480px; width: 100%; }
+            .hero, .card, .perks, .version-bar { max-width: 430px; width: 100%; }
+
+            /* Scale down agar 100% zoom = tampil seperti 90% sebelumnya */
+            .hero { padding: 20px 20px 0; }
+            .hero h1 { font-size: 24px; letter-spacing: -.8px; }
+            .hero p { font-size: 11px; margin-top: 6px; }
+            .chips { margin-top: 14px; gap: 6px; }
+            .chip { padding: 6px 10px; font-size: 10.5px; }
+            .card { margin: 18px 16px 22px; padding: 20px 18px; border-radius: 18px; }
+            .card-title { font-size: 16px; }
+            .card-sub { font-size: 10.5px; margin-bottom: 18px; }
+            .field { margin-bottom: 12px; }
+            .input-wrap input { padding: 11px 12px 11px 36px; font-size: 13px; }
+            .remember { margin-bottom: 16px; }
+            .btn-primary { padding: 13px; font-size: 13px; }
+            .divider { margin: 14px 0; }
+            .version-bar { padding: 0 0 14px; }
         }
         /* ===== DARK/LIGHT THEME TOGGLE ===== */
         body.light-mode{
@@ -114,7 +130,7 @@
             <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
             PRINCE<span>GAMES</span>
         </div>
-        <div class="topbar-right"><button class="theme-toggle" id="themeBtn" onclick="toggleTheme()"><i class="fas fa-sun"></i> Light</button>
+        <div class="topbar-right"><button class="theme-toggle" id="themeBtn" onclick="toggleTheme()"><i class="fas fa-sun"></i> Terang</button>
         <div class="badge-role"><i class="fas fa-shield-halved"></i> Owner Portal</div></div>
     </div>
 
@@ -143,7 +159,7 @@
         <div class="field">
             <div class="field-row">
                 <label>Kata Sandi</label>
-                <a href="#" class="forgot-link" onclick="forgotPassword('owner');return false;">Lupa password?</a>
+                <a href="#" class="forgot-link" onclick="forgotPassword('owner');return false;">Lupa Sandi?</a>
             </div>
             <div class="input-wrap">
                 <i class="icon-left fas fa-lock"></i>
@@ -225,8 +241,8 @@
         if(!btn) return;
         const isLight = document.body.classList.contains('light-mode');
         btn.innerHTML = isLight
-            ? '<i class="fas fa-moon"></i> Dark'
-            : '<i class="fas fa-sun"></i> Light';
+            ? '<i class="fas fa-moon"></i> Gelap'
+            : '<i class="fas fa-sun"></i> Terang';
     }
     document.addEventListener('DOMContentLoaded', updateThemeBtn);
 </script>

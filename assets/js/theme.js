@@ -58,10 +58,10 @@
 
     /* update semua tombol toggle yang ada di halaman */
     document.querySelectorAll('.pg-theme-btn').forEach(btn => {
-      btn.innerHTML = mode === 'dark'
+      btn.innerHTML = mode === 'Gelap'
         ? '<i class="fas fa-sun"></i>'
         : '<i class="fas fa-moon"></i>';
-      btn.title = mode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      btn.title = mode === 'Gelap' ? 'Pindah ke Mode Terang' : 'Pindah ke Mode Gelap';
     });
 
     /* tambah class ke body supaya bisa di-style manual jika perlu */
