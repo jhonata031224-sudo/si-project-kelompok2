@@ -561,6 +561,7 @@
             -webkit-appearance: none;
             appearance: none;
             box-sizing: border-box;
+            cursor: pointer;
         }
         .srev-date-input:focus { border-color: rgba(0,217,255,0.4); }
         .srev-date-input::-webkit-calendar-picker-indicator {
@@ -572,6 +573,19 @@
         }
         body.light-mode .srev-date-input { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: #1e293b; }
         body.light-mode .srev-date-input::-webkit-calendar-picker-indicator { filter: none; }
+        /* Desktop: box tanggal ramping/compact, tidak melebar penuh.
+           Hanya berlaku ≥768px, layout mobile tidak disentuh sama sekali. */
+        @media (min-width: 768px) {
+            .srev-date-input {
+                flex: 0 0 auto;
+                width: 132px;
+                padding: 7px 8px;
+            }
+        }
+        .srev-date-wrap { flex-shrink: 0; }
+        @media (max-width: 767px) {
+            .srev-date-wrap { flex: 1 1 0; min-width: 0; }
+        }
         .srev-date-sep { font-size: 10px; color: #4b5563; font-weight: 700; flex-shrink: 0; }
         .srev-date-apply {
             background: rgba(0,217,255,0.1);
@@ -790,6 +804,14 @@
                 flex-shrink: 0; overflow-y: auto;
             }
             body.light-mode #staff-sidebar { background: #ffffff !important; border-color: rgba(0,0,0,0.08) !important; }
+            #staff-sidebar { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.12) transparent; }
+            #staff-sidebar::-webkit-scrollbar { width: 4px; }
+            #staff-sidebar::-webkit-scrollbar-track { background: transparent; }
+            #staff-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
+            #staff-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(0,217,255,0.3); }
+            body.light-mode #staff-sidebar { scrollbar-color: rgba(0,0,0,0.15) transparent; }
+            body.light-mode #staff-sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
+            body.light-mode #staff-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(2,132,199,0.3); }
             .staff-sidebar-logo {
                 display: flex; align-items: center; gap: 8px;
                 font-size: 14px; font-weight: 900;
@@ -938,6 +960,8 @@
                 gap: 12px !important;
                 margin-bottom: 20px !important;
             }
+            /* Sembunyikan KPI bar saat tab aktif bukan "Unit" (F&B / Antrian / Permintaan) */
+            #unit-kpi-bar.kpi-bar-hidden { display: none !important; }
 
             /* Unit tab layout full width */
             #unit-tab-layout { display: block !important; }
@@ -1132,15 +1156,17 @@
                 border: 1px solid rgba(255,255,255,0.08) !important;
                 transition: transform .3s cubic-bezier(.32,1,.4,1), opacity .3s ease !important;
                 z-index: 10000 !important;
+                isolation: isolate;
+                pointer-events: none !important;
             }
-            .hist-drawer.show { transform: translate(-50%, -50%) scale(1) !important; opacity: 1 !important; }
+            .hist-drawer.show { transform: translate(-50%, -50%) scale(1) !important; opacity: 1 !important; pointer-events: all !important; }
             .hist-handle { display: none; }
             .hist-stats-row { grid-template-columns: 1fr 1fr; padding: 0 24px 14px; position: relative; z-index: 1; }
-            .hist-head { padding: 20px 24px 12px; }
-            .hist-tab-row { padding: 0 24px 14px; position: relative; z-index: 2; pointer-events: all !important; }
-            .htab { pointer-events: all !important; position: relative; z-index: 2; }
-            .hist-search { margin: 0 24px 12px; }
-            .hist-filter-row { padding: 0 24px 14px; }
+            .hist-head { padding: 20px 24px 12px; position: relative; z-index: 1; }
+            .hist-tab-row { padding: 0 24px 14px; position: relative; z-index: 50; pointer-events: all !important; }
+            .htab { pointer-events: all !important; position: relative; z-index: 50; cursor: pointer; }
+            .hist-search { margin: 0 24px 12px; position: relative; z-index: 1; }
+            .hist-filter-row { padding: 0 24px 14px; position: relative; z-index: 1; }
             .hist-body { padding: 0 24px 24px; }
             .hdcard-grid { grid-template-columns: repeat(3, 1fr) !important; }
         }
@@ -1252,6 +1278,8 @@
             #tab-switcher-row { display: none !important; }
             #unit-filter-bar  { display: none !important; }
             #sidebar-tab-nav, #sidebar-ps-section { display: flex !important; flex-direction: column; }
+            /* Sembunyikan tombol dropdown "Lihat/Sembunyikan" unit di desktop saja */
+            #unit-dropdown-btn { display: none !important; }
         }
         /* Di mobile: sembunyikan elemen sidebar tab ini */
         @media (max-width: 767px) {
@@ -1430,9 +1458,9 @@
     /* ── History Drawer ── */
     .hist-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;opacity:0;pointer-events:none;transition:opacity .25s;}
     .hist-overlay.show{opacity:1;pointer-events:all;}
-    .hist-drawer{position:fixed;bottom:0;left:0;right:0;z-index:401;background:#0d1219;border-top:1px solid rgba(255,255,255,0.07);border-radius:24px 24px 0 0;height:92vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1,.4,1);overflow:hidden;}
-    .hist-drawer.show{transform:translateY(0);}
-    .hist-drawer *{pointer-events:all !important;}
+    .hist-drawer{position:fixed;bottom:0;left:0;right:0;z-index:401;background:#0d1219;border-top:1px solid rgba(255,255,255,0.07);border-radius:24px 24px 0 0;height:92vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1,.4,1);overflow:hidden;pointer-events:none;}
+    .hist-drawer.show{transform:translateY(0);pointer-events:all;}
+    .hist-drawer.show *{pointer-events:all !important;}
     .hist-handle{width:40px;height:4px;background:rgba(255,255,255,0.12);border-radius:99px;margin:14px auto 0;flex-shrink:0;}
     .hist-head{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 12px;flex-shrink:0;}
     .hist-title{font-size:15px;font-weight:900;letter-spacing:-.3px;}
@@ -1530,7 +1558,7 @@
             <div class="staff-chart-pills">
                 <button class="staff-chart-pill sc1-pill active" onclick="switchChart('staff-chart-revenue','7d',this)">7H</button>
                 <button class="staff-chart-pill sc1-pill" onclick="switchChart('staff-chart-revenue','30d',this)">30H</button>
-                <button class="staff-chart-pill sc1-pill" onclick="switchChart('staff-chart-revenue','bulan',this)">Bln</button>
+                <button class="staff-chart-pill sc1-pill" onclick="switchChart('staff-chart-revenue','bulan',this)">1Th</button>
             </div>
         </div>
         <div class="srev-date-row" style="margin-bottom:10px">
@@ -1552,7 +1580,7 @@
             <div class="staff-chart-pills">
                 <button class="staff-chart-pill sc2-pill active" onclick="switchChart('staff-chart-bvr','7d',this)">7H</button>
                 <button class="staff-chart-pill sc2-pill" onclick="switchChart('staff-chart-bvr','30d',this)">30H</button>
-                <button class="staff-chart-pill sc2-pill" onclick="switchChart('staff-chart-bvr','bulan',this)">Bln</button>
+                <button class="staff-chart-pill sc2-pill" onclick="switchChart('staff-chart-bvr','bulan',this)">1Th</button>
             </div>
         </div>
         <div class="srev-date-row" style="margin-bottom:10px">
@@ -1577,7 +1605,7 @@
             <div class="staff-chart-pills">
                 <button class="staff-chart-pill sc3-pill active" onclick="switchChart('staff-chart-ps','7d',this)">7H</button>
                 <button class="staff-chart-pill sc3-pill" onclick="switchChart('staff-chart-ps','30d',this)">30H</button>
-                <button class="staff-chart-pill sc3-pill" onclick="switchChart('staff-chart-ps','bulan',this)">Bln</button>
+                <button class="staff-chart-pill sc3-pill" onclick="switchChart('staff-chart-ps','bulan',this)">1Th</button>
             </div>
         </div>
         <div class="srev-date-row" style="margin-bottom:10px">
@@ -1646,7 +1674,7 @@
             <div class="staff-chart-pills">
                 <button class="staff-chart-pill sp1-pill active" onclick="switchChart('sp-chart-revenue','7d',this)">7H</button>
                 <button class="staff-chart-pill sp1-pill" onclick="switchChart('sp-chart-revenue','30d',this)">30H</button>
-                <button class="staff-chart-pill sp1-pill" onclick="switchChart('sp-chart-revenue','bulan',this)">Bln</button>
+                <button class="staff-chart-pill sp1-pill" onclick="switchChart('sp-chart-revenue','bulan',this)">1Th</button>
             </div>
         </div>
         <div class="srev-date-row" style="margin-bottom:10px">
@@ -1668,7 +1696,7 @@
             <div class="staff-chart-pills">
                 <button class="staff-chart-pill sp2-pill active" onclick="switchChart('sp-chart-bvr','7d',this)">7H</button>
                 <button class="staff-chart-pill sp2-pill" onclick="switchChart('sp-chart-bvr','30d',this)">30H</button>
-                <button class="staff-chart-pill sp2-pill" onclick="switchChart('sp-chart-bvr','bulan',this)">Bln</button>
+                <button class="staff-chart-pill sp2-pill" onclick="switchChart('sp-chart-bvr','bulan',this)">1Th</button>
             </div>
         </div>
         <div class="srev-date-row" style="margin-bottom:10px">
@@ -1693,7 +1721,7 @@
             <div class="staff-chart-pills">
                 <button class="staff-chart-pill sp3-pill active" onclick="switchChart('sp-chart-ps','7d',this)">7H</button>
                 <button class="staff-chart-pill sp3-pill" onclick="switchChart('sp-chart-ps','30d',this)">30H</button>
-                <button class="staff-chart-pill sp3-pill" onclick="switchChart('sp-chart-ps','bulan',this)">Bln</button>
+                <button class="staff-chart-pill sp3-pill" onclick="switchChart('sp-chart-ps','bulan',this)">1Th</button>
             </div>
         </div>
         <div class="srev-date-row" style="margin-bottom:10px">
@@ -3487,6 +3515,9 @@
         unitGrid.style.display = tab === 'unit' ? '' : 'none';
         var unitFilterBar = document.getElementById('unit-filter-bar');
         if (unitFilterBar) unitFilterBar.style.display = tab === 'unit' ? '' : 'none';
+        // Sembunyikan KPI bar (Unit Aktif / Pendapatan / Permintaan) saat bukan tab Unit (desktop only, mobile sudah selalu hidden)
+        var unitKpiBar = document.getElementById('unit-kpi-bar');
+        if (unitKpiBar) unitKpiBar.classList.toggle('kpi-bar-hidden', tab !== 'unit');
         reqPanel.classList.toggle('show', tab === 'req');
         waitingPanel.classList.toggle('show', tab === 'antrian');
         fnbPanel.classList.toggle('hidden', tab !== 'fnb');
@@ -5645,12 +5676,18 @@
 
     window.setStaffFilter = function(f) {
         _staffFilter = f;
-        document.querySelectorAll('.srev-pill').forEach(b => b.classList.remove('srev-pill-active'));
         const map = { harian:0, mingguan:1, bulanan:2 };
-        document.querySelectorAll('.srev-pill')[map[f]]?.classList.add('srev-pill-active');
+        // Highlight pill per grup (ada 2 grup: kartu mobile & kartu duplikat di panel Statistik desktop)
+        document.querySelectorAll('.srev-pills').forEach(group => {
+            const pills = group.querySelectorAll('.srev-pill');
+            pills.forEach(b => b.classList.remove('srev-pill-active'));
+            if (pills[map[f]]) pills[map[f]].classList.add('srev-pill-active');
+        });
         const labels = { harian:'Hari Ini', mingguan:'Minggu Ini', bulanan:'Bulan Ini' };
-        const lbl = document.getElementById('srev-filter-label');
-        if (lbl) lbl.textContent = 'Filter: ' + labels[f];
+        const lbl  = document.getElementById('srev-filter-label');
+        const lbl2 = document.getElementById('srev-filter-label2');
+        if (lbl)  lbl.textContent  = 'Filter: ' + labels[f];
+        if (lbl2) lbl2.textContent = 'Filter: ' + labels[f];
         renderStaffRevenue();
     };
 
@@ -5681,6 +5718,11 @@
         const subEl = document.getElementById('srev-sublabel');
         if (amtEl) amtEl.textContent = fmtRp(total);
         if (subEl) subEl.textContent = trx + ' transaksi';
+        // Sync ke kartu duplikat di panel Statistik desktop
+        const amtEl2 = document.getElementById('srev-amount2');
+        const subEl2 = document.getElementById('srev-sublabel2');
+        if (amtEl2) amtEl2.textContent = fmtRp(total);
+        if (subEl2) subEl2.textContent = trx + ' transaksi';
 
         // KPI header - pendapatan strip
         const revEl = document.getElementById('strip-rev-today');
@@ -5714,6 +5756,19 @@
                     html += `<button id="srev-toggle-btn" onclick="(function(){var el=document.getElementById('srev-extra-rows');var btn=document.getElementById('srev-toggle-btn');var isOpen=el.style.display!=='none';el.style.display=isOpen?'none':'block';btn.innerHTML=isOpen?'<i class=\'fas fa-chevron-down\' style=\'margin-right:5px\'></i>Lihat ${hidden.length} lainnya':'<i class=\'fas fa-chevron-up\' style=\'margin-right:5px\'></i>Sembunyikan';})()" style="width:100%;margin-top:8px;padding:7px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:#6b7280;font-size:10px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;transition:.2s"><i class="fas fa-chevron-down" style="margin-right:5px"></i>Lihat ${hidden.length} lainnya</button>`;
                 }
                 listEl.innerHTML = html;
+            }
+        }
+        // Sync ke kartu duplikat di panel Statistik desktop (id di-suffix "2" agar tidak duplikat)
+        const listEl2 = document.getElementById('srev-list2');
+        if (listEl2) {
+            if (!filtered.length) {
+                listEl2.innerHTML = '<p class="staff-empty">Belum ada pendapatan.</p>';
+            } else {
+                listEl2.innerHTML = listEl.innerHTML
+                    .replace(/id="srev-extra-rows"/g, 'id="srev-extra-rows2"')
+                    .replace(/id="srev-toggle-btn"/g, 'id="srev-toggle-btn2"')
+                    .replace(/getElementById\('srev-extra-rows'\)/g, "getElementById('srev-extra-rows2')")
+                    .replace(/getElementById\('srev-toggle-btn'\)/g, "getElementById('srev-toggle-btn2')");
             }
         }
 
@@ -5821,7 +5876,7 @@
             el.textContent = [cs.dateFrom||'...', cs.dateTo||'...'].join(' s.d. ');
         } else {
             const p = cs.period;
-            el.textContent = p==='7d'?'7 hari terakhir':p==='30d'?'30 hari terakhir':'12 bulan terakhir';
+            el.textContent = p==='7d'?'7 hari terakhir':p==='30d'?'30 hari terakhir':'1 tahun terakhir';
         }
     }
 
@@ -5960,6 +6015,7 @@
     let _hdExpandRental = false;
     const HD_PREVIEW = 2;
     let _hdListening = false;
+    let _hdTab = 'sesi';
 
     const _hdFmtRp  = n => 'Rp ' + (n || 0).toLocaleString('id-ID');
     function _hdFmtTgl(val) {
@@ -6375,6 +6431,49 @@
         window.switchTab(tab);
     };
 
+    // ── Sidebar (desktop): tombol Unit / F&B / Antrian / Permintaan ───
+    window.sidebarSwitchTab = function(tab) {
+        // Update active state pada menu sidebar (Unit/F&B/Antrian/Permintaan)
+        ['snav-tab-unit','snav-tab-fnb','snav-tab-antrian','snav-tab-req'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('snav-tab-active');
+        });
+        const activeMap = { unit:'snav-tab-unit', fnb:'snav-tab-fnb', antrian:'snav-tab-antrian', req:'snav-tab-req' };
+        if (activeMap[tab]) {
+            const el = document.getElementById(activeMap[tab]);
+            if (el) el.classList.add('snav-tab-active');
+        }
+        // Filter Unit di sidebar hanya relevan saat tab Unit aktif
+        const psSection = document.getElementById('sidebar-ps-section');
+        if (psSection) psSection.style.display = (tab === 'unit') ? '' : 'none';
+        // Pastikan menu "Beranda" di sidebar atas ikut tersorot saat balik ke tab Unit
+        if (tab === 'unit') {
+            ['snav-beranda','snav-stats','snav-history','snav-setelan'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('active');
+            });
+            const beranda = document.getElementById('snav-beranda');
+            if (beranda) beranda.classList.add('active');
+        }
+        // Delegate ke switchTab yang sudah ada (logika utama show/hide panel)
+        window.switchTab(tab);
+    };
+
+    window.sidebarFilterUnit = function(type) {
+        // Update active state tombol filter di sidebar
+        document.querySelectorAll('#sidebar-ps-section .snav-ps-btn').forEach(b => {
+            b.classList.remove('snav-ps-active');
+        });
+        const idMap = { semua:'snav-uf-semua', PS5:'snav-uf-ps5', PS4:'snav-uf-ps4', PS3:'snav-uf-ps3' };
+        const activeBtn = document.getElementById(idMap[type]);
+        if (activeBtn) activeBtn.classList.add('snav-ps-active');
+        // Delegate ke filterUnit yang sudah ada, lewat tombol mobile (unit-filter-bar)
+        // agar logika filter & sinkronisasi tab mobile tetap konsisten
+        const mobileIdMap = { semua:'uf-semua', PS5:'uf-ps5', PS4:'uf-ps4', PS3:'uf-ps3' };
+        const mobileBtn = document.getElementById(mobileIdMap[type]);
+        if (mobileBtn) window.filterUnit(type, mobileBtn);
+    };
+
     // ── DESKTOP INIT: sync shift info ke sidebar card ─────────────────────
     (function initDesktopSidebar() {
         // Sync shift name & time ke sidebar card
@@ -6432,6 +6531,51 @@
         // Sync jam shift setelah setelan panel mungkin ter-render
         setTimeout(syncSidebarShift, 1500);
         setTimeout(syncSidebarShift, 4000);
+
+        // Fix: klik di mana saja pada box input tanggal (.srev-date-input) langsung
+        // membuka date picker — termasuk area kosong dan ikon kalender, yang secara
+        // native punya sub-area klik sendiri-sendiri di dalam <input type="date">
+        // sehingga sebagian titik klik tidak konsisten ter-handle.
+        // Solusi: pasang overlay transparan full-cover di atas tiap input tanggal,
+        // sehingga SEMUA klik pada box selalu lewat satu jalur yang sama.
+        // Hanya aktif di desktop (>=768px); di mobile tidak disentuh sama sekali.
+        function initDatePickerOverlays() {
+            if (window.innerWidth < 768) return;
+            document.querySelectorAll('.srev-date-input').forEach(function (input) {
+                if (input.dataset.overlayDone === '1') return;
+                input.dataset.overlayDone = '1';
+
+                let wrapper = input.parentElement;
+                if (!wrapper || !wrapper.classList.contains('srev-date-wrap')) {
+                    wrapper = document.createElement('span');
+                    wrapper.className = 'srev-date-wrap';
+                    wrapper.style.position = 'relative';
+                    wrapper.style.flex = input.style.flex || '0 0 auto';
+                    wrapper.style.display = 'inline-flex';
+                    input.parentNode.insertBefore(wrapper, input);
+                    wrapper.appendChild(input);
+                }
+
+                const overlay = document.createElement('span');
+                overlay.className = 'srev-date-overlay';
+                overlay.style.position = 'absolute';
+                overlay.style.inset = '0';
+                overlay.style.cursor = 'pointer';
+                overlay.style.zIndex = '2';
+                overlay.addEventListener('click', function () {
+                    if (typeof input.showPicker === 'function') {
+                        try { input.showPicker(); } catch (err) { /* ignore unsupported/disallowed cases */ }
+                    } else {
+                        input.focus();
+                    }
+                });
+                wrapper.appendChild(overlay);
+            });
+        }
+        initDatePickerOverlays();
+        // Re-scan kalau ada chart/tabel baru yang dirender belakangan
+        setTimeout(initDatePickerOverlays, 1000);
+        setTimeout(initDatePickerOverlays, 3000);
     })();
 </script>
 </div><!-- /staff-main-content -->
