@@ -207,14 +207,14 @@
       <span class="dana-number" id="dana-number-display">085769033135</span>
       <button class="copy-btn" onclick="copyDana()"><i class="fas fa-copy"></i> Salin</button>
     </div>
-    <div class="dana-name">a/n Prince Games</div>
+    <div class="dana-name">Prince Games</div>
     <div class="dana-qr-wrap">
-      <a href="https://wa.me/6285769033135" target="_blank">
-        <img id="dana-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https%3A%2F%2Fwa.me%2F6285769033135&color=0a0a0a&bgcolor=ffffff" alt="QR WhatsApp" style="width:160px;height:160px;display:block;">
+      <a href="qr-unavailable.html" target="_blank">
+        <img id="dana-qr" src="" alt="QR" style="width:160px;height:160px;display:block;">
       </a>
     </div>
     <div class="nominal-chip" id="dana-nominal">Rp 0</div>
-    <div class="dana-note">📱 Scan QR untuk chat admin via WhatsApp</div>
+    <div class="dana-note">Scan QR untuk Pembayaran</div>
     <div class="dana-steps" id="dana-steps-wrap"></div>
   </div>
   <div class="cash-panel" id="cash-panel">
@@ -562,6 +562,15 @@
   };
 
   selectPay('ewallet');
+</script>
+<script>
+  // Generate QR dinamis — selalu mengarah ke qr-unavailable.html relatif dari halaman ini
+  (function() {
+    const qrTarget = window.location.href.replace(/[^/]*$/, 'qr-unavailable.html');
+    const encoded  = encodeURIComponent(qrTarget);
+    document.getElementById('dana-qr').src =
+      'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + encoded + '&color=0a0a0a&bgcolor=ffffff';
+  })();
 </script>
 </body>
 </html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prince Games – QR Belum Aktif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cyan: #00d9ff;
+      --cyan-dim: rgba(0, 217, 255, 0.12);
+      --cyan-glow: rgba(0, 217, 255, 0.25);
+      --purple: #a855f7;
+      --bg: #06090f;
+      --card: rgba(17, 23, 31, 0.85);
+      --border: rgba(255,255,255,0.07);
+    }
+
+    html, body {
+      min-height: 100dvh;
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ── Animated background ── */
+    .bg-layer {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35;
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 420px; height: 420px; background: #00d9ff; top: -120px; left: -80px; animation-delay: 0s; }
+    .orb-2 { width: 320px; height: 320px; background: #a855f7; bottom: -80px; right: -60px; animation-delay: -3s; }
+    .orb-3 { width: 200px; height: 200px; background: #00d9ff; bottom: 20%; left: 10%; opacity: 0.15; animation-delay: -5s; }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(30px, 20px) scale(1.06); }
+    }
+
+    /* Scanline texture */
+    .scanlines {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+    }
+
+    /* ── Card ── */
+    .card {
+      position: relative; z-index: 2;
+      width: min(420px, 92vw);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 40px 32px 36px;
+      text-align: center;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 0 0 1px rgba(0,217,255,0.06), 0 32px 64px rgba(0,0,0,0.6);
+      animation: rise 0.6s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── QR ghost icon ── */
+    .qr-icon-wrap {
+      position: relative;
+      width: 120px; height: 120px;
+      margin: 0 auto 28px;
+    }
+    .qr-ghost {
+      width: 100%; height: 100%;
+      border-radius: 18px;
+      background: rgba(0,217,255,0.06);
+      border: 2px dashed rgba(0,217,255,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 48px;
+      color: rgba(0,217,255,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    /* Scan animation line */
+    .qr-ghost::after {
+      content: '';
+      position: absolute;
+      left: 10%; right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      box-shadow: 0 0 12px var(--cyan);
+      animation: scan 2.4s ease-in-out infinite;
+      border-radius: 2px;
+    }
+    @keyframes scan {
+      0%   { top: 12%; opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { top: 88%; opacity: 0; }
+    }
+
+    /* Badge merah di pojok */
+    .badge {
+      position: absolute;
+      top: -8px; right: -8px;
+      width: 32px; height: 32px;
+      background: #ef4444;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      box-shadow: 0 0 16px rgba(239,68,68,0.5);
+      animation: pulse-badge 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse-badge {
+      0%, 100% { box-shadow: 0 0 16px rgba(239,68,68,0.5); }
+      50%       { box-shadow: 0 0 28px rgba(239,68,68,0.8); }
+    }
+
+    /* ── Text ── */
+    .label-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #f87171;
+      font-size: 10px; font-weight: 800;
+      letter-spacing: .12em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 100px;
+      margin-bottom: 18px;
+    }
+    .label-tag .dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #ef4444;
+      animation: blink 1.2s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.2; }
+    }
+
+    h1 {
+      font-size: 24px; font-weight: 900;
+      letter-spacing: -.02em;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+    h1 span { color: var(--cyan); }
+
+    .subtitle {
+      font-size: 13px; color: rgba(255,255,255,0.45);
+      line-height: 1.6; margin-bottom: 28px;
+    }
+
+    /* ── Info box ── */
+    .info-box {
+      background: rgba(0,217,255,0.05);
+      border: 1px solid rgba(0,217,255,0.15);
+      border-radius: 16px;
+      padding: 18px 20px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .info-box .row {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 12.5px; color: rgba(255,255,255,0.65);
+      line-height: 1.5;
+    }
+    .info-box .row + .row { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .info-box .icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; flex-shrink: 0; margin-top: 1px;
+    }
+    .icon-cyan { background: rgba(0,217,255,0.12); color: var(--cyan); }
+    .icon-purple { background: rgba(168,85,247,0.12); color: var(--purple); }
+    .info-box strong { color: #fff; }
+
+    /* ── CTA button ── */
+    .btn-wa {
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      width: 100%;
+      background: linear-gradient(135deg, #25d366, #1da851);
+      color: #fff; font-weight: 800; font-size: 13px;
+      padding: 15px 20px; border-radius: 14px; border: none;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 4px 24px rgba(37,211,102,0.3);
+      transition: transform .15s, box-shadow .15s;
+      margin-bottom: 12px;
+      letter-spacing: .01em;
+    }
+    .btn-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(37,211,102,0.45); }
+    .btn-wa:active { transform: scale(0.98); }
+
+    .btn-back {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.55); font-weight: 700; font-size: 12px;
+      padding: 13px 20px; border-radius: 14px; cursor: pointer;
+      text-decoration: none;
+      transition: background .15s, color .15s;
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.09); color: #fff; }
+
+    /* ── Footer note ── */
+    .footer-note {
+      margin-top: 22px;
+      font-size: 10.5px; color: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="bg-layer">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="scanlines"></div>
+
+  <!-- Card -->
+  <div class="card">
+
+    <!-- QR ghost icon -->
+    <div class="qr-icon-wrap">
+      <div class="qr-ghost">
+        <i class="fas fa-qrcode"></i>
+      </div>
+      <div class="badge"><i class="fas fa-xmark" style="color:#fff;font-size:12px"></i></div>
+    </div>
+
+    <!-- Status tag -->
+    <div class="label-tag">
+      <span class="dot"></span>
+      QR Tidak Aktif
+    </div>
+
+    <h1>Fitur ini belum<br><span>tersedia</span></h1>
+    <p class="subtitle">
+      QR Code pembayaran DANA sedang dalam proses aktivasi.<br>
+      Untuk sekarang, hubungi admin langsung via WhatsApp.
+    </p>
+
+    <!-- Info -->
+    <div class="info-box">
+      <div class="row">
+        <div class="icon icon-cyan"><i class="fas fa-clock"></i></div>
+        <div><strong>Segera hadir</strong> — fitur scan-to-pay sedang disiapkan dan akan aktif dalam waktu dekat.</div>
+      </div>
+      <div class="row">
+        <div class="icon icon-purple"><i class="fas fa-headset"></i></div>
+        <div><strong>Sementara</strong>, konfirmasi pembayaran bisa langsung lewat admin Prince Games via WhatsApp.</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <a href="https://wa.me/6285769033135" target="_blank" class="btn-wa">
+      <i class="fab fa-whatsapp" style="font-size:17px"></i>
+      Chat Admin via WhatsApp
+    </a>
+    <a href="javascript:history.back()" class="btn-back">
+      <i class="fas fa-arrow-left" style="font-size:11px"></i>
+      Kembali ke halaman pembayaran
+    </a>
+
+    <div class="footer-note">
+      <i class="fas fa-shield-halved"></i>
+      Prince Games &nbsp;·&nbsp; Pembayaran aman & terpercaya
+    </div>
+
+  </div>
+
+</body>
+</html>
