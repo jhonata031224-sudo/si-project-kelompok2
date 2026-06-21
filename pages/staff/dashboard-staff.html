@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        html { scrollbar-gutter: stable; }
         body { background-color: #0b0e14; color: white; font-family: 'Plus Jakarta Sans', sans-serif; padding-bottom: 0; overflow: hidden; height: 100dvh; }
         /* ── FIXED HEADER LAYOUT ── */
         #staff-fixed-header {
@@ -29,11 +30,13 @@
             position: fixed;
             left: 0; right: 0; bottom: 72px;
             overflow-y: auto;
+            scrollbar-gutter: stable;
             -webkit-overflow-scrolling: touch;
             padding: 16px 16px 24px;
         }
         * { font-style: normal !important; }
         .glass-card { background: #11171f; border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; }
+        #fnb-cart-empty { display: none; }
         .border-ps5 { border-left: 6px solid #ffbf00; }
         .border-ps4 { border-left: 6px solid #5e20f0; }
         .border-ps3 { border-left: 6px solid #c0c0c0c2; }
@@ -708,9 +711,32 @@
             #staff-desktop-topbar { display: none !important; }
             #unit-kpi-bar { display: none !important; }
             #unit-tab-layout { display: block !important; }
-            /* Mobile: panel tetap fullscreen fixed */
-            #stats-panel { position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 72px !important; z-index: 40 !important; }
-            #setelan-panel { position: fixed !important; inset: 0 !important; bottom: 72px !important; top: 0 !important; z-index: 40 !important; }
+            /* Mobile: panel tetap fullscreen fixed (top diatur dinamis via adjustScrollTop() agar tidak ketutup header) */
+            #stats-panel { position: fixed !important; left: 0 !important; right: 0 !important; bottom: 72px !important; z-index: 40 !important; }
+            #setelan-panel { position: fixed !important; left: 0 !important; right: 0 !important; bottom: 72px !important; z-index: 40 !important; }
+            /* Filter Unit (Semua/PS5/PS4/PS3): grid 4 kolom rata, statis tanpa scroll/geser */
+            #unit-filter-bar {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                overflow: visible !important;
+                flex-wrap: unset !important;
+                gap: 6px !important;
+                margin-top: 10px !important;
+            }
+            #unit-filter-bar .tab-btn {
+                padding: 8px 4px !important;
+                font-size: 9.5px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 3px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+            }
+            #unit-filter-bar .tab-btn i { font-size: 10px !important; margin-right: 0 !important; flex-shrink: 0; }
+            #unit-filter-bar .tab-btn span { font-size: 8px !important; }
+            /* Sembunyikan total filter unit saat tab aktif bukan Unit (F&B/Antrian/Permintaan) */
+            #unit-filter-bar.uf-bar-hidden { display: none !important; }
         }
 
         /* ══════════════════════════════════════════════
@@ -889,6 +915,7 @@
             /* Main Content */
             #staff-main-content {
                 flex: 1; min-width: 0; overflow-y: auto;
+                scrollbar-gutter: stable;
                 padding: 28px 36px 60px; width: 100%;
             }
             #staff-main-content::-webkit-scrollbar { width: 4px; }
@@ -1101,9 +1128,22 @@
             #sesi-sidebar .staff-section-card:last-child { margin-bottom: 0 !important; }
 
             /* FnB panel */
-            #fnb-panel .glass-card { max-width: 760px; }
+            #fnb-panel { max-width: none !important; }
+            #fnb-panel > .glass-card:first-child,
+            #fnb-panel > .glass-card:nth-child(2) { max-width: 760px; }
             #fnb-panel select { max-width: 400px !important; width: auto !important; }
-            #fnb-panel button[onclick="submitFnbOrder()"] { width: auto !important; display: inline-flex !important; padding: 10px 24px !important; }
+            #fnb-layout {
+                display: grid;
+                grid-template-columns: 1fr 320px;
+                gap: 16px;
+                align-items: start;
+                max-width: 1100px;
+            }
+            #fnb-menu-list { margin-bottom: 0 !important; }
+            #fnb-cart-col { position: sticky; top: 16px; }
+            #fnb-cart-empty { display: block; }
+            #fnb-cart-empty.fnb-cart-empty-off { display: none !important; }
+            #fnb-panel button[onclick="submitFnbOrder()"] { width: 100% !important; display: flex !important; }
 
             /* Req & Antrian cards */
             .req-card { max-width: 760px; }
@@ -1167,6 +1207,7 @@
             .htab { pointer-events: all !important; position: relative; z-index: 50; cursor: pointer; }
             .hist-search { margin: 0 24px 12px; position: relative; z-index: 1; }
             .hist-filter-row { padding: 0 24px 14px; position: relative; z-index: 1; }
+            .hist-filter-scroll { overflow-x: visible; flex-wrap: wrap; }
             .hist-body { padding: 0 24px 24px; }
             .hdcard-grid { grid-template-columns: repeat(3, 1fr) !important; }
         }
@@ -1234,6 +1275,13 @@
         .snav-tab-dot.show { display: block; }
 
         /* Filter PS di sidebar */
+        #sidebar-ps-section {
+            padding-left: 14px;
+            margin: 2px 0 6px;
+            border-left: 2px solid rgba(255,255,255,0.06);
+            margin-left: 12px;
+        }
+        body.light-mode #sidebar-ps-section { border-left-color: rgba(0,0,0,0.07) !important; }
         .snav-ps-filter {
             display: flex;
             flex-direction: column;
@@ -1302,6 +1350,33 @@
     <button class="staff-snav-item active" id="snav-beranda" onclick="desktopSwitchTab('unit', this)">
         <i class="fas fa-th-large"></i> Beranda
     </button>
+
+    <!-- PS Filter — sub-menu Beranda (tampil saat tab Unit aktif) -->
+    <div id="sidebar-ps-section">
+        <div class="snav-ps-filter">
+            <button class="snav-ps-btn snav-ps-active" id="snav-uf-semua" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('semua', this)">
+                <i class="fas fa-th-large" style="color:#9ca3af;width:14px;text-align:center"></i>
+                Semua
+                <span class="snav-ps-count" id="snav-count-semua">0</span>
+            </button>
+            <button class="snav-ps-btn" id="snav-uf-ps5" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS5', this)">
+                <i class="fas fa-gamepad" style="color:#ffbf00;width:14px;text-align:center"></i>
+                PS5
+                <span class="snav-ps-count" id="snav-count-ps5">0</span>
+            </button>
+            <button class="snav-ps-btn" id="snav-uf-ps4" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS4', this)">
+                <i class="fas fa-gamepad" style="color:#a78bfa;width:14px;text-align:center"></i>
+                PS4
+                <span class="snav-ps-count" id="snav-count-ps4">0</span>
+            </button>
+            <button class="snav-ps-btn" id="snav-uf-ps3" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS3', this)">
+                <i class="fas fa-gamepad" style="color:#9ca3af;width:14px;text-align:center"></i>
+                PS3
+                <span class="snav-ps-count" id="snav-count-ps3">0</span>
+            </button>
+        </div>
+    </div>
+
     <button class="staff-snav-item" id="snav-stats" onclick="desktopSwitchTab('stats', this)">
         <i class="fas fa-chart-bar"></i> Statistik
     </button>
@@ -1333,34 +1408,6 @@
             <i class="fas fa-inbox"></i> Permintaan
             <span class="snav-tab-dot" id="snav-req-dot"></span>
         </button>
-    </div>
-
-    <!-- PS Filter di Sidebar (desktop, tampil saat tab Unit aktif) -->
-    <div id="sidebar-ps-section">
-        <div class="staff-sidebar-divider"></div>
-        <div class="staff-sidebar-section-label">Filter Unit</div>
-        <div class="snav-ps-filter">
-            <button class="snav-ps-btn snav-ps-active" id="snav-uf-semua" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('semua', this)">
-                <i class="fas fa-th-large" style="color:#9ca3af;width:14px;text-align:center"></i>
-                Semua
-                <span class="snav-ps-count" id="snav-count-semua">0</span>
-            </button>
-            <button class="snav-ps-btn" id="snav-uf-ps5" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS5', this)">
-                <i class="fas fa-gamepad" style="color:#ffbf00;width:14px;text-align:center"></i>
-                PS5
-                <span class="snav-ps-count" id="snav-count-ps5">0</span>
-            </button>
-            <button class="snav-ps-btn" id="snav-uf-ps4" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS4', this)">
-                <i class="fas fa-gamepad" style="color:#a78bfa;width:14px;text-align:center"></i>
-                PS4
-                <span class="snav-ps-count" id="snav-count-ps4">0</span>
-            </button>
-            <button class="snav-ps-btn" id="snav-uf-ps3" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS3', this)">
-                <i class="fas fa-gamepad" style="color:#9ca3af;width:14px;text-align:center"></i>
-                PS3
-                <span class="snav-ps-count" id="snav-count-ps3">0</span>
-            </button>
-        </div>
     </div>
 
 
@@ -1478,7 +1525,13 @@
     .hist-search i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#6b7280;font-size:11px;}
     .hist-search input{width:100%;background:#11171f;border:1px solid rgba(255,255,255,0.05);padding:11px 14px 11px 36px;border-radius:14px;color:#fff;font-size:12px;font-family:inherit;outline:none;box-sizing:border-box;}
     .hist-search input:focus{border-color:rgba(0,217,255,0.35);}
-    .hist-filter-row{display:flex;gap:8px;padding:0 20px 14px;overflow:visible;flex-wrap:nowrap;}
+    .hist-filter-row{display:flex;gap:8px;padding:0 20px 14px;align-items:center;}
+    .hist-filter-scroll{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1;min-width:0;}
+    .hist-filter-scroll::-webkit-scrollbar{display:none;}
+    .hist-filter-row-compact{gap:6px;}
+    .hist-filter-row-compact .hist-filter-scroll{overflow-x:visible;flex-wrap:nowrap;gap:6px;flex:none;}
+    .hist-filter-row-compact .hfil{padding:6.5px 9px;font-size:9px;letter-spacing:.03em;}
+    .hist-filter-row-compact .hfil-sort-toggle{padding:6.5px 8px;font-size:9px;flex-shrink:0;margin-left:auto;}
     .hfil{background:rgba(255,255,255,0.05);color:#6b7280;border:none;padding:7px 14px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s;}
     .hfil.on{background:#00d9ff;color:#000;}
     .hfil-batal.on{background:#f87171;color:#000;}
@@ -1871,22 +1924,32 @@
     <!-- Filter kategori menu -->
     <div id="fnb-cat-filter" class="flex gap-2 overflow-x-auto pb-1 mb-3"></div>
 
-    <!-- Daftar menu -->
-    <div id="fnb-menu-list" class="grid grid-cols-1 gap-3 mb-4">
-        <p class="text-center text-gray-600 py-6 text-sm">Memuat menu...</p>
-    </div>
-
-    <!-- Cart summary -->
-    <div id="fnb-cart-wrap" class="hidden glass-card p-4 mb-4 border border-yellow-500/20">
-        <p class="text-[10px] font-black uppercase text-gray-500 mb-3">Pesanan</p>
-        <div id="fnb-cart-list" class="space-y-2 text-xs mb-3"></div>
-        <div class="flex justify-between items-center pt-2 border-t border-white/5">
-            <span class="text-[10px] font-bold text-gray-400 uppercase">Total</span>
-            <span id="fnb-cart-total" class="font-black text-cyan-400 text-sm">Rp 0</span>
+    <!-- Menu + Cart layout -->
+    <div id="fnb-layout">
+        <!-- Daftar menu -->
+        <div id="fnb-menu-list" class="grid grid-cols-1 gap-3 mb-4">
+            <p class="text-center text-gray-600 py-6 text-sm">Memuat menu...</p>
         </div>
-        <button onclick="submitFnbOrder()" class="mt-3 w-full py-3 rounded-xl font-black text-[11px] uppercase" style="background:#a855f7;color:#fff">
-            <i class="fas fa-paper-plane mr-2"></i>Kirim Pesanan
-        </button>
+
+        <!-- Cart summary -->
+        <div id="fnb-cart-col">
+            <div id="fnb-cart-wrap" class="hidden glass-card p-4 mb-4 border border-yellow-500/20">
+                <p class="text-[10px] font-black uppercase text-gray-500 mb-3">Pesanan</p>
+                <div id="fnb-cart-list" class="space-y-2 text-xs mb-3"></div>
+                <div class="flex justify-between items-center pt-2 border-t border-white/5">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase">Total</span>
+                    <span id="fnb-cart-total" class="font-black text-cyan-400 text-sm">Rp 0</span>
+                </div>
+                <button onclick="submitFnbOrder()" class="mt-3 w-full py-3 rounded-xl font-black text-[11px] uppercase flex items-center justify-center gap-2" style="background:#a855f7;color:#fff">
+                    <i class="fas fa-paper-plane"></i>Kirim Pesanan
+                </button>
+            </div>
+            <div id="fnb-cart-empty" class="glass-card p-5 text-center">
+                <i class="fas fa-receipt text-2xl text-gray-700 mb-2 block"></i>
+                <p class="text-[11px] text-gray-600 font-bold">Keranjang masih kosong</p>
+                <p class="text-[10px] text-gray-700 mt-1">Tambahkan menu di samping untuk mulai pesanan</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -2254,6 +2317,7 @@
         return {
             background: isLight ? '#ffffff' : '#11171f',
             color:      isLight ? '#0f172a'  : '#ffffff',
+            scrollbarPadding: false, // cegah body geser saat modal dibuka (scrollbar asli ada di #staff-scroll-content, bukan body)
         };
     }
     function swalThemeAlt() {
@@ -2262,6 +2326,7 @@
         return {
             background: isLight ? '#f8fafc' : '#0d1520',
             color:      isLight ? '#0f172a' : '#e8edf5',
+            scrollbarPadding: false, // cegah body geser saat modal dibuka
         };
     }
 
@@ -2792,6 +2857,7 @@
                         showConfirmButton: false, timer: 6000, timerProgressBar: true,
                         background: document.body.classList.contains('light-mode') ? '#fffbeb' : '#150f00',
                         color: '#f59e0b',
+                        scrollbarPadding: false,
                         didOpen: (toast) => {
                             toast.style.border = '1px solid rgba(245,158,11,0.3)';
                             toast.style.borderRadius = '12px';
@@ -3103,6 +3169,7 @@
                 showConfirmButton: false, timer: 3000, timerProgressBar: true,
                 background: document.body.classList.contains('light-mode') ? '#fff5f5' : '#1a0a0a',
                 color: document.body.classList.contains('light-mode') ? '#7f1d1d' : '#fca5a5',
+                scrollbarPadding: false,
                 didOpen: (toast) => {
                     toast.style.border = '1px solid rgba(239,68,68,0.3)';
                     toast.style.borderRadius = '12px';
@@ -3484,7 +3551,8 @@
             title: isLight ? '☀️ Mode Terang aktif' : '🌙 Mode Gelap aktif',
             showConfirmButton: false, timer: 1500,
             background: isLight ? '#fff' : '#11171f',
-            color:      isLight ? '#1a202c' : '#fff'
+            color:      isLight ? '#1a202c' : '#fff',
+            scrollbarPadding: false
         });
     };
     window.hapusNotifSatuan = (i) => { historyNotif.splice(i, 1); updateNotifList(); };
@@ -3514,7 +3582,7 @@
 
         unitGrid.style.display = tab === 'unit' ? '' : 'none';
         var unitFilterBar = document.getElementById('unit-filter-bar');
-        if (unitFilterBar) unitFilterBar.style.display = tab === 'unit' ? '' : 'none';
+        if (unitFilterBar) unitFilterBar.classList.toggle('uf-bar-hidden', tab !== 'unit');
         // Sembunyikan KPI bar (Unit Aktif / Pendapatan / Permintaan) saat bukan tab Unit (desktop only, mobile sudah selalu hidden)
         var unitKpiBar = document.getElementById('unit-kpi-bar');
         if (unitKpiBar) unitKpiBar.classList.toggle('kpi-bar-hidden', tab !== 'unit');
@@ -3920,10 +3988,16 @@
     };
 
     function updateFnbCart() {
-        const wrap = document.getElementById('fnb-cart-wrap');
+        const wrap  = document.getElementById('fnb-cart-wrap');
+        const empty = document.getElementById('fnb-cart-empty');
         const keys = Object.keys(fnbCart);
-        if (!keys.length) { wrap.classList.add('hidden'); return; }
+        if (!keys.length) {
+            wrap.classList.add('hidden');
+            if (empty) empty.classList.remove('fnb-cart-empty-off');
+            return;
+        }
         wrap.classList.remove('hidden');
+        if (empty) empty.classList.add('fnb-cart-empty-off');
         let total = 0;
         let html = '';
         keys.forEach(id => {
@@ -6460,6 +6534,15 @@
     };
 
     window.sidebarFilterUnit = function(type) {
+        // Pastikan tampilan pindah ke tab Beranda → Unit dulu, walaupun sedang di Statistik/Setelan/F&B/dll
+        const snavBeranda = document.getElementById('snav-beranda');
+        if (snavBeranda && !snavBeranda.classList.contains('active')) {
+            window.desktopSwitchTab('unit', snavBeranda);
+        }
+        const snavTabUnit = document.getElementById('snav-tab-unit');
+        if (snavTabUnit && !snavTabUnit.classList.contains('snav-tab-active')) {
+            window.sidebarSwitchTab('unit');
+        }
         // Update active state tombol filter di sidebar
         document.querySelectorAll('#sidebar-ps-section .snav-ps-btn').forEach(b => {
             b.classList.remove('snav-ps-active');
@@ -6631,11 +6714,13 @@
             <i class="fas fa-search"></i>
             <input type="text" id="hd-search-sesi" placeholder="Cari nama pelanggan atau unit..." oninput="hdRenderSesi()">
         </div>
-        <div class="hist-filter-row" style="align-items:center;gap:8px;">
-            <button class="hfil on" onclick="hdSetFilter('semua',this)">Semua</button>
-            <button class="hfil" onclick="hdSetFilter('manual',this)">Manual</button>
-            <button class="hfil" onclick="hdSetFilter('otomatis',this)">Otomatis</button>
-            <div style="position:relative;margin-left:auto;flex-shrink:0;">
+        <div class="hist-filter-row">
+            <div class="hist-filter-scroll">
+                <button class="hfil on" onclick="hdSetFilter('semua',this)">Semua</button>
+                <button class="hfil" onclick="hdSetFilter('manual',this)">Manual</button>
+                <button class="hfil" onclick="hdSetFilter('otomatis',this)">Otomatis</button>
+            </div>
+            <div style="position:relative;flex-shrink:0;">
                 <button class="hfil hfil-sort-toggle" id="hd-sort-toggle-sesi" onclick="hdToggleSortDropdown('sesi')" style="display:flex;align-items:center;gap:5px;">
                     <i class="fas fa-arrow-down-wide-short" style="font-size:9px;"></i><span id="hd-sort-label-sesi">Terbaru</span> <i class="fas fa-chevron-down" style="font-size:7px;opacity:.6;"></i>
                 </button>
@@ -6661,11 +6746,13 @@
             <i class="fas fa-search"></i>
             <input type="text" id="hd-search-batal" placeholder="Cari nama pelanggan atau konsol..." oninput="hdRenderBatal()">
         </div>
-        <div class="hist-filter-row" style="align-items:center;gap:8px;">
-            <button class="hfil on" onclick="hdSetBatalFilter('semua',this)">Semua</button>
-            <button class="hfil hfil-batal" onclick="hdSetBatalFilter('booking',this)">Booking</button>
-            <button class="hfil hfil-batal" onclick="hdSetBatalFilter('rental',this)">Rental</button>
-            <div style="position:relative;margin-left:auto;flex-shrink:0;">
+        <div class="hist-filter-row">
+            <div class="hist-filter-scroll">
+                <button class="hfil on" onclick="hdSetBatalFilter('semua',this)">Semua</button>
+                <button class="hfil hfil-batal" onclick="hdSetBatalFilter('booking',this)">Booking</button>
+                <button class="hfil hfil-batal" onclick="hdSetBatalFilter('rental',this)">Rental</button>
+            </div>
+            <div style="position:relative;flex-shrink:0;">
                 <button class="hfil hfil-sort-toggle" id="hd-sort-toggle-batal" onclick="hdToggleSortDropdown('batal')" style="display:flex;align-items:center;gap:5px;">
                     <i class="fas fa-arrow-down-wide-short" style="font-size:9px;"></i><span id="hd-sort-label-batal">Terbaru</span> <i class="fas fa-chevron-down" style="font-size:7px;opacity:.6;"></i>
                 </button>
@@ -6691,14 +6778,16 @@
             <i class="fas fa-search"></i>
             <input type="text" id="hd-search-rental" placeholder="Cari nama pelanggan atau konsol..." oninput="hdRenderRental()">
         </div>
-        <div class="hist-filter-row" style="align-items:center;gap:8px;">
-            <button class="hfil on" onclick="hdSetRentalFilter('semua',this)">Semua</button>
-            <button class="hfil" onclick="hdSetRentalFilter('aktif',this)" style="color:#a78bfa;border-color:rgba(168,85,247,0.3)">Aktif</button>
-            <button class="hfil" onclick="hdSetRentalFilter('selesai',this)" style="color:#4ade80;border-color:rgba(74,222,128,0.3)">Selesai</button>
-            <button class="hfil" onclick="hdSetRentalFilter('menunggu',this)">Menunggu</button>
-            <div style="position:relative;margin-left:auto;flex-shrink:0;">
-                <button class="hfil hfil-sort-toggle" id="hd-sort-toggle-rental" onclick="hdToggleSortDropdown('rental')" style="display:flex;align-items:center;gap:5px;">
-                    <i class="fas fa-arrow-down-wide-short" style="font-size:9px;"></i><span id="hd-sort-label-rental">Terbaru</span> <i class="fas fa-chevron-down" style="font-size:7px;opacity:.6;"></i>
+        <div class="hist-filter-row hist-filter-row-compact">
+            <div class="hist-filter-scroll">
+                <button class="hfil on" onclick="hdSetRentalFilter('semua',this)">Semua</button>
+                <button class="hfil" onclick="hdSetRentalFilter('aktif',this)" style="color:#a78bfa;border-color:rgba(168,85,247,0.3)">Aktif</button>
+                <button class="hfil" onclick="hdSetRentalFilter('selesai',this)" style="color:#4ade80;border-color:rgba(74,222,128,0.3)">Selesai</button>
+                <button class="hfil" onclick="hdSetRentalFilter('menunggu',this)">Menunggu</button>
+            </div>
+            <div style="position:relative;flex-shrink:0;">
+                <button class="hfil hfil-sort-toggle" id="hd-sort-toggle-rental" onclick="hdToggleSortDropdown('rental')" style="display:flex;align-items:center;gap:4px;">
+                    <i class="fas fa-arrow-down-wide-short" style="font-size:8px;"></i><span id="hd-sort-label-rental">Terbaru</span> <i class="fas fa-chevron-down" style="font-size:7px;opacity:.6;"></i>
                 </button>
                 <div id="hd-sort-dropdown-rental" class="hd-sort-dropdown" style="display:none;">
                     <button onclick="hdSetSortRental('terbaru')" id="hd-sort-opt-rental-terbaru" class="hd-sort-opt active">↓ Terbaru</button>
