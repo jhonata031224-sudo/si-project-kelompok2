@@ -44,10 +44,21 @@
         body.light-mode .progress-bar { background: rgba(0,0,0,0.1) !important; }
         body.light-mode .console-card { border-color: rgba(0,0,0,0.1) !important; background: #ffffff !important; color: #1a202c !important; }
         body.light-mode .console-active { border-color: #0284c7 !important; background: #0284c7 !important; box-shadow: none !important; color: #fff !important; }
-        #icon-ambil { color: #000 !important; }
-        body.light-mode #icon-ambil { color: #0284c7 !important; }
-        .icon-ktp { color: #000 !important; }
-        body.light-mode .icon-ktp { color: #0284c7 !important; }
+        /* Icon ambil sendiri: ikuti warna teks card */
+        #icon-ambil { color: inherit !important; }
+        #card-ambil:not(.console-active) #icon-ambil { color: #ffffff !important; }
+        #card-ambil.console-active #icon-ambil { color: #000000 !important; }
+        body.light-mode #card-ambil:not(.console-active) #icon-ambil { color: #374151 !important; }
+        body.light-mode #card-ambil.console-active #icon-ambil { color: #ffffff !important; }
+        /* Icon KTP di card pilihan: ikuti warna teks card */
+        .icon-ktp { color: inherit !important; }
+        #card-dewasa:not(.console-active) .icon-ktp { color: #ffffff !important; }
+        #card-dewasa.console-active .icon-ktp { color: #000000 !important; }
+        body.light-mode #card-dewasa:not(.console-active) .icon-ktp { color: #374151 !important; }
+        body.light-mode #card-dewasa.console-active .icon-ktp { color: #ffffff !important; }
+        /* Icon KTP di dalam panel info (bukan card pilihan) */
+        .panel-icon-ktp { color: #00d9ff !important; }
+        body.light-mode .panel-icon-ktp { color: #0284c7 !important; }
         body.light-mode .console-active p { color: #fff !important; }
         body.light-mode .progress-active { background: #0284c7 !important; }
         body.light-mode .btn-cyan { background: #0284c7 !important; color: #fff !important; box-shadow: 0 0 20px rgba(2,132,199,0.3) !important; }
@@ -119,7 +130,7 @@
                 <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-3">Metode pengambilan</label>
                 <div class="grid grid-cols-2 gap-3">
                     <div onclick="selectDelivery('ambil', this)" id="card-ambil" class="console-card p-4 rounded-2xl text-center cursor-pointer console-active">
-                        <i class="fas fa-store text-xl mb-2 block" id="icon-ambil" style="color:#000"></i>
+                        <i class="fas fa-store text-xl mb-2 block" id="icon-ambil"></i>
                         <p class="font-bold text-sm">Ambil sendiri</p>
                         <p class="text-[10px] text-gray-500 mt-1">Datang ke tempat</p>
                     </div>
@@ -256,7 +267,7 @@
             <div id="panel-dewasa" class="space-y-4">
                 <div class="glass-card p-4 rounded-2xl space-y-3">
                     <div class="flex items-center gap-2 mb-1">
-                        <i class="fas fa-id-card icon-ktp"></i>
+                        <i class="fas fa-id-card panel-icon-ktp"></i>
                         <p class="text-xs font-bold uppercase tracking-widest text-gray-300">Jaminan KTP / SIM</p>
                     </div>
                     <p class="text-[11px] text-gray-400 leading-relaxed">KTP atau SIM asli <span class="text-white font-bold">wajib ditinggalkan</span> di tempat selama konsol dibawa pulang. Dokumen akan dikembalikan saat konsol kembali.</p>
