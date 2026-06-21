@@ -404,6 +404,7 @@
         body.light-mode .stats-section-title { color: #0f172a !important; }
         /* Notif panel */
         body.light-mode #notif-panel { background: #fff !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode #notif-panel [style*="background:#11171f"] { background: #fff !important; }
         /* History drawer */
         body.light-mode .hist-drawer { background: #f8fafc !important; border-color: rgba(0,0,0,0.08) !important; }
         body.light-mode .hist-handle { background: rgba(0,0,0,0.12) !important; }
@@ -711,6 +712,29 @@
             #staff-desktop-topbar { display: none !important; }
             #unit-kpi-bar { display: none !important; }
             #unit-tab-layout { display: block !important; }
+
+            /* ── Notif panel: fixed popup di mobile (MOBILE ONLY) ── */
+            #notif-overlay {
+                position: fixed !important;
+                inset: 0 !important;
+                z-index: 9997 !important;
+                background: transparent !important;
+                pointer-events: none;
+            }
+            #notif-overlay.show { pointer-events: all; }
+            #notif-panel {
+                position: fixed !important;
+                top: 76px !important;
+                left: 12px !important;
+                right: 12px !important;
+                width: auto !important;
+                max-height: 68vh !important;
+                z-index: 9998 !important;
+                border-radius: 18px !important;
+                box-shadow: 0 8px 32px rgba(0,0,0,.6) !important;
+                transform: none !important;
+                overflow-y: auto !important;
+            }
             /* Mobile: panel tetap fullscreen fixed (top diatur dinamis via adjustScrollTop() agar tidak ketutup header) */
             #stats-panel { position: fixed !important; left: 0 !important; right: 0 !important; bottom: 72px !important; z-index: 40 !important; }
             #setelan-panel { position: fixed !important; left: 0 !important; right: 0 !important; bottom: 72px !important; z-index: 40 !important; }
@@ -1156,7 +1180,8 @@
                 display: none;
                 position: fixed;
                 inset: 0;
-                z-index: 9998;
+                z-index: 9997;
+                background: rgba(0,0,0,0.2);
             }
             #notif-overlay.show { display: block; }
 
@@ -1173,11 +1198,14 @@
                 right: auto !important;
                 width: min(440px, calc(100vw - 48px)) !important;
                 max-height: 70vh !important;
-                z-index: 9999 !important;
+                z-index: 9998 !important;
                 border-radius: 20px !important;
                 box-shadow: 0 12px 48px rgba(0,0,0,.55) !important;
+            }
+            #notif-panel:not(.hidden) {
                 animation: notifDropDown .22s cubic-bezier(.32,1,.4,1);
             }
+            #notif-panel.hidden { display: none !important; }
             body.light-mode #notif-panel {
                 box-shadow: 0 12px 36px rgba(0,0,0,.15) !important;
             }
@@ -1959,12 +1987,16 @@
 </div>
 
 <div id="notif-overlay" onclick="tutupNotif()"></div>
-<div id="notif-panel" class="hidden glass-card p-5 overflow-y-auto" style="position:relative">
-    <div class="flex justify-between items-center mb-4 pb-2 border-b border-white/5">
-        <h3 class="text-xs font-black uppercase tracking-widest">Aktivitas Terbaru</h3>
-        <button onclick="hapusSemuaNotif()" class="text-[10px] font-bold text-red-500 uppercase">Hapus Semua</button>
+<div id="notif-panel" class="hidden glass-card overflow-y-auto">
+    <!-- Header notif -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 10px;border-bottom:1px solid rgba(255,255,255,0.06);position:sticky;top:0;background:#11171f;z-index:1;border-radius:18px 18px 0 0;">
+        <h3 style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#e6edf3;margin:0;">Aktivitas Terbaru</h3>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <button onclick="hapusSemuaNotif()" style="font-size:10px;font-weight:800;color:#ef4444;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:4px 10px;cursor:pointer;font-family:inherit;text-transform:uppercase;">Hapus Semua</button>
+            <button onclick="tutupNotif()" style="width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);color:#9ca3af;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='#9ca3af'"><i class="fas fa-xmark"></i></button>
+        </div>
     </div>
-    <div id="notif-list" class="space-y-3 text-[11px]"></div>
+    <div id="notif-list" style="padding:12px 16px 16px;font-size:11px;display:flex;flex-direction:column;gap:10px;"></div>
 </div>
 
 <!-- Filter tipe unit -->
@@ -3351,6 +3383,7 @@
         const panel   = document.getElementById('notif-panel');
         const overlay = document.getElementById('notif-overlay');
         panel.classList.remove('hidden');
+        panel.style.display = 'block';
         if (overlay) overlay.classList.add('show');
         panel.scrollTop = 0;
     }
@@ -3359,6 +3392,7 @@
         const panel   = document.getElementById('notif-panel');
         const overlay = document.getElementById('notif-overlay');
         panel.classList.add('hidden');
+        panel.style.display = 'none';
         if (overlay) overlay.classList.remove('show');
     };
 
