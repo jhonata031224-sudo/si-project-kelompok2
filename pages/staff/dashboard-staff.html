@@ -1363,7 +1363,6 @@
             #sidebar-ps-section { display: none !important; }
         }
     </style>
-    <link rel="stylesheet" href="../../assets/css/mobile-fix.css">
 </head>
 <body>
 
@@ -1383,6 +1382,40 @@
     <button class="staff-snav-item active" id="snav-beranda" onclick="unifiedSwitchTab('unit', 'page', this)">
         <i class="fas fa-th-large"></i> Beranda
     </button>
+
+    <!-- DIVIDER -->
+    <div class="staff-sidebar-divider" style="margin-top:10px;margin-bottom:6px"></div>
+
+    <!-- SECTION: Filter Unit (dipindah ke sini, di bawah Beranda & di atas Statistik) -->
+    <div class="staff-sidebar-section-label">Filter Unit</div>
+    <div id="sidebar-ps-section">
+        <div class="snav-ps-filter">
+            <button class="snav-ps-btn snav-ps-active" id="snav-uf-semua" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('semua', this)">
+                <i class="fas fa-th-large" style="color:#9ca3af;width:14px;text-align:center"></i>
+                Semua
+                <span class="snav-ps-count" id="snav-count-semua">0</span>
+            </button>
+            <button class="snav-ps-btn" id="snav-uf-ps5" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS5', this)">
+                <i class="fas fa-gamepad" style="color:#ffbf00;width:14px;text-align:center"></i>
+                PS5
+                <span class="snav-ps-count" id="snav-count-ps5">0</span>
+            </button>
+            <button class="snav-ps-btn" id="snav-uf-ps4" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS4', this)">
+                <i class="fas fa-gamepad" style="color:#a78bfa;width:14px;text-align:center"></i>
+                PS4
+                <span class="snav-ps-count" id="snav-count-ps4">0</span>
+            </button>
+            <button class="snav-ps-btn" id="snav-uf-ps3" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS3', this)">
+                <i class="fas fa-gamepad" style="color:#9ca3af;width:14px;text-align:center"></i>
+                PS3
+                <span class="snav-ps-count" id="snav-count-ps3">0</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- DIVIDER -->
+    <div class="staff-sidebar-divider" style="margin-top:10px;margin-bottom:6px"></div>
+
     <button class="staff-snav-item" id="snav-stats" onclick="unifiedSwitchTab('stats', 'page', this)">
         <i class="fas fa-chart-bar"></i> Statistik
     </button>
@@ -1412,36 +1445,6 @@
         <i class="fas fa-inbox"></i> Permintaan
         <span class="snav-tab-dot" id="snav-req-dot"></span>
     </button>
-
-    <!-- DIVIDER -->
-    <div class="staff-sidebar-divider" style="margin-top:10px;margin-bottom:6px"></div>
-
-    <!-- SECTION: Filter Unit -->
-    <div class="staff-sidebar-section-label">Filter Unit</div>
-    <div id="sidebar-ps-section">
-        <div class="snav-ps-filter">
-            <button class="snav-ps-btn snav-ps-active" id="snav-uf-semua" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('semua', this)">
-                <i class="fas fa-th-large" style="color:#9ca3af;width:14px;text-align:center"></i>
-                Semua
-                <span class="snav-ps-count" id="snav-count-semua">0</span>
-            </button>
-            <button class="snav-ps-btn" id="snav-uf-ps5" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS5', this)">
-                <i class="fas fa-gamepad" style="color:#ffbf00;width:14px;text-align:center"></i>
-                PS5
-                <span class="snav-ps-count" id="snav-count-ps5">0</span>
-            </button>
-            <button class="snav-ps-btn" id="snav-uf-ps4" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS4', this)">
-                <i class="fas fa-gamepad" style="color:#a78bfa;width:14px;text-align:center"></i>
-                PS4
-                <span class="snav-ps-count" id="snav-count-ps4">0</span>
-            </button>
-            <button class="snav-ps-btn" id="snav-uf-ps3" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('PS3', this)">
-                <i class="fas fa-gamepad" style="color:#9ca3af;width:14px;text-align:center"></i>
-                PS3
-                <span class="snav-ps-count" id="snav-count-ps3">0</span>
-            </button>
-        </div>
-    </div>
 
     <div class="staff-sidebar-spacer"></div>
 
@@ -1493,8 +1496,10 @@
                 <div id="shift-dot" class="w-2 h-2 rounded-full bg-green-400" style="animation:pulse-green 2s infinite"></div>
                 <span id="shift-label" class="text-[10px] font-black uppercase tracking-widest text-green-400">Sesi Aktif</span>
             </div>
-            <h1 class="text-xl font-black tracking-tight text-white">Halo, <span id="staff-greeting-name" class="text-cyan-400">Staff</span> </h1>
-            <p id="staff-header-time" class="text-[11px] font-bold text-gray-500 mt-0.5"></p>
+            <div id="staff-greeting-block">
+                <h1 class="text-xl font-black tracking-tight text-white">Halo, <span id="staff-greeting-name" class="text-cyan-400">Staff</span> </h1>
+                <p id="staff-header-time" class="text-[11px] font-bold text-gray-500 mt-0.5"></p>
+            </div>
         </div>
         <div class="flex items-center gap-2">
             <button onclick="toggleNotif()" style="display:flex;align-items:center;padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#9ca3af;cursor:pointer;transition:all .2s;font-size:15px;flex-shrink:0;position:relative;" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.color='#9ca3af'">
@@ -1998,6 +2003,21 @@
     </div>
     <div id="notif-list" style="padding:12px 16px 16px;font-size:11px;display:flex;flex-direction:column;gap:10px;"></div>
 </div>
+<script>
+    // Fix: pindahkan notif-overlay & notif-panel keluar dari #staff-scroll-content
+    // (parent fixed + overflow-y:auto + top dinamis via adjustScrollTop()) ke
+    // langsung di bawah <body>. Tanpa ini, di mobile popup notif kadang tidak
+    // muncul sama sekali walau class/style sudah toggle benar, karena posisinya
+    // ikut terjebak/clip oleh parent scroll container-nya.
+    (function () {
+        var ov = document.getElementById('notif-overlay');
+        var pn = document.getElementById('notif-panel');
+        if (ov && pn && document.body) {
+            document.body.appendChild(ov);
+            document.body.appendChild(pn);
+        }
+    })();
+</script>
 
 <!-- Filter tipe unit -->
 <div id="unit-tab-layout">
@@ -3597,6 +3617,18 @@
     window.hapusNotifSatuan = (i) => { historyNotif.splice(i, 1); updateNotifList(); };
 
     // ── TAB SWITCHER ──────────────────────────────────────────────────
+    // ── Mobile: sembunyikan greeting + KPI strip di tab Statistik/Setelan ──
+    function applyMobileHeaderVisibility() {
+        var greetBlock = document.getElementById('staff-greeting-block');
+        var statusStrip = document.getElementById('staff-status-strip');
+        if (!greetBlock || !statusStrip) return;
+        var tab = window.staffCurrentTab;
+        var shouldHide = window.innerWidth < 768 && (tab === 'stats' || tab === 'setelan');
+        greetBlock.style.display = shouldHide ? 'none' : '';
+        statusStrip.style.display = shouldHide ? 'none' : '';
+    }
+    window.addEventListener('resize', applyMobileHeaderVisibility);
+
     window.switchTab = function(tab) {
         if (typeof tutupNotif === 'function') tutupNotif();
         var unitGrid     = document.getElementById('unit-grid');
@@ -3637,6 +3669,13 @@
         } else {
             tabRow.style.cssText = '';
         }
+
+        // Mobile only: sembunyikan greeting "Halo, X" + tanggal & 3 kartu KPI
+        // (Unit Aktif/Permintaan/Pendapatan) di tab Statistik & Setelan karena
+        // sudah duplikat dengan kartu statistik di panel masing-masing.
+        // Halaman Beranda (unit/fnb/antrian/req) tidak disentuh sama sekali.
+        window.staffCurrentTab = tab;
+        applyMobileHeaderVisibility();
         // Re-adjust scroll top karena tinggi header berubah
         setTimeout(adjustScrollTop, 0);
 
