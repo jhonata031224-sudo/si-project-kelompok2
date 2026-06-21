@@ -822,12 +822,12 @@
             #staff-sidebar {
                 display: flex !important;
                 flex-direction: column;
-                width: 220px; min-width: 220px;
+                width: 210px; min-width: 210px;
                 background: #0d1117;
                 border-right: 1px solid rgba(255,255,255,0.07);
                 position: sticky; top: 0; height: 100vh;
-                padding: 20px 12px; z-index: 50; gap: 4px;
-                flex-shrink: 0; overflow-y: auto;
+                padding: 12px 10px 10px; z-index: 50; gap: 1px;
+                flex-shrink: 0; overflow-y: hidden;
             }
             body.light-mode #staff-sidebar { background: #ffffff !important; border-color: rgba(0,0,0,0.08) !important; }
             #staff-sidebar { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.12) transparent; }
@@ -841,73 +841,73 @@
             .staff-sidebar-logo {
                 display: flex; align-items: center; gap: 8px;
                 font-size: 14px; font-weight: 900;
-                padding: 0 8px 20px;
+                padding: 0 6px 10px;
                 border-bottom: 1px solid rgba(255,255,255,0.07);
-                margin-bottom: 8px; color: #e6edf3;
+                margin-bottom: 4px; color: #e6edf3; flex-shrink: 0;
             }
             body.light-mode .staff-sidebar-logo { color: #0f172a !important; border-color: rgba(0,0,0,0.08) !important; }
             .staff-sidebar-logo .logo-icon {
-                width: 32px; height: 32px;
+                width: 28px; height: 28px;
                 background: rgba(0,217,255,0.12); border: 1px solid rgba(0,217,255,0.3);
-                border-radius: 8px; display: flex; align-items: center; justify-content: center;
-                color: #00d9ff; font-size: 14px;
+                border-radius: 7px; display: flex; align-items: center; justify-content: center;
+                color: #00d9ff; font-size: 12px; flex-shrink: 0;
             }
             .staff-sidebar-logo .logo-cyan { color: #00d9ff; }
             .staff-sidebar-badge {
                 background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.3);
-                border-radius: 4px; padding: 2px 7px; font-size: 9px; font-weight: 800;
-                color: #3fb950; letter-spacing: .5px; text-transform: uppercase; margin-left: 2px;
+                border-radius: 4px; padding: 1px 6px; font-size: 8px; font-weight: 800;
+                color: #3fb950; letter-spacing: .5px; text-transform: uppercase;
             }
             .staff-snav-item {
                 display: flex; align-items: center; gap: 10px;
-                padding: 10px 12px; border-radius: 10px;
-                font-size: 12px; font-weight: 700; color: #6b7280;
+                padding: 7px 10px; border-radius: 8px;
+                font-size: 11px; font-weight: 700; color: #6b7280;
                 text-decoration: none; transition: all 0.15s; cursor: pointer;
                 background: none; border: none; font-family: inherit;
-                width: 100%; text-align: left;
+                width: 100%; text-align: left; flex-shrink: 0;
             }
             .staff-snav-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
             .staff-snav-item.active { background: rgba(0,217,255,0.08); color: #00d9ff; }
-            .staff-snav-item i { width: 16px; text-align: center; font-size: 13px; }
+            .staff-snav-item i { width: 14px; text-align: center; font-size: 11px; }
             body.light-mode .staff-snav-item { color: #94a3b8 !important; }
             body.light-mode .staff-snav-item:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
             body.light-mode .staff-snav-item.active { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
-            .staff-sidebar-spacer { flex: 1; }
+            .staff-sidebar-spacer { flex: 1; min-height: 4px; max-height: 16px; }
             .staff-sidebar-shift-card {
                 background: rgba(63,185,80,0.06); border: 1px solid rgba(63,185,80,0.18);
-                border-radius: 12px; padding: 10px 12px; margin-bottom: 6px;
+                border-radius: 10px; padding: 7px 10px; margin-bottom: 3px; flex-shrink: 0;
             }
             body.light-mode .staff-sidebar-shift-card { background: rgba(22,163,74,0.06) !important; border-color: rgba(22,163,74,0.2) !important; }
-            .staff-sidebar-shift-name { font-size: 11px; font-weight: 800; color: #e6edf3; margin-bottom: 2px; }
+            .staff-sidebar-shift-name { font-size: 10px; font-weight: 800; color: #e6edf3; margin-bottom: 1px; }
             body.light-mode .staff-sidebar-shift-name { color: #0f172a !important; }
-            .staff-sidebar-shift-time { font-size: 10px; font-weight: 700; color: #3fb950; }
+            .staff-sidebar-shift-time { font-size: 9px; font-weight: 700; color: #3fb950; }
             body.light-mode .staff-sidebar-shift-time { color: #16a34a !important; }
-            .staff-sidebar-shift-date { font-size: 9px; color: #4b5563; }
+            .staff-sidebar-shift-date { font-size: 8px; color: #4b5563; }
             body.light-mode .staff-sidebar-shift-date { color: #64748b !important; }
             .staff-sidebar-notif {
                 display: flex; align-items: center; gap: 10px;
-                padding: 10px 12px; border-radius: 10px;
-                font-size: 12px; font-weight: 700; color: #6b7280;
+                padding: 7px 10px; border-radius: 8px;
+                font-size: 11px; font-weight: 700; color: #6b7280;
                 cursor: pointer; border: none; background: none;
                 font-family: inherit; transition: all 0.15s; width: 100%;
-                text-align: left; position: relative; margin-bottom: 4px;
+                text-align: left; position: relative; margin-bottom: 2px; flex-shrink: 0;
             }
             .staff-sidebar-notif:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
             body.light-mode .staff-sidebar-notif { color: #94a3b8 !important; }
             body.light-mode .staff-sidebar-notif:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
             .staff-sidebar-notif-dot {
-                display: none; position: absolute; top: 8px; left: 22px;
-                width: 7px; height: 7px; background: #ef4444; border-radius: 50%;
+                display: none; position: absolute; top: 6px; left: 20px;
+                width: 6px; height: 6px; background: #ef4444; border-radius: 50%;
                 animation: pulse-red 1s infinite;
             }
             .staff-sidebar-notif-dot.show { display: block; }
             .staff-sidebar-keluar {
                 display: flex; align-items: center; gap: 10px;
-                padding: 10px 12px; border-radius: 10px;
-                font-size: 12px; font-weight: 500; color: #f78166;
+                padding: 7px 10px; border-radius: 8px;
+                font-size: 11px; font-weight: 500; color: #f78166;
                 cursor: pointer; background: rgba(247,129,102,0.06);
                 border: 1px solid rgba(247,129,102,0.15);
-                font-family: inherit; transition: all 0.15s; width: 100%;
+                font-family: inherit; transition: all 0.15s; width: 100%; flex-shrink: 0;
             }
             .staff-sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
             body.light-mode .staff-sidebar-keluar { background: rgba(239,68,68,0.07) !important; border-color: rgba(239,68,68,0.15) !important; }
@@ -1215,21 +1215,21 @@
 
         /* ── SIDEBAR: Tab nav & unit filter (desktop only) ── */
         .staff-sidebar-section-label {
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 800;
             letter-spacing: .1em;
             text-transform: uppercase;
             color: #4b5563;
-            padding: 0 12px;
-            margin-bottom: 4px;
-            margin-top: 6px;
+            padding: 0 10px;
+            margin-bottom: 2px;
+            margin-top: 4px;
         }
         body.light-mode .staff-sidebar-section-label { color: #94a3b8 !important; }
 
         .staff-sidebar-divider {
             height: 1px;
             background: rgba(255,255,255,0.06);
-            margin: 8px 0;
+            margin: 5px 0;
         }
         body.light-mode .staff-sidebar-divider { background: rgba(0,0,0,0.07) !important; }
 
@@ -1237,10 +1237,10 @@
         .snav-tab-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 9px 12px;
-            border-radius: 10px;
-            font-size: 12px;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 11px;
             font-weight: 700;
             color: #6b7280;
             cursor: pointer;
@@ -1291,10 +1291,10 @@
         .snav-ps-btn {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 7px 12px;
-            border-radius: 8px;
-            font-size: 11px;
+            gap: 6px;
+            padding: 5px 8px;
+            border-radius: 7px;
+            font-size: 10px;
             font-weight: 700;
             cursor: pointer;
             background: none;
@@ -1325,13 +1325,14 @@
         @media (min-width: 768px) {
             #tab-switcher-row { display: none !important; }
             #unit-filter-bar  { display: none !important; }
-            #sidebar-tab-nav, #sidebar-ps-section { display: flex !important; flex-direction: column; }
+            /* sidebar-ps-section selalu tampil di desktop (statis) */
+            #sidebar-ps-section { display: flex !important; flex-direction: column; }
             /* Sembunyikan tombol dropdown "Lihat/Sembunyikan" unit di desktop saja */
             #unit-dropdown-btn { display: none !important; }
         }
-        /* Di mobile: sembunyikan elemen sidebar tab ini */
+        /* Di mobile: sembunyikan filter unit di sidebar */
         @media (max-width: 767px) {
-            #sidebar-tab-nav, #sidebar-ps-section { display: none !important; }
+            #sidebar-ps-section { display: none !important; }
         }
     </style>
     <link rel="stylesheet" href="../../assets/css/mobile-fix.css">
@@ -1343,15 +1344,52 @@
 
 <!-- ══ DESKTOP SIDEBAR ══ -->
 <aside id="staff-sidebar" style="display:none">
+    <!-- Logo -->
     <div class="staff-sidebar-logo">
         <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
         PRINCE<span class="logo-cyan">GAMES</span>
     </div>
-    <button class="staff-snav-item active" id="snav-beranda" onclick="desktopSwitchTab('unit', this)">
+
+    <!-- SECTION: Halaman -->
+    <div class="staff-sidebar-section-label">Halaman</div>
+    <button class="staff-snav-item active" id="snav-beranda" onclick="unifiedSwitchTab('unit', 'page', this)">
         <i class="fas fa-th-large"></i> Beranda
     </button>
+    <button class="staff-snav-item" id="snav-stats" onclick="unifiedSwitchTab('stats', 'page', this)">
+        <i class="fas fa-chart-bar"></i> Statistik
+    </button>
+    <button class="staff-snav-item" id="snav-history" onclick="bukaHistoryDrawer()">
+        <i class="fas fa-history"></i> Riwayat
+    </button>
+    <button class="staff-snav-item" id="snav-setelan" onclick="unifiedSwitchTab('setelan', 'page', this)">
+        <i class="fas fa-sliders"></i> Setelan
+    </button>
 
-    <!-- PS Filter — sub-menu Beranda (tampil saat tab Unit aktif) -->
+    <!-- DIVIDER -->
+    <div class="staff-sidebar-divider" style="margin-top:10px;margin-bottom:6px"></div>
+
+    <!-- SECTION: Menu Beranda -->
+    <div class="staff-sidebar-section-label">Menu Beranda</div>
+    <button class="snav-tab-item snav-tab-active" id="snav-tab-unit" onclick="unifiedSwitchTab('unit', 'tab', this)">
+        <i class="fas fa-gamepad"></i> Unit
+    </button>
+    <button class="snav-tab-item" id="snav-tab-fnb" onclick="unifiedSwitchTab('fnb', 'tab', this)">
+        <i class="fas fa-utensils"></i> F&amp;B
+    </button>
+    <button class="snav-tab-item" id="snav-tab-antrian" onclick="unifiedSwitchTab('antrian', 'tab', this)">
+        <i class="fas fa-hourglass-half"></i> Antrian
+        <span class="snav-tab-dot" id="snav-antrian-dot"></span>
+    </button>
+    <button class="snav-tab-item" id="snav-tab-req" onclick="unifiedSwitchTab('req', 'tab', this)">
+        <i class="fas fa-inbox"></i> Permintaan
+        <span class="snav-tab-dot" id="snav-req-dot"></span>
+    </button>
+
+    <!-- DIVIDER -->
+    <div class="staff-sidebar-divider" style="margin-top:10px;margin-bottom:6px"></div>
+
+    <!-- SECTION: Filter Unit -->
+    <div class="staff-sidebar-section-label">Filter Unit</div>
     <div id="sidebar-ps-section">
         <div class="snav-ps-filter">
             <button class="snav-ps-btn snav-ps-active" id="snav-uf-semua" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarFilterUnit('semua', this)">
@@ -1377,42 +1415,9 @@
         </div>
     </div>
 
-    <button class="staff-snav-item" id="snav-stats" onclick="desktopSwitchTab('stats', this)">
-        <i class="fas fa-chart-bar"></i> Statistik
-    </button>
-    <button class="staff-snav-item" id="snav-history" onclick="bukaHistoryDrawer()">
-        <i class="fas fa-history"></i> Riwayat
-    </button>
-    <button class="staff-snav-item" id="snav-setelan" onclick="desktopSwitchTab('setelan', this)">
-        <i class="fas fa-sliders"></i> Setelan
-    </button>
     <div class="staff-sidebar-spacer"></div>
 
-    <!-- DIVIDER -->
-    <div class="staff-sidebar-divider"></div>
-
-    <!-- Tab Nav di Sidebar (desktop) -->
-    <div id="sidebar-tab-nav">
-        <div class="staff-sidebar-section-label">Menu</div>
-        <button class="snav-tab-item snav-tab-active" id="snav-tab-unit" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarSwitchTab('unit')">
-            <i class="fas fa-gamepad"></i> Unit
-        </button>
-        <button class="snav-tab-item" id="snav-tab-fnb" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarSwitchTab('fnb')">
-            <i class="fas fa-utensils"></i> F&B
-        </button>
-        <button class="snav-tab-item" id="snav-tab-antrian" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarSwitchTab('antrian')">
-            <i class="fas fa-hourglass-half"></i> Antrian
-            <span class="snav-tab-dot" id="snav-antrian-dot"></span>
-        </button>
-        <button class="snav-tab-item" id="snav-tab-req" onclick="if(typeof tutupNotif==='function')tutupNotif();sidebarSwitchTab('req')">
-            <i class="fas fa-inbox"></i> Permintaan
-            <span class="snav-tab-dot" id="snav-req-dot"></span>
-        </button>
-    </div>
-
-
-
-    <!-- Shift Info Card (desktop sidebar) -->
+    <!-- Shift Info Card -->
     <div class="staff-sidebar-shift-card" id="sidebar-shift-card">
         <div class="staff-sidebar-shift-name" id="sidebar-shift-name">Sesi Aktif</div>
         <div class="staff-sidebar-shift-time" id="sidebar-shift-time">--:-- – --:--</div>
@@ -1422,7 +1427,7 @@
     <!-- STAFF Badge -->
     <span class="staff-sidebar-badge" style="display:inline-block;margin-bottom:8px">Staff</span>
 
-    <!-- Notif Button (desktop sidebar) -->
+    <!-- Notif Button -->
     <button class="staff-sidebar-notif" onclick="toggleNotif()">
         <i class="fas fa-bell" style="width:16px;text-align:center;font-size:13px"></i>
         Notifikasi
@@ -6486,62 +6491,72 @@
     };
 
     // ── DESKTOP SIDEBAR TAB SWITCH ─────────────────────────────────────
-    window.desktopSwitchTab = function(tab, btn) {
+    // ── Unified Sidebar Switch (statis: semua tombol selalu terlihat) ───
+    window.unifiedSwitchTab = function(tab, type, btn) {
         if (typeof tutupNotif === 'function') tutupNotif();
-        // Tutup history drawer jika sedang terbuka
+
+        // Tutup history drawer jika terbuka
         const drawer = document.getElementById('hist-drawer');
         if (drawer && drawer.classList.contains('show')) {
-            document.getElementById('hist-overlay').classList.remove('show');
+            const overlay = document.getElementById('hist-overlay');
+            if (overlay) overlay.classList.remove('show');
             drawer.classList.remove('show');
-            document.getElementById('nav-history').style.color = '';
+            const navHist = document.getElementById('nav-history');
+            if (navHist) navHist.style.color = '';
         }
-        // Update sidebar active state
-        ['snav-beranda','snav-stats','snav-history','snav-setelan'].forEach(id => {
+
+        // Update active state: Halaman (snav-beranda/stats/setelan)
+        const pageIds = ['snav-beranda','snav-stats','snav-setelan'];
+        pageIds.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.remove('active');
         });
-        if (btn) btn.classList.add('active');
-        // Delegate to existing switchTab
-        window.switchTab(tab);
-    };
 
-    // ── Sidebar (desktop): tombol Unit / F&B / Antrian / Permintaan ───
-    window.sidebarSwitchTab = function(tab) {
-        // Update active state pada menu sidebar (Unit/F&B/Antrian/Permintaan)
-        ['snav-tab-unit','snav-tab-fnb','snav-tab-antrian','snav-tab-req'].forEach(id => {
+        // Update active state: Menu Beranda (snav-tab-unit/fnb/antrian/req)
+        const tabIds = ['snav-tab-unit','snav-tab-fnb','snav-tab-antrian','snav-tab-req'];
+        tabIds.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.remove('snav-tab-active');
         });
-        const activeMap = { unit:'snav-tab-unit', fnb:'snav-tab-fnb', antrian:'snav-tab-antrian', req:'snav-tab-req' };
-        if (activeMap[tab]) {
-            const el = document.getElementById(activeMap[tab]);
-            if (el) el.classList.add('snav-tab-active');
-        }
-        // Filter Unit di sidebar hanya relevan saat tab Unit aktif
-        const psSection = document.getElementById('sidebar-ps-section');
-        if (psSection) psSection.style.display = (tab === 'unit') ? '' : 'none';
-        // Pastikan menu "Beranda" di sidebar atas ikut tersorot saat balik ke tab Unit
-        if (tab === 'unit') {
-            ['snav-beranda','snav-stats','snav-history','snav-setelan'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.remove('active');
-            });
+
+        // Tentukan tab mana yang aktif & sorot tombol yang tepat
+        const pageTabMap = { stats:'snav-stats', setelan:'snav-setelan' };
+        const menuTabMap = { unit:'snav-tab-unit', fnb:'snav-tab-fnb', antrian:'snav-tab-antrian', req:'snav-tab-req' };
+
+        if (type === 'page') {
+            // Klik dari section Halaman
+            if (btn) btn.classList.add('active');
+            // Jika halaman beranda (unit), aktifkan juga tombol Unit di Menu Beranda
+            if (tab === 'unit') {
+                const tabUnit = document.getElementById('snav-tab-unit');
+                if (tabUnit) tabUnit.classList.add('snav-tab-active');
+            }
+        } else {
+            // Klik dari section Menu Beranda → otomatis sorot Beranda di section Halaman
             const beranda = document.getElementById('snav-beranda');
             if (beranda) beranda.classList.add('active');
+            if (menuTabMap[tab]) {
+                const el = document.getElementById(menuTabMap[tab]);
+                if (el) el.classList.add('snav-tab-active');
+            }
         }
-        // Delegate ke switchTab yang sudah ada (logika utama show/hide panel)
+
+        // Delegate ke switchTab utama
         window.switchTab(tab);
     };
 
-    window.sidebarFilterUnit = function(type) {
-        // Pastikan tampilan pindah ke tab Beranda → Unit dulu, walaupun sedang di Statistik/Setelan/F&B/dll
+    // Alias untuk backward-compat jika ada pemanggilan lama
+    window.desktopSwitchTab = function(tab, btn) { window.unifiedSwitchTab(tab, 'page', btn); };
+    window.sidebarSwitchTab = function(tab) { window.unifiedSwitchTab(tab, 'tab', null); };
+
+    window.sidebarFilterUnit = function(type, btn) {
+        // Pastikan tampilan pindah ke tab Unit (Beranda) dulu
         const snavBeranda = document.getElementById('snav-beranda');
-        if (snavBeranda && !snavBeranda.classList.contains('active')) {
-            window.desktopSwitchTab('unit', snavBeranda);
-        }
         const snavTabUnit = document.getElementById('snav-tab-unit');
-        if (snavTabUnit && !snavTabUnit.classList.contains('snav-tab-active')) {
-            window.sidebarSwitchTab('unit');
+        if (snavBeranda && !snavBeranda.classList.contains('active')) {
+            window.unifiedSwitchTab('unit', 'page', snavBeranda);
+        } else if (snavTabUnit && !snavTabUnit.classList.contains('snav-tab-active')) {
+            window.unifiedSwitchTab('unit', 'tab', null);
         }
         // Update active state tombol filter di sidebar
         document.querySelectorAll('#sidebar-ps-section .snav-ps-btn').forEach(b => {
@@ -6550,8 +6565,7 @@
         const idMap = { semua:'snav-uf-semua', PS5:'snav-uf-ps5', PS4:'snav-uf-ps4', PS3:'snav-uf-ps3' };
         const activeBtn = document.getElementById(idMap[type]);
         if (activeBtn) activeBtn.classList.add('snav-ps-active');
-        // Delegate ke filterUnit yang sudah ada, lewat tombol mobile (unit-filter-bar)
-        // agar logika filter & sinkronisasi tab mobile tetap konsisten
+        // Delegate ke filterUnit via tombol mobile agar logika filter tetap konsisten
         const mobileIdMap = { semua:'uf-semua', PS5:'uf-ps5', PS4:'uf-ps4', PS3:'uf-ps3' };
         const mobileBtn = document.getElementById(mobileIdMap[type]);
         if (mobileBtn) window.filterUnit(type, mobileBtn);
