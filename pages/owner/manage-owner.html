@@ -45,7 +45,6 @@
         .topbar {
             position: sticky; top: 0; z-index: 100;
             background: var(--surface);
-            border-bottom: 1px solid var(--border);
             padding: 14px 24px;
             display: flex; align-items: center; justify-content: space-between;
         }
@@ -403,8 +402,8 @@
                 display: flex;
                 align-items: center;
                 gap: 8px;
-                font-weight: 800;
-                font-size: 14px;
+                font-weight: 900;
+                font-size: 16px;
                 padding: 0 8px 20px;
                 border-bottom: 1px solid rgba(255,255,255,0.07);
                 margin-bottom: 8px;
@@ -667,6 +666,10 @@
             /* Grid cols max 2 on mobile */
             .grid-cols-3 { grid-template-columns: repeat(2, 1fr) !important; }
         }
+
+        /* ── HIDE SCROLLBAR ── */
+        .owner-main-content::-webkit-scrollbar { display: none; }
+        .owner-main-content { -ms-overflow-style: none; scrollbar-width: none; }
         </style>
     <script>
         (function(){
