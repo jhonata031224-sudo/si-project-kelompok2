@@ -95,7 +95,7 @@
                 display: flex;
                 align-items: center;
                 gap: 8px;
-                font-weight: 500;
+                font-weight: 800;
                 font-size: 14px;
                 padding: 0 8px 20px;
                 border-bottom: 1px solid rgba(255,255,255,0.07);
@@ -133,6 +133,24 @@
             .sidebar-nav-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
             .sidebar-nav-item.active { background: rgba(0,217,255,0.08) !important; color: #00d9ff !important; font-weight: 600 !important; }
             .sidebar-nav-item i { width: 16px; text-align: center; font-size: 13px; }
+            /* Submenu */
+            .sidebar-submenu { display: flex; flex-direction: column; gap: 2px; padding-left: 26px; margin-top: 2px; }
+            .sidebar-sub-item {
+                display: flex; align-items: center; gap: 8px;
+                padding: 7px 10px; border-radius: 8px;
+                font-size: 11px; font-weight: 500; color: var(--muted, #6b7a8d);
+                text-decoration: none; transition: background-color 0.15s, color 0.15s;
+                cursor: pointer; width: 100%; box-sizing: border-box;
+                border: none; font-family: inherit; background: transparent; line-height: 1.2;
+                position: relative;
+            }
+            .sidebar-sub-item::before {
+                content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+                width: 6px; height: 1px; background: rgba(255,255,255,0.15);
+            }
+            .sidebar-sub-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .sidebar-sub-item.active { color: #00d9ff !important; font-weight: 600 !important; background: rgba(0,217,255,0.06) !important; }
+            .sidebar-sub-item i { width: 13px; text-align: center; font-size: 11px; }
             .sidebar-spacer { flex: 1; }
             .sidebar-keluar {
                 display: flex;
@@ -188,6 +206,10 @@
         }
         body.light-mode .sidebar-logo { border-color: rgba(0,0,0,0.08) !important; color: #0f172a !important; }
         body.light-mode .sidebar-nav-item { color: #94a3b8 !important; }
+        body.light-mode .sidebar-sub-item { color: #64748b !important; }
+        body.light-mode .sidebar-sub-item:hover { background: rgba(2,132,199,0.06) !important; color: #0284c7 !important; }
+        body.light-mode .sidebar-sub-item.active { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; }
+        body.light-mode .sidebar-sub-item::before { background: rgba(0,0,0,0.15); }
         body.light-mode .sidebar-nav-item:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
         body.light-mode .sidebar-nav-item.active { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
         body.light-mode .sidebar-staff-view { color: #94a3b8 !important; border-color: rgba(0,0,0,0.08) !important; }
@@ -339,12 +361,14 @@
     <aside class="owner-sidebar">
         <div class="sidebar-logo">
             <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
-            PRINCE<span class="logo-cyan">GAMES</span>
+            PRINCE <span class="logo-cyan">GAMES</span>
         </div>
             <a href="../owner/dashboard-owner.html" class="sidebar-nav-item"><i class="fas fa-th-large"></i> Beranda</a>
             <a href="../owner/manage-owner.html" class="sidebar-nav-item"><i class="fas fa-tools"></i> Kelola</a>
-            <a href="../owner/manage-owner.html#unit" class="sidebar-nav-item"><i class="fas fa-gamepad"></i> Unit & Booking</a>
-            <a href="../owner/manage-owner.html#fnb" class="sidebar-nav-item"><i class="fas fa-utensils"></i> F&B</a>
+            <div class="sidebar-submenu">
+                <a href="../owner/manage-owner.html#unit" class="sidebar-sub-item"><i class="fas fa-gamepad"></i> Unit & Booking</a>
+                <a href="../owner/manage-owner.html#fnb" class="sidebar-sub-item"><i class="fas fa-utensils"></i> F&B</a>
+            </div>
             <a href="../owner/history-owner.html" class="sidebar-nav-item"><i class="fas fa-history"></i> Riwayat</a>
             <a href="../owner/export-owner.html" class="sidebar-nav-item active"><i class="fas fa-file-export"></i> Laporan</a>
         <div class="sidebar-spacer"></div>
