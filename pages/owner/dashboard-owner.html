@@ -94,13 +94,13 @@
         .revenue-label{font-size:11px;color:var(--muted)}
 
         /* ── Filter Pills ── */
-        .filter-pills{display:flex;gap:6px;flex-wrap:wrap}
-        .pill{padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;font-family:'Space Grotesk',sans-serif}
+        .filter-pills{display:flex;gap:5px;align-items:center;flex-wrap:nowrap}
+        .pill{padding:5px 11px;border-radius:20px;font-size:10.5px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;font-family:'Space Grotesk',sans-serif;white-space:nowrap}
         .pill:hover{border-color:var(--cyan);color:var(--cyan)}
         .pill.active{background:rgba(0,217,255,0.12);border-color:rgba(0,217,255,0.4);color:var(--cyan)}
 
         /* ── Reset Btn ── */
-        .btn-reset{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:rgba(255,77,79,0.08);border:1px solid rgba(255,77,79,0.25);color:var(--red);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Space Grotesk',sans-serif}
+        .btn-reset{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;background:rgba(255,77,79,0.08);border:1px solid rgba(255,77,79,0.25);color:var(--red);font-size:10.5px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Space Grotesk',sans-serif;white-space:nowrap}
         .btn-reset:hover{background:rgba(255,77,79,0.15)}
 
         /* ── Tabel Riwayat Pendapatan ── */
@@ -233,7 +233,7 @@
                 display: flex;
                 align-items: center;
                 gap: 8px;
-                font-weight: 500;
+                font-weight: 800;
                 font-size: 14px;
                 padding: 0 8px 20px;
                 border-bottom: 1px solid rgba(255,255,255,0.07);
@@ -271,6 +271,24 @@
             .sidebar-nav-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
             .sidebar-nav-item.active { background: rgba(0,217,255,0.08) !important; color: #00d9ff !important; font-weight: 600 !important; }
             .sidebar-nav-item i { width: 16px; text-align: center; font-size: 13px; }
+            /* Submenu */
+            .sidebar-submenu { display: flex; flex-direction: column; gap: 2px; padding-left: 26px; margin-top: 2px; }
+            .sidebar-sub-item {
+                display: flex; align-items: center; gap: 8px;
+                padding: 7px 10px; border-radius: 8px;
+                font-size: 11px; font-weight: 500; color: var(--muted, #6b7a8d);
+                text-decoration: none; transition: background-color 0.15s, color 0.15s;
+                cursor: pointer; width: 100%; box-sizing: border-box;
+                border: none; font-family: inherit; background: transparent; line-height: 1.2;
+                position: relative;
+            }
+            .sidebar-sub-item::before {
+                content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+                width: 6px; height: 1px; background: rgba(255,255,255,0.15);
+            }
+            .sidebar-sub-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .sidebar-sub-item.active { color: #00d9ff !important; font-weight: 600 !important; background: rgba(0,217,255,0.06) !important; }
+            .sidebar-sub-item i { width: 13px; text-align: center; font-size: 11px; }
             .sidebar-spacer { flex: 1; }
             .sidebar-keluar {
                 display: flex;
@@ -297,7 +315,7 @@
                 padding: 10px 12px;
                 border-radius: 10px;
                 font-size: 12px;
-                font-weight: 500;
+                font-weight: 800;
                 color: var(--muted, #6b7a8d);
                 cursor: pointer;
                 border: 1px solid rgba(255,255,255,0.06);
@@ -383,6 +401,10 @@
             background: rgba(2,132,199,0.08) !important;
             color: #0284c7 !important;
         }
+        body.light-mode .sidebar-sub-item { color: #64748b !important; }
+        body.light-mode .sidebar-sub-item:hover { background: rgba(2,132,199,0.06) !important; color: #0284c7 !important; }
+        body.light-mode .sidebar-sub-item.active { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; }
+        body.light-mode .sidebar-sub-item::before { background: rgba(0,0,0,0.15); }
         /* Text overrides */
         body.light-mode .text-white,
         body.light-mode [style*="color:#e6edf3"],
@@ -469,12 +491,14 @@
     <aside class="owner-sidebar">
         <div class="sidebar-logo">
             <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
-            PRINCE<span class="logo-cyan">GAMES</span>
+            PRINCE <span class="logo-cyan">GAMES</span>
         </div>
             <a href="../owner/dashboard-owner.html" class="sidebar-nav-item active"><i class="fas fa-th-large"></i> Beranda</a>
             <a href="../owner/manage-owner.html" class="sidebar-nav-item"><i class="fas fa-tools"></i> Kelola</a>
-            <a href="../owner/manage-owner.html#unit" class="sidebar-nav-item"><i class="fas fa-gamepad"></i> Unit & Booking</a>
-            <a href="../owner/manage-owner.html#fnb" class="sidebar-nav-item"><i class="fas fa-utensils"></i> F&B</a>
+            <div class="sidebar-submenu">
+                <a href="../owner/manage-owner.html#unit" class="sidebar-sub-item"><i class="fas fa-gamepad"></i> Unit & Booking</a>
+                <a href="../owner/manage-owner.html#fnb" class="sidebar-sub-item"><i class="fas fa-utensils"></i> F&B</a>
+            </div>
             <a href="../owner/history-owner.html" class="sidebar-nav-item"><i class="fas fa-history"></i> Riwayat</a>
             <a href="../owner/export-owner.html" class="sidebar-nav-item"><i class="fas fa-file-export"></i> Laporan</a>
         <div class="sidebar-spacer"></div>
@@ -495,7 +519,7 @@
     <div style="display:flex;align-items:center;gap:10px">
         <div class="logo">
             <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
-            PRINCE<span>GAMES</span>
+            PRINCE <span style="color:var(--cyan)">GAMES</span>
         </div>
         <div class="role-badge">OWNER</div>
     </div>
@@ -607,19 +631,19 @@
     <div class="section-card" style="margin-bottom:0;min-width:0;overflow:visible">
         <div class="revenue-header">
             <div>
-                <div class="revenue-title">💰 Total Pendapatan Tercatat</div>
+                <div class="revenue-title">Total Pendapatan Tercatat</div>
                 <div id="filter-label" style="font-size:11px;color:var(--muted);margin-top:3px">Filter: Hari Ini</div>
             </div>
-            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px">
+            <div style="display:flex;gap:0;align-items:center;flex-wrap:nowrap;margin-top:4px">
                 <div class="filter-pills">
+                    <button class="pill" onclick="setFilter('semua')">Semua</button>
                     <button class="pill active" onclick="setFilter('harian')">Harian</button>
                     <button class="pill" onclick="setFilter('mingguan')">Mingguan</button>
                     <button class="pill" onclick="setFilter('bulanan')">Bulanan</button>
-                    <button class="pill" onclick="setFilter('semua')">Semua</button>
+                    <button class="btn-reset" onclick="konfirmasiReset()" style="margin-left:5px">
+                        <i class="fas fa-trash-can"></i> Reset
+                    </button>
                 </div>
-                <button class="btn-reset" onclick="konfirmasiReset()">
-                    <i class="fas fa-trash-can"></i> Reset
-                </button>
             </div>
         </div>
         <div class="revenue-amount" id="rev-amount">Rp 0</div>
@@ -712,7 +736,7 @@
     </div>
 
     <!-- Booking & Rental Aktif + Pembatalan -->
-    <div class="section-card" style="margin-bottom:12px">
+    <div class="section-card" style="margin-bottom:12px" id="unit-booking">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
             <div class="section-title" style="margin-bottom:0">
                 <i class="fas fa-play-circle" style="color:#a855f7;margin-right:8px;font-size:13px"></i>Booking & Rental Aktif
@@ -725,7 +749,11 @@
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px">
             <p style="font-size:10px;color:#6b7280;margin:0;min-width:0;flex:1;line-height:1.5"><i class="fas fa-info-circle" style="color:#f59e0b;margin-right:4px"></i>Booking & rental yang dikonfirmasi staff dan sedang berjalan</p>
-            <button onclick="ownerHapusSemuaAktif()" id="obtn-hapus-semua" style="font-size:9px;font-weight:800;padding:3px 9px;border-radius:6px;border:1px solid rgba(255,77,79,0.4);background:rgba(255,77,79,0.10);color:#ff4d4f;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s;white-space:nowrap;flex-shrink:0;margin-left:auto" onmouseover="this.style.background='rgba(255,77,79,0.22)'" onmouseout="this.style.background='rgba(255,77,79,0.10)'"><i class="fas fa-trash-alt" style="font-size:8px"></i> Hapus Semua</button>
+            <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;margin-left:auto">
+                <button id="obtn-hapus-semua" onclick="ownerToggleSelectMode()" style="font-size:9px;font-weight:800;padding:3px 9px;border-radius:6px;border:1px solid rgba(255,77,79,0.4);background:rgba(255,77,79,0.10);color:#ff4d4f;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s;white-space:nowrap" onmouseover="this.style.background='rgba(255,77,79,0.22)'" onmouseout="this.style.background='rgba(255,77,79,0.10)'"><i class="fas fa-trash-alt" style="font-size:8px"></i> Hapus</button>
+                <button id="obtn-konfirmasi-hapus" onclick="ownerKonfirmasiHapusPilihan()" style="display:none;font-size:9px;font-weight:800;padding:3px 9px;border-radius:6px;border:1px solid rgba(255,77,79,0.6);background:rgba(255,77,79,0.20);color:#ff4d4f;cursor:pointer;align-items:center;gap:4px;transition:all .2s;white-space:nowrap"><i class="fas fa-check" style="font-size:8px"></i> Konfirmasi Hapus (<span id="obtn-hapus-count">0</span>)</button>
+                <button id="obtn-batal-hapus" onclick="ownerCancelSelectMode()" style="display:none;font-size:9px;font-weight:800;padding:3px 9px;border-radius:6px;border:1px solid rgba(156,163,175,0.4);background:rgba(156,163,175,0.08);color:#9ca3af;cursor:pointer;align-items:center;gap:4px;transition:all .2s;white-space:nowrap">Batal</button>
+            </div>
         </div>
         <div id="owner-aktif-list"></div>
     </div>
@@ -1526,9 +1554,9 @@
             return;
         }
 
+        var isSelectMode = window.ownerSelectMode || false;
         container.innerHTML = items.map(function(item) {
             var isBooking = item._col === 'bookings';
-            var nama = (item.customerName || item.custName || '-').replace(/'/g, "\\'");
             var unitLabel = isBooking
                 ? (item.assignedUnit ? item.assignedUnit : '-')
                 : (item.assignedRentalUnit ? item.assignedRentalUnit : '-');
@@ -1540,7 +1568,14 @@
             var borderColor = isBooking ? '#00d9ff' : '#a855f7';
             var colName = item._col;
             var itemId = item.id;
-            return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);margin-bottom:8px;gap:8px">' +
+            var isChecked = window.ownerSelectedIds && window.ownerSelectedIds.has(colName + '::' + itemId);
+            var cardBg = isChecked ? 'rgba(255,77,79,0.08)' : 'rgba(255,255,255,0.02)';
+            var cardBorder = isChecked ? 'rgba(255,77,79,0.35)' : 'rgba(255,255,255,0.06)';
+            var checkboxHtml = isSelectMode
+                ? '<div onclick="ownerToggleItemSelect(\'' + colName + '\',\'' + itemId + '\')" style="width:18px;height:18px;border-radius:5px;border:2px solid ' + (isChecked ? '#ff4d4f' : 'rgba(255,255,255,0.2)') + ';background:' + (isChecked ? '#ff4d4f' : 'transparent') + ';display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s">' + (isChecked ? '<i class="fas fa-check" style="color:#fff;font-size:9px"></i>' : '') + '</div>'
+                : '';
+            return '<div onclick="' + (isSelectMode ? 'ownerToggleItemSelect(\'' + colName + '\',\'' + itemId + '\')' : '') + '" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;border:1px solid ' + cardBorder + ';background:' + cardBg + ';margin-bottom:8px;gap:8px;' + (isSelectMode ? 'cursor:pointer;' : '') + 'transition:all .2s">' +
+                (isSelectMode ? checkboxHtml : '') +
                 '<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">' +
                     '<div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.2);flex-shrink:0">' +
                         '<i class="fas ' + (isBooking ? 'fa-gamepad' : 'fa-box-open') + '" style="color:' + iconColor + ';font-size:12px"></i>' +
@@ -1553,9 +1588,6 @@
                 '</div>' +
                 '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">' +
                     '<span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;border:1px solid ' + borderColor + '44;color:' + iconColor + ';background:' + borderColor + '11">' + labelBadge + '</span>' +
-                    '<button onclick="ownerHapusAktif(\'' + colName + '\',\'' + itemId + '\',\'' + nama + '\')" style="display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:6px;border:1px solid rgba(255,77,79,0.35);background:rgba(255,77,79,0.08);color:#ff4d4f;font-size:9px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.background=\'rgba(255,77,79,0.18)\'" onmouseout="this.style.background=\'rgba(255,77,79,0.08)\'">' +
-                        '<i class="fas fa-trash-alt" style="font-size:8px"></i> Hapus' +
-                    '</button>' +
                 '</div>' +
             '</div>';
         }).join('');
@@ -1629,7 +1661,111 @@
     };
 
     // ════════════════════════════════════════════════════════════════
-    // HAPUS SEMUA BOOKING/RENTAL AKTIF
+    // SELECT MODE — HAPUS PILIHAN
+    // ════════════════════════════════════════════════════════════════
+    window.ownerSelectMode   = false;
+    window.ownerSelectedIds  = new Set();
+
+    function ownerUpdateSelectUI() {
+        var count = window.ownerSelectedIds.size;
+        var konfBtn  = document.getElementById('obtn-konfirmasi-hapus');
+        var batalBtn = document.getElementById('obtn-batal-hapus');
+        var hapusBtn = document.getElementById('obtn-hapus-semua');
+        var countEl  = document.getElementById('obtn-hapus-count');
+        if (window.ownerSelectMode) {
+            hapusBtn.style.display  = 'none';
+            konfBtn.style.display   = 'flex';
+            batalBtn.style.display  = 'flex';
+            if (countEl) countEl.textContent = count;
+        } else {
+            hapusBtn.style.display  = 'flex';
+            konfBtn.style.display   = 'none';
+            batalBtn.style.display  = 'none';
+        }
+    }
+
+    window.ownerToggleSelectMode = function() {
+        window.ownerSelectMode  = true;
+        window.ownerSelectedIds = new Set();
+        ownerUpdateSelectUI();
+        renderOwnerAktif();
+    };
+
+    window.ownerCancelSelectMode = function() {
+        window.ownerSelectMode  = false;
+        window.ownerSelectedIds = new Set();
+        ownerUpdateSelectUI();
+        renderOwnerAktif();
+    };
+
+    window.ownerToggleItemSelect = function(colName, itemId) {
+        if (!window.ownerSelectMode) return;
+        var key = colName + '::' + itemId;
+        if (window.ownerSelectedIds.has(key)) {
+            window.ownerSelectedIds.delete(key);
+        } else {
+            window.ownerSelectedIds.add(key);
+        }
+        ownerUpdateSelectUI();
+        renderOwnerAktif();
+    };
+
+    window.ownerKonfirmasiHapusPilihan = async function() {
+        var selected = Array.from(window.ownerSelectedIds);
+        if (!selected.length) {
+            Swal.fire({ icon: 'info', title: 'Belum Ada Pilihan', text: 'Pilih minimal satu item untuk dihapus.', ...swalTheme(), timer: 2000, showConfirmButton: false });
+            return;
+        }
+        var { isConfirmed } = await Swal.fire({
+            title: 'Hapus ' + selected.length + ' Item?',
+            html: '<p style="font-size:13px;color:#9ca3af">Sebanyak <b style="color:#ff4d4f">' + selected.length + ' item</b> yang dipilih akan dihapus permanen dari Firebase.<br><br>Semua unit terkait akan direset ke <b style="color:#00d9ff">Tersedia</b>.<br><br>Tindakan ini <b style="color:#ff4d4f">tidak dapat dibatalkan</b>.</p>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-trash-alt"></i> Ya, Hapus',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#ff4d4f',
+            cancelButtonColor: '#374151',
+            ...swalTheme()
+        });
+        if (!isConfirmed) return;
+
+        try {
+            Swal.fire({ title: 'Menghapus...', html: '<p style="color:#9ca3af">Memproses ' + selected.length + ' item...</p>', allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
+            var batchObj = writeBatch(db);
+            var batchCount = 0;
+            for (var i = 0; i < selected.length; i++) {
+                var parts   = selected[i].split('::');
+                var colName = parts[0];
+                var itemId  = parts[1];
+                try {
+                    var itemDoc = await getDoc(doc(db, colName, itemId));
+                    if (itemDoc.exists()) {
+                        var data   = itemDoc.data();
+                        var unitId = colName === 'bookings' ? data.assignedUnit : data.assignedRentalUnit;
+                        if (unitId) {
+                            await updateDoc(doc(db, 'units', unitId), {
+                                status: 'Tersedia', startTime: null, endTime: null,
+                                price: 0, customerName: '-', customerId: null, bookingId: null
+                            });
+                        }
+                    }
+                } catch(e) { console.warn('reset unit gagal', e); }
+                batchObj.delete(doc(db, colName, itemId));
+                batchCount++;
+                if (batchCount === 400) { await batchObj.commit(); batchObj = writeBatch(db); batchCount = 0; }
+            }
+            if (batchCount > 0) await batchObj.commit();
+            window.ownerSelectMode  = false;
+            window.ownerSelectedIds = new Set();
+            ownerUpdateSelectUI();
+            Swal.fire({ icon: 'success', title: 'Berhasil Dihapus!', text: selected.length + ' item telah dihapus dan semua unit direset ke Tersedia.', timer: 2500, showConfirmButton: false, ...swalTheme() });
+        } catch(e) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, ...swalTheme() });
+        }
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // HAPUS SEMUA BOOKING/RENTAL AKTIF (legacy — tidak dipakai lagi)
     // ════════════════════════════════════════════════════════════════
     window.ownerHapusSemuaAktif = async function() {
         var filtered = window.ownerAktifItems.filter(function(x) {
