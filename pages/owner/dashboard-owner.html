@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prince Games – Owner Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --bg:#0d1117;--surface:#161b22;--surface2:#1c2128;
+            --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.05);
+            --text:#e6edf3;--muted:#7d8590;--cyan:#00d9ff;--green:#3fb950;
+            --orange:#f78166;--purple:#bc8cff;--yellow:#e3b341;--red:#ff4d4f;
+        }
+        html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif}
+        body{overflow-x:clip}
+        .owner-main-content{overflow-x:hidden}
+
+        /* ── Topbar ── */
+        .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--bg);position:sticky;top:0;z-index:100}
+        .logo{display:flex;align-items:center;gap:7px;font-weight:800;font-size:14px;letter-spacing:-.3px}
+        .logo-icon{width:32px;height:32px;background:rgba(0,217,255,0.12);border:1px solid rgba(0,217,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:14px}
+        .logo span{color:var(--cyan)}
+        .role-badge{background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2);border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:.5px}
+        .nav-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none;font-family:'Space Grotesk',sans-serif}
+        .nav-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.15)}
+        .btn-keluar{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.2);color:var(--orange)}
+        .btn-keluar:hover{background:rgba(247,129,102,0.15);color:var(--orange)}
+        .btn-staff-view{background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--muted);font-size:10px;padding:4px 9px}
+        .btn-staff-view:hover{background:rgba(255,255,255,0.04);color:var(--text);border-color:rgba(255,255,255,0.15)}
+
+        /* ── Layout ── */
+        .main{padding:28px 24px 100px;max-width:1100px;margin:0 auto}
+        .page-header{margin-bottom:24px}
+        .page-header h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
+        .page-header p{font-size:13px;color:var(--muted);margin-top:3px}
+
+        /* ── Charts ── */
+        .chart-section{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+        .chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px}
+        .chart-title{font-size:13px;font-weight:700}
+        .chart-subtitle{font-size:10px;color:var(--muted);margin-bottom:14px}
+        .chart-wrap{position:relative;width:100%;height:200px}
+        .chart-pills{display:flex;gap:5px;flex-wrap:wrap}
+        .chart-pill{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;font-family:'Space Grotesk',sans-serif}
+        .chart-pill.active{background:rgba(0,217,255,0.12);border-color:rgba(0,217,255,0.4);color:var(--cyan)}
+        .chart-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+        .chart-leg{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+        .chart-leg-dot{width:8px;height:8px;border-radius:50%}
+        body.light-mode .chart-section{background:#fff;border-color:rgba(0,0,0,0.07)}
+
+        /* ── Chart Date Filter ── */
+        .chart-date-row{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+        .chart-date-input{
+            background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+            border-radius:8px;color:#e6edf3;font-size:10px;font-weight:700;font-family:inherit;
+            padding:5px 8px;width:110px;outline:none;transition:border-color .2s;
+        }
+        /* Desktop: sembunyikan placeholder span, input warna normal */
+        @media(min-width:641px){
+            .chart-date-placeholder { display:none !important; }
+            .chart-date-input { color:#e6edf3 !important; width:110px; }
+        }
+        .chart-date-input:focus{border-color:rgba(0,217,255,0.4)}
+        .chart-date-input::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
+        body.light-mode .chart-date-input{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.1);color:#1e293b}
+        body.light-mode .chart-date-input::-webkit-calendar-picker-indicator{filter:none}
+        .chart-date-sep{font-size:10px;color:#4b5563;font-weight:700;flex-shrink:0}
+        .chart-date-clear{
+            background:transparent;border:1px solid rgba(255,255,255,0.07);color:#6b7280;
+            border-radius:8px;padding:5px 8px;font-size:10px;font-weight:800;
+            cursor:pointer;font-family:inherit;flex-shrink:0;transition:.2s;
+        }
+        .chart-date-clear:hover{border-color:rgba(255,255,255,0.15);color:#9ca3af}
+        body.light-mode .chart-date-clear{border-color:rgba(0,0,0,0.1);color:#6b7280}
+
+        /* ── KPI ── */
+        .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+        .kpi-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:16px 18px}
+        .kpi-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+        .kpi-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px}
+        .kpi-icon.green{background:rgba(63,185,80,0.12);color:var(--green)}
+        .kpi-icon.cyan{background:rgba(0,217,255,0.12);color:var(--cyan)}
+        .kpi-icon.purple{background:rgba(188,140,255,0.12);color:var(--purple)}
+        .kpi-value{font-size:22px;font-weight:800;letter-spacing:-.5px}
+        .kpi-sub{font-size:11px;color:var(--muted);margin-top:5px}
+        .kpi-sub.pos{color:var(--green)}
+
+        /* ── Revenue Card (besar) ── */
+        .revenue-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px;margin-bottom:16px}
+        .revenue-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:gap;gap:10px}
+        .revenue-title{font-size:13px;font-weight:700}
+        .revenue-amount{font-size:32px;font-weight:800;letter-spacing:-1px;color:var(--green);margin-bottom:4px}
+        .revenue-label{font-size:11px;color:var(--muted)}
+
+        /* ── Filter Pills ── */
+        .filter-pills{display:flex;gap:5px;align-items:center;flex-wrap:nowrap}
+        .pill{padding:5px 11px;border-radius:20px;font-size:10.5px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;font-family:'Space Grotesk',sans-serif;white-space:nowrap}
+        .pill:hover{border-color:var(--cyan);color:var(--cyan)}
+        .pill.active{background:rgba(0,217,255,0.12);border-color:rgba(0,217,255,0.4);color:var(--cyan)}
+
+        /* ── Reset Btn ── */
+        .btn-reset{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;background:rgba(255,77,79,0.08);border:1px solid rgba(255,77,79,0.25);color:var(--red);font-size:10.5px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Space Grotesk',sans-serif;white-space:nowrap}
+        .btn-reset:hover{background:rgba(255,77,79,0.15)}
+
+        /* ── Tabel Riwayat Pendapatan ── */
+        .table-scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;width:100%}
+
+        /* ── Custom Scrollbar ── */
+        .table-scroll-wrap::-webkit-scrollbar { height: 4px; }
+        .table-scroll-wrap::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 99px; }
+        .table-scroll-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 99px; }
+        .table-scroll-wrap::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.20); }
+
+        body.light-mode .table-scroll-wrap::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+        body.light-mode .table-scroll-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
+        body.light-mode .table-scroll-wrap::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+        .income-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px;min-width:520px}
+        .income-table th{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border2)}
+        .income-table td{padding:9px 10px;border-bottom:1px solid var(--border2);vertical-align:middle}
+        .income-table tr:last-child td{border-bottom:none}
+        .income-table tr:hover td{background:rgba(255,255,255,0.02)}
+        .badge-auto{background:rgba(0,217,255,0.1);color:var(--cyan);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
+        .badge-manual{background:rgba(255,77,79,0.1);color:var(--red);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
+
+        /* ── Two-col & section ── */
+        .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+        .section-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;overflow:visible}
+        .section-title{font-size:13px;font-weight:700;margin-bottom:14px}
+        .empty-state{font-size:12px;color:var(--muted)}
+        .session-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border2)}
+        .session-row:last-child{border-bottom:none;padding-bottom:0}
+        .session-row:first-child{padding-top:0}
+        .session-name{font-size:13px;font-weight:700}
+        .session-price{font-size:11px;color:var(--muted);margin-top:2px}
+        .session-timer{font-size:15px;font-weight:800;color:var(--cyan);font-variant-numeric:tabular-nums}
+        .completed-price{font-size:12px;font-weight:700;color:var(--green)}
+
+        /* ── Bottom Nav ── */
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#161b22;border-top:1px solid rgba(255,255,255,0.08);padding:10px 8px 24px;display:flex;justify-content:space-around;z-index:200;border-radius:22px 22px 0 0}
+        .bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 14px;border-radius:12px;transition:all .2s;text-decoration:none;font-family:'Space Grotesk',sans-serif}
+        .bnav-item i{font-size:18px}
+        .bnav-item span{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.3px}
+        .bnav-item.inactive{color:#7d8590}
+        .bnav-item.active{color:#00d9ff}
+
+        @media(max-width:640px){
+            .two-col{grid-template-columns:1fr}
+            .kpi-grid{grid-template-columns:repeat(3,1fr)}
+            .topbar{padding:12px 16px}
+            .main{padding:16px 14px 100px}
+            .page-header h1{font-size:22px}
+            .revenue-amount{font-size:24px}
+            .revenue-header{flex-direction:column;align-items:flex-start}
+            .btn-label-hide{display:none}
+            #topbar-actions{gap:6px}
+            .nav-btn{padding:7px 10px}
+            #revenue-shift-grid{grid-template-columns:1fr !important}
+
+            /* Hilangkan background gelap yang terlihat di antara card */
+            .owner-main-content { background: var(--bg); }
+            .main { background: var(--bg); }
+
+            /* Grid 2 kolom chart jadi 1 kolom */
+            .chart-two-col { grid-template-columns: 1fr !important; }
+
+            /* Tabel scroll horizontal */
+            .income-table { font-size:10px; }
+            .income-table th, .income-table td { padding:7px 8px; white-space:nowrap; }
+
+            /* KPI card compact */
+            .kpi-card { padding:12px 10px; }
+            .kpi-value { font-size:18px; }
+            .kpi-sub { font-size:10px; }
+            .kpi-label { font-size:9px; }
+
+            /* Filter pills scroll horizontal */
+            .filter-pills { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; scrollbar-width:none; }
+            .filter-pills::-webkit-scrollbar { display:none; }
+            .pill { flex-shrink:0; }
+
+            /* Revenue header */
+            .revenue-header > div:last-child { flex-direction:column; align-items:flex-start; width:100%; }
+            .revenue-header .filter-pills { width:100%; }
+
+            /* Section cards */
+            .section-card { padding:14px 14px; }
+            .chart-section { padding:14px 14px; }
+
+            /* Chart date row */
+            .chart-date-row { flex-direction:row; gap:4px; align-items:center; flex-wrap:nowrap; }
+            .chart-date-input { width:auto; min-width:0; flex:1; font-size:10px; box-sizing:border-box; padding:5px 4px; max-width:130px; }
+            .chart-date-sep { display:inline; font-size:9px; flex-shrink:0; }
+            .chart-date-clear { width:auto; flex-shrink:0; padding:5px 8px; }
+
+            /* Collapsible header untuk section mobile */
+            .mobile-collapse-header {
+                display:flex; align-items:center; justify-content:space-between;
+                cursor:pointer; user-select:none;
+            }
+            .mobile-collapse-header .chevron { transition: transform .2s; }
+            .mobile-collapse-header.collapsed .chevron { transform: rotate(-90deg); }
+            .mobile-collapse-body { overflow:hidden; transition: max-height .3s ease; }
+            .mobile-collapse-body.collapsed { max-height:0 !important; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           RESPONSIVE DESKTOP — Prince Games Owner Panel
+           Sidebar di ≥768px, bottom nav di <768px
+        ═══════════════════════════════════════════════════════════════ */
+        @media (min-width: 768px) {
+            .topbar { display: none !important; }
+            #topbar-actions { display: none !important; }
+            .role-badge { display: none !important; }
+            .topbar .logo { display: none !important; }
+            .bottom-nav, .bnav-item span { display: none !important; }
+            body { padding-bottom: 0 !important; display: flex; flex-direction: column; min-height: 100vh; }
+            .owner-layout { display: flex; min-height: 100vh; }
+            .owner-sidebar {
+                display: flex !important;
+                flex-direction: column;
+                width: 220px;
+                min-width: 220px;
+                max-width: 220px;
+                flex-shrink: 0;
+                background: #0d1117;
+                border-right: 1px solid rgba(255,255,255,0.07);
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                padding: 20px 12px 20px;
+                z-index: 50;
+                gap: 4px;
+                overflow: hidden;
+                box-sizing: border-box;
+            }
+            .sidebar-logo {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 900;
+                font-size: 16px;
+                color: #ffffff;
+                letter-spacing: .5px;
+                padding: 0 8px 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+                margin-bottom: 8px;
+            }
+            .sidebar-logo .logo-icon {
+                width: 32px; height: 32px;
+                background: rgba(0,217,255,0.12);
+                border: 1px solid rgba(0,217,255,0.3);
+                border-radius: 8px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 14px; color: #00d9ff;
+            }
+            .sidebar-logo .logo-cyan { color: #00d9ff; }
+            .sidebar-nav-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--muted, #6b7a8d);
+                text-decoration: none;
+                transition: background-color 0.15s, color 0.15s;
+                cursor: pointer;
+                width: 100%;
+                box-sizing: border-box;
+                border: 1px solid transparent;
+                font-family: inherit;
+                background: transparent;
+                line-height: 1.2;
+                min-height: 40px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .sidebar-nav-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .sidebar-nav-item.active { background: rgba(0,217,255,0.08) !important; color: #00d9ff !important; font-weight: 600 !important; border-color: transparent !important; }
+            .sidebar-nav-item i { width: 16px; text-align: center; font-size: 13px; }
+            /* Submenu */
+            .sidebar-submenu { display: flex; flex-direction: column; gap: 2px; padding-left: 26px; margin-top: 2px; }
+            .sidebar-sub-item {
+                display: flex; align-items: center; gap: 8px;
+                padding: 7px 10px; border-radius: 8px;
+                font-size: 11px; font-weight: 600; color: var(--muted, #6b7a8d);
+                text-decoration: none; transition: background-color 0.15s, color 0.15s;
+                cursor: pointer; width: 100%; box-sizing: border-box;
+                border: 1px solid transparent; font-family: inherit; background: transparent; line-height: 1.2;
+                position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            }
+            .sidebar-sub-item::before {
+                content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+                width: 6px; height: 1px; background: rgba(255,255,255,0.15);
+            }
+            .sidebar-sub-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .sidebar-sub-item.active { color: #00d9ff !important; font-weight: 600 !important; background: rgba(0,217,255,0.06) !important; }
+            .sidebar-sub-item i { width: 13px; text-align: center; font-size: 11px; }
+            .sidebar-spacer { flex: 1; }
+            .sidebar-keluar {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 700;
+                color: #f78166;
+                cursor: pointer;
+                background: rgba(247,129,102,0.06);
+                border: 1px solid rgba(247,129,102,0.15);
+                font-family: inherit;
+                transition: background-color 0.15s, color 0.15s;
+                width: 100%;
+                box-sizing: border-box;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
+            .sidebar-staff-view {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--muted, #6b7a8d);
+                cursor: pointer;
+                border: 1px solid rgba(255,255,255,0.06);
+                background: transparent;
+                font-family: inherit;
+                transition: background-color 0.15s, color 0.15s;
+                width: 100%;
+                margin-bottom: 6px;
+                text-decoration: none;
+                box-sizing: border-box;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .sidebar-staff-view:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .owner-main-content { flex: 1; min-width: 0; overflow-y: scroll; padding: 28px 40px 80px 40px; max-width: 1100px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+            .topbar { max-width: 100% !important; }
+            /* Widen content area on desktop */
+            .p-5 > .max-w-\[450px\],
+            .p-5 > .max-w-\[480px\],
+            .p-5 > .max-w-\[500px\] { max-width: 900px !important; }
+        }
+        @media (max-width: 767px) {
+            .owner-sidebar { display: none !important; }
+            .owner-layout { display: block; }
+            .owner-main-content { display: block; }
+        }
+    
+        /* ══ LIGHT MODE ══════════════════════════════════════════════ */
+        body.light-mode {
+            background-color: #f0f4f8 !important;
+            color: #1a202c !important;
+        }
+        body.light-mode :root,
+        body.light-mode {
+            --bg:#f0f4f8; --surface:#ffffff; --surface2:#e8edf5;
+            --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.05);
+            --text:#1a202c; --muted:#64748b;
+            --cyan:#0284c7; --green:#16a34a; --orange:#ea580c;
+            --purple:#7c3aed; --yellow:#d97706; --red:#dc2626;
+        }
+        body.light-mode .glass-card {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        /* Cards */
+        body.light-mode .skpi-card,
+        body.light-mode .kpi-card,
+        body.light-mode .stat-card,
+        body.light-mode .card,
+        body.light-mode .section-card,
+        body.light-mode .rev-card,
+        body.light-mode .hdcard,
+        body.light-mode .hstat-box {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        /* Bottom nav */
+        body.light-mode .fixed.bottom-0 {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .bottom-nav {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .bnav-item.inactive { color: #94a3b8 !important; }
+        body.light-mode .bnav-item.active { color: #0284c7 !important; }
+        /* Topbar / Header */
+        body.light-mode .topbar,
+        body.light-mode header {
+            background: rgba(248,250,252,0.97) !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        /* Sidebar */
+        body.light-mode .owner-sidebar {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .sidebar-logo { color: #111827 !important; }
+        body.light-mode .sidebar-nav-item {
+            color: #64748b !important;
+        }
+        body.light-mode .sidebar-nav-item:hover,
+        body.light-mode .sidebar-nav-item.active {
+            background: rgba(2,132,199,0.08) !important;
+            color: #0284c7 !important;
+        }
+        body.light-mode .sidebar-sub-item { color: #64748b !important; }
+        body.light-mode .sidebar-sub-item:hover { background: rgba(2,132,199,0.06) !important; color: #0284c7 !important; }
+        body.light-mode .sidebar-sub-item.active { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; }
+        body.light-mode .sidebar-sub-item::before { background: rgba(0,0,0,0.15); }
+        /* Text overrides */
+        body.light-mode .text-white,
+        body.light-mode [style*="color:#e6edf3"],
+        body.light-mode [style*="color: #e6edf3"] { color: #1a202c !important; }
+        body.light-mode [style*="color:#9ca3af"],
+        body.light-mode .text-gray-400 { color: #64748b !important; }
+        body.light-mode [style*="color:#6b7280"],
+        body.light-mode .text-gray-500 { color: #94a3b8 !important; }
+        body.light-mode [style*="color:#4b5563"] { color: #94a3b8 !important; }
+        body.light-mode [style*="color:#7d8590"] { color: #64748b !important; }
+        /* Inline background overrides */
+        body.light-mode [style*="background:#11171f"],
+        body.light-mode [style*="background: #11171f"] { background: #ffffff !important; }
+        body.light-mode [style*="background:#1a2030"],
+        body.light-mode [style*="background: #1a2030"] { background: #f1f5f9 !important; }
+        body.light-mode [style*="background:#1c2128"],
+        body.light-mode [style*="background: #1c2128"] { background: #f1f5f9 !important; }
+        body.light-mode [style*="background:#0b0e14"] { background: #f0f4f8 !important; }
+        body.light-mode [style*="background:#0d1117"] { background: #f0f4f8 !important; }
+        body.light-mode [style*="background:#0d1219"],
+        body.light-mode [style*="background:#0d1520"] { background: #f0f4f8 !important; }
+        body.light-mode [style*="background:rgba(8,12,18"] { background: rgba(248,250,252,0.97) !important; }
+        body.light-mode [style*="background:rgba(7,9,15"] { background: rgba(248,250,252,0.97) !important; }
+        /* Accent colours */
+        body.light-mode [style*="color:#00d9ff"] { color: #0284c7 !important; }
+        body.light-mode [style*="color:#3fb950"] { color: #16a34a !important; }
+        body.light-mode [style*="color:#a855f7"] { color: #7c3aed !important; }
+        body.light-mode [style*="color:#f59e0b"] { color: #d97706 !important; }
+        body.light-mode [style*="color:#ef4444"] { color: #dc2626 !important; }
+        /* Inputs / select */
+        body.light-mode select,
+        body.light-mode input[type="date"],
+        body.light-mode input[type="number"],
+        body.light-mode input[type="time"],
+        body.light-mode input[type="text"],
+        body.light-mode textarea {
+            background: #f1f5f9 !important;
+            color: #1a202c !important;
+            border-color: rgba(0,0,0,0.12) !important;
+        }
+        /* Badges */
+        body.light-mode .badge-booking { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; border-color: rgba(2,132,199,0.2) !important; }
+        body.light-mode .badge-rental  { background: rgba(124,58,237,0.08) !important; color: #7c3aed !important; border-color: rgba(124,58,237,0.2) !important; }
+        body.light-mode .badge-pending { background: rgba(217,119,6,0.08) !important; color: #d97706 !important; border-color: rgba(217,119,6,0.2) !important; }
+        /* Keluar button */
+        body.light-mode .btn-keluar,
+        body.light-mode .btn-out-hdr,
+        body.light-mode .topbar-keluar-btn,
+        body.light-mode .sidebar-keluar { background: rgba(234,88,12,0.07) !important; border-color: rgba(234,88,12,0.2) !important; color: #ea580c !important; }
+        /* History drawer */
+        body.light-mode .hist-drawer { background: #f8fafc !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .hdcard-header.selesai { background: rgba(22,163,74,0.06) !important; border-color: rgba(22,163,74,0.15) !important; }
+        body.light-mode .hdcard-header.batal   { background: rgba(220,38,38,0.05) !important; border-color: rgba(220,38,38,0.12) !important; }
+        body.light-mode .hdcard-cell { background: rgba(0,0,0,0.04) !important; }
+        /* Pill/filter buttons */
+        body.light-mode .pill { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
+        body.light-mode .pill.active { background: #0284c7 !important; color: #fff !important; border-color: #0284c7 !important; }
+        /* Separator lines */
+        body.light-mode hr,
+        body.light-mode .border-b { border-color: rgba(0,0,0,0.07) !important; }
+        /* Theme toggle button */
+        .btn-theme-toggle {
+            display: flex; align-items: center; justify-content: center;
+            padding: 6px 12px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            color: #9ca3af; cursor: pointer; transition: all .2s;
+            font-size: 11px; font-weight: 600; flex-shrink: 0;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .btn-theme-toggle:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        body.light-mode .btn-theme-toggle {
+            border-color: rgba(0,0,0,0.1) !important;
+            background: rgba(0,0,0,0.04) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .btn-theme-toggle:hover { background: rgba(0,0,0,0.08) !important; color: #1a202c !important; }
+        /* Smooth theme switch only */
+        body { transition: background-color .2s, color .15s; }
+
+        /* ── HIDE SCROLLBAR ── */
+        .owner-main-content::-webkit-scrollbar { display: none; }
+        .owner-main-content { -ms-overflow-style: none; scrollbar-width: none; }
+        </style>
+</head>
+<body>
+<div class="owner-layout">
+    <aside class="owner-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
+            PRINCE <span class="logo-cyan">GAMES</span>
+        </div>
+            <a href="../owner/dashboard-owner.html" class="sidebar-nav-item active"><i class="fas fa-th-large"></i> Beranda</a>
+            <a href="../owner/manage-owner.html" class="sidebar-nav-item"><i class="fas fa-tools"></i> Kelola</a>
+            <div class="sidebar-submenu">
+                <a href="../owner/manage-owner.html#unit" class="sidebar-sub-item"><i class="fas fa-gamepad"></i> Unit & Booking</a>
+                <a href="../owner/manage-owner.html#fnb" class="sidebar-sub-item"><i class="fas fa-utensils"></i> F&B</a>
+            </div>
+            <a href="../owner/history-owner.html" class="sidebar-nav-item"><i class="fas fa-history"></i> Riwayat</a>
+            <a href="../owner/export-owner.html" class="sidebar-nav-item"><i class="fas fa-file-export"></i> Laporan</a>
+        <div class="sidebar-spacer"></div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 8px;border-radius:4px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;text-transform:uppercase;margin-bottom:8px;display:inline-block">OWNER</div>
+        <button class="sidebar-staff-view" onclick="goToStaffView()">
+            <i class="fas fa-users-gear"></i> Staff View
+        </button>
+        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left;margin-bottom:6px">
+            <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
+        </button>
+        <button class="sidebar-keluar" onclick="doLogout()">
+            <i class="fas fa-right-from-bracket"></i> Keluar
+        </button>
+    </aside>
+<div class="owner-main-content">
+
+<div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
+            PRINCE <span style="color:var(--cyan)">GAMES</span>
+        </div>
+        <div class="role-badge">OWNER</div>
+    </div>
+    <div id="topbar-actions" style="display:flex;align-items:center;gap:8px">
+        <button class="nav-btn btn-staff-view" onclick="goToStaffView()"><i class="fas fa-users-gear"></i><span class="btn-label-hide">Staff View</span></button>
+        <button id="btn-theme" onclick="toggleTheme()" class="btn-theme-toggle" title="Ganti tema"><i id="theme-icon" class="fas fa-sun"></i></button>
+        <button class="nav-btn btn-keluar" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i><span class="btn-label-hide">Keluar</span></button>
+    </div></div>
+
+<div class="main">
+
+    <div class="page-header">
+        <h1>Owner Dashboard</h1>
+        <p>KPI bisnis real-time &amp; pendapatan tercatat</p>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Pemakaian <div class="kpi-icon cyan"><i class="fas fa-wave-square"></i></div></div>
+            <div class="kpi-value" id="kpi-occupancy">0%</div>
+            <div class="kpi-sub" id="kpi-occupancy-sub">0 dari 0 unit</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Sesi Aktif <div class="kpi-icon purple"><i class="fas fa-users"></i></div></div>
+            <div class="kpi-value" id="kpi-sessions">0</div>
+            <div class="kpi-sub" id="kpi-sessions-sub">0 selesai</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Total Transaksi <div class="kpi-icon green"><i class="fas fa-receipt"></i></div></div>
+            <div class="kpi-value" id="kpi-trx">0</div>
+            <div class="kpi-sub" id="kpi-trx-sub">periode ini</div>
+        </div>
+    </div>
+
+    <!-- ══ GRAFIK STATISTIK ══ -->
+    <div class="chart-section">
+        <div class="chart-header">
+            <div>
+                <div class="chart-title"><i class="fas fa-chart-line" style="color:var(--cyan);margin-right:7px;font-size:12px"></i>Grafik Pendapatan</div>
+                <div class="chart-subtitle" id="chart-rev-subtitle">Pendapatan per hari (7 hari terakhir)</div>
+            </div>
+            <div class="chart-pills">
+                <button class="chart-pill active" onclick="switchChartPeriod('7d',this)">7 Hari</button>
+                <button class="chart-pill" onclick="switchChartPeriod('30d',this)">30 Hari</button>
+                <button class="chart-pill" onclick="switchChartPeriod('bulan',this)">Bulanan</button>
+            </div>
+        </div>
+        <div class="chart-date-row" style="margin-bottom:10px">
+            <div style="position:relative;flex:1;max-width:130px">
+                <span class="chart-date-placeholder" id="ph-rev-from" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:9px;color:#6b7280;pointer-events:none;white-space:nowrap"></span>
+                <input type="date" id="owner-chart-revenue-date-from" class="chart-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyOwnerChartDateFilter('revenue');this.style.color='';document.getElementById('ph-rev-from').style.display='none'" title="Dari tanggal">
+            </div>
+            <span class="chart-date-sep">—</span>
+            <div style="position:relative;flex:1;max-width:130px">
+                <span class="chart-date-placeholder" id="ph-rev-to" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:9px;color:#6b7280;pointer-events:none;white-space:nowrap"></span>
+                <input type="date" id="owner-chart-revenue-date-to" class="chart-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyOwnerChartDateFilter('revenue');this.style.color='';document.getElementById('ph-rev-to').style.display='none'" title="Sampai tanggal">
+            </div>
+            <button class="chart-date-clear" onclick="clearOwnerChartDateFilter('revenue');resetDatePlaceholders(['ph-rev-from','ph-rev-to'],['owner-chart-revenue-date-from','owner-chart-revenue-date-to'])" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chart-wrap"><canvas id="chart-revenue"></canvas></div>
+    </div>
+
+    <div class="chart-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="chart-section" style="margin-bottom:0">
+            <div class="mobile-collapse-header" onclick="toggleMobileSection(this,'bvr-body')">
+                <div>
+                    <div class="chart-title" style="font-size:12px;margin-bottom:3px"><i class="fas fa-chart-line" style="color:#a855f7;margin-right:6px;font-size:11px"></i>Booking vs Rental</div>
+                    <div class="chart-subtitle">Jumlah transaksi per tipe</div>
+                </div>
+                <i class="fas fa-chevron-down chevron" style="font-size:11px;color:#7d8590"></i>
+            </div>
+            <div id="bvr-body" class="mobile-collapse-body" style="max-height:400px">
+                <div class="chart-date-row" style="margin-bottom:10px;margin-top:8px">
+                    <div style="position:relative;flex:1;max-width:130px">
+                        <span class="chart-date-placeholder" id="ph-bvr-from" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:9px;color:#6b7280;pointer-events:none;white-space:nowrap"></span>
+                        <input type="date" id="owner-chart-bvr-date-from" class="chart-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyOwnerChartDateFilter('bvr');this.style.color='';document.getElementById('ph-bvr-from').style.display='none'" title="Dari tanggal">
+                    </div>
+                    <span class="chart-date-sep">—</span>
+                    <div style="position:relative;flex:1;max-width:130px">
+                        <span class="chart-date-placeholder" id="ph-bvr-to" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:9px;color:#6b7280;pointer-events:none;white-space:nowrap"></span>
+                        <input type="date" id="owner-chart-bvr-date-to" class="chart-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyOwnerChartDateFilter('bvr');this.style.color='';document.getElementById('ph-bvr-to').style.display='none'" title="Sampai tanggal">
+                    </div>
+                    <button class="chart-date-clear" onclick="clearOwnerChartDateFilter('bvr');resetDatePlaceholders(['ph-bvr-from','ph-bvr-to'],['owner-chart-bvr-date-from','owner-chart-bvr-date-to'])" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="chart-wrap" style="height:170px"><canvas id="chart-bvr"></canvas></div>
+                <div class="chart-legend">
+                    <div class="chart-leg"><div class="chart-leg-dot" style="background:#00d9ff"></div>Booking</div>
+                    <div class="chart-leg"><div class="chart-leg-dot" style="background:#a855f7"></div>Rental</div>
+                </div>
+            </div>
+        </div>
+        <div class="chart-section" style="margin-bottom:0">
+            <div class="mobile-collapse-header" onclick="toggleMobileSection(this,'ps-body')">
+                <div>
+                    <div class="chart-title" style="font-size:12px;margin-bottom:3px"><i class="fas fa-chart-line" style="color:#3fb950;margin-right:6px;font-size:11px"></i>Pendapatan per Tipe PS</div>
+                    <div class="chart-subtitle">Kontribusi PS3 / PS4 / PS5</div>
+                </div>
+                <i class="fas fa-chevron-down chevron" style="font-size:11px;color:#7d8590"></i>
+            </div>
+            <div id="ps-body" class="mobile-collapse-body" style="max-height:400px">
+                <div class="chart-date-row" style="margin-bottom:10px;margin-top:8px">
+                    <div style="position:relative;flex:1;max-width:130px">
+                        <span class="chart-date-placeholder" id="ph-ps-from" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:9px;color:#6b7280;pointer-events:none;white-space:nowrap"></span>
+                        <input type="date" id="owner-chart-ps-date-from" class="chart-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyOwnerChartDateFilter('ps');this.style.color='';document.getElementById('ph-ps-from').style.display='none'" title="Dari tanggal">
+                    </div>
+                    <span class="chart-date-sep">—</span>
+                    <div style="position:relative;flex:1;max-width:130px">
+                        <span class="chart-date-placeholder" id="ph-ps-to" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:9px;color:#6b7280;pointer-events:none;white-space:nowrap"></span>
+                        <input type="date" id="owner-chart-ps-date-to" class="chart-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyOwnerChartDateFilter('ps');this.style.color='';document.getElementById('ph-ps-to').style.display='none'" title="Sampai tanggal">
+                    </div>
+                    <button class="chart-date-clear" onclick="clearOwnerChartDateFilter('ps');resetDatePlaceholders(['ph-ps-from','ph-ps-to'],['owner-chart-ps-date-from','owner-chart-ps-date-to'])" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="chart-wrap" style="height:170px"><canvas id="chart-ps"></canvas></div>
+                <div class="chart-legend">
+                    <div class="chart-leg"><div class="chart-leg-dot" style="background:#3fb950"></div>PS3</div>
+                    <div class="chart-leg"><div class="chart-leg-dot" style="background:#00d9ff"></div>PS4</div>
+                    <div class="chart-leg"><div class="chart-leg-dot" style="background:#e3b341"></div>PS5</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ Revenue + Shift Grid ══ -->
+    <div id="revenue-shift-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;align-items:start">
+    <!-- Revenue Card dengan Filter -->
+    <div class="section-card" style="margin-bottom:0;min-width:0;overflow:visible">
+        <div class="revenue-header">
+            <div>
+                <div class="revenue-title">Total Pendapatan Tercatat</div>
+                <div id="filter-label" style="font-size:11px;color:var(--muted);margin-top:3px">Filter: Hari Ini</div>
+            </div>
+            <div style="display:flex;gap:0;align-items:center;flex-wrap:nowrap;margin-top:4px">
+                <div class="filter-pills">
+                    <button class="pill" onclick="setFilter('semua')">Semua</button>
+                    <button class="pill active" onclick="setFilter('harian')">Harian</button>
+                    <button class="pill" onclick="setFilter('mingguan')">Mingguan</button>
+                    <button class="pill" onclick="setFilter('bulanan')">Bulanan</button>
+                    <button class="btn-reset" onclick="konfirmasiReset()" style="margin-left:5px">
+                        <i class="fas fa-trash-can"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="revenue-amount" id="rev-amount">Rp 0</div>
+        <div class="revenue-label" id="rev-label">Memuat data...</div>
+
+        <!-- Tabel riwayat pendapatan -->
+        <div class="table-scroll-wrap" style="margin-top:16px">
+            <table class="income-table">
+                <thead>
+                    <tr>
+                        <th>Unit</th>
+                        <th>Customer</th>
+                        <th>Mulai</th>
+                        <th>Stop</th>
+                        <th>Tanggal</th>
+                        <th>Keterangan</th>
+                        <th style="text-align:right">Pendapatan</th>
+                    </tr>
+                </thead>
+                <tbody id="income-tbody">
+                    <tr><td colspan="7" style="text-align:center;padding:20px;color:var(--muted)">Memuat...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div><!-- end revenue section-card -->
+
+    <!-- ══ Pendapatan Per Shift ══ -->
+    <div class="section-card" style="margin-bottom:0;min-width:0;overflow:visible" id="shift-revenue-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+            <div>
+                <div class="section-title" style="margin-bottom:2px">
+                    <i class="fas fa-clock" style="color:var(--purple);margin-right:8px;font-size:13px"></i>Pendapatan Per Shift & Staff
+                </div>
+                <div style="font-size:10px;color:var(--muted)" id="shift-rev-filter-label">Mengikuti filter periode aktif</div>
+            </div>
+            <div style="display:flex;gap:6px">
+                <button class="chart-pill" onclick="switchShiftView('semua',this)" style="font-size:10px;padding:4px 10px">Semua</button>
+                <button class="chart-pill active" id="shift-pill-1" onclick="switchShiftView('shift1',this)" style="font-size:10px;padding:4px 10px;background:rgba(255,193,7,0.12);border-color:rgba(255,193,7,0.4);color:#fbbf24">☀️ Shift 1</button>
+                <button class="chart-pill" id="shift-pill-2" onclick="switchShiftView('shift2',this)" style="font-size:10px;padding:4px 10px">🌙 Shift 2</button>
+            </div>
+        </div>
+
+        <!-- Shift Summary Card (single, dinamis) -->
+        <div id="shift-summary-grid" style="margin-bottom:16px"></div>
+
+        <!-- Tabel per Staff -->
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
+            <i class="fas fa-user-clock" style="margin-right:6px"></i>Rincian Per Staff
+        </div>
+        <div class="table-scroll-wrap">
+            <table class="income-table" id="staff-shift-table">
+                <thead>
+                    <tr>
+                        <th>Nama Staff</th>
+                        <th>Shift</th>
+                        <th>Jam</th>
+                        <th style="text-align:center">Transaksi</th>
+                        <th style="text-align:right">Total Pendapatan</th>
+                    </tr>
+                </thead>
+                <tbody id="staff-shift-tbody">
+                    <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Memuat...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div><!-- end shift-revenue-card -->
+
+    </div><!-- end revenue-shift-grid -->
+
+    <!-- Active & Completed -->
+    <div class="two-col">
+        <div class="section-card">
+            <div class="mobile-collapse-header" onclick="toggleMobileSection(this,'sesi-aktif-body')">
+                <div class="section-title" style="margin-bottom:0">Sesi Aktif Sekarang</div>
+                <i class="fas fa-chevron-down chevron" style="font-size:11px;color:#7d8590"></i>
+            </div>
+            <div id="sesi-aktif-body" class="mobile-collapse-body" style="max-height:1000px;margin-top:10px">
+                <div id="active-list"><p class="empty-state">Tidak ada sesi aktif.</p></div>
+            </div>
+        </div>
+        <div class="section-card">
+            <div class="mobile-collapse-header" onclick="toggleMobileSection(this,'sesi-selesai-body')">
+                <div class="section-title" style="margin-bottom:0">Sesi Selesai Hari Ini</div>
+                <i class="fas fa-chevron-down chevron" style="font-size:11px;color:#7d8590"></i>
+            </div>
+            <div id="sesi-selesai-body" class="mobile-collapse-body" style="max-height:1000px;margin-top:10px">
+                <div id="completed-list"><p class="empty-state">Belum ada sesi selesai hari ini.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking & Rental Aktif + Pembatalan -->
+    <div class="section-card" style="margin-bottom:12px" id="unit-booking">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div class="section-title" style="margin-bottom:0">
+                <i class="fas fa-play-circle" style="color:#a855f7;margin-right:8px;font-size:13px"></i>Booking & Rental Aktif
+            </div>
+            <div style="display:flex;gap:6px;align-items:center">
+                <button onclick="ownerFilterAktif('booking')" id="obtn-booking" style="font-size:10px;font-weight:800;padding:5px 12px;border-radius:8px;border:1px solid rgba(0,217,255,0.3);background:rgba(0,217,255,0.08);color:#00d9ff;cursor:pointer">Booking</button>
+                <button onclick="ownerFilterAktif('rental')"  id="obtn-rental"  style="font-size:10px;font-weight:800;padding:5px 12px;border-radius:8px;border:1px solid rgba(168,85,247,0.3);background:rgba(168,85,247,0.08);color:#a855f7;cursor:pointer">Rental</button>
+                <button onclick="ownerFilterAktif('semua')"   id="obtn-semua"   style="font-size:10px;font-weight:800;padding:5px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:#9ca3af;cursor:pointer;outline:2px solid #fff;outline-offset:-2px">Semua</button>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px">
+            <p style="font-size:10px;color:#6b7280;margin:0;min-width:0;flex:1;line-height:1.5"><i class="fas fa-info-circle" style="color:#f59e0b;margin-right:4px"></i>Booking & rental yang dikonfirmasi staff dan sedang berjalan</p>
+            <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;margin-left:auto">
+                <button id="obtn-hapus-semua" onclick="ownerToggleSelectMode()" style="font-size:9px;font-weight:800;padding:3px 9px;border-radius:6px;border:1px solid rgba(255,77,79,0.4);background:rgba(255,77,79,0.10);color:#ff4d4f;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s;white-space:nowrap" onmouseover="this.style.background='rgba(255,77,79,0.22)'" onmouseout="this.style.background='rgba(255,77,79,0.10)'"><i class="fas fa-trash-alt" style="font-size:8px"></i> Hapus</button>
+                <button id="obtn-konfirmasi-hapus" onclick="ownerKonfirmasiHapusPilihan()" style="display:none;font-size:9px;font-weight:800;padding:3px 9px;border-radius:6px;border:1px solid rgba(255,77,79,0.6);background:rgba(255,77,79,0.20);color:#ff4d4f;cursor:pointer;align-items:center;gap:4px;transition:all .2s;white-space:nowrap"><i class="fas fa-check" style="font-size:8px"></i> Konfirmasi Hapus (<span id="obtn-hapus-count">0</span>)</button>
+                <button id="obtn-batal-hapus" onclick="ownerCancelSelectMode()" style="display:none;font-size:9px;font-weight:800;padding:3px 9px;border-radius:6px;border:1px solid rgba(156,163,175,0.4);background:rgba(156,163,175,0.08);color:#9ca3af;cursor:pointer;align-items:center;gap:4px;transition:all .2s;white-space:nowrap">Batal</button>
+            </div>
+        </div>
+        <div id="owner-aktif-list"></div>
+    </div>
+
+
+</div>
+
+<nav class="bottom-nav">
+    <div class="bnav-item active"><i class="fas fa-th-large"></i><span>Beranda</span></div>
+    <a href="../owner/manage-owner.html" class="bnav-item inactive"><i class="fas fa-tools"></i><span>Kelola</span></a>
+    <a href="../owner/history-owner.html" class="bnav-item inactive"><i class="fas fa-history"></i><span>Riwayat</span></a>
+    <a href="../owner/export-owner.html" class="bnav-item inactive"><i class="fas fa-file-export"></i><span>Laporan</span></a>
+</nav>
+
+<script type="module">
+    import { db, collection, onSnapshot, query, orderBy, handleLogout, doc } from '../../assets/js/auth.js';
+    import { where, writeBatch, getDocs, getDoc, deleteDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    window.doLogout = () => handleLogout('../auth/login-owner.html');
+
+    // ── SweetAlert theme helper ────────────────────────────────────────
+    function swalTheme() {
+        const isLight = document.body.classList.contains('light-mode');
+        return {
+            background: isLight ? '#ffffff' : '#0d1117',
+            color:      isLight ? '#1a202c' : '#e6edf3',
+        };
+    }
+
+    window.goToStaffView = async () => {
+        const result = await Swal.fire({
+            title: '👔 Masuk sebagai Staff?',
+            html: `Anda akan diarahkan ke <b>Dashboard Staff</b>.<br><span style="font-size:12px;color:#9ca3af">Aksi ini tidak akan keluar dari akun Owner.</span>`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#bc8cff',
+            cancelButtonColor: '#374151',
+            confirmButtonText: '<i class="fas fa-users-gear"></i> Ya, buka Staff View',
+            cancelButtonText: 'Batal',
+            ...swalTheme()
+        });
+        if (result.isConfirmed) {
+            sessionStorage.setItem('owner_viewing_staff', '1');
+            window.location.href = '../staff/dashboard-staff.html';
+        }
+    };
+
+    const fmt = n => 'Rp ' + (n || 0).toLocaleString('id-ID');
+    const todayStr  = () => new Date().toISOString().slice(0, 10);
+    const monthStr  = () => new Date().toISOString().slice(0, 7);
+
+    // ISO Week helper
+    function getISOWeek(date) {
+        const d = new Date(date);
+        d.setHours(0,0,0,0);
+        d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+        const w1 = new Date(d.getFullYear(), 0, 4);
+        const wn = 1 + Math.round(((d - w1) / 86400000 - 3 + (w1.getDay() + 6) % 7) / 7);
+        return `${d.getFullYear()}-W${String(wn).padStart(2,'0')}`;
+    }
+
+    // ── State filter ───────────────────────────────────────────────────
+    let currentFilter = 'harian';
+    let allPendapatan = [];
+
+    window.setFilter = (filter) => {
+        currentFilter = filter;
+        document.querySelectorAll('.pill').forEach(p => {
+            p.classList.toggle('active', p.textContent.toLowerCase().includes(
+                filter === 'harian' ? 'harian' :
+                filter === 'mingguan' ? 'minggu' :
+                filter === 'bulanan' ? 'bulan' : 'semua'
+            ));
+        });
+        renderPendapatan(allPendapatan);
+    };
+
+    // ── Filter data ────────────────────────────────────────────────────
+    function filterData(data) {
+        if (currentFilter === 'semua') return data;
+        const today = todayStr();
+        const week  = getISOWeek(new Date());
+        const month = monthStr();
+        return data.filter(d => {
+            if (currentFilter === 'harian')   return d.tanggal === today;
+            if (currentFilter === 'mingguan') return d.minggu  === week;
+            if (currentFilter === 'bulanan')  return d.bulan   === month;
+            return true;
+        });
+    }
+
+    // ── Render Pendapatan Per Shift & Staff ───────────────────────────
+    let currentShiftView = 'shift1'; // 'shift1' | 'shift2' | 'semua'
+
+    window.switchShiftView = (view, btn) => {
+        currentShiftView = view;
+        // reset warna semua pill ke default dulu
+        document.querySelectorAll('#shift-revenue-card .chart-pill').forEach(p => {
+            p.classList.remove('active');
+            p.style.background = ''; p.style.borderColor = ''; p.style.color = '';
+        });
+        btn.classList.add('active');
+        if (view === 'shift1') {
+            btn.style.background = 'rgba(255,193,7,0.12)';
+            btn.style.borderColor = 'rgba(255,193,7,0.4)';
+            btn.style.color = '#fbbf24';
+        } else if (view === 'shift2') {
+            btn.style.background = 'rgba(99,102,241,0.12)';
+            btn.style.borderColor = 'rgba(99,102,241,0.4)';
+            btn.style.color = '#818cf8';
+        }
+        renderShiftRevenue(allPendapatan);
+    };
+
+    function renderShiftRevenue(data) {
+        const filtered = filterData(data);
+
+        // Label filter
+        const labelMap = { harian:'Hari Ini', mingguan:'Minggu Ini', bulanan:'Bulan Ini', semua:'Semua Waktu' };
+        const lbl = document.getElementById('shift-rev-filter-label');
+        if (lbl) lbl.textContent = 'Periode: ' + (labelMap[currentFilter] || currentFilter);
+
+        const s1 = filtered.filter(d => {
+            const n = (d.shiftNama || '').toLowerCase();
+            return n.includes('1') || n.includes('pagi') || n.includes('siang') || n.includes('morning');
+        });
+        const s2 = filtered.filter(d => {
+            const n = (d.shiftNama || '').toLowerCase();
+            return n.includes('2') || n.includes('sore') || n.includes('malam') || n.includes('night') || n.includes('evening');
+        });
+
+        const s1Total = s1.reduce((a, d) => a + (d.price || 0), 0);
+        const s2Total = s2.reduce((a, d) => a + (d.price || 0), 0);
+
+        // Render summary card sesuai view
+        const grid = document.getElementById('shift-summary-grid');
+        if (grid) {
+            if (currentShiftView === 'shift1') {
+                grid.innerHTML = `
+                <div style="background:rgba(255,193,7,0.05);border:1px solid rgba(255,193,7,0.2);border-radius:10px;padding:14px">
+                    <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#fbbf24;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                        <span>☀️</span> Shift 1 (Pagi/Siang)
+                    </div>
+                    <div style="font-size:20px;font-weight:800;color:#ffd54f">${fmt(s1Total)}</div>
+                    <div style="font-size:11px;color:var(--muted);margin-top:4px">${s1.length} transaksi</div>
+                </div>`;
+            } else if (currentShiftView === 'shift2') {
+                grid.innerHTML = `
+                <div style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:14px">
+                    <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#818cf8;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                        <span>🌙</span> Shift 2 (Sore/Malam)
+                    </div>
+                    <div style="font-size:20px;font-weight:800;color:#a5b4fc">${fmt(s2Total)}</div>
+                    <div style="font-size:11px;color:var(--muted);margin-top:4px">${s2.length} transaksi</div>
+                </div>`;
+            } else {
+                grid.innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <div style="background:rgba(255,193,7,0.05);border:1px solid rgba(255,193,7,0.2);border-radius:10px;padding:14px">
+                        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#fbbf24;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                            <span>☀️</span> Shift 1 (Pagi/Siang)
+                        </div>
+                        <div style="font-size:20px;font-weight:800;color:#ffd54f">${fmt(s1Total)}</div>
+                        <div style="font-size:11px;color:var(--muted);margin-top:4px">${s1.length} transaksi</div>
+                    </div>
+                    <div style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:14px">
+                        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#818cf8;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                            <span>🌙</span> Shift 2 (Sore/Malam)
+                        </div>
+                        <div style="font-size:20px;font-weight:800;color:#a5b4fc">${fmt(s2Total)}</div>
+                        <div style="font-size:11px;color:var(--muted);margin-top:4px">${s2.length} transaksi</div>
+                    </div>
+                </div>`;
+            }
+        }
+
+        // Filter tabel berdasarkan shift view
+        let tableData = filtered;
+        if (currentShiftView === 'shift1') tableData = s1;
+        else if (currentShiftView === 'shift2') tableData = s2;
+
+        // Kelompokkan per staff + shift
+        const staffMap = {};
+        tableData.forEach(d => {
+            const key = (d.staffName || 'Tidak Diketahui') + '||' + (d.shiftNama || 'Shift -');
+            if (!staffMap[key]) staffMap[key] = { staffName: d.staffName || 'Tidak Diketahui', shiftNama: d.shiftNama || '-', shiftJam: d.shiftJam || '-', total: 0, count: 0 };
+            staffMap[key].total += (d.price || 0);
+            staffMap[key].count++;
+        });
+
+        const rows = Object.values(staffMap).sort((a, b) => b.total - a.total);
+        const tbody = document.getElementById('staff-shift-tbody');
+        if (!tbody) return;
+
+        if (!rows.length) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Belum ada data untuk periode ini.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = rows.map(r => {
+            const isS1 = (r.shiftNama || '').toLowerCase().match(/1|pagi|siang|morning/);
+            const shiftColor = isS1 ? '#fbbf24' : '#818cf8';
+            const shiftBg    = isS1 ? 'rgba(255,193,7,0.10)' : 'rgba(99,102,241,0.10)';
+            const shiftIcon  = isS1 ? '☀️' : '🌙';
+            return `<tr>
+                <td><strong>${r.staffName}</strong></td>
+                <td>
+                    <span style="display:inline-flex;align-items:center;gap:4px;background:${shiftBg};color:${shiftColor};border:1px solid ${shiftColor}44;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:800">
+                        ${shiftIcon} ${r.shiftNama}
+                    </span>
+                </td>
+                <td style="color:var(--muted);font-size:11px">${r.shiftJam}</td>
+                <td style="text-align:center;color:var(--cyan);font-weight:700">${r.count}</td>
+                <td style="text-align:right;font-weight:800;color:var(--green)">${fmt(r.total)}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ── Render tabel pendapatan ────────────────────────────────────────
+    function renderPendapatan(data) {
+        const filtered = filterData(data);
+        const total    = filtered.reduce((s, d) => s + (d.price || 0), 0);
+
+        renderShiftRevenue(data);
+
+        const labelMap = {
+            harian:   `Hari ini · ${todayStr()}`,
+            mingguan: `Minggu ini · ${getISOWeek(new Date())}`,
+            bulanan:  `Bulan ini · ${monthStr()}`,
+            semua:    'Semua waktu'
+        };
+        document.getElementById('filter-label').textContent = 'Filter: ' + (
+            currentFilter === 'harian' ? 'Hari Ini' :
+            currentFilter === 'mingguan' ? 'Minggu Ini' :
+            currentFilter === 'bulanan' ? 'Bulan Ini' : 'Semua'
+        );
+        document.getElementById('rev-amount').textContent = fmt(total);
+        document.getElementById('rev-label').textContent  = `${filtered.length} transaksi · ${labelMap[currentFilter]}`;
+        document.getElementById('kpi-trx').textContent    = filtered.length;
+        document.getElementById('kpi-trx-sub').textContent = labelMap[currentFilter];
+
+        const tbody = document.getElementById('income-tbody');
+        if (!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--muted)">Belum ada pendapatan untuk periode ini.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = filtered.slice(0, 50).map(d => `
+            <tr>
+                <td><strong>${d.unitId}</strong> <span style="font-size:10px;color:var(--muted)">${d.unitType||''}</span></td>
+                <td>${d.customerName || '-'}</td>
+                <td style="color:var(--muted)">${d.startTime ? (isNaN(d.startTime) ? d.startTime : new Date(d.startTime).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})) : '-'}</td>
+                <td style="color:var(--muted)">${d.stopTime  || '-'}</td>
+                <td style="color:var(--muted)">${d.tanggal ? new Date(d.tanggal).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) : '-'}</td>
+                <td><span class="${d.alasan === 'AUTO' ? 'badge-auto' : 'badge-manual'}">${d.alasan || '-'}</span></td>
+                <td style="text-align:right;font-weight:700;color:var(--green)">${fmt(d.price)}</td>
+            </tr>
+        `).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // CHART.JS — 3 Grafik: Revenue, Booking vs Rental, Per Tipe PS
+    // ══════════════════════════════════════════════════════════════════
+    let chartRevenue = null, chartBvR = null, chartPS = null;
+    let chartPeriod = '7d';
+    let allBookingsData = [], allRentalsData = [];
+
+    // ── Date filter state per chart ─────────────────────────────────────
+    const ownerChartDateState = {
+        revenue: { dateFrom: null, dateTo: null },
+        bvr:     { dateFrom: null, dateTo: null },
+        ps:      { dateFrom: null, dateTo: null },
+    };
+
+    function getChartDefaults() {
+        const isLight = document.body.classList.contains('light-mode');
+        const gridColor   = isLight ? 'rgba(0,0,0,0.07)'   : 'rgba(255,255,255,0.04)';
+        const tickColor   = isLight ? '#94a3b8'             : '#7d8590';
+        const tooltipBg   = isLight ? '#ffffff'             : '#1c2128';
+        const tooltipTitle= isLight ? '#0f172a'             : '#e6edf3';
+        const tooltipBody = isLight ? '#64748b'             : '#7d8590';
+        const tooltipBorder=isLight ? 'rgba(0,0,0,0.1)'    : 'rgba(255,255,255,0.08)';
+        return {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: {
+                backgroundColor: tooltipBg, titleColor: tooltipTitle, bodyColor: tooltipBody,
+                borderColor: tooltipBorder, borderWidth: 1, padding: 10,
+                callbacks: { label: ctx => ' Rp ' + (ctx.raw||0).toLocaleString('id-ID') }
+            }},
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 9, family: 'Space Grotesk' }, maxRotation: 45 } },
+                y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 9, family: 'Space Grotesk' }, callback: v => 'Rp ' + (v>=1000000 ? (v/1000000).toFixed(1)+'jt' : v>=1000 ? (v/1000).toFixed(0)+'k' : v) }, beginAtZero: true }
+            }
+        };
+    }
+    const chartDefaults = getChartDefaults();
+
+    const lineDataset = (label, data, color) => ({
+        label, data,
+        borderColor: color, backgroundColor: color + '22',
+        borderWidth: 2, pointRadius: 3, pointHoverRadius: 5,
+        fill: true, tension: 0.4
+    });
+
+    function getDateLabels(n) {
+        const labels = [];
+        for (let i = n-1; i >= 0; i--) {
+            const d = new Date(); d.setDate(d.getDate() - i);
+            labels.push(d.toISOString().slice(0,10));
+        }
+        return labels;
+    }
+
+    function getMonthLabels(n) {
+        const labels = [];
+        for (let i = n-1; i >= 0; i--) {
+            const d = new Date(); d.setMonth(d.getMonth() - i);
+            labels.push(d.toISOString().slice(0,7));
+        }
+        return labels;
+    }
+
+    function labelShort(str) {
+        if (str.length === 10) {
+            const [,m,d] = str.split('-');
+            return `${d}/${m}`;
+        }
+        const [y,m] = str.split('-');
+        const bulanNama = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+        return bulanNama[parseInt(m)-1] + ' ' + y.slice(2);
+    }
+
+    function buildRevenueChart(data) {
+        const ds = ownerChartDateState.revenue;
+        let filteredData = data;
+        let labels, subtitleText;
+
+        if (ds.dateFrom || ds.dateTo) {
+            // Mode custom date range — tampilkan per hari dalam rentang
+            const from = ds.dateFrom || '2000-01-01';
+            const to   = ds.dateTo   || '2099-12-31';
+            filteredData = data.filter(d => (d.tanggal||'') >= from && (d.tanggal||'') <= to);
+            // Buat label hari unik dalam rentang
+            const days = [];
+            const d = new Date(from);
+            const end = new Date(to);
+            while (d <= end) { days.push(d.toISOString().slice(0,10)); d.setDate(d.getDate()+1); }
+            labels = days;
+            const fmtTgl = s => { const [,m,dd]=s.split('-'); return `${dd}/${m}`; };
+            const totals = labels.map(lbl => filteredData.filter(d=>d.tanggal===lbl).reduce((s,d)=>s+(d.price||0),0));
+            const subtitleEl = document.getElementById('chart-rev-subtitle');
+            if (subtitleEl) subtitleEl.textContent = `Pendapatan ${from} — ${to}`;
+            const ctx = document.getElementById('chart-revenue').getContext('2d');
+            if (chartRevenue) chartRevenue.destroy();
+            chartRevenue = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels.map(fmtTgl), datasets: [lineDataset('Pendapatan', totals, '#00d9ff')] },
+                options: { ...getChartDefaults() }
+            });
+            return;
+        }
+
+        const n = chartPeriod === '7d' ? 7 : chartPeriod === '30d' ? 30 : 12;
+        labels = chartPeriod === 'bulan' ? getMonthLabels(n) : getDateLabels(n);
+
+        const totals = labels.map(lbl => {
+            return data.filter(d => (chartPeriod === 'bulan' ? d.bulan : d.tanggal) === lbl)
+                       .reduce((s, d) => s + (d.price||0), 0);
+        });
+
+        const subMap = { '7d': '7 hari terakhir', '30d': '30 hari terakhir', 'bulan': '12 bulan terakhir' };
+        const subtitleEl = document.getElementById('chart-rev-subtitle');
+        if (subtitleEl) subtitleEl.textContent = `Pendapatan per ${chartPeriod === 'bulan' ? 'bulan' : 'hari'} (${subMap[chartPeriod]})`;
+
+        const ctx = document.getElementById('chart-revenue').getContext('2d');
+        if (chartRevenue) chartRevenue.destroy();
+        chartRevenue = new Chart(ctx, {
+            type: 'line',
+            data: { labels: labels.map(labelShort), datasets: [lineDataset('Pendapatan', totals, '#00d9ff')] },
+            options: { ...getChartDefaults() }
+        });
+    }
+
+    function buildBvRChart(pendapatan) {
+        const ds = ownerChartDateState.bvr;
+        let labels, keyField;
+
+        if (ds.dateFrom || ds.dateTo) {
+            const from = ds.dateFrom || '2000-01-01';
+            const to   = ds.dateTo   || '2099-12-31';
+            const days = [];
+            const d = new Date(from); const end = new Date(to);
+            while (d <= end) { days.push(d.toISOString().slice(0,10)); d.setDate(d.getDate()+1); }
+            labels = days; keyField = 'tanggal';
+            const fmtTgl = s => { const [,m,dd]=s.split('-'); return `${dd}/${m}`; };
+            const bkTotals  = labels.map(lbl => pendapatan.filter(d=>(d[keyField]||'')===lbl && !(d.unitId||'').startsWith('R-')).length);
+            const rntTotals = labels.map(lbl => pendapatan.filter(d=>(d[keyField]||'')===lbl &&  (d.unitId||'').startsWith('R-')).length);
+            const ctx = document.getElementById('chart-bvr').getContext('2d');
+            if (chartBvR) chartBvR.destroy();
+            chartBvR = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels.map(fmtTgl), datasets: [lineDataset('Booking', bkTotals, '#00d9ff'), lineDataset('Rental', rntTotals, '#a855f7')] },
+                options: (function(){ const cd=getChartDefaults(); return { ...cd, plugins: { ...cd.plugins, tooltip: { ...cd.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } }, scales: { ...cd.scales, y: { ...cd.scales.y, ticks: { ...cd.scales.y.ticks, callback: v => v + ' unit' } } } }; })()
+            });
+            return;
+        }
+
+        const n = chartPeriod === 'bulan' ? 12 : chartPeriod === '30d' ? 30 : 7;
+        labels = chartPeriod === 'bulan' ? getMonthLabels(n) : getDateLabels(n);
+        keyField = chartPeriod === 'bulan' ? 'bulan' : 'tanggal';
+
+        const bkTotals  = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && !(d.unitId||'').startsWith('R-')).length);
+        const rntTotals = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && (d.unitId||'').startsWith('R-')).length);
+
+        const ctx = document.getElementById('chart-bvr').getContext('2d');
+        if (chartBvR) chartBvR.destroy();
+        chartBvR = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.map(labelShort),
+                datasets: [
+                    lineDataset('Booking', bkTotals, '#00d9ff'),
+                    lineDataset('Rental',  rntTotals, '#a855f7')
+                ]
+            },
+            options: (function(){ const cd=getChartDefaults(); return { ...cd, plugins: { ...cd.plugins, tooltip: { ...cd.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} transaksi` } } }, scales: { ...cd.scales, y: { ...cd.scales.y, ticks: { ...cd.scales.y.ticks, callback: v => v + ' unit' } } } }; })()
+        });
+    }
+
+    function buildPSChart(pendapatan) {
+        const ds = ownerChartDateState.ps;
+
+        if (ds.dateFrom || ds.dateTo) {
+            const from = ds.dateFrom || '2000-01-01';
+            const to   = ds.dateTo   || '2099-12-31';
+            const days = [];
+            const d = new Date(from); const end = new Date(to);
+            while (d <= end) { days.push(d.toISOString().slice(0,10)); d.setDate(d.getDate()+1); }
+            const fmtTgl = s => { const [,m,dd]=s.split('-'); return `${dd}/${m}`; };
+            const ps3 = days.map(lbl => pendapatan.filter(d=>d.tanggal===lbl && (d.unitType||d.unitId||'').includes('PS3')).reduce((s,d)=>s+(d.price||0),0));
+            const ps4 = days.map(lbl => pendapatan.filter(d=>d.tanggal===lbl && (d.unitType||d.unitId||'').includes('PS4')).reduce((s,d)=>s+(d.price||0),0));
+            const ps5 = days.map(lbl => pendapatan.filter(d=>d.tanggal===lbl && (d.unitType||d.unitId||'').includes('PS5')).reduce((s,d)=>s+(d.price||0),0));
+            const ctx = document.getElementById('chart-ps').getContext('2d');
+            if (chartPS) chartPS.destroy();
+            chartPS = new Chart(ctx, {
+                type: 'line',
+                data: { labels: days.map(fmtTgl), datasets: [lineDataset('PS3', ps3, '#3fb950'), lineDataset('PS4', ps4, '#00d9ff'), lineDataset('PS5', ps5, '#e3b341')] },
+                options: { ...getChartDefaults() }
+            });
+            return;
+        }
+
+        const n = chartPeriod === 'bulan' ? 12 : chartPeriod === '30d' ? 30 : 7;
+        const labels = chartPeriod === 'bulan' ? getMonthLabels(n) : getDateLabels(n);
+        const keyField = chartPeriod === 'bulan' ? 'bulan' : 'tanggal';
+
+        const ps3 = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && (d.unitType||d.unitId||'').includes('PS3')).reduce((s,d)=>s+(d.price||0),0));
+        const ps4 = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && (d.unitType||d.unitId||'').includes('PS4')).reduce((s,d)=>s+(d.price||0),0));
+        const ps5 = labels.map(lbl => pendapatan.filter(d => (d[keyField]||'') === lbl && (d.unitType||d.unitId||'').includes('PS5')).reduce((s,d)=>s+(d.price||0),0));
+
+        const ctx = document.getElementById('chart-ps').getContext('2d');
+        if (chartPS) chartPS.destroy();
+        chartPS = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.map(labelShort),
+                datasets: [
+                    lineDataset('PS3', ps3, '#3fb950'),
+                    lineDataset('PS4', ps4, '#00d9ff'),
+                    lineDataset('PS5', ps5, '#e3b341')
+                ]
+            },
+            options: { ...getChartDefaults() }
+        });
+    }
+
+    function buildAllCharts(data) {
+        window._lastChartData = data;
+        buildRevenueChart(data);
+        buildBvRChart(data);
+        buildPSChart(data);
+    }
+
+    window.switchChartPeriod = (period, btn) => {
+        chartPeriod = period;
+        document.querySelectorAll('.chart-pill').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        buildAllCharts(allPendapatan);
+    };
+
+    // Placeholder tanggal realtime untuk mobile
+    const _todayStr = () => {
+        const now = new Date();
+        const d = String(now.getDate()).padStart(2,'0');
+        const m = String(now.getMonth()+1).padStart(2,'0');
+        const y = now.getFullYear();
+        return `${d}/${m}/${y}`;
+    };
+    const _initPlaceholders = () => {
+        const today = _todayStr();
+        const ids = ['ph-rev-from','ph-rev-to','ph-bvr-from','ph-bvr-to','ph-ps-from','ph-ps-to'];
+        ids.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = today; });
+    };
+    window.resetDatePlaceholders = (phIds, inputIds) => {
+        const today = _todayStr();
+        phIds.forEach(id => { const el = document.getElementById(id); if(el){ el.style.display=''; el.textContent=today; }});
+        inputIds.forEach(id => { const el = document.getElementById(id); if(el) el.style.color='transparent'; });
+    };
+    _initPlaceholders();
+
+    window.applyOwnerChartDateFilter = (chartKey) => {
+        const ds = ownerChartDateState[chartKey];
+        ds.dateFrom = document.getElementById(`owner-chart-${chartKey}-date-from`)?.value || null;
+        ds.dateTo   = document.getElementById(`owner-chart-${chartKey}-date-to`)?.value   || null;
+        if (chartKey === 'revenue') buildRevenueChart(allPendapatan);
+        else if (chartKey === 'bvr') buildBvRChart(allPendapatan);
+        else if (chartKey === 'ps')  buildPSChart(allPendapatan);
+    };
+
+    window.clearOwnerChartDateFilter = (chartKey) => {
+        const ds = ownerChartDateState[chartKey];
+        ds.dateFrom = null; ds.dateTo = null;
+        const fromEl = document.getElementById(`owner-chart-${chartKey}-date-from`);
+        const toEl   = document.getElementById(`owner-chart-${chartKey}-date-to`);
+        if (fromEl) fromEl.value = '';
+        if (toEl)   toEl.value   = '';
+        if (chartKey === 'revenue') buildRevenueChart(allPendapatan);
+        else if (chartKey === 'bvr') buildBvRChart(allPendapatan);
+        else if (chartKey === 'ps')  buildPSChart(allPendapatan);
+    };
+
+    // ── Listen pendapatan realtime ─────────────────────────────────────
+    onSnapshot(
+        query(collection(db, 'pendapatan'), orderBy('createdAt', 'desc')),
+        (snap) => {
+            allPendapatan = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+            renderPendapatan(allPendapatan);
+            buildAllCharts(allPendapatan);
+        }
+    );
+
+    // ── Reset pendapatan ───────────────────────────────────────────────
+    window.konfirmasiReset = async () => {
+        const filterLabel = currentFilter === 'harian' ? 'Hari Ini' :
+                            currentFilter === 'mingguan' ? 'Minggu Ini' :
+                            currentFilter === 'bulanan' ? 'Bulan Ini' : 'SEMUA DATA';
+
+        const { value: inputKonfirm } = await Swal.fire({
+            title: `⚠️ Reset Pendapatan ${filterLabel}?`,
+            html: `Data pendapatan <b>${filterLabel}</b> akan <b>dihapus permanen</b> dari Firebase.<br><br>Ketik <code>RESET</code> untuk konfirmasi:`,
+            input: 'text',
+            inputPlaceholder: 'Ketik RESET',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff4d4f',
+            cancelButtonColor: '#374151',
+            confirmButtonText: 'Hapus Permanen',
+            cancelButtonText: 'Batal',
+            ...swalTheme()
+        });
+
+        if (inputKonfirm !== 'RESET') {
+            if (inputKonfirm !== undefined) {
+                Swal.fire({ icon: 'error', title: 'Konfirmasi Salah', text: 'Ketik RESET dengan huruf kapital.', ...swalTheme() });
+            }
+            return;
+        }
+
+        // Ambil data pendapatan yang perlu dihapus
+        const toDelete = filterData(allPendapatan);
+
+        // Ambil data orders (F&B) yang perlu dihapus sesuai filter yang sama
+        const today = todayStr();
+        const week  = getISOWeek(new Date());
+        const month = monthStr();
+        const ordersSnap = await getDocs(query(collection(db, 'orders'), orderBy('createdAt', 'desc')));
+        const allOrders  = ordersSnap.docs.map(d => ({ _id: d.id, ...d.data() }));
+        const toDeleteOrders = currentFilter === 'semua' ? allOrders : allOrders.filter(d => {
+            const tgl = (d.tanggal || (d.createdAt || '').slice(0, 10));
+            if (currentFilter === 'harian')   return tgl === today;
+            if (currentFilter === 'mingguan') return tgl.slice(0, 7) === month && getISOWeek(new Date(tgl)) === week;
+            if (currentFilter === 'bulanan')  return tgl.slice(0, 7) === month;
+            return true;
+        });
+
+        const totalToDelete = toDelete.length + toDeleteOrders.length;
+        if (!totalToDelete) {
+            Swal.fire({ icon: 'info', title: 'Tidak ada data', text: 'Tidak ada data untuk periode ini.', ...swalTheme() });
+            return;
+        }
+
+        // Hapus batch pendapatan + orders
+        try {
+            Swal.fire({ title: 'Menghapus...', html: `<p style="color:#9ca3af">Menghapus ${toDelete.length} pendapatan & ${toDeleteOrders.length} data F&B...</p>`, allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
+
+            // Gabung semua dokumen yang dihapus dengan koleksi masing-masing
+            const allToDelete = [
+                ...toDelete.map(d => ({ col: 'pendapatan', id: d._id })),
+                ...toDeleteOrders.map(d => ({ col: 'orders', id: d._id }))
+            ];
+
+            const chunks = [];
+            for (let i = 0; i < allToDelete.length; i += 400) chunks.push(allToDelete.slice(i, i + 400));
+
+            for (const chunk of chunks) {
+                const batch = writeBatch(db);
+                chunk.forEach(d => batch.delete(doc(db, d.col, d.id)));
+                await batch.commit();
+            }
+
+            Swal.fire({
+                icon: 'success', title: 'Reset Berhasil!',
+                html: `<p style="color:#9ca3af">${toDelete.length} data pendapatan & ${toDeleteOrders.length} data F&B telah dihapus.<br>Laporan otomatis terupdate.</p>`,
+                ...swalTheme(), timer: 3000, showConfirmButton: false
+            });
+        } catch (e) {
+            console.error(e);
+            Swal.fire({ icon: 'error', title: 'Gagal Reset', text: e.message, ...swalTheme() });
+        }
+    };
+
+    // ── Units realtime ─────────────────────────────────────────────────
+    let allUnits = [];
+    const timers = {};
+    const autoCleanedUnits = new Set(); // hindari double cleanup
+
+    // ── Auto-cleanup unit Dipesan yang sudah kadaluarsa ───────────────
+    async function cleanupExpiredDipesan(units) {
+        const now = Date.now();
+        const BATAS_MS = 30 * 60 * 1000; // 30 menit toleransi setelah jadwal lewat
+
+        for (const u of units) {
+            if (u.status !== 'Dipesan') continue;
+            if (!u.startTime) continue;
+            if (autoCleanedUnits.has(u.id)) continue;
+
+            const lewat = now - u.startTime;
+            if (lewat < BATAS_MS) continue; // belum 30 menit lewat, skip
+
+            autoCleanedUnits.add(u.id);
+            try {
+                // Reset unit ke Tersedia
+                await updateDoc(doc(db, 'units', u.id), {
+                    status: 'Tersedia', startTime: null, endTime: null,
+                    price: 0, customerName: '-', customerId: null, bookingId: null
+                });
+
+                // Hapus booking/rental terkait jika ada
+                if (u.bookingId) {
+                    try {
+                        const bSnap = await getDoc(doc(db, 'bookings', u.bookingId));
+                        if (bSnap.exists()) {
+                            await updateDoc(doc(db, 'bookings', u.bookingId), { status: 'Kadaluarsa' });
+                        } else {
+                            const rSnap = await getDoc(doc(db, 'rentals', u.bookingId));
+                            if (rSnap.exists()) await updateDoc(doc(db, 'rentals', u.bookingId), { status: 'Kadaluarsa' });
+                        }
+                    } catch(e) { console.warn('update booking kadaluarsa gagal', e); }
+                }
+
+                console.log(`[AutoCleanup] Unit ${u.id} direset — jadwal terlewat ${Math.round(lewat/60000)} menit`);
+
+                Swal.fire({
+                    toast: true, position: 'top-end', icon: 'warning',
+                    title: `⚠️ ${u.id} — Booking kadaluarsa`,
+                    html: `<span style="font-size:11px;color:#9ca3af">Jadwal ${u.customerName||'-'} terlewat ${Math.round(lewat/60000)} menit. Unit direset ke Tersedia.</span>`,
+                    showConfirmButton: false, timer: 5000,
+                    ...swalTheme()
+                });
+            } catch(e) { console.error('cleanup unit gagal', e); autoCleanedUnits.delete(u.id); }
+        }
+    }
+
+    onSnapshot(collection(db, 'units'), snap => {
+        allUnits = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // Jalankan cleanup unit kadaluarsa
+        cleanupExpiredDipesan(allUnits);
+
+        const active   = allUnits.filter(u => u.status === 'Digunakan');
+        const dipesan  = allUnits.filter(u => u.status === 'Dipesan');
+        const occupied = active.length + dipesan.length;
+        const total    = allUnits.length || 1;
+
+        document.getElementById('kpi-occupancy').textContent     = Math.round(occupied / total * 100) + '%';
+        document.getElementById('kpi-occupancy-sub').textContent  = `${active.length} aktif · ${dipesan.length} dipesan`;
+        document.getElementById('kpi-sessions').textContent      = active.length;
+
+        // Hentikan semua timer lama
+        Object.keys(timers).forEach(k => { clearInterval(timers[k]); delete timers[k]; });
+
+        // Active + Dipesan list
+        const aEl = document.getElementById('active-list');
+        const combined = [...active, ...dipesan];
+        if (!combined.length) {
+            aEl.innerHTML = '<p class="empty-state">Tidak ada sesi aktif.</p>';
+        } else {
+            aEl.innerHTML = combined.map(u => {
+                const isDipesan = u.status === 'Dipesan';
+                const now = Date.now();
+                const lewatMs = isDipesan && u.startTime ? now - u.startTime : -1;
+                const isOverdue = lewatMs > 0;
+                const lewatMnt = isOverdue ? Math.round(lewatMs / 60000) : 0;
+                const timerColor = isDipesan ? (isOverdue ? 'color:#ff4d4f' : 'color:#f97316') : '';
+                const timerInitial = isDipesan && isOverdue
+                    ? (lewatMnt < 1 ? 'SEGERA' : `+${lewatMnt}m`)
+                    : '--:--:--';
+                const lblText = isDipesan ? (isOverdue ? 'terlambat' : 'mulai dalam') : '';
+                const lblColor = isOverdue ? '#ff4d4f' : '#f97316';
+                return `<div class="session-row">
+                    <div>
+                        <div class="session-name">${u.name||u.id}${isDipesan ? ` <span style="font-size:9px;color:${isOverdue?'#ff4d4f':'#f97316'};font-weight:800">${isOverdue?'KADALUARSA':'DIPESAN'}</span>` : ''}</div>
+                        <div class="session-price">${fmt(u.price||0)} · ${u.customerName||'-'}</div>
+                        <div style="font-size:10px;color:var(--muted);margin-top:2px"><i class="fas fa-calendar-day" style="margin-right:4px;font-size:9px"></i>${u.startTime ? new Date(u.startTime).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) : new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})}</div>
+                        ${isDipesan ? `<div style="font-size:9px;color:${isOverdue?'#ff4d4f':'#f97316'};margin-top:2px">Jadwal: ${u.startTime ? new Date(u.startTime).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '-'}${isOverdue ? ` <b>(telat ${lewatMnt} mnt)</b>` : ''}</div>` : ''}
+                    </div>
+                    <div style="text-align:right">
+                        ${isDipesan ? `<div style="font-size:8px;color:${lblColor};margin-bottom:2px" id="lbl-${u.id}">${lblText}</div>` : ''}
+                        <div class="session-timer" id="tmr-${u.id}" style="${timerColor};font-size:${isOverdue&&lewatMnt>=1?'12px':'15px'}">${timerInitial}</div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            // Ticker untuk unit Digunakan (sisa waktu)
+            active.forEach(u => {
+                if (!u.endTime) return;
+                timers[u.id] = setInterval(() => {
+                    const el = document.getElementById('tmr-' + u.id);
+                    if (!el) { clearInterval(timers[u.id]); return; }
+                    const d = u.endTime - Date.now();
+                    if (d <= 0) { el.textContent = 'SELESAI'; el.style.color = 'var(--orange)'; clearInterval(timers[u.id]); return; }
+                    el.textContent = `${String(Math.floor(d/3600000)).padStart(2,'0')}:${String(Math.floor(d%3600000/60000)).padStart(2,'0')}:${String(Math.floor(d%60000/1000)).padStart(2,'0')}`;
+                }, 1000);
+            });
+
+            // Ticker untuk unit Dipesan (hitung mundur menuju jadwal)
+            dipesan.forEach(u => {
+                if (!u.startTime) return;
+                timers[u.id] = setInterval(() => {
+                    const el = document.getElementById('tmr-' + u.id);
+                    if (!el) { clearInterval(timers[u.id]); return; }
+                    const d = u.startTime - Date.now();
+                    if (d <= 0) {
+                        const lewatMnt = Math.round(Math.abs(d) / 60000);
+                        if (lewatMnt < 1) {
+                            el.textContent = 'SEGERA';
+                            el.style.color = '#22c55e';
+                        } else {
+                            el.textContent = `+${lewatMnt}m`;
+                            el.style.color = '#ff4d4f';
+                            el.style.fontSize = '12px';
+                            // Update label atas juga
+                            const lblEl = document.getElementById('lbl-' + u.id);
+                            if (lblEl) { lblEl.textContent = 'terlambat'; lblEl.style.color = '#ff4d4f'; }
+                        }
+                        clearInterval(timers[u.id]);
+                        return;
+                    }
+                    el.textContent = `${String(Math.floor(d/3600000)).padStart(2,'0')}:${String(Math.floor(d%3600000/60000)).padStart(2,'0')}:${String(Math.floor(d%60000/1000)).padStart(2,'0')}`;
+                }, 1000);
+            });
+        }
+    });
+
+    // ── Completed sessions hari ini dari pendapatan ────────────────────
+    onSnapshot(
+        query(collection(db, 'pendapatan'), orderBy('createdAt', 'desc')),
+        (snap) => {
+            const today = todayStr();
+            const doneToday = snap.docs.map(d=>d.data()).filter(d => d.tanggal === today);
+            document.getElementById('kpi-sessions-sub').textContent = doneToday.length + ' selesai';
+
+            const cEl = document.getElementById('completed-list');
+            if (!doneToday.length) {
+                cEl.innerHTML = '<p class="empty-state">Belum ada sesi selesai hari ini.</p>';
+            } else {
+                cEl.innerHTML = doneToday.slice(0,6).map(d => `
+                    <div class="session-row">
+                        <div>
+                            <div class="session-name">${d.unitId} · ${d.unitType||''}</div>
+                            <div class="session-price">${d.customerName||'-'} · ${d.stopTime||'-'}</div>
+                            <div style="font-size:10px;color:var(--muted);margin-top:2px"><i class="fas fa-calendar-day" style="margin-right:4px;font-size:9px"></i>${d.tanggal ? new Date(d.tanggal).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) : '-'}</div>
+                        </div>
+                        <div class="completed-price">${fmt(d.price)}</div>
+                    </div>`).join('');
+            }
+        }
+    );
+    // ════════════════════════════════════════════════════════════════
+    // BOOKING & RENTAL AKTIF — Owner bisa monitor & batalkan
+    // ════════════════════════════════════════════════════════════════
+    window.ownerAktifItems  = [];
+    window.ownerAktifFilter = 'semua';
+
+    window.ownerFilterAktif = function(type) {
+        window.ownerAktifFilter = type;
+        ['semua','booking','rental'].forEach(function(f) {
+            var btn = document.getElementById('obtn-' + f);
+            if (!btn) return;
+            btn.style.outline = f === type ? '2px solid #fff' : 'none';
+            btn.style.outlineOffset = '-2px';
+        });
+        renderOwnerAktif();
+    };
+
+    function renderOwnerAktif() {
+        var container = document.getElementById('owner-aktif-list');
+        if (!container) return;
+        var items = window.ownerAktifItems.filter(function(x) {
+            if (window.ownerAktifFilter === 'semua')   return true;
+            if (window.ownerAktifFilter === 'booking') return x._col === 'bookings';
+            if (window.ownerAktifFilter === 'rental')  return x._col === 'rentals';
+            return true;
+        });
+
+        if (!items.length) {
+            container.innerHTML = '<p class="empty-state">Tidak ada booking/rental aktif.</p>';
+            return;
+        }
+
+        var isSelectMode = window.ownerSelectMode || false;
+        container.innerHTML = items.map(function(item) {
+            var isBooking = item._col === 'bookings';
+            var unitLabel = isBooking
+                ? (item.assignedUnit ? item.assignedUnit : '-')
+                : (item.assignedRentalUnit ? item.assignedRentalUnit : '-');
+            var waktu = item.confirmedAt
+                ? new Date(item.confirmedAt).toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+                : '-';
+            var iconColor = isBooking ? '#00d9ff' : '#a855f7';
+            var labelBadge = isBooking ? 'Booking' : 'Rental';
+            var borderColor = isBooking ? '#00d9ff' : '#a855f7';
+            var colName = item._col;
+            var itemId = item.id;
+            var isChecked = window.ownerSelectedIds && window.ownerSelectedIds.has(colName + '::' + itemId);
+            var cardBg = isChecked ? 'rgba(255,77,79,0.08)' : 'rgba(255,255,255,0.02)';
+            var cardBorder = isChecked ? 'rgba(255,77,79,0.35)' : 'rgba(255,255,255,0.06)';
+            var checkboxHtml = isSelectMode
+                ? '<div onclick="ownerToggleItemSelect(\'' + colName + '\',\'' + itemId + '\')" style="width:18px;height:18px;border-radius:5px;border:2px solid ' + (isChecked ? '#ff4d4f' : 'rgba(255,255,255,0.2)') + ';background:' + (isChecked ? '#ff4d4f' : 'transparent') + ';display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s">' + (isChecked ? '<i class="fas fa-check" style="color:#fff;font-size:9px"></i>' : '') + '</div>'
+                : '';
+            return '<div onclick="' + (isSelectMode ? 'ownerToggleItemSelect(\'' + colName + '\',\'' + itemId + '\')' : '') + '" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;border:1px solid ' + cardBorder + ';background:' + cardBg + ';margin-bottom:8px;gap:8px;' + (isSelectMode ? 'cursor:pointer;' : '') + 'transition:all .2s">' +
+                (isSelectMode ? checkboxHtml : '') +
+                '<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">' +
+                    '<div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.2);flex-shrink:0">' +
+                        '<i class="fas ' + (isBooking ? 'fa-gamepad' : 'fa-box-open') + '" style="color:' + iconColor + ';font-size:12px"></i>' +
+                    '</div>' +
+                    '<div style="min-width:0">' +
+                        '<div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (item.customerName||'-') + '</div>' +
+                        '<div style="font-size:10px;color:#6b7280">' + (item.console||'-') + ' · ' + (item.duration||'?') + ' Jam · Unit ' + unitLabel + '</div>' +
+                        '<div style="font-size:10px;color:#6b7280">' + waktu + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">' +
+                    '<span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;border:1px solid ' + borderColor + '44;color:' + iconColor + ';background:' + borderColor + '11">' + labelBadge + '</span>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    // Listen bookings aktif
+    onSnapshot(query(collection(db, 'bookings'), where('status', '==', 'Aktif')), function(snap) {
+        var items = snap.docs.map(function(d) { return Object.assign({ _id: d.id, id: d.id, _col: 'bookings' }, d.data()); });
+        window.ownerAktifItems = window.ownerAktifItems.filter(function(x) { return x._col !== 'bookings'; }).concat(items);
+        renderOwnerAktif();
+    });
+
+    // Listen rentals aktif
+    onSnapshot(query(collection(db, 'rentals'), where('status', '==', 'Aktif')), function(snap) {
+        var items = snap.docs.map(function(d) { return Object.assign({ _id: d.id, id: d.id, _col: 'rentals' }, d.data()); });
+        window.ownerAktifItems = window.ownerAktifItems.filter(function(x) { return x._col !== 'rentals'; }).concat(items);
+        renderOwnerAktif();
+    });
+
+    // ════════════════════════════════════════════════════════════════
+    // HAPUS BOOKING / RENTAL AKTIF (Owner only)
+    // ════════════════════════════════════════════════════════════════
+    window.ownerHapusAktif = async function(colName, itemId, nama) {
+        var label = colName === 'bookings' ? 'Booking' : 'Rental';
+        var { isConfirmed } = await Swal.fire({
+            title: 'Hapus ' + label + '?',
+            html: '<p style="font-size:13px;color:#9ca3af">Data <b style="color:#e6edf3">' + nama + '</b> akan dihapus permanen dari Firebase.<br><br>Unit terkait akan direset ke <b style="color:#00d9ff">Tersedia</b>.</p>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-trash-alt"></i> Ya, Hapus',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#ff4d4f',
+            cancelButtonColor: '#374151',
+            ...swalTheme()
+        });
+        if (!isConfirmed) return;
+
+        try {
+            Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
+
+            // Ambil data item untuk tahu unit yang dipakai
+            var itemDoc = await getDoc(doc(db, colName, itemId));
+            if (itemDoc.exists()) {
+                var data = itemDoc.data();
+                var unitId = colName === 'bookings' ? data.assignedUnit : data.assignedRentalUnit;
+                // Reset unit jika ada
+                if (unitId) {
+                    try {
+                        await updateDoc(doc(db, 'units', unitId), {
+                            status: 'Tersedia', startTime: null, endTime: null,
+                            price: 0, customerName: '-', customerId: null,
+                            bookingId: null
+                        });
+                    } catch(e) { console.warn('reset unit gagal', e); }
+                }
+            }
+
+            // Hapus dokumen
+            await deleteDoc(doc(db, colName, itemId));
+
+            Swal.fire({
+                icon: 'success',
+                title: label + ' Dihapus',
+                text: nama + ' telah dihapus dan unit direset.',
+                timer: 2200, showConfirmButton: false,
+                ...swalTheme()
+            });
+        } catch(e) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, ...swalTheme() });
+        }
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // SELECT MODE — HAPUS PILIHAN
+    // ════════════════════════════════════════════════════════════════
+    window.ownerSelectMode   = false;
+    window.ownerSelectedIds  = new Set();
+
+    function ownerUpdateSelectUI() {
+        var count = window.ownerSelectedIds.size;
+        var konfBtn  = document.getElementById('obtn-konfirmasi-hapus');
+        var batalBtn = document.getElementById('obtn-batal-hapus');
+        var hapusBtn = document.getElementById('obtn-hapus-semua');
+        var countEl  = document.getElementById('obtn-hapus-count');
+        if (window.ownerSelectMode) {
+            hapusBtn.style.display  = 'none';
+            konfBtn.style.display   = 'flex';
+            batalBtn.style.display  = 'flex';
+            if (countEl) countEl.textContent = count;
+        } else {
+            hapusBtn.style.display  = 'flex';
+            konfBtn.style.display   = 'none';
+            batalBtn.style.display  = 'none';
+        }
+    }
+
+    window.ownerToggleSelectMode = function() {
+        window.ownerSelectMode  = true;
+        window.ownerSelectedIds = new Set();
+        ownerUpdateSelectUI();
+        renderOwnerAktif();
+    };
+
+    window.ownerCancelSelectMode = function() {
+        window.ownerSelectMode  = false;
+        window.ownerSelectedIds = new Set();
+        ownerUpdateSelectUI();
+        renderOwnerAktif();
+    };
+
+    window.ownerToggleItemSelect = function(colName, itemId) {
+        if (!window.ownerSelectMode) return;
+        var key = colName + '::' + itemId;
+        if (window.ownerSelectedIds.has(key)) {
+            window.ownerSelectedIds.delete(key);
+        } else {
+            window.ownerSelectedIds.add(key);
+        }
+        ownerUpdateSelectUI();
+        renderOwnerAktif();
+    };
+
+    window.ownerKonfirmasiHapusPilihan = async function() {
+        var selected = Array.from(window.ownerSelectedIds);
+        if (!selected.length) {
+            Swal.fire({ icon: 'info', title: 'Belum Ada Pilihan', text: 'Pilih minimal satu item untuk dihapus.', ...swalTheme(), timer: 2000, showConfirmButton: false });
+            return;
+        }
+        var { isConfirmed } = await Swal.fire({
+            title: 'Hapus ' + selected.length + ' Item?',
+            html: '<p style="font-size:13px;color:#9ca3af">Sebanyak <b style="color:#ff4d4f">' + selected.length + ' item</b> yang dipilih akan dihapus permanen dari Firebase.<br><br>Semua unit terkait akan direset ke <b style="color:#00d9ff">Tersedia</b>.<br><br>Tindakan ini <b style="color:#ff4d4f">tidak dapat dibatalkan</b>.</p>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-trash-alt"></i> Ya, Hapus',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#ff4d4f',
+            cancelButtonColor: '#374151',
+            ...swalTheme()
+        });
+        if (!isConfirmed) return;
+
+        try {
+            Swal.fire({ title: 'Menghapus...', html: '<p style="color:#9ca3af">Memproses ' + selected.length + ' item...</p>', allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
+            var batchObj = writeBatch(db);
+            var batchCount = 0;
+            for (var i = 0; i < selected.length; i++) {
+                var parts   = selected[i].split('::');
+                var colName = parts[0];
+                var itemId  = parts[1];
+                try {
+                    var itemDoc = await getDoc(doc(db, colName, itemId));
+                    if (itemDoc.exists()) {
+                        var data   = itemDoc.data();
+                        var unitId = colName === 'bookings' ? data.assignedUnit : data.assignedRentalUnit;
+                        if (unitId) {
+                            await updateDoc(doc(db, 'units', unitId), {
+                                status: 'Tersedia', startTime: null, endTime: null,
+                                price: 0, customerName: '-', customerId: null, bookingId: null
+                            });
+                        }
+                    }
+                } catch(e) { console.warn('reset unit gagal', e); }
+                batchObj.delete(doc(db, colName, itemId));
+                batchCount++;
+                if (batchCount === 400) { await batchObj.commit(); batchObj = writeBatch(db); batchCount = 0; }
+            }
+            if (batchCount > 0) await batchObj.commit();
+            window.ownerSelectMode  = false;
+            window.ownerSelectedIds = new Set();
+            ownerUpdateSelectUI();
+            Swal.fire({ icon: 'success', title: 'Berhasil Dihapus!', text: selected.length + ' item telah dihapus dan semua unit direset ke Tersedia.', timer: 2500, showConfirmButton: false, ...swalTheme() });
+        } catch(e) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, ...swalTheme() });
+        }
+    };
+
+    // ════════════════════════════════════════════════════════════════
+    // HAPUS SEMUA BOOKING/RENTAL AKTIF (legacy — tidak dipakai lagi)
+    // ════════════════════════════════════════════════════════════════
+    window.ownerHapusSemuaAktif = async function() {
+        var filtered = window.ownerAktifItems.filter(function(x) {
+            if (window.ownerAktifFilter === 'semua')   return true;
+            if (window.ownerAktifFilter === 'booking') return x._col === 'bookings';
+            if (window.ownerAktifFilter === 'rental')  return x._col === 'rentals';
+        });
+
+        if (!filtered.length) {
+            Swal.fire({ icon: 'info', title: 'Tidak Ada Data', text: 'Tidak ada item untuk dihapus.', ...swalTheme(), timer: 2000, showConfirmButton: false });
+            return;
+        }
+
+        var filterLabel = window.ownerAktifFilter === 'semua' ? 'Semua Booking & Rental' : window.ownerAktifFilter === 'booking' ? 'Semua Booking' : 'Semua Rental';
+        var { isConfirmed } = await Swal.fire({
+            title: 'Hapus ' + filterLabel + '?',
+            html: '<p style="font-size:13px;color:#9ca3af">Sebanyak <b style="color:#ff4d4f">' + filtered.length + ' item</b> akan dihapus permanen dari Firebase.<br><br>Semua unit terkait akan direset ke <b style="color:#00d9ff">Tersedia</b>.<br><br>Tindakan ini <b style="color:#ff4d4f">tidak dapat dibatalkan</b>.</p>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-trash-alt"></i> Ya, Hapus Semua',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#ff4d4f',
+            cancelButtonColor: '#374151',
+            ...swalTheme()
+        });
+        if (!isConfirmed) return;
+
+        try {
+            Swal.fire({ title: 'Menghapus...', html: '<p style="color:#9ca3af">Memproses ' + filtered.length + ' item...</p>', allowOutsideClick: false, didOpen: () => Swal.showLoading(), ...swalTheme() });
+
+            var batch = writeBatch(db);
+            var batchCount = 0;
+
+            for (var i = 0; i < filtered.length; i++) {
+                var item = filtered[i];
+                var colName = item._col;
+                var itemId  = item._id;
+
+                // Reset unit terkait
+                try {
+                    var itemDoc = await getDoc(doc(db, colName, itemId));
+                    if (itemDoc.exists()) {
+                        var data = itemDoc.data();
+                        var unitId = colName === 'bookings' ? data.assignedUnit : data.assignedRentalUnit;
+                        if (unitId) {
+                            await updateDoc(doc(db, 'units', unitId), {
+                                status: 'Tersedia', startTime: null, endTime: null,
+                                price: 0, customerName: '-', customerId: null, bookingId: null
+                            });
+                        }
+                    }
+                } catch(e) { console.warn('reset unit gagal', e); }
+
+                batch.delete(doc(db, colName, itemId));
+                batchCount++;
+
+                // Firestore batch max 500 ops
+                if (batchCount === 400) {
+                    await batch.commit();
+                    batch = writeBatch(db);
+                    batchCount = 0;
+                }
+            }
+
+            if (batchCount > 0) await batch.commit();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil Dihapus!',
+                text: filtered.length + ' item telah dihapus dan semua unit direset ke Tersedia.',
+                timer: 2500, showConfirmButton: false,
+                ...swalTheme()
+            });
+        } catch(e) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: e.message, ...swalTheme() });
+        }
+    };
+
+
+</script>
+</div></div>
+</div></div>
+<script>
+    // ── THEME TOGGLE ──────────────────────────────────────────────────
+    (function initTheme() {
+        const saved = localStorage.getItem('pg_theme') || 'dark';
+        if (saved === 'light') {
+            document.body.classList.add('light-mode');
+            ['theme-icon','theme-icon-sidebar'].forEach(id => {
+                const icon = document.getElementById(id);
+                if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+            });
+        }
+    })();
+
+    // ── MOBILE COLLAPSIBLE SECTIONS ───────────────────────────────────
+    window.toggleMobileSection = function(header, bodyId) {
+        if (window.innerWidth > 640) return; // desktop: tidak collapse
+        var body = document.getElementById(bodyId);
+        if (!body) return;
+        var isCollapsed = body.classList.contains('collapsed');
+        body.classList.toggle('collapsed', !isCollapsed);
+        header.classList.toggle('collapsed', !isCollapsed);
+    };
+
+    // Init: collapse chart BvR dan PS di mobile saat load
+    (function initMobileCollapse() {
+        if (window.innerWidth > 640) return;
+        ['bvr-body','ps-body','sesi-aktif-body','sesi-selesai-body'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('collapsed');
+            // Flip chevron header
+            var header = el && el.previousElementSibling;
+            if (header && header.classList.contains('mobile-collapse-header')) {
+                header.classList.add('collapsed');
+            }
+        });
+    })();
+
+    window.toggleTheme = function() {
+        const isLight = document.body.classList.toggle('light-mode');
+        localStorage.setItem('pg_theme', isLight ? 'light' : 'dark');
+        ['theme-icon','theme-icon-sidebar'].forEach(id => {
+            const icon = document.getElementById(id);
+            if (icon) {
+                icon.classList.toggle('fa-sun',  !isLight);
+                icon.classList.toggle('fa-moon',  isLight);
+            }
+        });
+        // Rebuild charts agar grid/ticks ikut tema
+        if (typeof buildAllCharts === 'function' && window._lastChartData) {
+            buildAllCharts(window._lastChartData);
+        }
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true, position: 'top', icon: 'success',
+                title: isLight ? '☀️ Mode Terang aktif' : '🌙 Mode Gelap aktif',
+                showConfirmButton: false, timer: 1500,
+                background: isLight ? '#fff' : '#11171f',
+                color:      isLight ? '#1a202c' : '#fff'
+            });
+        }
+    };
+
+</script>
+</body>
+</html>

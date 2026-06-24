@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PRINCEGAMES</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #080c12;
+      --card: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --text: #e8edf5;
+      --muted: #6b7a8d;
+      --cyan: #00d9ff;
+      --pink: #ff4d9e;
+      --orange: #f78166;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 10%, rgba(0,217,255,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 50% at 90% 90%, rgba(255,77,158,0.08) 0%, transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    /* LIGHT MODE */
+    body.light-mode {
+      --bg: #f0f4f8; --text: #1a2332; --muted: #7a8a9a; --card: #ffffff; --border: rgba(0,0,0,0.08);
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 10%, rgba(0,180,200,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 50% at 90% 90%, rgba(200,0,120,0.07) 0%, transparent 55%),
+        #f0f4f8;
+    }
+    body.light-mode .role-card { background: #fff; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    body.light-mode .role-card:hover { box-shadow: 0 12px 36px rgba(0,0,0,0.13); }
+    body.light-mode .role-desc { color: #7a8a9a; }
+    body.light-mode .version-bar { color: #c0ccd8; }
+    body.light-mode .theme-toggle { background: rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.12); color: #5a6a80; }
+
+    /* TOPBAR */
+    .topbar {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+    .logo { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+    .logo span { color: var(--cyan); }
+    .theme-toggle {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      transition: all .2s;
+    }
+    .theme-toggle:hover { background: rgba(0,217,255,0.1); border-color: rgba(0,217,255,0.3); color: var(--cyan); }
+
+    /* HERO */
+    .hero { text-align: center; margin-bottom: 40px; }
+    .hero h1 { font-size: 26px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+    .hero h1 span { color: var(--cyan); }
+    .hero p { font-size: 13px; color: var(--muted); }
+
+    /* CARDS */
+    .cards { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 380px; }
+
+    .role-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+      transition: all .22s cubic-bezier(.4,0,.2,1);
+      position: relative;
+      overflow: hidden;
+    }
+    .role-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity .22s;
+      border-radius: 16px;
+    }
+    .role-card.staff::before { background: linear-gradient(135deg, rgba(0,217,255,0.06), transparent); }
+    .role-card.owner::before { background: linear-gradient(135deg, rgba(255,77,158,0.06), transparent); }
+    .role-card.pelanggan::before { background: linear-gradient(135deg, rgba(247,129,102,0.06), transparent); }
+    .role-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.14); }
+    .role-card:hover::before { opacity: 1; }
+    .role-card.staff:hover { border-color: rgba(0,217,255,0.25); }
+    .role-card.owner:hover { border-color: rgba(255,77,158,0.25); }
+    .role-card.pelanggan:hover { border-color: rgba(247,129,102,0.25); }
+
+    .role-icon {
+      width: 46px; height: 46px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .role-card.staff .role-icon { background: rgba(0,217,255,0.12); color: var(--cyan); }
+    .role-card.owner .role-icon { background: rgba(255,77,158,0.12); color: var(--pink); }
+    .role-card.pelanggan .role-icon { background: rgba(247,129,102,0.12); color: var(--orange); }
+
+    .role-info { flex: 1; }
+    .role-name { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+    .role-desc { font-size: 11px; color: var(--muted); }
+
+    .role-arrow { color: var(--muted); font-size: 13px; transition: transform .2s; }
+    .role-card:hover .role-arrow { transform: translateX(3px); color: var(--text); }
+
+    /* DIVIDER */
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; max-width: 380px;
+      margin: 4px 0;
+      color: var(--muted); font-size: 11px;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1;
+      height: 1px; background: var(--border);
+    }
+
+    /* VERSION */
+    .version-bar { font-size: 10px; color: var(--muted); margin-top: 36px; opacity: .6; }
+
+    /* ANIM */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .topbar  { animation: fadeUp .4s ease both; }
+    .hero    { animation: fadeUp .45s .08s ease both; }
+    .role-card:nth-child(1) { animation: fadeUp .4s .15s ease both; }
+    .divider:nth-child(2)   { animation: fadeUp .4s .18s ease both; }
+    .role-card:nth-child(3) { animation: fadeUp .4s .21s ease both; }
+    .divider:nth-child(4)   { animation: fadeUp .4s .24s ease both; }
+    .role-card:nth-child(5) { animation: fadeUp .4s .27s ease both; }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="logo">PRINCE<span>GAMES</span></div>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">
+      <i class="fas fa-sun"></i> Terang
+    </button>
+  </div>
+
+  <div class="hero">
+    <h1>Masuk sebagai<br><span>siapa kamu?</span></h1>
+    <p>Pilih peran untuk melanjutkan ke sistem</p>
+  </div>
+
+  <div class="cards">
+    <a class="role-card staff" href="login-staff.html">
+      <div class="role-icon"><i class="fas fa-headset"></i></div>
+      <div class="role-info">
+        <div class="role-name">Staff</div>
+        <div class="role-desc">Kelola sesi, unit, dan transaksi harian</div>
+      </div>
+      <i class="fas fa-chevron-right role-arrow"></i>
+    </a>
+
+    <div class="divider">atau</div>
+
+    <a class="role-card owner" href="login-owner.html">
+      <div class="role-icon"><i class="fas fa-crown"></i></div>
+      <div class="role-info">
+        <div class="role-name">Owner</div>
+        <div class="role-desc">Pantau laporan, statistik, dan manajemen</div>
+      </div>
+      <i class="fas fa-chevron-right role-arrow"></i>
+    </a>
+
+    <div class="divider">atau</div>
+
+    <a class="role-card pelanggan" href="login-pelanggan.html">
+      <div class="role-icon"><i class="fas fa-gamepad"></i></div>
+      <div class="role-info">
+        <div class="role-name">Pelanggan</div>
+        <div class="role-desc">Booking unit, lihat riwayat, dan poin loyalitas</div>
+      </div>
+      <i class="fas fa-chevron-right role-arrow"></i>
+    </a>
+  </div>
+
+  <div class="version-bar">PRINCEGAMES &copy; 2025 &mdash; Kelompok 2</div>
+
+  <script>
+    (function(){
+      if(localStorage.getItem('pg_theme') === 'light') document.body.classList.add('light-mode');
+      updateBtn();
+    })();
+    function toggleTheme(){
+      document.body.classList.toggle('light-mode');
+      localStorage.setItem('pg_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+      updateBtn();
+    }
+    function updateBtn(){
+      const isLight = document.body.classList.contains('light-mode');
+      const btn = document.getElementById('themeBtn');
+      btn.innerHTML = isLight ? '<i class="fas fa-moon"></i> Gelap' : '<i class="fas fa-sun"></i> Terang';
+    }
+  </script>
+</body>
+</html>

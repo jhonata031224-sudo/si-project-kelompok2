@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prince Games - Rental Bawa Pulang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body {
+            background-color: #06090f;
+            background:
+                radial-gradient(ellipse 100% 60% at 0% 0%, rgba(0,200,220,0.35) 0%, transparent 55%),
+                radial-gradient(ellipse 80% 60% at 100% 100%, rgba(180,0,180,0.28) 0%, transparent 55%),
+                radial-gradient(ellipse 60% 40% at 50% 50%, rgba(0,100,140,0.10) 0%, transparent 70%),
+                #06090f;
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+        }
+        body.light-mode {
+            background:
+                radial-gradient(ellipse 100% 60% at 0% 0%, rgba(0,180,200,0.15) 0%, transparent 55%),
+                radial-gradient(ellipse 80% 60% at 100% 100%, rgba(150,0,150,0.10) 0%, transparent 55%),
+                #f0f4f8 !important;
+        }
+        .glass-card { background: rgba(17, 23, 31, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .progress-bar { height: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 6px; flex: 1; }
+        .progress-active { background: #00d9ff; box-shadow: none; }
+        .console-card { border: 1px solid rgba(255, 255, 255, 0.1); transition: 0.3s; cursor: pointer; }
+        .console-active { border-color: #00d9ff; background: #00d9ff; box-shadow: none; color: #000 !important; }
+        .console-active p { color: #000 !important; }
+        .btn-cyan { background: #00d9ff; color: #000; font-weight: 800; box-shadow: 0 0 20px rgba(0, 217, 255, 0.3); }
+        .dur-active { background: #00d9ff !important; color: #000 !important; border: none !important; box-shadow: none !important; }
+        input, select { background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: white !important; }
+        input:focus, select:focus { border-color: #00d9ff !important; outline: none; }
+        input[type="date"], input[type="time"] { color-scheme: dark; }
+        body.light-mode input[type="date"], body.light-mode input[type="time"] { color-scheme: light; }
+        select option { background: #11171f; color: white; }
+
+        /* ── LIGHT MODE ── */
+        body.light-mode { color: #1a202c !important; }
+        body.light-mode .glass-card { background: #ffffff !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .progress-bar { background: rgba(0,0,0,0.1) !important; }
+        body.light-mode .console-card { border-color: rgba(0,0,0,0.1) !important; background: #ffffff !important; color: #1a202c !important; }
+        body.light-mode .console-active { border-color: #0284c7 !important; background: #0284c7 !important; box-shadow: none !important; color: #fff !important; }
+        /* Icon ambil sendiri: ikuti warna teks card */
+        #icon-ambil { color: inherit !important; }
+        #card-ambil:not(.console-active) #icon-ambil { color: #ffffff !important; }
+        #card-ambil.console-active #icon-ambil { color: #000000 !important; }
+        body.light-mode #card-ambil:not(.console-active) #icon-ambil { color: #374151 !important; }
+        body.light-mode #card-ambil.console-active #icon-ambil { color: #ffffff !important; }
+        /* Icon KTP di card pilihan: ikuti warna teks card */
+        .icon-ktp { color: inherit !important; }
+        #card-dewasa:not(.console-active) .icon-ktp { color: #ffffff !important; }
+        #card-dewasa.console-active .icon-ktp { color: #000000 !important; }
+        body.light-mode #card-dewasa:not(.console-active) .icon-ktp { color: #374151 !important; }
+        body.light-mode #card-dewasa.console-active .icon-ktp { color: #ffffff !important; }
+        /* Icon KTP di dalam panel info (bukan card pilihan) */
+        .panel-icon-ktp { color: #00d9ff !important; }
+        body.light-mode .panel-icon-ktp { color: #0284c7 !important; }
+        body.light-mode .console-active p { color: #fff !important; }
+        body.light-mode .progress-active { background: #0284c7 !important; }
+        body.light-mode .btn-cyan { background: #0284c7 !important; color: #fff !important; box-shadow: 0 0 20px rgba(2,132,199,0.3) !important; }
+        body.light-mode input,body.light-mode select { background: #ffffff !important; border-color: rgba(0,0,0,0.15) !important; color: #1a202c !important; }
+        body.light-mode input:focus,body.light-mode select:focus { border-color: #0284c7 !important; }
+        body.light-mode select option { background: #ffffff; color: #1a202c; }
+        body.light-mode .bg-white\/5 { background: rgba(0,0,0,0.04) !important; }
+        body.light-mode .bg-white\/\[0\.02\] { background: rgba(0,0,0,0.02) !important; }
+        body.light-mode .border-white\/10 { border-color: rgba(0,0,0,0.1) !important; }
+        body.light-mode .border-white\/5 { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode .text-white { color: #1a202c !important; }
+        body.light-mode .text-gray-400 { color: #64748b !important; }
+        body.light-mode .text-gray-500 { color: #94a3b8 !important; }
+        body.light-mode .text-gray-600 { color: #475569 !important; }
+        body.light-mode h1,body.light-mode h2,body.light-mode h3 { color: #1a202c !important; }
+        body.light-mode p { color: #374151; }
+        body.light-mode .h-px { background-color: rgba(0,0,0,0.07) !important; }
+        body.light-mode [class*="bg-white/"] { background: rgba(0,0,0,0.04) !important; }
+        body.light-mode [class*="border-white/"] { border-color: rgba(0,0,0,0.1) !important; }
+        body.light-mode .rounded-xl.border,.rounded-2xl.border { border-color: rgba(0,0,0,0.1); }
+        body.light-mode .dur-btn { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.1) !important; color: #374151 !important; }
+        body.light-mode .dur-active { border-color: #0284c7 !important; background: #0284c7 !important; color: #fff !important; }
+    </style>
+</head>
+<body class="p-6">
+<script>
+  (function(){
+    const t = localStorage.getItem('pg_theme') || 'dark';
+    if(t === 'light') document.body.classList.add('light-mode');
+  })();
+</script>
+
+    <div class="max-w-xl mx-auto">
+        <h1 class="text-3xl font-black mb-2 tracking-tighter">Rental bawa pulang</h1>
+        <p id="step-label" class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-6">Step 1 of 4</p>
+
+        <div class="flex gap-2 mb-10">
+            <div id="p1" class="progress-bar progress-active"></div>
+            <div id="p2" class="progress-bar"></div>
+            <div id="p3" class="progress-bar"></div>
+            <div id="p4" class="progress-bar"></div>
+        </div>
+
+        <!-- STEP 1: PILIH KONSOL & WAKTU -->
+        <div id="step1" class="space-y-8">
+            <div>
+                <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-4">Pilih konsol</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <div onclick="selectConsole('PS3', 5000, this)" id="card-PS3" class="console-card p-4 rounded-xl text-center">
+                        <p class="font-bold text-sm">PS3</p>
+                        <p class="text-[10px] text-gray-500">Rp 25.000/6 JAM</p>
+                        <p id="unit-info-PS3" class="text-[9px] mt-1 font-bold text-gray-600">— / — unit</p>
+                    </div>
+                    <div onclick="selectConsole('PS4', 10000, this)" id="card-PS4" class="console-card p-4 rounded-xl text-center console-active">
+                        <p class="font-bold text-sm">PS4</p>
+                        <p class="text-[10px] text-gray-500">Rp 50.000/6 JAM</p>
+                        <p id="unit-info-PS4" class="text-[9px] mt-1 font-bold text-gray-600">— / — unit</p>
+                    </div>
+                    <div onclick="selectConsole('PS5', 15000, this)" id="card-PS5" class="console-card p-4 rounded-xl text-center">
+                        <p class="font-bold text-sm">PS5</p>
+                        <p class="text-[10px] text-gray-500">Rp 180.000/12 JAM</p>
+                        <p id="unit-info-PS5" class="text-[9px] mt-1 font-bold text-gray-600">— / — unit</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ambil sendiri vs diantar -->
+            <div>
+                <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-3">Metode pengambilan</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <div onclick="selectDelivery('ambil', this)" id="card-ambil" class="console-card p-4 rounded-2xl text-center cursor-pointer console-active">
+                        <i class="fas fa-store text-xl mb-2 block" id="icon-ambil"></i>
+                        <p class="font-bold text-sm">Ambil sendiri</p>
+                        <p class="text-[10px] text-gray-500 mt-1">Datang ke tempat</p>
+                    </div>
+                    <div onclick="selectDelivery('antar', this)" id="card-antar" class="console-card p-4 rounded-2xl text-center cursor-pointer">
+                        <i class="fas fa-motorcycle text-purple-400 text-xl mb-2 block"></i>
+                        <p class="font-bold text-sm">Diantar staff</p>
+                        <p class="text-[10px] text-gray-500 mt-1">Ke alamat kamu</p>
+                    </div>
+                </div>
+                <!-- Info ongkir jika pilih antar -->
+                <div id="info-antar" class="hidden mt-3 p-3 rounded-xl text-[10px] text-purple-300 flex gap-2 items-start" style="background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2)">
+                    <i class="fas fa-circle-info shrink-0 mt-0.5"></i>
+                    <span>Biaya pengiriman ditentukan staff sesuai jarak. Kamu akan dikonfirmasi via WhatsApp sebelum konsol diantar.</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Tanggal</label>
+                    <input type="date" id="book-date" class="w-full p-4 rounded-xl text-sm">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Estimasi waktu ambil</label>
+                    <input type="time" id="book-time" class="w-full p-4 rounded-xl text-sm">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Durasi sewa</label>
+                <p class="text-[10px] text-gray-500 mb-3">Minimal 6 jam · Maksimal 24 jam (1 hari)</p>
+                <div class="grid grid-cols-4 gap-2 mb-3">
+                    <button onclick="setDuration(6, this)"  class="dur-btn dur-active py-3 rounded-xl text-xs font-bold">6j</button>
+                    <button onclick="setDuration(12, this)" class="py-3 rounded-xl bg-white/5 border border-white/10 text-xs hover:border-cyan-400">12j</button>
+                    <button onclick="setDuration(18, this)" class="py-3 rounded-xl bg-white/5 border border-white/10 text-xs hover:border-cyan-400">18j</button>
+                    <button onclick="setDuration(24, this)" class="py-3 rounded-xl bg-white/5 border border-white/10 text-xs hover:border-cyan-400">24j</button>
+                </div>
+                <div class="flex items-center gap-3">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 whitespace-nowrap">Custom jam</label>
+                    <input type="number" id="custom-dur" min="6" max="24" placeholder="6–24"
+                        class="w-full p-3 rounded-xl text-sm"
+                        oninput="setDurationCustom(this.value)">
+                </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl text-xs text-gray-400 flex gap-3 items-start">
+                <i class="fas fa-circle-info text-cyan-400 mt-0.5"></i>
+                <span>Konsol wajib dikembalikan paling lambat <span id="return-time" class="text-white font-bold">—</span> dihitung dari estimasi waktu ambil + durasi sewa.</span>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="history.back()" class="flex-1 bg-white/5 border border-white/10 py-5 rounded-2xl uppercase text-xs font-bold">Back</button>
+                <button onclick="goToStep(2)" class="flex-[2] btn-cyan py-5 rounded-2xl uppercase tracking-widest text-xs font-black">Lanjut <i class="fas fa-arrow-right ml-2"></i></button>
+            </div>
+        </div>
+
+        <!-- STEP 2: DATA DIRI (AUTO dari profil) -->
+        <div id="step2" class="hidden space-y-6">
+            <div class="glass-card p-5 rounded-2xl space-y-4 text-sm">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(168,85,247,0.1)">
+                        <i class="fas fa-user text-purple-400 text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Data Pelanggan</p>
+                        <p class="text-xs text-gray-400">Otomatis dari akun Anda</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-white/5">
+                    <span class="text-gray-500 text-xs">Username</span>
+                    <span id="rental-display-username" class="font-bold text-sm text-white">-</span>
+                </div>
+                <div class="flex justify-between items-center py-3">
+                    <span class="text-gray-500 text-xs">Nomor WhatsApp</span>
+                    <span id="rental-display-nowa" class="font-bold text-sm text-purple-400">-</span>
+                </div>
+            </div>
+            <div id="rental-nowa-warning" class="hidden p-4 rounded-xl text-xs font-bold text-yellow-400 flex flex-col gap-3" style="background:rgba(250,204,21,0.08);border:1px solid rgba(250,204,21,0.2)">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-triangle-exclamation text-base"></i>
+                    <span>No. WhatsApp belum ada. Isi sekarang agar tersimpan permanen ke akun kamu.</span>
+                </div>
+                <div class="flex gap-2">
+                    <input type="tel" id="input-nowa-rental" placeholder="Contoh: 08123456789" inputmode="numeric"
+                        oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                        class="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none font-bold"
+                        style="font-family:inherit">
+                    <button onclick="simpanNoWARental()" class="px-4 py-2 rounded-xl text-xs font-black" style="background:#a855f7;color:#fff;border:none;cursor:pointer;font-family:inherit">Simpan</button>
+                </div>
+            </div>
+            <div id="section-alamat" class="hidden">
+                <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Alamat pengiriman</label>
+                <div class="relative">
+                    <input type="text" id="cust-address" placeholder="Alamat lengkap & patokan jalan..." class="w-full p-4 pr-14 rounded-xl text-sm">
+                    <button id="btn-gps" onclick="gunakanLokasi()" type="button"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 transition-all"
+                        title="Gunakan lokasi saya">
+                        <i id="gps-icon" class="fas fa-location-crosshairs text-xs"></i>
+                    </button>
+                </div>
+                <p id="gps-status" class="text-[9px] mt-1.5 hidden"></p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="goToStep(1)" class="flex-1 bg-white/5 border border-white/10 py-5 rounded-2xl uppercase text-xs font-bold">Back</button>
+                <button onclick="goToStep(3)" class="flex-[2] btn-cyan py-5 rounded-2xl uppercase text-xs font-black">Lanjut</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: JAMINAN -->
+        <div id="step3" class="hidden space-y-6">
+            <!-- Info kenapa ada jaminan -->
+            <div class="glass-card p-4 rounded-2xl flex gap-3 items-start text-xs text-gray-400">
+                <i class="fas fa-shield-halved text-cyan-400 text-base mt-0.5 shrink-0"></i>
+                <span>Jaminan diperlukan sebagai <span class="text-white font-bold">bentuk tanggung jawab</span> atas konsol yang dibawa pulang. Jaminan akan dikembalikan saat konsol kembali dalam kondisi baik.</span>
+            </div>
+
+            <!-- Pilih tipe penjamin -->
+            <div>
+                <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-3">Siapa yang menyewa?</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <div onclick="selectPenjamin('dewasa', this)" class="console-card p-4 rounded-2xl text-center cursor-pointer console-active" id="card-dewasa">
+                        <i class="fas fa-id-card text-xl mb-2 block icon-ktp"></i>
+                        <p class="font-bold text-sm">Dewasa / Remaja</p>
+                        <p class="text-[10px] text-gray-500 mt-1">Punya KTP / SIM</p>
+                    </div>
+                    <div onclick="selectPenjamin('bocil', this)" class="console-card p-4 rounded-2xl text-center cursor-pointer" id="card-bocil">
+                        <i class="fas fa-child text-purple-400 text-xl mb-2 block"></i>
+                        <p class="font-bold text-sm">Anak-anak</p>
+                        <p class="text-[10px] text-gray-500 mt-1">Belum punya KTP</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL DEWASA: KTP -->
+            <div id="panel-dewasa" class="space-y-4">
+                <div class="glass-card p-4 rounded-2xl space-y-3">
+                    <div class="flex items-center gap-2 mb-1">
+                        <i class="fas fa-id-card panel-icon-ktp"></i>
+                        <p class="text-xs font-bold uppercase tracking-widest text-gray-300">Jaminan KTP / SIM</p>
+                    </div>
+                    <p class="text-[11px] text-gray-400 leading-relaxed">KTP atau SIM asli <span class="text-white font-bold">wajib ditinggalkan</span> di tempat selama konsol dibawa pulang. Dokumen akan dikembalikan saat konsol kembali.</p>
+                    <div class="bg-white/5 rounded-xl p-3 space-y-1 text-[10px] text-gray-500">
+                        <div class="flex items-center gap-2"><i class="fas fa-check text-cyan-400 w-3"></i> KTP Nasional (NIK)</div>
+                        <div class="flex items-center gap-2"><i class="fas fa-check text-cyan-400 w-3"></i> SIM A / SIM C</div>
+                        <div class="flex items-center gap-2"><i class="fas fa-xmark text-red-400 w-3"></i> Foto / fotokopi tidak diterima</div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Nomor KTP / SIM <span class="text-gray-600">(opsional, untuk verifikasi)</span></label>
+                        <input type="text" id="nomor-ktp" maxlength="20" placeholder="16 digit NIK atau nomor SIM..." class="w-full p-3 rounded-xl text-sm">
+                    </div>
+                </div>
+                <div class="p-3 rounded-xl text-[10px] text-amber-400 flex gap-2 items-start" style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2)">
+                    <i class="fas fa-triangle-exclamation shrink-0 mt-0.5"></i>
+                    <span>Jika konsol <strong>tidak dikembalikan</strong> tepat waktu, staff berhak menghubungi dan menahan KTP hingga konsol kembali.</span>
+                </div>
+            </div>
+
+            <!-- PANEL BOCIL: Alternatif jaminan -->
+            <div id="panel-bocil" class="hidden space-y-4">
+                <div class="glass-card p-4 rounded-2xl space-y-3">
+                    <div class="flex items-center gap-2 mb-1">
+                        <i class="fas fa-child text-purple-400"></i>
+                        <p class="text-xs font-bold uppercase tracking-widest text-gray-300">Jaminan Alternatif (Anak-anak)</p>
+                    </div>
+                    <p class="text-[11px] text-gray-400 leading-relaxed">Karena belum punya KTP, <span class="text-white font-bold">pilih salah satu</span> jaminan di bawah. Jaminan wajib dibawa & diserahkan saat ambil konsol.</p>
+                    <div class="space-y-2">
+                        <div onclick="selectJaminanAlt('uang', this)" class="alt-jaminan console-card p-3 rounded-xl cursor-pointer" id="alt-uang">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:rgba(34,197,94,0.1)">
+                                    <i class="fas fa-money-bill-wave text-green-400 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold">Deposit Uang</p>
+                                    <p class="text-[10px] text-gray-500">Titip uang <span class="text-white font-semibold">Rp 100.000–300.000</span> · dikembalikan saat konsol kembali kondisi baik</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Input nominal deposit -->
+                        <div id="input-deposit" class="hidden pl-1">
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Estimasi nominal deposit</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500 font-bold">Rp</span>
+                                <input type="number" id="nominal-deposit" min="100000" max="300000" step="50000" placeholder="100000 – 300000"
+                                    class="w-full p-3 pl-9 rounded-xl text-sm">
+                            </div>
+                            <p class="text-[9px] text-gray-600 mt-1">Nominal akhir dikonfirmasi bersama staff saat pengambilan.</p>
+                        </div>
+
+                        <div onclick="selectJaminanAlt('ortu', this)" class="alt-jaminan console-card p-3 rounded-xl cursor-pointer" id="alt-ortu">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:rgba(168,85,247,0.1)">
+                                    <i class="fas fa-people-roof text-purple-400 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold">KTP Orang Tua / Wali</p>
+                                    <p class="text-[10px] text-gray-500">Orang tua/wali <span class="text-white font-semibold">harus hadir langsung</span> & serahkan KTP asli saat ambil konsol</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Input nama + nomor KTP ortu -->
+                        <div id="input-ortu" class="hidden pl-1 space-y-3">
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Nama orang tua / wali</label>
+                                <input type="text" id="nama-ortu" placeholder="Nama lengkap sesuai KTP..." class="w-full p-3 rounded-xl text-sm">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Nomor KTP wali <span class="text-gray-600">(opsional)</span></label>
+                                <input type="text" id="ktp-ortu" maxlength="16" placeholder="16 digit NIK..." class="w-full p-3 rounded-xl text-sm">
+                            </div>
+                        </div>
+
+                        <div onclick="selectJaminanAlt('hp', this)" class="alt-jaminan console-card p-3 rounded-xl cursor-pointer" id="alt-hp">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:rgba(59,130,246,0.1)">
+                                    <i class="fas fa-mobile-screen text-blue-400 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold">Titip Handphone</p>
+                                    <p class="text-[10px] text-gray-500">HP penyewa dititipkan <span class="text-white font-semibold">selama konsol dibawa pulang</span> · dikembalikan saat konsol kembali</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Input merk HP -->
+                        <div id="input-hp" class="hidden pl-1">
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Merk / tipe HP <span class="text-gray-600">(opsional)</span></label>
+                            <input type="text" id="merk-hp" placeholder="Contoh: Samsung A55, iPhone 13..." class="w-full p-3 rounded-xl text-sm">
+                        </div>
+                    </div>
+                </div>
+                <div class="p-3 rounded-xl text-[10px] text-amber-400 flex gap-2 items-start" style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2)">
+                    <i class="fas fa-triangle-exclamation shrink-0 mt-0.5"></i>
+                    <span>Jaminan <strong>wajib dibawa & diserahkan</strong> saat pengambilan konsol. Tanpa jaminan, staff berhak menolak sewa.</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="goToStep(2)" class="flex-1 bg-white/5 border border-white/10 py-5 rounded-2xl uppercase text-xs font-bold">Back</button>
+                <button onclick="goToStep(4)" class="flex-[2] btn-cyan py-5 rounded-2xl uppercase text-xs font-black">Lanjut <i class="fas fa-arrow-right ml-2"></i></button>
+            </div>
+        </div>
+
+        <!-- STEP 4: KONFIRMASI -->
+        <div id="step4" class="hidden space-y-8">
+            <div class="glass-card p-6 rounded-3xl space-y-4 text-sm">
+                <div class="flex justify-between"><span class="text-gray-500">Konsol</span><span id="res-console" class="font-bold">PS4</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Durasi</span><span id="res-duration" class="font-bold">6 Jam</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Est. waktu ambil</span><span id="res-start" class="font-bold">—</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Kembali paling lambat</span><span id="res-return" class="font-bold text-cyan-400">—</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Metode</span><span id="res-delivery" class="font-bold text-purple-400">—</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Pelanggan</span><span id="res-name" class="font-bold">-</span></div>
+                <div id="res-address-row" class="flex justify-between"><span class="text-gray-500">Alamat</span><span id="res-address" class="font-bold text-right max-w-[55%]">-</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-500">Jaminan</span><span id="res-jaminan" class="font-bold text-right max-w-[55%] text-cyan-400">-</span></div>
+                <div class="h-px bg-white/5 my-4"></div>
+                <div class="flex justify-between items-center">
+                    <span class="font-bold uppercase tracking-widest text-[10px]">Total Pembayaran</span>
+                    <span id="res-total" class="text-xl font-black text-cyan-400 tracking-tighter">Rp 0</span>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-4">Metode pembayaran</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="setPay('Cash', this)" class="py-4 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase">Cash</button>
+                    <button onclick="setPay('Ewallet', this)" class="py-4 rounded-xl btn-cyan text-[10px] font-bold uppercase">Ewallet</button>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="goToStep(3)" class="flex-1 bg-white/5 border border-white/10 py-5 rounded-2xl uppercase text-xs font-bold">Back</button>
+                <button onclick="confirmRental()" class="flex-[2] btn-cyan py-5 rounded-2xl uppercase text-xs font-black">
+                    <i class="fas fa-check mr-2"></i> Konfirmasi
+                </button>
+            </div>
+        </div>
+
+        <!-- SUCCESS SCREEN -->
+        <div id="success-screen" class="hidden fixed inset-0 bg-[#06090f] z-[100] flex items-center justify-center p-6">
+            <div class="glass-card p-10 rounded-[40px] w-full max-w-sm text-center border-yellow-500/30">
+                <div class="w-16 h-16 bg-yellow-500/15 text-yellow-400 rounded-full flex items-center justify-center mx-auto mb-6 border border-yellow-500/30">
+                    <i class="fas fa-clock text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-black mb-2 tracking-tighter">Permintaan Terkirim!</h2>
+                <p class="text-gray-400 text-xs mb-2">Permintaan rental bawa pulang kamu sudah diterima.</p>
+                <p class="text-yellow-400 text-[11px] font-bold mb-6">⏳ Menunggu konfirmasi staff — harap tunggu sebentar.</p>
+                <div class="bg-white/5 rounded-2xl p-4 mb-8 text-left space-y-2">
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Selanjutnya</p>
+                    <div class="flex items-start gap-2 text-xs text-gray-300">
+                        <i class="fas fa-1 text-cyan-400 mt-0.5 w-4 shrink-0"></i>
+                        <span>Staff akan mengecek ketersediaan konsol & menyiapkan unit</span>
+                    </div>
+                    <div class="flex items-start gap-2 text-xs text-gray-300">
+                        <i class="fas fa-2 text-cyan-400 mt-0.5 w-4 shrink-0"></i>
+                        <span>Kamu akan dihubungi via WhatsApp untuk konfirmasi & pembayaran</span>
+                    </div>
+                    <div class="flex items-start gap-2 text-xs text-gray-300">
+                        <i class="fas fa-3 text-cyan-400 mt-0.5 w-4 shrink-0"></i>
+                        <span>Konsol siap diambil setelah staff menyetujui permintaan</span>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="location.href='dashboard-customer.html?history=1'" class="flex-1 bg-white/5 py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest">Pesanan</button>
+                    <button onclick="location.href='../pelanggan/dashboard-customer.html'" class="flex-[1.5] btn-cyan py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest">Dashboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db, updateDoc, doc, auth, getDocs, getDoc, collection, where } from '../../assets/js/auth.js';
+        import { addDoc, query, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Expose ke HTML onclick sebelum async init
+        window.selectConsole     = (...a) => selectConsole(...a);
+        window.setDuration       = (...a) => setDuration(...a);
+        window.setDurationCustom = (...a) => setDurationCustom(...a);
+        window.setPay            = (...a) => setPay(...a);
+        window.goToStep          = (...a) => goToStep(...a);
+        window.confirmRental     = (...a) => confirmRental(...a);
+
+        let currentUser = null;
+        let profilPelanggan = { username: '-', noWA: '' };
+
+        onAuthStateChanged(auth, async user => {
+            if (!user) { window.location.href = '../auth/login-pelanggan.html'; return; }
+            currentUser = user;
+            try {
+                const snap = await getDoc(doc(db, 'pelanggan', user.uid));
+                if (snap.exists()) {
+                    const d = snap.data();
+                    profilPelanggan.username = d.username || d.namaLengkap || '-';
+                    profilPelanggan.noWA     = d.noWA || '';
+                }
+            } catch(e) { console.warn('Gagal load profil:', e); }
+        });
+
+        // Cek unit rental tersedia dari Firestore (collection: rentalUnits)
+        async function checkRentalUnitAvailable(consoleType) {
+            const snap = await getDocs(query(collection(db, 'rentalUnits'),
+                where('type',   '==', consoleType),
+                where('status', '==', 'Tersedia')
+            ));
+            return snap.size;
+        }
+
+        // Cek jumlah antrian list aktif rental untuk tipe ini
+        async function countRentalWaitingList(consoleType) {
+            const snap = await getDocs(query(collection(db, 'rentals'),
+                where('console', '==', consoleType),
+                where('status', '==', 'Antrian List')
+            ));
+            return snap.size;
+        }
+
+        // Cari unit rental lain yang tersedia
+        async function cariRentalUnitLain(excludeConsole) {
+            const tipes = ['PS3', 'PS4', 'PS5'].filter(t => t !== excludeConsole);
+            const hasil = [];
+            for (const t of tipes) {
+                const n = await checkRentalUnitAvailable(t);
+                if (n > 0) hasil.push(t);
+            }
+            return hasil;
+        }
+
+        // ── Simpan No WA ke Firestore (permanen) ─────────────────────────
+        window.simpanNoWARental = async function() {
+            const input = document.getElementById('input-nowa-rental');
+            const nowa  = (input ? input.value.trim() : '');
+            if (!nowa || nowa.length < 9 || !/^0[0-9]{8,14}$/.test(nowa)) {
+                Swal.fire({ icon:'error', title:'No. WA tidak valid', text:'Masukkan nomor yang benar, contoh: 08123456789', background:'#11171f', color:'#fff', timer:2000 });
+                return;
+            }
+            if (!currentUser) return;
+            try {
+                await updateDoc(doc(db, 'pelanggan', currentUser.uid), { noWA: nowa });
+                profilPelanggan.noWA = nowa;
+                document.getElementById('rental-display-nowa').innerText = nowa;
+                document.getElementById('rental-nowa-warning').classList.add('hidden');
+                Swal.fire({ icon:'success', title:'Tersimpan!', text:'No. WA berhasil disimpan ke akun kamu.', background:'#11171f', color:'#fff', timer:1800, showConfirmButton:false });
+            } catch(e) {
+                Swal.fire({ icon:'error', title:'Gagal simpan', text:'Coba lagi.', background:'#11171f', color:'#fff', timer:2000 });
+            }
+        };
+
+        let rentalData = { console: 'PS4', rate: 10000, duration: 6, payment: 'Ewallet', deliveryMethod: 'ambil' };
+
+        // ── Pilih metode ambil/antar ──────────────────────────────────────
+        window.selectDelivery = function(tipe, el) {
+            rentalData.deliveryMethod = tipe;
+            document.getElementById('card-ambil').classList.remove('console-active');
+            document.getElementById('card-antar').classList.remove('console-active');
+            el.classList.add('console-active');
+            document.getElementById('info-antar').classList.toggle('hidden', tipe !== 'antar');
+            // Di step 2, toggle section alamat
+            const sectionAlamat = document.getElementById('section-alamat');
+            if (sectionAlamat) {
+                sectionAlamat.classList.toggle('hidden', tipe !== 'antar');
+            }
+        };
+
+        // ── Realtime info unit tersedia per tipe (rentalUnits) ──
+        onSnapshot(collection(db, 'rentalUnits'), (snap) => {
+            const unitMap = { PS3: { total: 0, tersedia: 0 }, PS4: { total: 0, tersedia: 0 }, PS5: { total: 0, tersedia: 0 } };
+            snap.forEach(d => {
+                const data = d.data();
+                const tipe = (data.type || '').toUpperCase();
+                if (!unitMap[tipe]) return;
+                unitMap[tipe].total++;
+                if (data.status === 'Tersedia') unitMap[tipe].tersedia++;
+            });
+            ['PS3', 'PS4', 'PS5'].forEach(tipe => {
+                const el = document.getElementById('unit-info-' + tipe);
+                if (!el) return;
+                const { total, tersedia } = unitMap[tipe];
+                const habis = tersedia === 0 && total > 0;
+                el.textContent = tersedia + ' / ' + total + ' unit tersedia';
+                el.style.color = habis ? '#ff4d4f' : tersedia <= 1 ? '#f59e0b' : '#00d9ff';
+            });
+        });
+        let jaminanData = { tipe: 'dewasa', jenis: 'KTP/SIM', detail: '' };
+        window._jaminanTipe = 'dewasa';
+        window._jaminanAltJenis = null;
+
+        // Sync window globals to jaminanData before using
+        function syncJaminan() {
+            jaminanData.tipe = window._jaminanTipe || 'dewasa';
+            jaminanData.altJenis = window._jaminanAltJenis || null;
+        }
+
+        const now = new Date();
+        document.getElementById('book-date').valueAsDate = now;
+        document.getElementById('book-time').value =
+            now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+
+        document.getElementById('book-time').addEventListener('change', updateReturnTime);
+        document.getElementById('book-date').addEventListener('change', updateReturnTime);
+        updateReturnTime();
+
+        function selectConsole(name, price, el) {
+            rentalData.console = name;
+            rentalData.rate = price;
+            document.querySelectorAll('.console-card').forEach(c => c.classList.remove('console-active'));
+            el.classList.add('console-active');
+            updateTotal();
+        }
+
+        function setDuration(h, el) {
+            rentalData.duration = h;
+            document.getElementById('custom-dur').value = '';
+            document.querySelectorAll('#step1 .grid.grid-cols-4 button').forEach(b => {
+                b.className = "dur-btn py-3 rounded-xl bg-white/5 border border-white/10 text-xs hover:border-cyan-400";
+            });
+            el.className = "dur-btn dur-active py-3 rounded-xl text-xs font-bold";
+            updateTotal();
+            updateReturnTime();
+        }
+
+        function setDurationCustom(val) {
+            const h = Math.min(24, Math.max(6, parseInt(val) || 6));
+            rentalData.duration = h;
+            document.querySelectorAll('#step1 .grid.grid-cols-4 button').forEach(b => {
+                b.className = "py-3 rounded-xl bg-white/5 border border-white/10 text-xs hover:border-cyan-400";
+            });
+            updateTotal();
+            updateReturnTime();
+        }
+
+        function setPay(type, el) {
+            rentalData.payment = type;
+            document.querySelectorAll('#step4 .grid.grid-cols-2 button').forEach(b => {
+                b.className = "py-4 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase";
+            });
+            el.className = "py-4 rounded-xl btn-cyan text-[10px] font-bold uppercase";
+        }
+
+        function updateTotal() {
+            const total = rentalData.rate * rentalData.duration;
+            document.getElementById('res-total').innerText = 'Rp ' + total.toLocaleString('id-ID');
+        }
+
+        function updateReturnTime() {
+            const dateVal = document.getElementById('book-date').value;
+            const timeVal = document.getElementById('book-time').value;
+            if (!dateVal || !timeVal) { document.getElementById('return-time').textContent = '—'; return; }
+            const start = new Date(dateVal + 'T' + timeVal);
+            const ret = new Date(start.getTime() + rentalData.duration * 60 * 60 * 1000);
+            const fmt = ret.toLocaleString('id-ID', { weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+            document.getElementById('return-time').textContent = fmt;
+        }
+
+        function goToStep(s) {
+            if (s === 2) {
+                const dur = rentalData.duration;
+                if (dur < 6 || dur > 24) {
+                    Swal.fire({ icon:'warning', title:'Durasi tidak valid', text:'Minimal 6 jam, maksimal 24 jam.', background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff' });
+                    return;
+                }
+            }
+
+            if (s === 4) {
+                // Validasi alamat jika pilih diantar
+                if (rentalData.deliveryMethod === 'antar') {
+                    const addr = (document.getElementById('cust-address')?.value || '').trim();
+                    if (!addr) {
+                        Swal.fire({ icon:'warning', title:'Alamat belum diisi', text:'Isi alamat pengiriman karena kamu memilih diantar staff.', background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff' });
+                        return;
+                    }
+                }
+                // Validasi jaminan bocil harus pilih salah satu
+                syncJaminan();
+                if (jaminanData.tipe === 'bocil' && !jaminanData.altJenis) {
+                    Swal.fire({ icon:'warning', title:'Pilih jaminan', text:'Pilih salah satu jaminan alternatif untuk penyewa anak-anak.', background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff' });
+                    return;
+                }
+            }
+
+            ['step1','step2','step3','step4'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById('step' + s).classList.remove('hidden');
+            document.getElementById('step-label').innerText = `Step ${s} of 4`;
+            document.getElementById('p2').className = s >= 2 ? 'progress-bar progress-active' : 'progress-bar';
+            document.getElementById('p3').className = s >= 3 ? 'progress-bar progress-active' : 'progress-bar';
+            document.getElementById('p4').className = s >= 4 ? 'progress-bar progress-active' : 'progress-bar';
+
+            if (s === 2) {
+                document.getElementById('rental-display-username').innerText = profilPelanggan.username;
+                document.getElementById('rental-display-nowa').innerText     = profilPelanggan.noWA || 'Belum diisi';
+                const warn = document.getElementById('rental-nowa-warning');
+                if (!profilPelanggan.noWA) warn.classList.remove('hidden');
+                else warn.classList.add('hidden');
+                // Tampilkan / sembunyikan section alamat sesuai pilihan metode
+                const sectionAlamat = document.getElementById('section-alamat');
+                if (sectionAlamat) sectionAlamat.classList.toggle('hidden', rentalData.deliveryMethod !== 'antar');
+            }
+
+            if (s === 4) {
+                const dateVal = document.getElementById('book-date').value;
+                const timeVal = document.getElementById('book-time').value;
+                const start = new Date(dateVal + 'T' + timeVal);
+                const ret = new Date(start.getTime() + rentalData.duration * 60 * 60 * 1000);
+                const fmtStart = start.toLocaleString('id-ID', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+                const fmtRet = ret.toLocaleString('id-ID', { weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+
+                document.getElementById('res-console').innerText   = rentalData.console;
+                document.getElementById('res-duration').innerText  = rentalData.duration + ' Jam';
+                document.getElementById('res-start').innerText     = fmtStart;
+                document.getElementById('res-return').innerText    = fmtRet;
+                document.getElementById('res-name').innerText      = profilPelanggan.username;
+
+                // Delivery method
+                const deliveryLabel = rentalData.deliveryMethod === 'antar' ? '🛵 Diantar staff' : '🏪 Ambil sendiri';
+                document.getElementById('res-delivery').innerText = deliveryLabel;
+
+                // Alamat: tampilkan hanya kalau diantar
+                const addrRow = document.getElementById('res-address-row');
+                if (rentalData.deliveryMethod === 'antar') {
+                    document.getElementById('res-address').innerText = document.getElementById('cust-address')?.value || '—';
+                    if (addrRow) addrRow.classList.remove('hidden');
+                } else {
+                    if (addrRow) addrRow.classList.add('hidden');
+                }
+
+                // Tampilkan jaminan di summary
+                let jaminanLabel = '';
+                if (jaminanData.tipe === 'dewasa') {
+                    const ktpNum = document.getElementById('nomor-ktp').value;
+                    jaminanLabel = 'KTP/SIM' + (ktpNum ? ' (' + ktpNum + ')' : '');
+                } else {
+                    const namaOrtu   = document.getElementById('nama-ortu')?.value || '';
+                    const ktpOrtu    = document.getElementById('ktp-ortu')?.value || '';
+                    const merkHp     = document.getElementById('merk-hp')?.value || '';
+                    const deposit    = document.getElementById('nominal-deposit')?.value || '';
+                    if (jaminanData.altJenis === 'uang') {
+                        jaminanLabel = 'Deposit Uang' + (deposit ? ' (Rp ' + parseInt(deposit).toLocaleString('id-ID') + ')' : '');
+                    } else if (jaminanData.altJenis === 'ortu') {
+                        jaminanLabel = 'KTP Wali' + (namaOrtu ? ' (' + namaOrtu + (ktpOrtu ? ' · ' + ktpOrtu : '') + ')' : '');
+                    } else if (jaminanData.altJenis === 'hp') {
+                        jaminanLabel = 'Titip HP' + (merkHp ? ' (' + merkHp + ')' : '');
+                    } else {
+                        jaminanLabel = '-';
+                    }
+                }
+                document.getElementById('res-jaminan').innerText = jaminanLabel || '—';
+                updateTotal();
+            }
+        }
+
+        async function confirmRental() {
+            syncJaminan();
+            const custName  = profilPelanggan.username || 'Customer';
+            const custPhone = profilPelanggan.noWA || '—';
+            const custAddr  = rentalData.deliveryMethod === 'antar'
+                ? (document.getElementById('cust-address')?.value || '—')
+                : '—';
+            const dateVal   = document.getElementById('book-date').value;
+            const timeVal   = document.getElementById('book-time').value;
+            const start     = new Date(dateVal + 'T' + timeVal);
+            const endMillis = start.getTime() + rentalData.duration * 60 * 60 * 1000;
+            const total     = rentalData.rate * rentalData.duration;
+
+            // Cek ketersediaan unit rental bawa pulang
+            Swal.fire({ title:'Mengecek unit rental...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), background:'#11171f', color:'#fff' });
+            const available = await checkRentalUnitAvailable(rentalData.console);
+            Swal.close();
+
+            // Rangkum jaminan untuk ditampilkan & disimpan
+            let jaminanLabel = '';
+            let jaminanSaved = {};
+            if (jaminanData.tipe === 'dewasa') {
+                const ktpNum = document.getElementById('nomor-ktp').value;
+                jaminanLabel = 'KTP/SIM' + (ktpNum ? ' (' + ktpNum + ')' : '');
+                jaminanSaved = { tipe: 'dewasa', jenis: 'KTP/SIM', nomorDokumen: ktpNum };
+            } else {
+                const namaOrtu  = document.getElementById('nama-ortu')?.value || '';
+                const ktpOrtu   = document.getElementById('ktp-ortu')?.value || '';
+                const merkHp    = document.getElementById('merk-hp')?.value || '';
+                const deposit   = document.getElementById('nominal-deposit')?.value || '';
+                if (jaminanData.altJenis === 'uang') {
+                    jaminanLabel = 'Deposit Uang' + (deposit ? ' (Rp ' + parseInt(deposit).toLocaleString('id-ID') + ')' : '');
+                    jaminanSaved = { tipe: 'bocil', jenis: 'uang', nominalDeposit: parseInt(deposit) || 0 };
+                } else if (jaminanData.altJenis === 'ortu') {
+                    jaminanLabel = 'KTP Wali' + (namaOrtu ? ' (' + namaOrtu + (ktpOrtu ? ' · ' + ktpOrtu : '') + ')' : '');
+                    jaminanSaved = { tipe: 'bocil', jenis: 'ortu', namaWali: namaOrtu, ktpWali: ktpOrtu };
+                } else if (jaminanData.altJenis === 'hp') {
+                    jaminanLabel = 'Titip HP' + (merkHp ? ' (' + merkHp + ')' : '');
+                    jaminanSaved = { tipe: 'bocil', jenis: 'hp', merkHp };
+                } else {
+                    jaminanLabel = '-';
+                    jaminanSaved = { tipe: 'bocil', jenis: jaminanData.altJenis };
+                }
+            }
+
+            if (available === 0) {
+                // Cek antrian list aktif
+                const waitCount = await countRentalWaitingList(rentalData.console);
+
+                if (waitCount >= 2) {
+                    const unitLain = await cariRentalUnitLain(rentalData.console);
+                    const saranHtml = unitLain.length > 0
+                        ? '<br><br>💡 Unit rental tersedia: <strong style="color:#00d9ff">' + unitLain.join(', ') + '</strong>'
+                        : '<br><br>Semua tipe unit rental juga penuh saat ini.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Antrian List Penuh!',
+                        html: 'Unit rental <strong>' + rentalData.console + '</strong> penuh & antrian antrian list sudah maksimal (2 orang).' + saranHtml,
+                        background:'#11171f', color:'#fff', confirmButtonColor:'#00d9ff',
+                        confirmButtonText: unitLain.length > 0 ? 'Pilih Konsol Lain' : 'Kembali'
+                    });
+                    goToStep(1);
+                    return;
+                }
+
+                // Tawari antrian list
+                const posisi = waitCount + 1;
+                const { isConfirmed: mauWaiting } = await Swal.fire({
+                    icon: 'warning',
+                    title: '⏳ Unit Rental ' + rentalData.console + ' Tidak Tersedia',
+                    html:
+                        '<p style="color:#9ca3af;font-size:12px;margin-bottom:10px">Semua unit rental <strong>' + rentalData.console + '</strong> sedang dipinjam.</p>' +
+                        '<div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:12px;margin-bottom:10px">' +
+                        '<p style="font-size:14px;font-weight:800;color:#f59e0b">Posisi Antrian: #' + posisi + '</p>' +
+                        '<p style="color:#9ca3af;font-size:11px;margin-top:4px">Max 2 orang per unit. Staff akan konfirmasi saat unit tersedia.</p>' +
+                        '</div>' +
+                        '<p style="color:#6b7280;font-size:11px">Atau pilih konsol lain jika tidak mau menunggu.</p>',
+                    showCancelButton: true,
+                    confirmButtonText: '✋ Masuk Antrian List',
+                    cancelButtonText: 'Pilih Konsol Lain',
+                    confirmButtonColor: '#f59e0b',
+                    cancelButtonColor: '#374151',
+                    background:'#11171f', color:'#fff'
+                });
+
+                if (!mauWaiting) { goToStep(1); return; }
+
+                // Simpan sebagai Antrian List rental
+                Swal.fire({ title:'Mendaftar antrian...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), background:'#11171f', color:'#fff' });
+                try {
+                    await addDoc(collection(db, 'rentals'), {
+                        type:            'bawa_pulang',
+                        console:         rentalData.console,
+                        rate:            rentalData.rate,
+                        duration:        rentalData.duration,
+                        paymentMethod:   rentalData.payment,
+                        grandTotal:      total,
+                        payment:         rentalData.payment,
+                        total:           total,
+                        customerName:    custName,
+                        customerPhone:   custPhone,
+                        customerAddress: custAddr,
+                        deliveryMethod:  rentalData.deliveryMethod === 'antar' ? 'Diantar Staff' : 'Ambil Sendiri',
+                        waitingPos:      posisi,
+                        createdAt:       new Date().toISOString()
+                    });
+                    Swal.fire({
+                        icon: 'success',
+                        title: '✅ Berhasil Masuk Antrian!',
+                        html: 'Kamu di posisi <strong style="color:#f59e0b">#' + posisi + '</strong> antrian list unit rental <strong>' + rentalData.console + '</strong>.<br><span style="color:#9ca3af;font-size:11px">Staff akan mengkonfirmasi saat unit tersedia. Cek riwayat untuk update status.</span>',
+                        confirmButtonText: 'Lihat Riwayat',
+                        confirmButtonColor: '#f59e0b',
+                        background:'#11171f', color:'#fff'
+                    }).then(r => { if (r.isConfirmed) location.href = "dashboard-customer.html?history=1"; else location.href = '../pelanggan/dashboard-customer.html'; });
+                } catch(e) {
+                    Swal.fire({ icon:'error', title:'Gagal', text:e.message, background:'#11171f', color:'#fff' });
+                }
+                return;
+            }
+
+            // Konfirmasi akhir sebelum kirim
+            const confirm = await Swal.fire({
+                title: 'Kirim Permintaan Rental?',
+                html:
+                    '<div style="text-align:left;font-size:12px;color:#9ca3af;line-height:1.8">' +
+                    '<div style="display:flex;justify-content:space-between"><span>Konsol</span><strong style="color:#fff">' + rentalData.console + '</strong></div>' +
+                    '<div style="display:flex;justify-content:space-between"><span>Durasi</span><strong style="color:#fff">' + rentalData.duration + ' Jam</strong></div>' +
+                    '<div style="display:flex;justify-content:space-between"><span>Batas kembali</span><strong style="color:#00d9ff">' + new Date(endMillis).toLocaleString('id-ID',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) + '</strong></div>' +
+                    '<div style="display:flex;justify-content:space-between"><span>Jaminan</span><strong style="color:#a78bfa">' + jaminanLabel + '</strong></div>' +
+                    '<div style="display:flex;justify-content:space-between"><span>Pembayaran</span><strong style="color:#fff">' + rentalData.payment + '</strong></div>' +
+                    '<hr style="border-color:rgba(255,255,255,0.07);margin:10px 0">' +
+                    '<div style="display:flex;justify-content:space-between"><span>Total</span><strong style="color:#00d9ff;font-size:15px">Rp ' + total.toLocaleString('id-ID') + '</strong></div>' +
+                    '</div>' +
+                    '<p style="color:#f59e0b;font-size:11px;margin-top:12px;text-align:center">⏳ Permintaan akan menunggu konfirmasi staff</p>',
+                showCancelButton: true,
+                confirmButtonText: '📦 Kirim Permintaan',
+                cancelButtonText: 'Cek Lagi',
+                confirmButtonColor: '#a855f7',
+                cancelButtonColor: '#374151',
+                background: '#11171f', color: '#fff'
+            });
+            if (!confirm.isConfirmed) return;
+
+            Swal.fire({
+                title: 'Mengirim Permintaan...',
+                html: 'Mohon tunggu sebentar...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+                background: '#11171f', color: '#fff'
+            });
+
+            try {
+                await addDoc(collection(db, 'rentals'), {
+                    type:            'bawa_pulang',
+                    console:         rentalData.console,
+                    rate:            rentalData.rate,
+                    duration:        rentalData.duration,
+                    paymentMethod:   rentalData.payment,
+                    grandTotal:      total,
+                    // field lama (backward compat)
+                    payment:         rentalData.payment,
+                    total:           total,
+                    customerName:    custName,
+                    customerPhone:   custPhone,
+                    customerAddress: custAddr,
+                    deliveryMethod:  rentalData.deliveryMethod === 'antar' ? 'Diantar Staff' : 'Ambil Sendiri',
+                    startTime:       start.toISOString(),
+                    endTime:         new Date(endMillis).toISOString(),
+                    jaminan:         jaminanSaved,
+                    jaminanLabel:    jaminanLabel,
+                    // userId untuk filter history pelanggan
+                    userId:          currentUser ? currentUser.uid : null,
+                    userEmail:       currentUser ? currentUser.email : null,
+                    // Status menunggu konfirmasi staff — bukan langsung Aktif
+                    status:          'Menunggu Konfirmasi Staff',
+                    createdAt:       new Date().toISOString()
+                });
+
+                Swal.close();
+                document.getElementById('success-screen').classList.remove('hidden');
+            } catch (err) {
+                console.error(err);
+                Swal.fire({ icon:'error', title:'Gagal', text:'Terjadi kesalahan, coba lagi.', background:'#11171f', color:'#fff' });
+            }
+        }
+    </script>
+
+    <script>
+    // ── Jaminan ───────────────────────────────────────────────────
+    window.selectPenjamin = function(tipe, el) {
+        // Update jaminanData (di module scope via global)
+        window._jaminanTipe = tipe;
+        document.getElementById('card-dewasa').classList.remove('console-active');
+        document.getElementById('card-bocil').classList.remove('console-active');
+        el.classList.add('console-active');
+
+        if (tipe === 'dewasa') {
+            document.getElementById('panel-dewasa').classList.remove('hidden');
+            document.getElementById('panel-bocil').classList.add('hidden');
+        } else {
+            document.getElementById('panel-dewasa').classList.add('hidden');
+            document.getElementById('panel-bocil').classList.remove('hidden');
+        }
+    };
+
+    window.selectJaminanAlt = function(jenis, el) {
+        window._jaminanAltJenis = jenis;
+        document.querySelectorAll('.alt-jaminan').forEach(c => c.classList.remove('console-active'));
+        el.classList.add('console-active');
+        // Sembunyikan semua input tambahan dulu
+        ['input-deposit', 'input-ortu', 'input-hp'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        });
+        // Tampilkan input sesuai pilihan
+        if (jenis === 'uang')  document.getElementById('input-deposit')?.classList.remove('hidden');
+        if (jenis === 'ortu')  document.getElementById('input-ortu')?.classList.remove('hidden');
+        if (jenis === 'hp')    document.getElementById('input-hp')?.classList.remove('hidden');
+    };
+
+    // ── GPS / Lokasi Sekarang ─────────────────────────────────────
+    window.gunakanLokasi = function() {
+        const btn    = document.getElementById('btn-gps');
+        const icon   = document.getElementById('gps-icon');
+        const status = document.getElementById('gps-status');
+        const input  = document.getElementById('cust-address');
+
+        if (!navigator.geolocation) {
+            status.textContent = 'Browser tidak mendukung geolocation.';
+            status.className = 'text-[9px] mt-1.5 text-red-400';
+            status.classList.remove('hidden');
+            return;
+        }
+
+        // Loading state
+        icon.className = 'fas fa-spinner fa-spin text-xs';
+        btn.disabled = true;
+        status.textContent = 'Mendeteksi lokasi...';
+        status.className = 'text-[9px] mt-1.5 text-cyan-400';
+        status.classList.remove('hidden');
+
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                try {
+                    // Nominatim (OpenStreetMap) — gratis, tanpa API key
+                    const res  = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
+                        { headers: { 'Accept-Language': 'id' } }
+                    );
+                    const data = await res.json();
+                    const addr = data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+                    input.value = addr;
+                    status.textContent = '✓ Lokasi berhasil dideteksi';
+                    status.className = 'text-[9px] mt-1.5 text-green-400';
+                } catch {
+                    // Fallback: pakai koordinat saja
+                    input.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    status.textContent = '✓ Koordinat digunakan (geocoding gagal)';
+                    status.className = 'text-[9px] mt-1.5 text-amber-400';
+                }
+                icon.className = 'fas fa-location-crosshairs text-xs';
+                btn.disabled = false;
+            },
+            (err) => {
+                icon.className = 'fas fa-location-crosshairs text-xs';
+                btn.disabled = false;
+                let msg = 'Gagal mendapatkan lokasi.';
+                if (err.code === 1) msg = 'Izin lokasi ditolak. Aktifkan di pengaturan browser.';
+                if (err.code === 2) msg = 'Lokasi tidak tersedia. Coba lagi.';
+                if (err.code === 3) msg = 'Timeout. Coba lagi.';
+                status.textContent = msg;
+                status.className = 'text-[9px] mt-1.5 text-red-400';
+                status.classList.remove('hidden');
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    };
+    </script>
+</body>
+</html>

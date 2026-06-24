@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prince Games - Laporan Ekspor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html.light-mode-pre body { background: #f0f4f8 !important; }
+        html.light-mode-pre { background: #f0f4f8; }
+
+        :root {
+            --bg:#0d1117;--surface:#161b22;--surface2:#1c2128;
+            --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.05);
+            --text:#e6edf3;--muted:#7d8590;--cyan:#00d9ff;--green:#3fb950;
+            --orange:#f78166;--purple:#bc8cff;--yellow:#e3b341;--red:#ff4d4f;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800');
+        * { font-style: normal !important; box-sizing: border-box; }
+        body { background-color: #06090f; color: white; font-family: 'Space Grotesk', sans-serif; padding-bottom: 120px; }
+        .topbar { position: sticky; top: 0; z-index: 100; background: #0d1117; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+        .logo { display:flex;align-items:center;gap:7px;font-weight:800;font-size:14px;letter-spacing:-.3px }
+        .logo-icon { width: 32px; height: 32px; background: rgba(0,217,255,0.12); border: 1px solid rgba(0,217,255,0.3); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--cyan); font-size: 14px; }
+        .logo span { color: #00d9ff }
+        .role-badge { background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2);border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;color:#00d9ff;letter-spacing:.5px }
+        .nav-btn { display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:#161b22;border:1px solid rgba(255,255,255,0.08);font-size:11px;font-weight:400;color:var(--muted);cursor:pointer;transition:all .2s;font-family:inherit }
+        .nav-btn:hover { color:#e6edf3;border-color:rgba(255,255,255,0.15) }
+        .btn-keluar { background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.2);color:#f78166 }
+        .btn-keluar:hover { background:rgba(247,129,102,0.15);color:#f78166 }
+        .btn-staff-view { background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--muted);font-size:10px;padding:4px 9px }
+        .btn-staff-view:hover { background:rgba(255,255,255,0.04);color:#e6edf3;border-color:rgba(255,255,255,0.15) }
+        .btn-theme-toggle { width:32px;height:32px;border-radius:8px;background:#161b22;border:1px solid rgba(255,255,255,0.08);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s }
+        .btn-theme-toggle:hover { color:#e6edf3;border-color:rgba(255,255,255,0.15) }
+        .logo-text { font-size: 13px; font-weight: 900; letter-spacing: .3px; margin-left: 7px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0d1117; border-top: 1px solid rgba(255,255,255,0.07); padding: 10px 8px 24px; display: flex; justify-content: space-around; z-index: 200; border-radius: 22px 22px 0 0; }
+        .bnav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 14px; border-radius: 12px; text-decoration: none; }
+        .bnav-item i { font-size: 18px; }
+        .bnav-item span { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .3px; }
+        .bnav-item.inactive { color: #4b5563; }
+        .bnav-item.active { color: #00d9ff; }
+        .glass-card { background: rgba(17, 23, 31, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; }
+        .filter-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; padding: 6px 16px; border-radius: 10px; font-size: 11px; font-weight: 500; transition: all 0.2s; cursor: pointer; font-family: 'Space Grotesk', sans-serif; }
+        .filter-btn.active { background: #00d9ff; color: #000; border-color: #00d9ff; }
+        .kpi-card { background: rgba(17,23,31,0.9); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; }
+        .btn-action { width: 100%; padding: 16px; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 700; font-size: 13px; transition: 0.2s; border: none; cursor: pointer; font-family: 'Space Grotesk', sans-serif; }
+        .bg-pdf { background: #e63946; color: white; }
+        .bg-excel { background: #2a9d8f; color: white; }
+        .bg-share { background: #00d9ff; color: #000; }
+        .btn-action:active { transform: scale(0.98); opacity: 0.9; }
+        .table-header { color: #475569; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 10px 8px; }
+        .table-cell { font-size: 11px; font-weight: 600; padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .tab-btn { flex: 1; padding: 10px; font-size: 11px; font-weight: 700; border: none; cursor: pointer; font-family: 'Space Grotesk', sans-serif; transition: 0.2s; border-radius: 12px; }
+        .tab-btn.active { background: rgba(0,217,255,0.1); color: #00d9ff; }
+        .tab-btn.inactive { background: transparent; color: #4b5563; }
+        .empty-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 16px; gap: 8px; }
+        .empty-box i { font-size: 28px; color: #1e293b; }
+        .empty-box p { font-size: 11px; color: #374151; font-weight: 400; text-align: center; }
+        .loading-pulse { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        input[type="date"] { color-scheme: dark; }
+        .topbar-right { margin-left: auto; }
+        .topbar-keluar-btn { background: rgba(247,129,102,0.1); border: 1px solid rgba(247,129,102,0.2); color: #f78166; padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: 'Space Grotesk', sans-serif; transition: background-color 0.15s, color 0.15s; }
+        .topbar-keluar-btn:hover { background: rgba(247,129,102,0.2); }
+        @media (min-width: 768px) { #topbar-keluar-btn { display: none !important; } }
+
+        /* ═══════════════════════════════════════════════════════════════
+           RESPONSIVE DESKTOP — Prince Games Owner Panel
+           Sidebar di ≥768px, bottom nav di <768px
+        ═══════════════════════════════════════════════════════════════ */
+        @media (min-width: 768px) {
+            .bottom-nav, .bnav-item span { display: none !important; }
+            body { padding-bottom: 0 !important; display: flex; flex-direction: column; min-height: 100vh; }
+            .owner-layout { display: flex; min-height: 100vh; flex: 1; }
+            .owner-sidebar {
+                display: flex !important;
+                flex-direction: column;
+                width: 220px;
+                min-width: 220px;
+                background: #0d1117;
+                border-right: 1px solid rgba(255,255,255,0.07);
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                padding: 20px 12px 20px;
+                z-index: 50;
+                gap: 4px;
+            }
+            .sidebar-logo {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 900;
+                font-size: 16px;
+                padding: 0 8px 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+                margin-bottom: 8px;
+            }
+            .sidebar-logo .logo-icon {
+                width: 32px; height: 32px;
+                background: rgba(0,217,255,0.12);
+                border: 1px solid rgba(0,217,255,0.3);
+                border-radius: 8px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 14px; color: #00d9ff;
+            }
+            .sidebar-logo .logo-cyan { color: #00d9ff; }
+            .sidebar-nav-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--muted);
+                text-decoration: none;
+                transition: background-color 0.15s, color 0.15s;
+                cursor: pointer;
+                width: 100%;
+                box-sizing: border-box;
+                border: none;
+                font-family: inherit;
+                background: transparent;
+                line-height: 1.2;
+                min-height: 40px;
+            }
+            .sidebar-nav-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .sidebar-nav-item.active { background: rgba(0,217,255,0.08) !important; color: #00d9ff !important; font-weight: 600 !important; }
+            .sidebar-nav-item i { width: 16px; text-align: center; font-size: 13px; }
+            /* Submenu */
+            .sidebar-submenu { display: flex; flex-direction: column; gap: 2px; padding-left: 26px; margin-top: 2px; }
+            .sidebar-sub-item {
+                display: flex; align-items: center; gap: 8px;
+                padding: 7px 10px; border-radius: 8px;
+                font-size: 11px; font-weight: 500; color: var(--muted, #6b7a8d);
+                text-decoration: none; transition: background-color 0.15s, color 0.15s;
+                cursor: pointer; width: 100%; box-sizing: border-box;
+                border: none; font-family: inherit; background: transparent; line-height: 1.2;
+                position: relative;
+            }
+            .sidebar-sub-item::before {
+                content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+                width: 6px; height: 1px; background: rgba(255,255,255,0.15);
+            }
+            .sidebar-sub-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .sidebar-sub-item.active { color: #00d9ff !important; font-weight: 600 !important; background: rgba(0,217,255,0.06) !important; }
+            .sidebar-sub-item i { width: 13px; text-align: center; font-size: 11px; }
+            .sidebar-spacer { flex: 1; }
+            .sidebar-keluar {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 500;
+                color: #f78166;
+                cursor: pointer;
+                border: none;
+                background: rgba(247,129,102,0.06);
+                border: 1px solid rgba(247,129,102,0.15);
+                font-family: inherit;
+                transition: background-color 0.15s, color 0.15s;
+                width: 100%;
+            }
+            .sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
+            .sidebar-staff-view { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-size:12px; font-weight:500; color:var(--muted, #6b7a8d); cursor:pointer; border:1px solid rgba(255,255,255,0.06); background:transparent; font-family:inherit; transition:all 0.15s; width:100%; margin-bottom:6px; text-decoration:none; }
+            .sidebar-staff-view:hover { background:rgba(255,255,255,0.04); color:var(--muted); }
+            .owner-main-content { flex: 1; min-width: 0; overflow-y: scroll; padding: 28px 40px 80px 40px; max-width: 1100px; margin: 0 auto; }
+            .topbar { display: none !important; }
+            /* Widen content area on desktop */
+            .p-5 { max-width: 900px !important; padding: 32px 40px !important; }
+        }
+        @media (max-width: 767px) {
+            .owner-sidebar { display: none !important; }
+            .owner-layout { display: block; }
+            .owner-main-content { display: block; padding: 16px 16px 100px; max-width: 100%; }
+        }
+    
+        /* ══════════════════════════════════════
+           LIGHT MODE — FULL OVERRIDE
+        ══════════════════════════════════════ */
+        body.light-mode {
+            --bg: #f0f4f8;
+            --surface: #ffffff;
+            --card: #f8fafc;
+            --card2: #f1f5f9;
+            --border: rgba(0,0,0,0.08);
+            --text: #0f172a;
+            --muted: #64748b;
+            --muted2: #94a3b8;
+        }
+        body.light-mode { background: #f0f4f8 !important; color: #0f172a !important; }
+        body.light-mode html { background: #f0f4f8 !important; }
+
+        /* Sidebar */
+        body.light-mode .owner-sidebar {
+            background: #ffffff !important;
+            border-right: 1px solid rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .sidebar-logo { border-color: rgba(0,0,0,0.08) !important; color: #0f172a !important; }
+        body.light-mode .sidebar-nav-item { color: #94a3b8 !important; }
+        body.light-mode .sidebar-sub-item { color: #64748b !important; }
+        body.light-mode .sidebar-sub-item:hover { background: rgba(2,132,199,0.06) !important; color: #0284c7 !important; }
+        body.light-mode .sidebar-sub-item.active { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; }
+        body.light-mode .sidebar-sub-item::before { background: rgba(0,0,0,0.15); }
+        body.light-mode .sidebar-nav-item:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
+        body.light-mode .sidebar-nav-item.active { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
+        body.light-mode .sidebar-staff-view { color: #94a3b8 !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .sidebar-staff-view:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
+        body.light-mode .sidebar-keluar { background: rgba(239,68,68,0.07) !important; border-color: rgba(239,68,68,0.15) !important; }
+
+        /* Layout & wrappers */
+        body.light-mode .owner-main-content { background: #f0f4f8 !important; }
+        body.light-mode .scroll-area { background: #f0f4f8 !important; }
+        body.light-mode .p-5 { background: #f0f4f8 !important; }
+
+        /* Cards / sections */
+        body.light-mode .section-card,
+        body.light-mode .section,
+        body.light-mode .glass-card,
+        body.light-mode .kpi-card,
+        body.light-mode .card,
+        body.light-mode .stat-card,
+        body.light-mode [class*="glass"],
+        body.light-mode [class*="card"] {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            color: #0f172a !important;
+        }
+
+        /* Section headers & borders */
+        body.light-mode .section-header { border-color: rgba(0,0,0,0.07) !important; }
+        body.light-mode .type-row { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode .type-row:last-child { border-color: transparent !important; }
+        body.light-mode .menu-row { border-color: rgba(0,0,0,0.06) !important; }
+
+        /* Text */
+        body.light-mode h1, body.light-mode h2, body.light-mode h3 { color: #0f172a !important; }
+        body.light-mode .page-title h1 { color: #0f172a !important; }
+        body.light-mode .page-title p { color: #64748b !important; }
+        body.light-mode .type-name, body.light-mode .type-info h3 { color: #0f172a !important; }
+        body.light-mode .type-info p, body.light-mode .menu-info p { color: #64748b !important; }
+        body.light-mode .unit-name { color: #0f172a !important; }
+        body.light-mode .menu-name { color: #0f172a !important; }
+        body.light-mode .menu-price { color: #64748b !important; }
+        body.light-mode .sec-title { color: #0f172a !important; }
+
+        /* Unit cards */
+        body.light-mode .unit-card {
+            background: #f8fafc !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .unit-card:hover { background: #f1f5f9 !important; }
+
+        /* Inputs / forms */
+        body.light-mode .form-input,
+        body.light-mode input[type="text"],
+        body.light-mode input[type="number"],
+        body.light-mode input[type="date"],
+        body.light-mode select,
+        body.light-mode textarea {
+            background: #f8fafc !important;
+            border-color: rgba(0,0,0,0.12) !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .form-field label { color: #64748b !important; }
+
+        /* Buttons */
+        body.light-mode .btn-icon { 
+            background: #f1f5f9 !important; 
+            border-color: rgba(0,0,0,0.08) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .add-trigger { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode .filter-btn { 
+            background: #f1f5f9 !important; 
+            border-color: rgba(0,0,0,0.1) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .filter-btn.active { background: #00d9ff !important; color: #000 !important; }
+
+        /* Tables */
+        body.light-mode table, body.light-mode th, body.light-mode td { color: #0f172a !important; }
+        body.light-mode th { color: #64748b !important; }
+        body.light-mode tr { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode .table-header { color: #94a3b8 !important; }
+        body.light-mode .table-cell { color: #0f172a !important; border-color: rgba(0,0,0,0.05) !important; }
+
+        /* Bottom nav */
+        body.light-mode .bottom-nav {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .bnav-item.inactive, body.light-mode .nav-item.inactive { color: #cbd5e1 !important; }
+
+        /* Topbar */
+        body.light-mode .topbar { background: #ffffff !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .nav-btn { background: #f1f5f9 !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
+        body.light-mode .btn-theme-toggle { background: #f1f5f9 !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
+        body.light-mode .role-badge { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
+
+        /* Misc */
+        body.light-mode .empty-box p { color: #94a3b8 !important; }
+        body.light-mode .loading-pulse { color: #94a3b8 !important; }
+        body.light-mode input[type="date"] { color-scheme: light; }
+        body.light-mode [class*="text-gray"] { color: #64748b !important; }
+        body.light-mode [class*="text-white"] { color: #0f172a !important; }
+        body.light-mode [class*="bg-white/"] { background: rgba(0,0,0,0.04) !important; }
+        body.light-mode [class*="border-white/"] { border-color: rgba(0,0,0,0.08) !important; }
+
+        
+        @media (max-width: 767px) {
+            /* Wrapper: susun vertikal di mobile */
+            .export-total-wrap {
+                flex-direction: column !important;
+            }
+            /* Box tombol: full width, tombol sejajar */
+            .export-btn-box {
+                flex-direction: row !important;
+                flex-shrink: unset !important;
+                width: 100% !important;
+                padding: 16px !important;
+                gap: 10px !important;
+            }
+            .export-btn-box .btn-action {
+                flex: 1 !important;
+                width: 0 !important;
+                min-width: 0 !important;
+            }
+            /* Prevent horizontal overflow on mobile */
+            .owner-main-content > *,
+            .owner-main-content .glass-card,
+            .owner-main-content [class*="card"],
+            .owner-main-content .section {
+                max-width: 100% !important;
+                overflow-x: hidden;
+            }
+            table { font-size: 10px !important; }
+            .table-cell { padding: 8px 6px !important; font-size: 10px !important; }
+            .table-header { padding: 8px 6px !important; }
+            /* Grid cols max 2 on mobile */
+            .grid-cols-3 { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+
+        /* ── HIDE SCROLLBAR ── */
+        .owner-main-content::-webkit-scrollbar { display: none; }
+        .owner-main-content { -ms-overflow-style: none; scrollbar-width: none; }
+        </style>
+    <script>
+        (function(){
+            if(localStorage.getItem('pg_theme')==='light')
+                document.documentElement.classList.add('light-mode-pre');
+        })();
+    </script>
+</head>
+<body>
+<div class="owner-layout">
+    <aside class="owner-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
+            PRINCE <span class="logo-cyan">GAMES</span>
+        </div>
+            <a href="../owner/dashboard-owner.html" class="sidebar-nav-item"><i class="fas fa-th-large"></i> Beranda</a>
+            <a href="../owner/manage-owner.html" class="sidebar-nav-item"><i class="fas fa-tools"></i> Kelola</a>
+            <div class="sidebar-submenu">
+                <a href="../owner/manage-owner.html#unit" class="sidebar-sub-item"><i class="fas fa-gamepad"></i> Unit & Booking</a>
+                <a href="../owner/manage-owner.html#fnb" class="sidebar-sub-item"><i class="fas fa-utensils"></i> F&B</a>
+            </div>
+            <a href="../owner/history-owner.html" class="sidebar-nav-item"><i class="fas fa-history"></i> Riwayat</a>
+            <a href="../owner/export-owner.html" class="sidebar-nav-item active"><i class="fas fa-file-export"></i> Laporan</a>
+        <div class="sidebar-spacer"></div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 8px;border-radius:4px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;text-transform:uppercase;margin-bottom:8px;display:inline-block">OWNER</div>
+        <button class="sidebar-staff-view" onclick="goToStaffView()">
+            <i class="fas fa-users-gear"></i> Staff View
+        </button>
+        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left;margin-bottom:6px">
+            <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
+        </button>
+        <button class="sidebar-keluar" onclick="doLogout()">
+            <i class="fas fa-right-from-bracket"></i> Keluar
+        </button>
+    </aside>
+<div class="owner-main-content">
+
+    <div class="mb-6">
+        <h1 class="text-2xl font-black uppercase tracking-tight text-white" style="letter-spacing:-.5px">Ekspor Laporan</h1>
+        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Data real-time dari Firebase</p>
+    </div>
+
+    <!-- Filter Tanggal & Unit -->
+    <div class="glass-card p-4 mb-4">
+        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-3">Rentang Waktu & Unit</p>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div>
+                <label class="text-[9px] text-gray-500 font-bold uppercase ml-1">Dari</label>
+                <input type="date" id="date-from" class="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-xs text-white outline-none mt-1">
+            </div>
+            <div>
+                <label class="text-[9px] text-gray-500 font-bold uppercase ml-1">Sampai</label>
+                <input type="date" id="date-to" class="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-xs text-white outline-none mt-1">
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button class="filter-btn active" onclick="setUnitFilter('semua', this)">Semua</button>
+            <button class="filter-btn" onclick="setUnitFilter('PS3', this)">PS3</button>
+            <button class="filter-btn" onclick="setUnitFilter('PS4', this)">PS4</button>
+            <button class="filter-btn" onclick="setUnitFilter('PS5', this)">PS5</button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="kpi-card">
+            <div class="flex justify-between items-start mb-2">
+                <p class="text-[9px] text-gray-500 font-medium uppercase">Sesi Gaming</p>
+                <i class="fas fa-gamepad text-cyan-400 text-[10px]"></i>
+            </div>
+            <h2 class="text-lg font-medium loading-pulse" id="kpi-sesi">Rp 0</h2>
+            <p class="text-[9px] text-gray-600 mt-1" id="kpi-sesi-sub">Memuat...</p>
+        </div>
+        <div class="kpi-card">
+            <div class="flex justify-between items-start mb-2">
+                <p class="text-[9px] text-gray-500 font-medium uppercase">F&amp;B</p>
+                <i class="fas fa-utensils text-yellow-400 text-[10px]"></i>
+            </div>
+            <h2 class="text-lg font-medium loading-pulse" id="kpi-fnb">Rp 0</h2>
+            <p class="text-[9px] text-gray-600 mt-1" id="kpi-fnb-sub">Memuat...</p>
+        </div>
+    </div>
+
+    <!-- Total Gabungan + Tombol Export -->
+    <div class="export-total-wrap" style="display:flex;gap:12px;margin-bottom:24px;align-items:stretch;flex-wrap:wrap;">
+        <!-- Box Total -->
+        <div class="glass-card p-5 border-t-4 border-t-cyan-400 text-center" style="flex:1;min-width:180px;">
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2">Total Pendapatan</p>
+            <h1 id="kpi-total" class="text-4xl font-medium text-white loading-pulse">Rp 0</h1>
+            <div class="mt-3 flex justify-center">
+                <div class="inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                    <p id="kpi-total-sub" class="text-[10px] text-cyan-400 font-bold uppercase">0 Transaksi</p>
+                </div>
+            </div>
+        </div>
+        <!-- Box Tombol -->
+        <div class="glass-card export-btn-box" style="flex-shrink:0;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:20px 24px;">
+            <button onclick="unduhPDF()" class="btn-action bg-pdf">
+                <i class="fas fa-file-pdf"></i> Unduh PDF
+            </button>
+            <button onclick="unduhExcel()" class="btn-action bg-excel">
+                <i class="fas fa-file-excel"></i> Unduh Excel
+            </button>
+        </div>
+    </div>
+
+    <!-- Preview Tabel dengan Tab -->
+    <div class="glass-card mb-6 overflow-hidden">
+        <div class="p-4 border-b border-white/5">
+            <h3 class="text-xs font-medium uppercase tracking-widest mb-3">Preview Data</h3>
+            <div class="flex gap-2 bg-white/5 p-1 rounded-xl">
+                <button class="tab-btn active" id="tab-sesi-btn" onclick="switchTab('sesi')">
+                    <i class="fas fa-gamepad mr-1"></i> Sesi Gaming
+                </button>
+                <button class="tab-btn inactive" id="tab-fnb-btn" onclick="switchTab('fnb')">
+                    <i class="fas fa-utensils mr-1"></i> F&amp;B
+                </button>
+            </div>
+        </div>
+        <div id="tab-sesi" class="overflow-x-auto">
+            <div class="empty-box"><i class="fas fa-spinner fa-spin"></i><p>Memuat data...</p></div>
+        </div>
+        <div id="tab-fnb" class="overflow-x-auto hidden">
+            <div class="empty-box"><i class="fas fa-spinner fa-spin"></i><p>Memuat data...</p></div>
+        </div>
+    </div>
+
+
+
+</div>
+
+<nav class="bottom-nav">
+    <a href="../owner/dashboard-owner.html" class="bnav-item inactive"><i class="fas fa-th-large"></i><span>Beranda</span></a>
+    <a href="../owner/manage-owner.html" class="bnav-item inactive"><i class="fas fa-tools"></i><span>Kelola</span></a>
+    <a href="../owner/history-owner.html" class="bnav-item inactive"><i class="fas fa-history"></i><span>Riwayat</span></a>
+    <div class="bnav-item active"><i class="fas fa-file-export"></i><span>Laporan</span></div>
+</nav>
+
+<script type="module">
+    import { db, collection, onSnapshot, query, orderBy, handleLogout} from '../../assets/js/auth.js';
+
+    let allSesi = [], allFnb = [], allExtend = [], allFnbOrders = [];
+    let unitFilter = 'semua';
+    let filteredSesi = [], filteredFnb = [];
+
+    // Helper: hitung durasi booking dari startTime & stopTime string "HH:MM"
+    // Normalise "HH.MM" atau "HH:MM" → [jam, menit]
+    function parseJam(t) {
+        if (!t || t === '-') return null;
+        const str = String(t).replace('.', ':');
+        const parts = str.split(':').map(Number);
+        if (parts.length < 2 || isNaN(parts[0]) || isNaN(parts[1])) return null;
+        return parts;
+    }
+
+    function hitungDurasi(startTime, stopTime) {
+        const s = parseJam(startTime);
+        const e = parseJam(stopTime);
+        if (!s || !e) return '-';
+        try {
+            let menit = (e[0] * 60 + e[1]) - (s[0] * 60 + s[1]);
+            if (menit < 0) menit += 24 * 60;
+            const jam = Math.floor(menit / 60);
+            const sisa = menit % 60;
+            if (menit <= 0) return '-';
+            if (jam === 0) return sisa + ' mnt';
+            return sisa > 0 ? jam + ' jam ' + sisa + ' mnt' : jam + ' jam';
+        } catch(e) { return '-'; }
+    }
+
+    // Helper: cari extend log untuk sesi tertentu (unitId + tanggal)
+    function getExtendSesi(unitId, tanggal) {
+        return allExtend.filter(e =>
+            e.unitId === unitId &&
+            (e.createdAt || '').slice(0, 10) === tanggal
+        );
+    }
+
+    // Helper: cari fnb orders untuk sesi tertentu (unitId + tanggal)
+    function getFnbSesi(unitId, tanggal) {
+        return allFnbOrders.filter(f =>
+            f.unitId === unitId &&
+            (f.createdAt || '').slice(0, 10) === tanggal
+        );
+    }
+
+    const fmt = n => 'Rp ' + (n || 0).toLocaleString('id-ID');
+    // Helper total F&B: cek semua kemungkinan field
+    function getFnbTotal(d) {
+        return d.total || d.totalHarga || d.grandTotal || 
+               ((d.items||[]).reduce((s,x) => s + ((x.harga||x.price||0)*(x.qty||x.jumlah||1)), 0)) || 0;
+    }
+    // Helper flatten: 1 order -> banyak baris per item
+    function flattenFnbRows(list) {
+        const result = [];
+        list.forEach(d => {
+            const tgl = (d.createdAt||d.tanggal||'').slice(0,10)||'-';
+            const items = d.items || [];
+            if (items.length > 0) {
+                items.forEach(x => {
+                    result.push({
+                        tanggal: tgl,
+                        nama: x.name || x.nama || x.itemName || '-',
+                        qty: x.qty || x.jumlah || 1,
+                        harga: (x.harga||x.price||0) * (x.qty||x.jumlah||1),
+                        _order: d
+                    });
+                });
+            } else {
+                // fallback flat
+                result.push({
+                    tanggal: tgl,
+                    nama: d.namaItem||d.itemName||d.nama||'-',
+                    qty: d.qty||d.jumlah||'-',
+                    harga: getFnbTotal(d),
+                    _order: d
+                });
+            }
+        });
+        return result;
+    }
+
+    // Default: 30 hari terakhir
+    const today = new Date();
+    const from30 = new Date(); from30.setDate(today.getDate() - 30);
+    document.getElementById('date-from').value = from30.toISOString().slice(0, 10);
+    document.getElementById('date-to').value   = today.toISOString().slice(0, 10);
+
+    function applyFilter() {
+        const from = document.getElementById('date-from').value;
+        const to   = document.getElementById('date-to').value;
+
+        filteredSesi = allSesi.filter(d => {
+            const tgl    = d.tanggal || (d.createdAt || '').slice(0, 10) || '';
+            const unitOk = unitFilter === 'semua' || (d.unitType || '').toUpperCase() === unitFilter;
+            const dateOk = (!from || tgl >= from) && (!to || tgl <= to);
+            return unitOk && dateOk;
+        });
+
+        // Gabungkan orders + fnb_orders, deduplicate by id
+        const allFnbCombined = [...allFnb, ...allFnbOrders].filter((d, idx, arr) =>
+            arr.findIndex(x => x.id === d.id) === idx
+        );
+        filteredFnb = allFnbCombined.filter(d => {
+            const tgl    = (d.createdAt || d.tanggal || '').slice(0, 10);
+            const dateOk = (!from || tgl >= from) && (!to || tgl <= to);
+            return dateOk;
+        });
+
+        updateKPI();
+        renderTabelSesi();
+        renderTabelFnb();
+    }
+
+    function updateKPI() {
+        const totalSesi  = filteredSesi.reduce((s, d) => s + (d.price || 0), 0);
+        const totalFnb   = filteredFnb.reduce((s, d) => s + getFnbTotal(d), 0);
+        const grandTotal = totalSesi + totalFnb;
+
+        document.getElementById('kpi-sesi').textContent      = fmt(totalSesi);
+        document.getElementById('kpi-sesi-sub').textContent  = filteredSesi.length ? filteredSesi.length + ' sesi' : 'Belum ada data';
+        document.getElementById('kpi-fnb').textContent       = fmt(totalFnb);
+        document.getElementById('kpi-fnb-sub').textContent   = filteredFnb.length ? filteredFnb.length + ' pesanan' : 'Belum ada data';
+        document.getElementById('kpi-total').textContent     = fmt(grandTotal);
+        document.getElementById('kpi-total-sub').textContent = (filteredSesi.length + filteredFnb.length) + ' Total Transaksi';
+
+        document.getElementById('kpi-sesi').classList.remove('loading-pulse');
+        document.getElementById('kpi-fnb').classList.remove('loading-pulse');
+        document.getElementById('kpi-total').classList.remove('loading-pulse');
+    }
+
+    function renderTabelSesi() {
+        const wrap = document.getElementById('tab-sesi');
+        if (!filteredSesi.length) {
+            wrap.innerHTML = '<div class="empty-box"><i class="fas fa-inbox"></i><p>Tidak ada data sesi<br>untuk filter ini.</p></div>';
+            return;
+        }
+
+        const data50 = filteredSesi.slice(0, 50);
+        let rows = data50.map((d, i) => {
+            const tanggal  = d.tanggal || (d.createdAt||'').slice(0,10) || '-';
+            const unitId   = d.unitId || '-';
+            const durasi   = hitungDurasi(d.startTime, d.stopTime);
+            const exts     = getExtendSesi(unitId, tanggal);
+            const extTotal = exts.reduce((s,e) => s + (e.biaya||0), 0);
+            const fnbs     = getFnbSesi(unitId, tanggal);
+            const fnbLines = fnbs.flatMap(f => (f.items||[]).map(x => x.name + ' x' + x.qty));
+            const fnbTotal = fnbs.reduce((s,f) => s + (f.total||0), 0);
+
+            // Badge Tambahan ringkas
+            const extPayMethods = [...new Set(exts.map(e => {
+                const pm = e.payMethod;
+                if (!pm || pm === true) return 'Cash';
+                return String(pm);
+            }))].join('/');
+            const extBadge = exts.length > 0
+                ? '<span style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.3);color:#f97316;border-radius:5px;padding:2px 8px;font-size:10px;font-weight:700;white-space:nowrap">+' + exts.length + 'x · ' + fmt(extTotal) + ' · ' + extPayMethods + '</span>'
+                : '<span style="color:#374151">—</span>';
+
+            // Badge F&B ringkas
+            const fnbBadge = fnbLines.length > 0
+                ? '<span style="background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.25);color:#facc15;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;white-space:nowrap">' + fnbLines.length + ' item &nbsp;' + fmt(fnbTotal) + '</span>'
+                : '<span style="color:#374151">—</span>';
+
+            return '<tr class="hover:bg-white/[0.02]" style="border-bottom:1px solid rgba(255,255,255,0.04)">' +
+                '<td class="table-cell text-gray-500 text-[10px] text-center" style="white-space:nowrap">' + (i+1) + '</td>' +
+                '<td class="table-cell text-gray-400 text-[10px] text-center" style="white-space:nowrap">' + tanggal + '</td>' +
+                '<td class="table-cell text-center" style="white-space:nowrap"><span class="font-bold text-cyan-400" style="font-size:11px">' + unitId + '</span> <span class="text-gray-600" style="font-size:9px">' + (d.unitType||'') + '</span></td>' +
+                '<td class="table-cell text-[11px] text-center">' + (d.customerName||d.namaCustomer||'-') + '</td>' +
+                '<td class="table-cell text-gray-400 text-[10px] text-center" style="white-space:nowrap">' + (d.startTime||'-') + ' — ' + (d.stopTime||'-') + '</td>' +
+                '<td class="table-cell text-center" style="color:#a3e635;font-size:10px;white-space:nowrap">' + durasi + '</td>' +
+                '<td class="table-cell text-center">' + extBadge + '</td>' +
+                '<td class="table-cell text-center">' + fnbBadge + '</td>' +
+                '<td class="table-cell font-bold text-green-400 text-center" style="white-space:nowrap">' + fmt(d.price) + '</td>' +
+            '</tr>';
+        }).join('');
+
+        wrap.innerHTML = '<table class="w-full text-left" style="border-collapse:collapse">' +
+            '<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.07)">' +
+            '<th class="table-header text-center">#</th>' +
+            '<th class="table-header text-center">Tanggal</th>' +
+            '<th class="table-header text-center">Unit</th>' +
+            '<th class="table-header text-center">Customer</th>' +
+            '<th class="table-header text-center">Jam</th>' +
+            '<th class="table-header text-center">Durasi</th>' +
+            '<th class="table-header text-center">Tambahan</th>' +
+            '<th class="table-header text-center">F&B</th>' +
+            '<th class="table-header text-center">Total Bayar</th>' +
+            '</tr></thead><tbody>' + rows + '</tbody></table>' +
+            (filteredSesi.length > 50 ? '<p class="text-center text-[10px] text-gray-600 py-3">+' + (filteredSesi.length-50) + ' baris lainnya di ekspor</p>' : '');
+    }
+
+
+    function renderTabelFnb() {
+        const wrap = document.getElementById('tab-fnb');
+        if (!filteredFnb.length) {
+            wrap.innerHTML = '<div class="empty-box"><i class="fas fa-utensils"></i><p>Tidak ada data F&B<br>untuk filter ini.</p></div>';
+            return;
+        }
+        const flat = flattenFnbRows(filteredFnb);
+        const show = flat.slice(0, 50);
+        let rows = show.map((r, i) =>
+            '<tr class="hover:bg-white/[0.02]">' +
+            '<td class="table-cell text-gray-400 text-[10px]">' + r.tanggal + '</td>' +
+            '<td class="table-cell text-[11px]">' + r.nama + '</td>' +
+            '<td class="table-cell text-gray-400 text-center">' + r.qty + '</td>' +
+            '<td class="table-cell font-medium text-yellow-400">' + fmt(r.harga) + '</td>' +
+            '</tr>'
+        ).join('');
+        wrap.innerHTML = '<table class="w-full text-left">' +
+            '<thead><tr>' +
+            '<th class="table-header">Tanggal</th><th class="table-header">Item</th><th class="table-header">Qty</th><th class="table-header">Total</th>' +
+            '</tr></thead><tbody>' + rows + '</tbody></table>' +
+            (flat.length > 50 ? '<p class="text-center text-[10px] text-gray-600 py-3">+' + (flat.length-50) + ' baris lainnya di ekspor</p>' : '');
+    }
+
+    window.switchTab = (tab) => {
+        document.getElementById('tab-sesi').classList.toggle('hidden', tab !== 'sesi');
+        document.getElementById('tab-fnb').classList.toggle('hidden', tab !== 'fnb');
+        document.getElementById('tab-sesi-btn').className = 'tab-btn ' + (tab === 'sesi' ? 'active' : 'inactive');
+        document.getElementById('tab-fnb-btn').className  = 'tab-btn ' + (tab === 'fnb'  ? 'active' : 'inactive');
+    };
+
+    window.setUnitFilter = (val, el) => {
+        unitFilter = val;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        applyFilter();
+    };
+
+    document.getElementById('date-from').addEventListener('change', applyFilter);
+    document.getElementById('date-to').addEventListener('change', applyFilter);
+
+    // Firebase listeners
+    onSnapshot(query(collection(db, 'pendapatan'), orderBy('createdAt', 'desc')),
+        snap => { allSesi = snap.docs.map(d => ({ id: d.id, ...d.data() })); applyFilter(); });
+
+    onSnapshot(query(collection(db, 'orders'), orderBy('createdAt', 'desc')),
+        snap => { allFnb = snap.docs.map(d => ({ id: d.id, ...d.data() })); applyFilter(); });
+
+    onSnapshot(query(collection(db, 'extendLog'), orderBy('createdAt', 'desc')),
+        snap => { allExtend = snap.docs.map(d => ({ id: d.id, ...d.data() })); applyFilter(); });
+
+    onSnapshot(query(collection(db, 'fnb_orders'), orderBy('createdAt', 'desc')),
+        snap => { allFnbOrders = snap.docs.map(d => ({ id: d.id, ...d.data() })); applyFilter(); });
+
+    function getLabelFilter() {
+        const from = document.getElementById('date-from').value;
+        const to   = document.getElementById('date-to').value;
+        return (unitFilter === 'semua' ? 'Semua Unit' : unitFilter) + ' | ' + (from||'...') + ' s/d ' + (to||'...');
+    }
+
+    function toast(icon, title) {
+        Swal.fire({ toast: true, position: 'top', showConfirmButton: false, timer: 2500, icon, title, background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff' });
+    }
+    function warn(title, text) {
+        Swal.fire({ icon: 'warning', title, text, background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff', confirmButtonColor: '#00d9ff' });
+    }
+
+    // ── EKSPOR PDF (POLOSAN, RAPI, ALL BORDERS) ─────────────────────────────
+    window.unduhPDF = () => {
+        if (!filteredSesi.length && !filteredFnb.length) return warn('Data Kosong', 'Tidak ada data untuk diunduh.');
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const W = 210;
+        const totalSesi  = filteredSesi.reduce((s,d) => s+(d.price||0), 0);
+        const totalFnb   = filteredFnb.reduce((s,d) => s+getFnbTotal(d), 0);
+        const grandTotal = totalSesi + totalFnb;
+        const tglCetak   = new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' });
+        const noLaporan  = 'PG-' + new Date().getFullYear() + '-' + String(new Date().getMonth()+1).padStart(2,'0') + '-' + String(new Date().getDate()).padStart(2,'0');
+        const from = document.getElementById('date-from').value;
+        const to   = document.getElementById('date-to').value;
+        const unitLabel = unitFilter === 'semua' ? 'Semua Unit' : unitFilter;
+
+        /* ── HEADER ──────────────────────────────── */
+        doc.setFontSize(16); doc.setFont('helvetica', 'bold'); doc.setTextColor(0,0,0);
+        doc.text('PRINCE GAMES', W/2, 18, { align: 'center' });
+        doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+        doc.text('LAPORAN RESMI PENDAPATAN', W/2, 24, { align: 'center' });
+        doc.setFontSize(8);
+        doc.text('Jl. Contoh No. 1, Kota Anda  |  Prince Games Management System', W/2, 29, { align: 'center' });
+
+        // Garis bawah header
+        doc.setDrawColor(0,0,0); doc.setLineWidth(0.5);
+        doc.line(14, 33, W-14, 33);
+        doc.setLineWidth(0.2);
+        doc.line(14, 35, W-14, 35);
+
+        /* ── INFO LAPORAN ────────────────────────── */
+        let curY = 42;
+        const col1 = 14, col2 = 70, col3 = 120, col4 = 170;
+        doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+        doc.text('No. Laporan',  col1, curY); doc.text(':', col2-6, curY);
+        doc.text('Periode',      col3, curY); doc.text(':', col4-6, curY);
+        doc.setFont('helvetica', 'normal');
+        doc.text(noLaporan,      col2, curY);
+        doc.text((from||'...') + ' s/d ' + (to||'...'), col4, curY);
+        curY += 6;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Dicetak',      col1, curY); doc.text(':', col2-6, curY);
+        doc.text('Filter Unit',  col3, curY); doc.text(':', col4-6, curY);
+        doc.setFont('helvetica', 'normal');
+        doc.text(tglCetak,       col2, curY);
+        doc.text(unitLabel,      col4, curY);
+        curY += 4;
+        doc.setDrawColor(0,0,0); doc.setLineWidth(0.4);
+        doc.line(14, curY, W-14, curY);
+        curY += 8;
+
+        /* ── RINGKASAN KPI ───────────────────────── */
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+        doc.text('RINGKASAN', 14, curY); curY += 5;
+
+        const kpiHeaders = ['Keterangan', 'Jumlah Transaksi', 'Total Pendapatan'];
+        const kpiBody = [
+            ['Sesi Gaming', String(filteredSesi.length) + ' sesi', fmt(totalSesi)],
+            ['Pesanan F&B', String(filteredFnb.length) + ' pesanan', fmt(totalFnb)],
+            ['GRAND TOTAL', String(filteredSesi.length + filteredFnb.length) + ' transaksi', fmt(grandTotal)],
+        ];
+        doc.autoTable({
+            startY: curY,
+            head: [kpiHeaders],
+            body: kpiBody,
+            styles: {
+                fontSize: 8.5,
+                textColor: [0,0,0],
+                fillColor: false,
+                lineColor: [0,0,0],
+                lineWidth: 0.3,
+                cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
+                valign: 'middle',
+            },
+            headStyles: {
+                fillColor: [220,220,220],
+                textColor: [0,0,0],
+                fontStyle: 'bold',
+                fontSize: 8.5,
+                lineColor: [0,0,0],
+                lineWidth: 0.3,
+            },
+            bodyStyles: { fillColor: false },
+            alternateRowStyles: { fillColor: [245,245,245] },
+            columnStyles: {
+                0: { cellWidth: 70 },
+                1: { cellWidth: 50, halign: 'center' },
+                2: { cellWidth: 62, halign: 'right', fontStyle: 'bold' },
+            },
+            didParseCell: function(data) {
+                if (data.row.index === 2) {
+                    data.cell.styles.fontStyle = 'bold';
+                    data.cell.styles.fillColor = [200,200,200];
+                }
+            },
+            margin: { left: 14, right: 14 },
+        });
+        curY = doc.lastAutoTable.finalY + 10;
+
+        /* ── TABEL SESI GAMING ───────────────────── */
+        if (filteredSesi.length) {
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(0,0,0);
+            doc.text('DETAIL SESI GAMING  (' + filteredSesi.length + ' data)', 14, curY);
+            curY += 5;
+            doc.autoTable({
+                startY: curY,
+                head: [['No', 'Tanggal', 'Unit', 'Customer', 'Mulai', 'Selesai', 'Durasi', 'Tambahan', 'F&B', 'Total Bayar']],
+                body: filteredSesi.map((d, i) => {
+                    const tanggal  = d.tanggal || (d.createdAt||'').slice(0,10) || '-';
+                    const unitId   = d.unitId || '-';
+                    const durasi   = hitungDurasi(d.startTime, d.stopTime);
+                    const exts     = getExtendSesi(unitId, tanggal);
+                    const extCount = exts.length;
+                    const extTotal = exts.reduce((s,e) => s+(e.biaya||0), 0);
+                    const fnbs     = getFnbSesi(unitId, tanggal);
+                    const fnbTotal = fnbs.reduce((s,f) => s+(f.total||0), 0);
+
+                    // Tambahan: ringkas untuk PDF
+                    const extLines = exts.map(e => {
+                        const pm = e.payMethod;
+                        const pmStr = (!pm || pm === true) ? 'Cash' : String(pm);
+                        return '+1 jam  ' + fmt(e.biaya||0) + '  ' + pmStr;
+                    });
+                    const extPDF   = extCount > 0
+                        ? (extCount === 1
+                            ? extLines[0] + '\nTotal: ' + fmt(extTotal)
+                            : extLines.map((x,i) => (i+1) + '. ' + x).join('\n') + '\nTotal: ' + fmt(extTotal))
+                        : '-';
+
+                    // F&B: list bernomor untuk PDF
+                    const fnbLines = fnbs.flatMap(f => (f.items||[]).map(ii => ii.name + ' x' + ii.qty));
+                    const fnbPDF   = fnbLines.length > 0
+                        ? (fnbLines.length === 1
+                            ? fnbLines[0] + '\nTotal: ' + fmt(fnbTotal)
+                            : fnbLines.map((x,i) => (i+1) + '. ' + x).join('\n') + '\nTotal: ' + fmt(fnbTotal))
+                        : '-';
+
+                    return [
+                        i+1,
+                        tanggal,
+                        (d.unitId||'-') + ' (' + (d.unitType||'-') + ')',
+                        d.customerName || d.namaCustomer || '-',
+                        d.startTime || '-',
+                        d.stopTime  || '-',
+                        durasi,
+                        extPDF,
+                        fnbPDF,
+                        fmt(d.price || 0)
+                    ];
+                }),
+                foot: [['', '', '', '', '', '', '', '', 'SUBTOTAL', fmt(totalSesi)]],
+                styles: {
+                    fontSize: 6.5,
+                    textColor: [0,0,0],
+                    fillColor: false,
+                    lineColor: [0,0,0],
+                    lineWidth: 0.25,
+                    cellPadding: { top: 2.5, bottom: 2.5, left: 2.5, right: 2.5 },
+                    valign: 'middle',
+                    overflow: 'linebreak',
+                },
+                headStyles: {
+                    fillColor: [220,220,220],
+                    textColor: [0,0,0],
+                    fontStyle: 'bold',
+                    fontSize: 6.5,
+                    lineColor: [0,0,0],
+                    lineWidth: 0.3,
+                    halign: 'center',
+                },
+                alternateRowStyles: { fillColor: [245,245,245] },
+                footStyles: {
+                    fillColor: [210,210,210],
+                    textColor: [0,0,0],
+                    fontStyle: 'bold',
+                    fontSize: 7.5,
+                    lineColor: [0,0,0],
+                    lineWidth: 0.3,
+                },
+                columnStyles: {
+                    0: { cellWidth: 7,  halign: 'center' },
+                    1: { cellWidth: 20, halign: 'center' },
+                    2: { cellWidth: 20, halign: 'center' },
+                    3: { cellWidth: 28, halign: 'center' },
+                    4: { cellWidth: 14, halign: 'center' },
+                    5: { cellWidth: 14, halign: 'center' },
+                    6: { cellWidth: 16, halign: 'center' },
+                    7: { cellWidth: 18 },
+                    8: { cellWidth: 24 },
+                    9: { cellWidth: 21, halign: 'center', fontStyle: 'bold' },
+                },
+                margin: { left: 14, right: 14 },
+            });
+            curY = doc.lastAutoTable.finalY + 10;
+        }
+
+        /* ── TABEL F&B ───────────────────────────── */
+        if (filteredFnb.length) {
+            if (curY > 235) { doc.addPage(); curY = 20; }
+            const flatFnb = flattenFnbRows(filteredFnb);
+            const totalFnbFlat = flatFnb.reduce((s,r) => s+r.harga, 0);
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(0,0,0);
+            doc.text('DETAIL PESANAN F&B  (' + flatFnb.length + ' item dari ' + filteredFnb.length + ' order)', 14, curY);
+            curY += 5;
+            doc.autoTable({
+                startY: curY,
+                head: [['No', 'Tanggal', 'Nama Item', 'Qty', 'Total']],
+                body: flatFnb.map((r, i) => [
+                    i+1,
+                    r.tanggal,
+                    r.nama,
+                    r.qty,
+                    fmt(r.harga)
+                ]),
+                foot: [['', '', '', 'SUBTOTAL', fmt(totalFnbFlat)]],
+                styles: {
+                    fontSize: 7.5,
+                    textColor: [0,0,0],
+                    fillColor: false,
+                    lineColor: [0,0,0],
+                    lineWidth: 0.25,
+                    cellPadding: { top: 3, bottom: 3, left: 3, right: 3 },
+                    valign: 'middle',
+                },
+                headStyles: {
+                    fillColor: [220,220,220],
+                    textColor: [0,0,0],
+                    fontStyle: 'bold',
+                    fontSize: 7.5,
+                    lineColor: [0,0,0],
+                    lineWidth: 0.3,
+                },
+                alternateRowStyles: { fillColor: [245,245,245] },
+                footStyles: {
+                    fillColor: [210,210,210],
+                    textColor: [0,0,0],
+                    fontStyle: 'bold',
+                    fontSize: 8,
+                    lineColor: [0,0,0],
+                    lineWidth: 0.3,
+                },
+                columnStyles: {
+                    0: { cellWidth: 10, halign: 'center' },
+                    1: { cellWidth: 28 },
+                    2: { cellWidth: 80 },
+                    3: { cellWidth: 18, halign: 'center' },
+                    4: { cellWidth: 30, halign: 'right', fontStyle: 'bold' },
+                },
+                margin: { left: 14, right: 14 },
+            });
+            curY = doc.lastAutoTable.finalY + 10;
+        }
+
+        /* ── GRAND TOTAL BOX ─────────────────────── */
+        if (curY > 265) { doc.addPage(); curY = 20; }
+        doc.setDrawColor(0,0,0); doc.setLineWidth(0.5);
+        doc.rect(14, curY, W-28, 16);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(0,0,0);
+        doc.text('TOTAL PENDAPATAN KESELURUHAN', 20, curY+7);
+        doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+        doc.text('Sesi: ' + fmt(totalSesi) + '  +  F&B: ' + fmt(totalFnb), 20, curY+13);
+        doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+        doc.text(fmt(grandTotal), W-18, curY+11, { align: 'right' });
+
+        /* ── FOOTER HALAMAN ──────────────────────── */
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let p = 1; p <= pageCount; p++) {
+            doc.setPage(p);
+            const py = 290;
+            doc.setDrawColor(0,0,0); doc.setLineWidth(0.3);
+            doc.line(14, py-4, W-14, py-4);
+            doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(80,80,80);
+            doc.text('Prince Games Management System  |  Dicetak otomatis oleh sistem', 14, py);
+            doc.text('Halaman ' + p + ' dari ' + pageCount, W-14, py, { align: 'right' });
+        }
+
+        doc.save('Laporan_PrinceGames_' + new Date().toLocaleDateString('id-ID').replace(/\//g,'-') + '.pdf');
+        toast('success', 'PDF berhasil diunduh!');
+    };
+
+    // ── EKSPOR EXCEL (POLOSAN, RAPI, ALL BORDERS) ─────────────────────────────
+    window.unduhExcel = () => {
+        if (!filteredSesi.length && !filteredFnb.length) return warn('Data Kosong', 'Tidak ada data untuk diunduh.');
+        const totalSesi  = filteredSesi.reduce((s,d) => s+(d.price||0), 0);
+        const totalFnb   = filteredFnb.reduce((s,d) => s+getFnbTotal(d), 0);
+        const grandTotal = totalSesi + totalFnb;
+        const wb = XLSX.utils.book_new();
+        const tglCetak  = new Date().toLocaleString('id-ID');
+        const noLaporan = 'PG-' + new Date().getFullYear() + '-' + String(new Date().getMonth()+1).padStart(2,'0') + '-' + String(new Date().getDate()).padStart(2,'0');
+        const from = document.getElementById('date-from').value;
+        const to   = document.getElementById('date-to').value;
+        const unitLabel = unitFilter === 'semua' ? 'Semua Unit' : unitFilter;
+
+        // Border style helper
+        const BORDER_THIN = { style: 'thin', color: { rgb: '000000' } };
+        const allBorders = { top: BORDER_THIN, bottom: BORDER_THIN, left: BORDER_THIN, right: BORDER_THIN };
+
+        function c(v, opts = {}) {
+            const cell = { v, t: typeof v === 'number' ? 'n' : 's' };
+            const s = { border: allBorders };
+            if (opts.bold)   s.font = { ...(s.font||{}), bold: true };
+            if (opts.sz)     s.font = { ...(s.font||{}), sz: opts.sz };
+            if (opts.center) s.alignment = { horizontal: 'center', vertical: 'center', wrapText: true };
+            if (opts.right)  s.alignment = { horizontal: 'right',  vertical: 'center' };
+            if (opts.left)   s.alignment = { horizontal: 'left',   vertical: 'center' };
+            if (opts.numFmt) s.numFmt = opts.numFmt;
+            // abu-abu header
+            if (opts.header) s.fill = { fgColor: { rgb: 'DDDDDD' } };
+            // abu-abu subtotal/total
+            if (opts.total)  s.fill = { fgColor: { rgb: 'C8C8C8' } };
+            // stripe alt row
+            if (opts.alt)    s.fill = { fgColor: { rgb: 'F2F2F2' } };
+            cell.s = s;
+            return cell;
+        }
+
+        function emptyRow(n) { return Array(n).fill({ v: '', t: 's', s: {} }); }
+        function noBorderCell(v, opts = {}) {
+            const cell = { v, t: 's', s: {} };
+            if (opts.bold) cell.s.font = { bold: true, sz: opts.sz || 11 };
+            if (opts.sz)   cell.s.font = { ...(cell.s.font||{}), sz: opts.sz };
+            return cell;
+        }
+
+        // ── SHEET SESI GAMING ────────────────────────────────────────────────
+        if (filteredSesi.length) {
+            const rows = [];
+            rows.push([noBorderCell('PRINCE GAMES', { bold: true, sz: 14 })]);
+            rows.push([noBorderCell('Laporan Sesi Gaming', { sz: 11 })]);
+            rows.push([noBorderCell('No. Laporan : ' + noLaporan + '   |   Dicetak : ' + tglCetak, { sz: 9 })]);
+            rows.push([noBorderCell('Periode     : ' + (from||'...') + ' s/d ' + (to||'...') + '   |   Unit : ' + unitLabel, { sz: 9 })]);
+            rows.push(emptyRow(10));
+
+            // Header tabel
+            rows.push([
+                c('No',             { header:true, bold:true, center:true, sz:9 }),
+                c('Tanggal',        { header:true, bold:true, center:true, sz:9 }),
+                c('Unit',           { header:true, bold:true, center:true, sz:9 }),
+                c('Nama Pelanggan', { header:true, bold:true, center:true, sz:9 }),
+                c('Jam Mulai',      { header:true, bold:true, center:true, sz:9 }),
+                c('Jam Selesai',    { header:true, bold:true, center:true, sz:9 }),
+                c('Durasi',         { header:true, bold:true, center:true, sz:9 }),
+                c('Tambahan',       { header:true, bold:true, center:true, sz:9 }),
+                c('Detail F&B',     { header:true, bold:true, center:true, sz:9 }),
+                c('Total Bayar',    { header:true, bold:true, center:true, sz:9 }),
+            ]);
+
+            // Helper list bernomor untuk Excel (pakai \n)
+            function xlsList(arr) {
+                if (!arr.length) return '-';
+                if (arr.length === 1) return arr[0];
+                return arr.map((x, i) => (i+1) + '. ' + x).join('\n');
+            }
+
+            // Data rows
+            filteredSesi.forEach((d, i) => {
+                const isAlt    = i % 2 === 1;
+                const tanggal  = d.tanggal || (d.createdAt||'').slice(0,10) || '-';
+                const unitId   = d.unitId || '-';
+                const durasi   = hitungDurasi(d.startTime, d.stopTime);
+                const exts     = getExtendSesi(unitId, tanggal);
+                const extCount = exts.length;
+                const extTotal = exts.reduce((s,e) => s+(e.biaya||0), 0);
+                const fnbs     = getFnbSesi(unitId, tanggal);
+                const fnbLines = fnbs.flatMap(f => (f.items||[]).map(ii => ii.name + ' x' + ii.qty));
+                const fnbTotal = fnbs.reduce((s,f) => s+(f.total||0), 0);
+
+                // Tambahan: ringkas satu baris per extend + total
+                const extLines = exts.map(e => {
+                    const pm = e.payMethod;
+                    const pmStr = (!pm || pm === true) ? 'Cash' : String(pm);
+                    return '+1 jam  Rp ' + (e.biaya||0).toLocaleString('id-ID') + '  ' + pmStr;
+                });
+                const extXls   = extCount > 0
+                    ? xlsList(extLines) + '\nTotal: Rp ' + extTotal.toLocaleString('id-ID')
+                    : '-';
+
+                // F&B: list bernomor + total
+                const fnbXls   = fnbLines.length > 0
+                    ? xlsList(fnbLines) + '\nTotal: Rp ' + fnbTotal.toLocaleString('id-ID')
+                    : '-';
+
+                const opt = isAlt ? { alt:true } : {};
+                const wrap = { wrapText: true, vertical: 'top' };
+
+                function cw(v, extra = {}) {
+                    const cell = c(v, { sz:9, ...opt, ...extra });
+                    cell.s.alignment = { ...(cell.s.alignment||{}), wrapText: true, vertical: 'top' };
+                    return cell;
+                }
+
+                rows.push([
+                    cw(i+1,                                              { center:true }),
+                    cw(tanggal,                                          { center:true }),
+                    cw((d.unitId||'-') + ' (' + (d.unitType||'-') + ')',{ center:true }),
+                    cw(d.customerName || d.namaCustomer || '-'),
+                    cw(d.startTime || '-',                               { center:true }),
+                    cw(d.stopTime  || '-',                               { center:true }),
+                    cw(durasi,                                           { center:true }),
+                    cw(extXls),
+                    cw(fnbXls),
+                    cw(fmt(d.price || 0),                               { center:true, bold:true }),
+                ]);
+            });
+
+            // Subtotal
+            rows.push([
+                c('', { total:true }), c('', { total:true }), c('', { total:true }),
+                c('', { total:true }), c('', { total:true }), c('', { total:true }),
+                c('', { total:true }), c('', { total:true }),
+                c('SUBTOTAL', { total:true, bold:true, right:true, sz:9 }),
+                c(totalSesi,  { total:true, bold:true, center:true, sz:10, numFmt:'"Rp "#,##0' }),
+            ]);
+
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            ws['!cols'] = [{ wch:5 },{ wch:14 },{ wch:18 },{ wch:22 },{ wch:10 },{ wch:10 },{ wch:12 },{ wch:36 },{ wch:36 },{ wch:18 }];
+            ws['!merges'] = [
+                { s:{r:0,c:0}, e:{r:0,c:9} },
+                { s:{r:1,c:0}, e:{r:1,c:9} },
+                { s:{r:2,c:0}, e:{r:2,c:9} },
+                { s:{r:3,c:0}, e:{r:3,c:9} },
+            ];
+            XLSX.utils.book_append_sheet(wb, ws, 'Sesi Gaming');
+        }
+
+        // ── SHEET F&B ─────────────────────────────────────────────────────────
+        if (filteredFnb.length) {
+            const flatFnbXl = flattenFnbRows(filteredFnb);
+            const totalFnbXl = flatFnbXl.reduce((s,r) => s+r.harga, 0);
+            const rows = [];
+            rows.push([noBorderCell('PRINCE GAMES', { bold: true, sz: 14 })]);
+            rows.push([noBorderCell('Laporan Pesanan F&B', { sz: 11 })]);
+            rows.push([noBorderCell('No. Laporan : ' + noLaporan + '   |   Dicetak : ' + tglCetak, { sz: 9 })]);
+            rows.push([noBorderCell('Periode     : ' + (from||'...') + ' s/d ' + (to||'...') + '   |   Unit : ' + unitLabel, { sz: 9 })]);
+            rows.push(emptyRow(5));
+
+            rows.push([
+                c('No',          { header:true, bold:true, center:true, sz:9 }),
+                c('Tanggal',     { header:true, bold:true, center:true, sz:9 }),
+                c('Nama Item',   { header:true, bold:true, sz:9 }),
+                c('Qty',         { header:true, bold:true, center:true, sz:9 }),
+                c('Total',       { header:true, bold:true, right:true, sz:9 }),
+            ]);
+
+            flatFnbXl.forEach((r, i) => {
+                const isAlt = i % 2 === 1;
+                rows.push([
+                    c(i+1,      { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
+                    c(r.tanggal,{ center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
+                    c(r.nama,   { sz:9, ...(isAlt?{alt:true}:{}) }),
+                    c(r.qty,    { center:true, sz:9, ...(isAlt?{alt:true}:{}) }),
+                    c(r.harga,  { right:true, bold:true, sz:9, numFmt:'"Rp "#,##0', ...(isAlt?{alt:true}:{}) }),
+                ]);
+            });
+
+            rows.push([
+                c('',           { total:true }),
+                c('',           { total:true }),
+                c('',           { total:true }),
+                c('SUBTOTAL',   { total:true, bold:true, right:true, sz:9 }),
+                c(totalFnbXl,   { total:true, bold:true, right:true, sz:10, numFmt:'"Rp "#,##0' }),
+            ]);
+
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            ws['!cols'] = [{ wch:5 },{ wch:14 },{ wch:40 },{ wch:8 },{ wch:20 }];
+            ws['!merges'] = [
+                { s:{r:0,c:0}, e:{r:0,c:4} },
+                { s:{r:1,c:0}, e:{r:1,c:4} },
+                { s:{r:2,c:0}, e:{r:2,c:4} },
+                { s:{r:3,c:0}, e:{r:3,c:4} },
+            ];
+            XLSX.utils.book_append_sheet(wb, ws, 'Pesanan F&B');
+        }
+
+        // ── SHEET RINGKASAN ───────────────────────────────────────────────────
+        {
+            const rows = [];
+            rows.push([noBorderCell('PRINCE GAMES', { bold: true, sz: 14 })]);
+            rows.push([noBorderCell('Ringkasan Laporan Pendapatan', { sz: 11 })]);
+            rows.push([noBorderCell('No. Laporan : ' + noLaporan + '   |   Dicetak : ' + tglCetak, { sz: 9 })]);
+            rows.push([noBorderCell('Periode     : ' + (from||'...') + ' s/d ' + (to||'...') + '   |   Unit : ' + unitLabel, { sz: 9 })]);
+            rows.push(emptyRow(3));
+
+            rows.push([
+                c('Keterangan',        { header:true, bold:true, sz:10 }),
+                c('Jumlah Transaksi',  { header:true, bold:true, center:true, sz:10 }),
+                c('Total Pendapatan',  { header:true, bold:true, right:true, sz:10 }),
+            ]);
+            rows.push([
+                c('Sesi Gaming',       { sz:10 }),
+                c(filteredSesi.length, { center:true, sz:10 }),
+                c(totalSesi,           { right:true, bold:true, sz:10, numFmt:'"Rp "#,##0' }),
+            ]);
+            rows.push([
+                c('Pesanan F&B',       { alt:true, sz:10 }),
+                c(filteredFnb.length,  { alt:true, center:true, sz:10 }),
+                c(totalFnb,            { alt:true, right:true, bold:true, sz:10, numFmt:'"Rp "#,##0' }),
+            ]);
+            rows.push([
+                c('GRAND TOTAL',       { total:true, bold:true, sz:11 }),
+                c(filteredSesi.length + filteredFnb.length, { total:true, bold:true, center:true, sz:11 }),
+                c(grandTotal,          { total:true, bold:true, right:true, sz:12, numFmt:'"Rp "#,##0' }),
+            ]);
+            rows.push(emptyRow(3));
+            rows.push([noBorderCell('Prince Games Management System  |  Laporan dicetak otomatis oleh sistem', { sz: 8 })]);
+
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            ws['!cols'] = [{ wch:30 },{ wch:22 },{ wch:24 }];
+            ws['!merges'] = [
+                { s:{r:0,c:0}, e:{r:0,c:2} },
+                { s:{r:1,c:0}, e:{r:1,c:2} },
+                { s:{r:2,c:0}, e:{r:2,c:2} },
+                { s:{r:3,c:0}, e:{r:3,c:2} },
+                { s:{r:9,c:0}, e:{r:9,c:2} },
+            ];
+            XLSX.utils.book_append_sheet(wb, ws, 'Ringkasan');
+        }
+
+        XLSX.writeFile(wb, 'Laporan_PrinceGames_' + new Date().toLocaleDateString('id-ID').replace(/\//g,'-') + '.xlsx');
+        toast('success', 'Excel berhasil diunduh!');
+    };
+
+    // ── BAGIKAN RINGKASAN ─────────────────────────────────────────────────────
+    window.bagikanRingkasan = async () => {
+        const totalSesi  = filteredSesi.reduce((s,d) => s+(d.price||0), 0);
+        const totalFnb   = filteredFnb.reduce((s,d) => s+getFnbTotal(d), 0);
+        const grandTotal = totalSesi + totalFnb;
+        if (!filteredSesi.length && !filteredFnb.length) return toast('info', 'Tidak ada data untuk dibagikan.');
+
+        const from = document.getElementById('date-from').value;
+        const to   = document.getElementById('date-to').value;
+        const unit = unitFilter === 'semua' ? 'Semua Unit' : unitFilter;
+
+        const pesan =
+'🎮 *LAPORAN PRINCE GAMES*\n' +
+'━━━━━━━━━━━━━━━━━━━━\n' +
+'📅 Periode : ' + (from||'...') + ' s/d ' + (to||'...') + '\n' +
+'🕹️ Unit     : ' + unit + '\n' +
+'━━━━━━━━━━━━━━━━━━━━\n' +
+'🎮 Sesi Gaming\n' +
+'   • ' + filteredSesi.length + ' transaksi\n' +
+'   • ' + fmt(totalSesi) + '\n\n' +
+'🍔 Pesanan F&B\n' +
+'   • ' + filteredFnb.length + ' pesanan\n' +
+'   • ' + fmt(totalFnb) + '\n' +
+'━━━━━━━━━━━━━━━━━━━━\n' +
+'💰 *TOTAL : ' + fmt(grandTotal) + '*\n' +
+'   (' + (filteredSesi.length + filteredFnb.length) + ' transaksi)\n' +
+'━━━━━━━━━━━━━━━━━━━━\n' +
+'📊 Prince Games Management';
+
+        if (navigator.share) {
+            try { await navigator.share({ title: 'Laporan Prince Games', text: pesan }); }
+            catch(e) {}
+        } else {
+            try { await navigator.clipboard.writeText(pesan); } catch(e) {}
+            Swal.fire({
+                title: '📊 Ringkasan Laporan',
+                html: '<pre style="text-align:left;font-size:12px;white-space:pre-wrap;font-family:\'Space Grotesk\',sans-serif;line-height:1.6">' + pesan + '</pre>' +
+                      '<p style="font-size:10px;color:#4b5563;margin-top:8px">Teks telah disalin ke clipboard</p>',
+                background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff',
+                confirmButtonColor: '#00d9ff', confirmButtonText: 'Tutup'
+            });
+        }
+    };
+
+    window.doLogout = () => handleLogout('../auth/login-owner.html');
+
+    window.goToStaffView = async () => {
+        const result = await Swal.fire({
+            title: '👔 Masuk sebagai Staff?',
+            html: `Anda akan diarahkan ke <b>Dashboard Staff</b>.<br><span style="font-size:12px;color:var(--muted)">Aksi ini tidak akan keluar dari akun Owner.</span>`,
+            icon: 'question', showCancelButton: true,
+            confirmButtonColor: '#bc8cff', cancelButtonColor: '#374151',
+            confirmButtonText: '<i class="fas fa-users-gear"></i> Ya, buka Staff View',
+            cancelButtonText: 'Batal', background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff'
+        });
+        if (result.isConfirmed) {
+            sessionStorage.setItem('owner_viewing_staff', '1');
+            window.location.href = '../staff/dashboard-staff.html';
+        }
+    };
+
+    (function initTheme() {
+        const saved = localStorage.getItem('pg_theme') || 'dark';
+        if (saved === 'light') {
+            document.body.classList.add('light-mode');
+            document.documentElement.classList.remove('light-mode-pre');
+            ['theme-icon','theme-icon-sidebar'].forEach(id => {
+                const icon = document.getElementById(id);
+                if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+            });
+        } else {
+            document.documentElement.classList.remove('light-mode-pre');
+        }
+    })();
+
+    window.toggleTheme = function() {
+        const isLight = document.body.classList.toggle('light-mode');
+        localStorage.setItem('pg_theme', isLight ? 'light' : 'dark');
+        ['theme-icon','theme-icon-sidebar'].forEach(id => {
+            const icon = document.getElementById(id);
+            if (icon) {
+                icon.classList.toggle('fa-sun',  !isLight);
+                icon.classList.toggle('fa-moon',  isLight);
+            }
+        });
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true, position: 'top', icon: 'success',
+                title: isLight ? '☀️ Mode Terang aktif' : '🌙 Mode Gelap aktif',
+                showConfirmButton: false, timer: 1500,
+                background: isLight ? '#fff' : '#11171f',
+                color:      isLight ? '#1a202c' : '#fff'
+            });
+        }
+    };
+</script>
+</div></div>
+</body>
+</html>
