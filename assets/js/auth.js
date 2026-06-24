@@ -2,7 +2,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-    signOut, onAuthStateChanged, sendPasswordResetEmail
+    signOut, onAuthStateChanged, sendPasswordResetEmail,
+    reauthenticateWithCredential, updatePassword, EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
     getFirestore, doc, updateDoc, onSnapshot, collection, setDoc, getDoc, getDocs, addDoc, deleteDoc, query, orderBy, where
@@ -164,15 +165,32 @@ window.forgotPassword = async (role = 'staff') => {
 
     try {
         if (formData.type === 'pelanggan') {
-            // Pelanggan: cari email dari username, lalu kirim reset email
-            const fakeEmail = `${formData.username}@prince.com`;
-            // Verifikasi username ada di Firestore
+            // Ambil password lama dari Firestore via username
             const usernameDoc = await getDoc(doc(db, 'usernames', formData.username));
             if (!usernameDoc.exists()) {
                 Swal.fire({ icon: 'error', title: 'Gagal', text: 'Username tidak ditemukan di sistem.', confirmButtonColor: '#00d9ff', ...bg });
                 return;
             }
-            await sendPasswordResetEmail(auth, fakeEmail);
+            const uid = usernameDoc.data().uid;
+            const pelangganDoc = await getDoc(doc(db, 'pelanggan', uid));
+            if (!pelangganDoc.exists() || !pelangganDoc.data().password) {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: 'Data akun tidak lengkap. Hubungi admin.', confirmButtonColor: '#00d9ff', ...bg });
+                return;
+            }
+            const oldPassword = pelangganDoc.data().password;
+            const fakeEmail = `${formData.username}@prince.com`;
+
+            // Re-auth dengan password lama dari Firestore
+            const credential = EmailAuthProvider.credential(fakeEmail, oldPassword);
+            const tempUser = (await signInWithEmailAndPassword(auth, fakeEmail, oldPassword)).user;
+            await reauthenticateWithCredential(tempUser, credential);
+
+            // Update password baru di Firebase Auth
+            await updatePassword(tempUser, formData.newPass);
+
+            // Update password baru di Firestore
+            await updateDoc(doc(db, 'pelanggan', uid), { password: formData.newPass });
+
             Swal.fire({
                 icon: 'success',
                 title: 'Kata Sandi Berhasil Diubah!',
@@ -181,9 +199,35 @@ window.forgotPassword = async (role = 'staff') => {
                 confirmButtonText: 'OK',
                 ...bg
             });
+
         } else {
-            // Staff / Owner: kirim reset email langsung
-            await sendPasswordResetEmail(auth, formData.email);
+            // Staff / Owner: ambil password lama dari Firestore
+            const collection_name = formData.type === 'owner' ? 'owners' : 'staff';
+            const q = query(collection(db, collection_name), where('email', '==', formData.email));
+            const snap = await getDocs(q);
+            if (snap.empty) {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: 'Akun tidak ditemukan di sistem.', confirmButtonColor: '#00d9ff', ...bg });
+                return;
+            }
+            const userDocData = snap.docs[0].data();
+            const userDocId = snap.docs[0].id;
+            if (!userDocData.password) {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: 'Data akun tidak lengkap. Hubungi admin.', confirmButtonColor: '#00d9ff', ...bg });
+                return;
+            }
+            const oldPassword = userDocData.password;
+
+            // Re-auth dengan password lama dari Firestore
+            const credential = EmailAuthProvider.credential(formData.email, oldPassword);
+            const tempUser = (await signInWithEmailAndPassword(auth, formData.email, oldPassword)).user;
+            await reauthenticateWithCredential(tempUser, credential);
+
+            // Update password baru di Firebase Auth
+            await updatePassword(tempUser, formData.newPass);
+
+            // Update password baru di Firestore
+            await updateDoc(doc(db, collection_name, userDocId), { password: formData.newPass });
+
             Swal.fire({
                 icon: 'success',
                 title: 'Kata Sandi Berhasil Diubah!',
@@ -195,9 +239,11 @@ window.forgotPassword = async (role = 'staff') => {
         }
     } catch (err) {
         let msg = 'Terjadi kesalahan. Coba lagi.';
-        if (err.code === 'auth/user-not-found')    msg = 'Akun tidak ditemukan di sistem.';
-        if (err.code === 'auth/invalid-email')     msg = 'Format email tidak valid.';
-        if (err.code === 'auth/too-many-requests') msg = 'Terlalu banyak permintaan. Coba lagi nanti.';
+        if (err.code === 'auth/user-not-found')      msg = 'Akun tidak ditemukan di sistem.';
+        if (err.code === 'auth/invalid-email')       msg = 'Format email tidak valid.';
+        if (err.code === 'auth/too-many-requests')   msg = 'Terlalu banyak permintaan. Coba lagi nanti.';
+        if (err.code === 'auth/wrong-password')      msg = 'Data password di sistem tidak cocok. Hubungi admin.';
+        if (err.code === 'auth/invalid-credential')  msg = 'Data password di sistem tidak cocok. Hubungi admin.';
         Swal.fire({ icon: 'error', title: 'Gagal', text: msg, confirmButtonColor: '#00d9ff', ...bg });
     }
 };
@@ -255,6 +301,7 @@ window.handleRegisterOwner = async () => {
 
         await setDoc(doc(db, 'owners', uid), {
             email,
+            password: pass,
             role: 'owner',
             createdAt: new Date().toISOString()
         });
@@ -329,6 +376,7 @@ window.handleRegisterPelanggan = async () => {
         await setDoc(doc(db, "pelanggan", uid), {
             username,
             email,
+            password: pass,
             noWA: noWA || '',
             namaLengkap: username,
             role: "pelanggan",
@@ -386,6 +434,7 @@ window.handleRegisterStaff = async () => {
 
         await setDoc(doc(db, "staff", uid), {
             email,
+            password: pass,
             role: "staff",
             createdAt: new Date().toISOString()
         });
