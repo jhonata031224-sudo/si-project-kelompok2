@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prince Games - Staff History</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+        * { box-sizing: border-box; }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* kunci: body tidak scroll */
+        }
+        body {
+            background-color: #06090f;
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Layout: header + sticky-controls + scrollable-list ── */
+        #page-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Area atas: header + stat + tab — tidak scroll */
+        #top-section {
+            flex-shrink: 0;
+            padding: 20px 20px 0;
+        }
+
+        /* Kontrol filter — sticky, tidak ikut scroll */
+        #controls-section {
+            flex-shrink: 0;
+            padding: 0 20px;
+            background: #06090f;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        /* Daftar card — bisa scroll */
+        #scroll-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 20px 100px; /* bottom 100px untuk bottom nav */
+            -webkit-overflow-scrolling: touch;
+        }
+        #scroll-section::-webkit-scrollbar { width: 0; }
+
+        .glass-card { background: #11171f; border: 1px solid rgba(255,255,255,0.05); }
+        .btn-filter { background: rgba(255,255,255,0.05); color: #6b7280; transition: all 0.2s; white-space: nowrap; }
+        .btn-filter.active { background: #00d9ff; color: #000; font-weight: bold; }
+
+        .tab-btn {
+            flex: 1; padding: 12px; border-radius: 16px;
+            font-size: 10px; font-weight: 800; letter-spacing: .1em;
+            text-transform: uppercase; border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.03); color: #6b7280;
+            transition: all .3s; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .tab-btn.tab-active-sesi  { background: rgba(0,217,255,0.1);  color: #00d9ff; border-color: rgba(0,217,255,0.25); }
+        .tab-btn.tab-active-batal { background: rgba(239,68,68,0.1);   color: #f87171; border-color: rgba(239,68,68,0.25); }
+
+        /* Sort pill */
+        .sort-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px; padding: 5px 12px; font-size: 10px; font-weight: 700;
+            color: #6b7280; cursor: pointer; transition: all .2s; white-space: nowrap;
+        }
+        .sort-pill.active { background: rgba(255,255,255,0.1); color: #e2e8f0; border-color: rgba(255,255,255,0.18); }
+
+        /* Delete btn on card */
+        .card-del-btn {
+            width: 28px; height: 28px; border-radius: 8px;
+            background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+            color: #f87171; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all .2s; font-size: 11px; flex-shrink: 0;
+        }
+        .card-del-btn:hover { background: rgba(239,68,68,0.22); border-color: rgba(239,68,68,0.4); color: #ef4444; }
+
+        #notification-modal { background: rgba(6,9,15,0.9); backdrop-filter: blur(15px); }
+
+        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .fade-in { animation: fadeIn 0.25s ease-out forwards; }
+
+        .btn-keluar-staff {
+            display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+            border-radius: 8px; background: rgba(247,129,102,0.08);
+            border: 1px solid rgba(247,129,102,0.2); color: #f78166;
+            font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .2s;
+        }
+        .btn-keluar-staff:hover { background: rgba(247,129,102,0.18); }
+
+        @keyframes pulse-green { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* Divider antara top-section & controls */
+        .section-divider { height: 1px; background: rgba(255,255,255,0.04); margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+<div id="page-wrapper">
+
+    <!-- ══ TOP SECTION (header + stat + tab) ══ -->
+    <div id="top-section">
+
+        <!-- Staff Header -->
+        <header class="mb-5 px-1">
+            <div class="flex justify-between items-start mb-1">
+                <div>
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <div id="shift-dot" class="w-2 h-2 rounded-full bg-green-400" style="animation:pulse-green 2s infinite"></div>
+                        <span id="shift-label" class="text-[10px] font-black uppercase tracking-widest text-green-400">Shift Aktif</span>
+                    </div>
+                    <h1 class="text-xl font-black tracking-tight text-white">Halo, <span id="staff-greeting-name" class="text-cyan-400">Staff</span></h1>
+                    <p id="staff-header-time" class="text-[11px] font-bold text-gray-500 mt-0.5"></p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleNotif()" class="w-11 h-11 glass-card rounded-xl flex items-center justify-center text-gray-400 relative">
+                        <i class="fas fa-bell text-sm"></i>
+                        <span id="notif-badge" class="hidden absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <button class="btn-keluar-staff" onclick="doLogout()">
+                        <i class="fas fa-right-from-bracket"></i>
+                        <span>Keluar</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <h2 class="text-3xl font-black mb-0.5 tracking-tight px-1">Riwayat Aktivitas</h2>
+        <p class="text-xs text-gray-500 mb-4 font-medium px-1">Sesi selesai & pembatalan yang diproses staff.</p>
+
+        <!-- Stat cards -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="glass-card rounded-2xl p-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-check-circle text-green-400"></i>
+                </div>
+                <div>
+                    <p class="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Sesi Selesai</p>
+                    <p id="stat-selesai" class="text-2xl font-black text-green-400 leading-none mt-0.5">-</p>
+                </div>
+            </div>
+            <div class="glass-card rounded-2xl p-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-ban text-red-400"></i>
+                </div>
+                <div>
+                    <p class="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Pembatalan</p>
+                    <p id="stat-batal" class="text-2xl font-black text-red-400 leading-none mt-0.5">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab -->
+        <div class="flex gap-2 mb-1">
+            <button id="tab-btn-sesi" class="tab-btn tab-active-sesi" onclick="switchTab('sesi')">
+                <i class="fas fa-gamepad"></i> Sesi Selesai
+            </button>
+            <button id="tab-btn-batal" class="tab-btn" onclick="switchTab('batal')">
+                <i class="fas fa-times-circle"></i> Pembatalan
+            </button>
+        </div>
+    </div>
+
+    <!-- ══ CONTROLS SECTION (filter + sort + search) — sticky ══ -->
+    <div id="controls-section">
+        <div class="section-divider"></div>
+
+        <!-- Panel kontrol: Sesi -->
+        <div id="ctrl-sesi">
+            <!-- Search -->
+            <div class="relative mb-3">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                <input id="search-sesi" type="text" placeholder="Cari nama pelanggan atau unit..."
+                    class="w-full bg-[#11171f] border border-white/5 py-3 pl-10 pr-4 rounded-2xl text-xs focus:outline-none focus:border-cyan-500/50"
+                    oninput="renderSesi()">
+            </div>
+            <!-- Filter + Sort dalam satu baris, scrollable horizontal -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2" style="scrollbar-width:none">
+                <button onclick="setFilter('semua',this)"    class="btn-filter active px-4 py-2 rounded-xl text-[10px] uppercase font-bold tracking-widest flex-shrink-0">Semua</button>
+                <button onclick="setFilter('manual',this)"   class="btn-filter px-4 py-2 rounded-xl text-[10px] uppercase font-bold tracking-widest flex-shrink-0">Manual</button>
+                <button onclick="setFilter('otomatis',this)" class="btn-filter px-4 py-2 rounded-xl text-[10px] uppercase font-bold tracking-widest flex-shrink-0">Otomatis</button>
+                <!-- Divider visual -->
+                <div class="flex-shrink-0 w-px h-5 bg-white/10"></div>
+                <!-- Sort pills -->
+                <button id="sort-sesi-baru" onclick="setSort('sesi','baru',this)" class="sort-pill active flex-shrink-0">
+                    <i class="fas fa-arrow-down-short-wide text-[9px]"></i> Terbaru
+                </button>
+                <button id="sort-sesi-lama" onclick="setSort('sesi','lama',this)" class="sort-pill flex-shrink-0">
+                    <i class="fas fa-arrow-up-short-wide text-[9px]"></i> Terlama
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel kontrol: Pembatalan (hidden default) -->
+        <div id="ctrl-batal" class="hidden">
+            <div class="relative mb-3">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                <input id="search-batal" type="text" placeholder="Cari nama pelanggan atau konsol..."
+                    class="w-full bg-[#11171f] border border-white/5 py-3 pl-10 pr-4 rounded-2xl text-xs focus:outline-none focus:border-red-500/50"
+                    oninput="renderBatal()">
+            </div>
+            <div class="flex items-center gap-2 overflow-x-auto pb-2" style="scrollbar-width:none">
+                <button onclick="setBatalFilter('semua',this)"   class="btn-filter active px-4 py-2 rounded-xl text-[10px] uppercase font-bold tracking-widest flex-shrink-0">Semua</button>
+                <button onclick="setBatalFilter('booking',this)" class="btn-filter px-4 py-2 rounded-xl text-[10px] uppercase font-bold tracking-widest flex-shrink-0">Booking</button>
+                <button onclick="setBatalFilter('rental',this)"  class="btn-filter px-4 py-2 rounded-xl text-[10px] uppercase font-bold tracking-widest flex-shrink-0">Rental</button>
+                <div class="flex-shrink-0 w-px h-5 bg-white/10"></div>
+                <button id="sort-batal-baru" onclick="setSort('batal','baru',this)" class="sort-pill active flex-shrink-0">
+                    <i class="fas fa-arrow-down-short-wide text-[9px]"></i> Terbaru
+                </button>
+                <button id="sort-batal-lama" onclick="setSort('batal','lama',this)" class="sort-pill flex-shrink-0">
+                    <i class="fas fa-arrow-up-short-wide text-[9px]"></i> Terlama
+                </button>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+    </div>
+
+    <!-- ══ SCROLL SECTION (card list) ══ -->
+    <div id="scroll-section">
+
+        <!-- LIST SESI SELESAI -->
+        <div id="list-sesi" class="space-y-4">
+            <div class="flex flex-col items-center justify-center py-20 opacity-40">
+                <i class="fas fa-spinner fa-spin text-3xl text-cyan-400 mb-4"></i>
+                <p class="text-[10px] font-black uppercase tracking-[0.3em]">Memuat riwayat...</p>
+            </div>
+        </div>
+
+        <!-- LIST PEMBATALAN (hidden) -->
+        <div id="list-batal" class="space-y-4 hidden">
+            <div class="flex flex-col items-center justify-center py-20 opacity-40">
+                <i class="fas fa-spinner fa-spin text-3xl text-red-400 mb-4"></i>
+                <p class="text-[10px] font-black uppercase tracking-[0.3em]">Memuat pembatalan...</p>
+            </div>
+        </div>
+
+    </div><!-- /scroll-section -->
+
+</div><!-- /page-wrapper -->
+
+<!-- Modal Notifikasi F&B -->
+<div id="notification-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
+    <div class="w-full max-w-sm glass-card rounded-[2.5rem] p-8 border border-white/10 shadow-2xl">
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-utensils text-orange-400"></i>
+                <h3 class="font-black text-xs uppercase tracking-widest">Notifikasi Pesanan F&B</h3>
+            </div>
+            <button onclick="toggleNotif()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="notif-content" class="space-y-4 max-h-[350px] overflow-y-auto pr-2">
+            <div class="text-center py-10 opacity-30">
+                <i class="fas fa-spinner fa-spin text-2xl mb-3"></i>
+                <p class="text-[10px] font-bold uppercase tracking-widest">Memuat...</p>
+            </div>
+        </div>
+        <button onclick="clearAllNotifications()" class="w-full mt-8 pt-6 border-t border-white/5 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] hover:text-red-400 transition-colors flex justify-center items-center gap-3">
+            <i class="fas fa-trash-alt text-[8px]"></i> Bersihkan semua
+        </button>
+    </div>
+</div>
+
+<!-- Bottom Nav -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:#11171f;border:1px solid rgba(255,255,255,0.05);border-radius:24px 24px 0 0;border-bottom:none;padding:16px;display:flex;justify-content:space-around;align-items:center;z-index:50">
+    <div onclick="window.location.href='../staff/dashboard-staff.html'" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:#6b7280">
+        <i class="fas fa-th-large" style="font-size:18px"></i>
+        <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em">Beranda</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:#00d9ff">
+        <i class="fas fa-history" style="font-size:18px"></i>
+        <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em">Riwayat</span>
+    </div>
+    <div onclick="window.location.href='../staff/dashboard-staff.html#setelan'" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:#6b7280">
+        <i class="fas fa-sliders" style="font-size:18px"></i>
+        <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em">Setelan</span>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot, where, writeBatch, doc, deleteDoc }
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut }
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAqa9FTlNuVXGHnINFN1qz8-aoGTrn-0g4",
+        authDomain: "prince-games-f170a.firebaseapp.com",
+        projectId: "prince-games-f170a",
+        storageBucket: "prince-games-f170a.firebasestorage.app",
+        messagingSenderId: "245728198046",
+        appId: "1:245728198046:web:b6136e05459f23a96677f5"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const db   = getFirestore(app);
+    const auth = getAuth(app);
+
+    // ── Staff Header ─────────────────────────────────────────────────
+    onAuthStateChanged(auth, async (user) => {
+        let staffNama = sessionStorage.getItem('staff_nama_display') || 'Staff';
+        if (user) {
+            try {
+                const sDoc = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js")
+                    .then(m => m.getDoc(m.doc(db, 'staff', user.uid)));
+                if (sDoc.exists() && sDoc.data().nama) staffNama = sDoc.data().nama;
+                else staffNama = sessionStorage.getItem('staff_nama_display') || user.email.split('@')[0];
+            } catch(e) { staffNama = sessionStorage.getItem('staff_nama_display') || (user.email ? user.email.split('@')[0] : 'Staff'); }
+        }
+        const nameEl   = document.getElementById('staff-greeting-name');
+        const timeEl   = document.getElementById('staff-header-time');
+        const shiftEl  = document.getElementById('shift-label');
+        const shiftDot = document.getElementById('shift-dot');
+        if (nameEl) nameEl.textContent = staffNama;
+        function tick() {
+            const now = new Date();
+            const h = now.getHours();
+            const timeStr = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+            const dateStr = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long' });
+            if (timeEl) timeEl.textContent = dateStr + '  ·  ' + timeStr;
+            const _sShift = sessionStorage.getItem('staff_shift');
+            const _sNama  = sessionStorage.getItem('staff_shift_nama');
+            const _sJam   = sessionStorage.getItem('staff_shift_jam');
+            let shift, color;
+            if (_sShift && _sNama && _sJam) {
+                shift = _sNama + ' · ' + _sJam; color = _sShift === '1' ? '#fbbf24' : '#818cf8';
+            } else {
+                const s1s = localStorage.getItem('pg_shift1_start') || '08:00';
+                const s1e = localStorage.getItem('pg_shift1_end')   || '14:00';
+                const s2s = localStorage.getItem('pg_shift2_start') || '14:00';
+                const s2e = localStorage.getItem('pg_shift2_end')   || '20:00';
+                const s1sh = parseInt(s1s), s1eh = parseInt(s1e);
+                const s2sh = parseInt(s2s), s2eh = parseInt(s2e);
+                if (h >= s1sh && h < s1eh)      { shift = 'Shift 1 · ' + s1s + '–' + s1e; color = '#fbbf24'; }
+                else if (h >= s2sh && h < s2eh) { shift = 'Shift 2 · ' + s2s + '–' + s2e; color = '#818cf8'; }
+                else                             { shift = 'Di Luar Jam Shift'; color = '#9ca3af'; }
+            }
+            if (shiftEl)  { shiftEl.textContent = shift; shiftEl.style.color = color; }
+            if (shiftDot) shiftDot.style.background = color;
+        }
+        tick();
+        setInterval(tick, 1000);
+    });
+
+    window.doLogout = async () => {
+        if (sessionStorage.getItem('owner_viewing_staff') === '1') {
+            sessionStorage.removeItem('owner_viewing_staff');
+            window.location.href = '../owner/dashboard-owner.html';
+        } else {
+            sessionStorage.removeItem('staff_shift');
+            sessionStorage.removeItem('staff_shift_nama');
+            sessionStorage.removeItem('staff_shift_jam');
+            sessionStorage.removeItem('staff_shift_tanggal');
+            try { await signOut(auth); } catch(e) {}
+            window.location.href = '../auth/login-staff.html';
+        }
+    };
+
+    // ── State ─────────────────────────────────────────────────────────
+    let allSesi     = [];
+    let allBatal    = [];
+    let allFnb      = [];
+    let filterSesi  = 'semua';
+    let filterBatal = 'semua';
+    let sortSesi    = 'baru';   // 'baru' | 'lama'
+    let sortBatal   = 'baru';
+    let activeTab   = 'sesi';
+
+    const fmtRp = n => 'Rp ' + (n || 0).toLocaleString('id-ID');
+
+    function fmtTgl(val) {
+        if (!val) return '-';
+        try {
+            const d = val.toDate ? val.toDate() : new Date(val);
+            return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })
+                 + ', ' + d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+        } catch { return String(val); }
+    }
+
+    function getTimestamp(item, fields) {
+        for (const f of fields) {
+            const v = item[f];
+            if (!v) continue;
+            if (v && typeof v.toDate === 'function') return v.toDate().getTime();
+            const ms = new Date(v).getTime();
+            if (!isNaN(ms)) return ms;
+        }
+        return 0;
+    }
+
+    function hitungDurasi(tanggal, startTime, stopTime) {
+        if (!startTime || !stopTime || !tanggal) return '-';
+        try {
+            const s = new Date(`${tanggal}T${startTime}:00`);
+            const e = new Date(`${tanggal}T${stopTime}:00`);
+            const diff = e - s;
+            if (isNaN(diff) || diff <= 0) return '-';
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            return h > 0 ? `${h}j ${m}m` : `${m}m`;
+        } catch { return '-'; }
+    }
+
+    /* ── RENDER SESI SELESAI ─────────────────────────────────── */
+    window.renderSesi = function() {
+        const list    = document.getElementById('list-sesi');
+        const keyword = document.getElementById('search-sesi').value.toLowerCase().trim();
+
+        let data = [...allSesi];
+        if (filterSesi === 'manual')   data = data.filter(d => d.alasan === 'Stop Manual');
+        if (filterSesi === 'otomatis') data = data.filter(d => d.alasan === 'Otomatis');
+        if (keyword) data = data.filter(d =>
+            (d.customerName||'').toLowerCase().includes(keyword) ||
+            (d.unitId||'').toLowerCase().includes(keyword)
+        );
+
+        // Sort
+        data.sort((a, b) => {
+            const ta = getTimestamp(a, ['createdAt','tanggal']);
+            const tb = getTimestamp(b, ['createdAt','tanggal']);
+            return sortSesi === 'baru' ? tb - ta : ta - tb;
+        });
+
+        if (data.length === 0) {
+            list.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-20 opacity-25">
+                    <div class="w-16 h-16 border-2 border-dashed border-gray-600 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-history text-2xl"></i>
+                    </div>
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em]">Belum Ada Riwayat</p>
+                    <p class="text-[8px] mt-2 font-bold text-gray-600">Riwayat muncul setelah sesi diselesaikan.</p>
+                </div>`;
+            return;
+        }
+
+        list.innerHTML = data.map((d, i) => {
+            const durasi = hitungDurasi(d.tanggal, d.startTime, d.stopTime);
+            const tgl    = fmtTgl(d.createdAt || d.tanggal);
+            const isOto  = d.alasan === 'Otomatis';
+            const safeId = (d.id || '').replace(/'/g, "\\'");
+            const safeName = (d.customerName || 'Walk-in').replace(/'/g, "\\'");
+
+            return `
+            <div class="glass-card rounded-[2rem] overflow-hidden fade-in" style="animation-delay:${i*0.04}s" id="sesi-card-${safeId}">
+                <div class="bg-green-500/8 border-b border-green-500/15 px-5 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
+                        <span class="text-[9px] font-black text-green-400 uppercase tracking-widest">Sesi Selesai</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[9px] font-bold ${isOto ? 'text-emerald-400' : 'text-cyan-400'}">
+                            ${isOto ? '⚙ Otomatis' : '✋ Manual'}
+                        </span>
+                        <button class="card-del-btn" onclick="hapusSesi('${safeId}','${safeName}')" title="Hapus sesi ini">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="font-black text-xl tracking-tight">${d.unitId || '-'}</h4>
+                            <p class="text-[10px] text-gray-500 font-bold mt-1 uppercase tracking-wide">${d.customerName || 'Walk-in'}</p>
+                            <p class="text-[9px] text-gray-600 mt-0.5">${tgl}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[8px] text-gray-500 font-bold uppercase mb-1">Pendapatan</p>
+                            <p class="text-xl font-black text-green-400 tracking-tight">${fmtRp(d.price)}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-white/4 rounded-xl p-3">
+                            <p class="text-[8px] text-gray-500 font-bold uppercase tracking-widest mb-1">Durasi</p>
+                            <p class="text-sm font-black">${durasi}</p>
+                        </div>
+                        <div class="bg-white/4 rounded-xl p-3">
+                            <p class="text-[8px] text-gray-500 font-bold uppercase tracking-widest mb-1">Tipe</p>
+                            <p class="text-sm font-black">${d.unitType || '-'}</p>
+                        </div>
+                        <div class="bg-white/4 rounded-xl p-3">
+                            <p class="text-[8px] text-gray-500 font-bold uppercase tracking-widest mb-1">Stop</p>
+                            <p class="text-sm font-black">${d.stopTime || '-'}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    };
+
+    /* ── RENDER PEMBATALAN ───────────────────────────────────── */
+    window.renderBatal = function() {
+        const list    = document.getElementById('list-batal');
+        const keyword = document.getElementById('search-batal').value.toLowerCase().trim();
+
+        let data = [...allBatal];
+        if (filterBatal === 'booking') data = data.filter(d => d.type === 'booking');
+        if (filterBatal === 'rental')  data = data.filter(d => d.type === 'rental');
+        if (keyword) data = data.filter(d =>
+            (d.customerName||'').toLowerCase().includes(keyword) ||
+            (d.console||'').toLowerCase().includes(keyword) ||
+            (d.assignedUnit||'').toLowerCase().includes(keyword)
+        );
+
+        // Sort
+        data.sort((a, b) => {
+            const ta = getTimestamp(a, ['cancelledAt','createdAt']);
+            const tb = getTimestamp(b, ['cancelledAt','createdAt']);
+            return sortBatal === 'baru' ? tb - ta : ta - tb;
+        });
+
+        if (data.length === 0) {
+            list.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-20 opacity-25">
+                    <div class="w-16 h-16 border-2 border-dashed border-red-600/40 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-ban text-2xl text-red-500/50"></i>
+                    </div>
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em]">Belum Ada Pembatalan</p>
+                    <p class="text-[8px] mt-2 font-bold text-gray-600">Riwayat pembatalan akan muncul di sini.</p>
+                </div>`;
+            return;
+        }
+
+        list.innerHTML = data.map((d, i) => {
+            const tgl      = fmtTgl(d.cancelledAt || d.createdAt);
+            const typeLabel = d.type === 'booking' ? 'Booking' : 'Rental';
+            const unit     = d.assignedUnit || d.assignedRentalUnit || '-';
+            const safeId   = (d.id || '').replace(/'/g, "\\'");
+
+            return `
+            <div class="glass-card rounded-[2rem] overflow-hidden fade-in" style="animation-delay:${i*0.04}s" id="batal-card-${safeId}">
+                <div class="bg-red-500/8 border-b border-red-500/15 px-5 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-red-400 inline-block"></span>
+                        <span class="text-[9px] font-black text-red-400 uppercase tracking-widest">Dibatalkan</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[9px] font-bold px-2.5 py-0.5 rounded-full
+                            ${d.type === 'booking'
+                                ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                                : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'}">
+                            ${typeLabel}
+                        </span>
+                        <button class="card-del-btn" onclick="hapusBatal('${safeId}')" title="Hapus pembatalan ini">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="font-black text-xl tracking-tight">${d.customerName || '-'}</h4>
+                            <p class="text-[10px] text-gray-500 font-bold mt-1 uppercase tracking-wide">${d.console || '-'}</p>
+                            <p class="text-[9px] text-gray-600 mt-0.5">${tgl}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[8px] text-gray-500 font-bold uppercase mb-1">Unit</p>
+                            <p class="text-base font-black text-gray-300">${unit}</p>
+                        </div>
+                    </div>
+                    ${d.cancelReason ? `
+                    <div class="bg-red-500/5 border border-red-500/15 rounded-2xl px-4 py-3">
+                        <p class="text-[8px] text-red-400 font-bold uppercase tracking-widest mb-1.5">
+                            <i class="fas fa-comment-alt mr-1"></i> Alasan
+                        </p>
+                        <p class="text-xs text-gray-300 font-medium leading-relaxed">${d.cancelReason}</p>
+                    </div>` : ''}
+                    <p class="text-[9px] text-gray-600 mt-3">Dibatalkan oleh: <span class="text-gray-400 font-bold">${d.cancelledByName || d.cancelledBy || 'Staff'}</span></p>
+                </div>
+            </div>`;
+        }).join('');
+    };
+
+    /* ── NOTIFIKASI F&B ──────────────────────────────────────── */
+    function renderNotif(data) {
+        const content = document.getElementById('notif-content');
+        const badge   = document.getElementById('notif-badge');
+        if (data.length === 0) {
+            content.innerHTML = `<div class="text-center py-10 opacity-20"><i class="fas fa-check-circle text-4xl mb-3"></i><p class="text-[10px] font-bold uppercase tracking-widest">Tidak ada pesanan F&B</p></div>`;
+            badge.classList.add('hidden'); return;
+        }
+        const totalItems = data.reduce((s, b) => s + (b.fnbOrders?.length || 0), 0);
+        badge.textContent = totalItems; badge.classList.remove('hidden');
+        content.innerHTML = data.map(item => {
+            const waktu = item.createdAt ? fmtTgl(item.createdAt).split(', ')[1] : (item.time || '-');
+            return (item.fnbOrders || []).map(f => `
+                <div class="p-5 bg-white/5 rounded-3xl border border-white/5 flex justify-between items-center">
+                    <div>
+                        <h5 class="text-xs font-black">${f.name} <span class="text-gray-500 text-[10px] ml-1">x${f.qty}</span></h5>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase mt-1">${item.console || '-'} · ${(item.customerName||'-').toUpperCase()}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-cyan-400 text-xs font-black">${fmtRp(f.subtotal ?? (f.price * f.qty))}</p>
+                        <p class="text-[8px] text-gray-600 mt-1">${waktu}</p>
+                    </div>
+                </div>`).join('');
+        }).join('');
+    }
+
+    /* ── FIREBASE LISTENERS ──────────────────────────────────── */
+    onSnapshot(
+        query(collection(db, 'pendapatan'), orderBy('createdAt', 'desc')),
+        snap => {
+            allSesi = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('stat-selesai').textContent = allSesi.length;
+            renderSesi();
+        },
+        err => {
+            document.getElementById('list-sesi').innerHTML = `<div class="text-center py-20 opacity-30"><i class="fas fa-exclamation-circle text-3xl text-red-400 mb-3"></i><p class="text-[10px] font-black uppercase tracking-[0.3em]">Gagal memuat data</p><p class="text-[8px] mt-2 text-gray-600">${err.message}</p></div>`;
+        }
+    );
+
+    onSnapshot(
+        query(collection(db, 'cancellations'), orderBy('createdAt', 'desc')),
+        snap => {
+            allBatal = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('stat-batal').textContent = allBatal.length;
+            renderBatal();
+        },
+        err => {
+            document.getElementById('list-batal').innerHTML = `<div class="text-center py-20 opacity-30"><i class="fas fa-exclamation-circle text-3xl text-red-400 mb-3"></i><p class="text-[10px] font-black uppercase tracking-[0.3em]">Gagal memuat pembatalan</p></div>`;
+        }
+    );
+
+    onSnapshot(
+        query(collection(db, 'bookings'), where('status', '==', 'Menunggu Konfirmasi Staff')),
+        snap => {
+            allFnb = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(d => d.fnbOrders?.length > 0);
+            renderNotif(allFnb);
+        }
+    );
+
+    /* ── TAB SWITCH ──────────────────────────────────────────── */
+    window.switchTab = function(tab) {
+        activeTab = tab;
+        // panel list
+        document.getElementById('list-sesi').classList.toggle('hidden', tab !== 'sesi');
+        document.getElementById('list-batal').classList.toggle('hidden', tab !== 'batal');
+        // panel controls
+        document.getElementById('ctrl-sesi').classList.toggle('hidden', tab !== 'sesi');
+        document.getElementById('ctrl-batal').classList.toggle('hidden', tab !== 'batal');
+        // tab buttons
+        const btnSesi  = document.getElementById('tab-btn-sesi');
+        const btnBatal = document.getElementById('tab-btn-batal');
+        btnSesi.className  = 'tab-btn' + (tab === 'sesi'  ? ' tab-active-sesi'  : '');
+        btnBatal.className = 'tab-btn' + (tab === 'batal' ? ' tab-active-batal' : '');
+    };
+
+    /* ── FILTER ──────────────────────────────────────────────── */
+    window.setFilter = function(type, btn) {
+        filterSesi = type;
+        document.querySelectorAll('#ctrl-sesi .btn-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active'); renderSesi();
+    };
+    window.setBatalFilter = function(type, btn) {
+        filterBatal = type;
+        document.querySelectorAll('#ctrl-batal .btn-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active'); renderBatal();
+    };
+
+    /* ── SORT ────────────────────────────────────────────────── */
+    window.setSort = function(panel, dir, btn) {
+        if (panel === 'sesi') {
+            sortSesi = dir;
+            document.getElementById('sort-sesi-baru').classList.toggle('active', dir === 'baru');
+            document.getElementById('sort-sesi-lama').classList.toggle('active', dir === 'lama');
+            renderSesi();
+        } else {
+            sortBatal = dir;
+            document.getElementById('sort-batal-baru').classList.toggle('active', dir === 'baru');
+            document.getElementById('sort-batal-lama').classList.toggle('active', dir === 'lama');
+            renderBatal();
+        }
+    };
+
+    /* ── NOTIF TOGGLE ────────────────────────────────────────── */
+    window.toggleNotif = () => document.getElementById('notification-modal').classList.toggle('hidden');
+
+    /* ── HAPUS SESI ──────────────────────────────────────────── */
+    window.hapusSesi = async function(id, customerName) {
+        const result = await Swal.fire({
+            title: 'Hapus riwayat ini?',
+            text: `Sesi "${customerName}" akan dihapus permanen.`,
+            icon: 'warning', showCancelButton: true,
+            confirmButtonColor: '#ef4444', cancelButtonColor: '#374151',
+            confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal',
+            background: '#11171f', color: '#fff'
+        });
+        if (!result.isConfirmed) return;
+        try {
+            await deleteDoc(doc(db, 'pendapatan', id));
+            Swal.fire({ toast:true, position:'top', icon:'success', title:'Riwayat dihapus', showConfirmButton:false, timer:1500, background:'#11171f', color:'#fff' });
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'Gagal', text: e.message, background:'#11171f', color:'#fff' });
+        }
+    };
+
+    /* ── HAPUS PEMBATALAN ────────────────────────────────────── */
+    window.hapusBatal = async function(id) {
+        const result = await Swal.fire({
+            title: 'Hapus riwayat ini?',
+            text: 'Data pembatalan akan dihapus permanen.',
+            icon: 'warning', showCancelButton: true,
+            confirmButtonColor: '#ef4444', cancelButtonColor: '#374151',
+            confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal',
+            background: '#11171f', color: '#fff'
+        });
+        if (!result.isConfirmed) return;
+        try {
+            await deleteDoc(doc(db, 'cancellations', id));
+            Swal.fire({ toast:true, position:'top', icon:'success', title:'Riwayat dihapus', showConfirmButton:false, timer:1500, background:'#11171f', color:'#fff' });
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'Gagal', text: e.message, background:'#11171f', color:'#fff' });
+        }
+    };
+
+    /* ── HAPUS OTOMATIS ──────────────────────────────────────── */
+    async function jalankanHapusOtomatis() {
+        const hari = parseInt(localStorage.getItem('pg_auto_delete_days') || '0');
+        if (!hari || hari <= 0) return;
+        const batas = new Date(); batas.setDate(batas.getDate() - hari);
+        const batasTs = batas.getTime();
+        const { getDocs: gd, query: q, collection: col } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        const snapP = await gd(col(db, 'pendapatan'));
+        const batch1 = writeBatch(db); let c1 = 0;
+        snapP.forEach(d => {
+            const ts = d.data().createdAt?.toMillis?.() || 0;
+            if (ts && ts < batasTs) { batch1.delete(doc(db, 'pendapatan', d.id)); c1++; }
+        });
+        if (c1 > 0) await batch1.commit();
+        const snapC = await gd(col(db, 'cancellations'));
+        const batch2 = writeBatch(db); let c2 = 0;
+        snapC.forEach(d => {
+            const ts = d.data().createdAt?.toMillis?.() || d.data().cancelledAt?.toMillis?.() || 0;
+            if (ts && ts < batasTs) { batch2.delete(doc(db, 'cancellations', d.id)); c2++; }
+        });
+        if (c2 > 0) await batch2.commit();
+    }
+    jalankanHapusOtomatis();
+
+    window.clearAllNotifications = async function() {
+        if (allFnb.length === 0) { toggleNotif(); return; }
+        const result = await Swal.fire({
+            title: 'Hapus Semua Notif?', text: 'Pesanan F&B akan ditandai sudah diproses.',
+            icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33',
+            cancelButtonText: 'Batal', confirmButtonText: 'Ya, Bersihkan',
+            background: '#11171f', color: '#fff'
+        });
+        if (!result.isConfirmed) return;
+        try {
+            const batch = writeBatch(db);
+            allFnb.forEach(item => batch.update(doc(db, 'bookings', item.id), { fnbProcessed: true, status: 'F&B Diproses' }));
+            await batch.commit();
+            toggleNotif();
+            Swal.fire({ toast:true, position:'top', icon:'success', title:'Notifikasi dibersihkan!', showConfirmButton:false, timer:1500, background:'#11171f', color:'#fff' });
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'Gagal', text: e.message, background:'#11171f', color:'#fff' });
+        }
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prince Games - Manajemen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        html.light-mode-pre,
+        html.light-mode-pre body {
+            background: #f0f4f8 !important;
+            --bg: #f0f4f8 !important;
+            --surface: #ffffff !important;
+            --surface2: #f1f5f9 !important;
+            --border: rgba(0,0,0,0.08) !important;
+            --border2: rgba(0,0,0,0.06) !important;
+            --text: #0f172a !important;
+            --muted: #64748b !important;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #06090f;
+            --surface: #0d1117;
+            --card: #111720;
+            --card2: #141c26;
+            --border: rgba(255,255,255,0.07);
+            --cyan: #00d9ff;
+            --cyan-dim: rgba(0,217,255,0.12);
+            --yellow: #f5c518;
+            --yellow-dim: rgba(245,197,24,0.12);
+            --red: #ef4444;
+            --red-dim: rgba(239,68,68,0.12);
+            --green: #22c55e;
+            --orange: #f97316;
+            --text: #e2e8f0;
+            --muted: #7d8590;
+            --muted2: #374151;
+        }
+
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--surface);
+            padding: 14px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .logo { display:flex;align-items:center;gap:7px;font-weight:800;font-size:14px;letter-spacing:-.3px }
+        .logo-icon {
+            width: 32px; height: 32px; background: rgba(0,217,255,0.12);
+            border: 1px solid rgba(0,217,255,0.3);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            color: var(--cyan); font-size: 14px;
+        }
+        .logo span { color: var(--cyan) }
+        .role-badge { background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2);border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:.5px }
+        .nav-btn { display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none;font-family:'Space Grotesk',sans-serif }
+        .nav-btn:hover { color:var(--text);border-color:rgba(255,255,255,0.15) }
+        .btn-keluar { background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.2);color:var(--orange) }
+        .btn-keluar:hover { background:rgba(247,129,102,0.15);color:var(--orange) }
+        .btn-staff-view { background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--muted);font-size:10px;padding:4px 9px }
+        .btn-staff-view:hover { background:rgba(255,255,255,0.04);color:var(--text);border-color:rgba(255,255,255,0.15) }
+        .btn-theme-toggle { width:32px;height:32px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s }
+        .btn-theme-toggle:hover { color:var(--text);border-color:rgba(255,255,255,0.15) }
+
+        /* ── SCROLL AREA ── */
+        .scroll-area {
+            padding: 0;
+        }
+
+        /* ── PAGE TITLE ── */
+        .page-title {
+            margin-bottom: 20px;
+        }
+        .page-title h1 {
+            font-size: 20px; font-weight: 900;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .page-title h1 i { color: var(--cyan); font-size: 16px; }
+        .page-title p { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .7px; margin-top: 3px; }
+
+        /* ── SECTION ── */
+        .section { margin-bottom: 18px; }
+        .section-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .section-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .sec-icon {
+            width: 30px; height: 30px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px;
+        }
+        .sec-icon.cyan { background: var(--cyan-dim); color: var(--cyan); }
+        .sec-icon.yellow { background: var(--yellow-dim); color: var(--yellow); }
+        .section-header h2 { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; }
+
+        /* ── TYPE ROWS ── */
+        .type-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 13px 16px;
+            border-bottom: 1px solid var(--border);
+            active-scale: .98;
+        }
+        .type-row:last-of-type { border-bottom: none; }
+        .type-badge {
+            width: 38px; height: 38px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 900; flex-shrink: 0;
+            letter-spacing: .3px;
+        }
+        .badge-ps3 { background: rgba(139,92,246,.15); color: #a78bfa; }
+        .badge-ps4 { background: rgba(59,130,246,.15); color: #60a5fa; }
+        .badge-ps5 { background: var(--cyan-dim); color: var(--cyan); }
+        .type-info { flex: 1; min-width: 0; }
+        .type-info h4 { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .type-info p { font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+        .row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .btn-icon {
+            width: 32px; height: 32px; border-radius: 9px;
+            border: 1px solid var(--border); background: transparent;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 11px; transition: all .2s; color: var(--muted);
+        }
+        .btn-icon.edit:active { color: var(--cyan); border-color: var(--cyan-dim); background: var(--cyan-dim); }
+        .btn-icon.del:active { color: var(--red); border-color: var(--red-dim); background: var(--red-dim); }
+
+        /* ── ADD FORM (collapsible) ── */
+        .add-trigger {
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            padding: 13px 16px;
+            border-top: 1px solid var(--border);
+            background: rgba(0,0,0,.15);
+            cursor: pointer;
+            font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
+        }
+        .add-trigger.cyan { color: var(--cyan); }
+        .add-trigger.yellow { color: var(--yellow); }
+
+        .add-form {
+            display: none;
+            flex-direction: column; gap: 10px;
+            padding: 14px 16px;
+            border-top: 1px solid var(--border);
+            background: rgba(0,0,0,.2);
+            animation: slideDown .2s ease;
+        }
+        .add-form.open { display: flex; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-row { display: flex; gap: 8px; }
+        .form-field { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+        .form-field label { font-size: 9px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; padding-left: 2px; }
+        .form-input {
+            background: var(--card2); border: 1px solid var(--border);
+            border-radius: 10px; padding: 10px 12px;
+            color: var(--text); font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px; font-weight: 600; outline: none;
+            transition: border-color .2s; width: 100%; height: 40px;
+            -webkit-appearance: none;
+        }
+        .form-input::placeholder { color: var(--muted2); }
+        .form-input:focus { border-color: var(--cyan); }
+        select.form-input { appearance: none; -webkit-appearance: none; }
+
+        .btn-add {
+            width: 100%; height: 42px; border-radius: 10px; border: none;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+            transition: all .15s; active-scale: .97;
+        }
+        .btn-add:active { transform: scale(.97); }
+        .btn-add.cyan { background: var(--cyan); color: #000; }
+        .btn-add.yellow { background: var(--yellow); color: #000; }
+
+        /* ── UNIT GRID ── */
+        .unit-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 14px 14px;
+        }
+        .unit-chip {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 10px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            min-height: 80px;
+            justify-content: center;
+            transition: border-color .2s;
+        }
+        .unit-chip:hover { border-color: rgba(255,255,255,0.15); }
+        .unit-chip-badge {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 900; letter-spacing: .3px;
+            flex-shrink: 0;
+        }
+        .badge-ps3 { background: rgba(139,92,246,.18); color: #a78bfa; border: 1px solid rgba(139,92,246,.25); }
+        .badge-ps4 { background: rgba(59,130,246,.18); color: #60a5fa; border: 1px solid rgba(59,130,246,.25); }
+        .badge-ps5 { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,217,255,.25); }
+        .badge-other { background: rgba(255,255,255,.06); color: var(--muted); border: 1px solid var(--border); }
+        .unit-chip-name {
+            font-size: 10px; font-weight: 900; text-transform: uppercase;
+            letter-spacing: .4px; text-align: center; line-height: 1.2;
+        }
+        .unit-chip-status {
+            font-size: 8px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: .4px; text-align: center;
+            padding: 2px 7px; border-radius: 4px;
+        }
+        .s-available { color: var(--green); background: rgba(34,197,94,.1); }
+        .s-inuse { color: var(--cyan); background: rgba(0,217,255,.1); }
+        .s-perawatan { color: var(--orange); background: rgba(249,115,22,.1); }
+        .unit-del {
+            position: absolute; top: 5px; right: 5px;
+            width: 22px; height: 22px;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.25);
+            cursor: pointer; color: #ef4444; font-size: 9px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 6px; transition: all .15s;
+        }
+        .unit-del:hover, .unit-del:active { background: rgba(239,68,68,0.25); border-color: #ef4444; }
+
+        /* ── MENU LIST ── */
+        .menu-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .menu-emoji {
+            width: 38px; height: 38px; background: var(--card2);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+        }
+        .menu-info { flex: 1; min-width: 0; }
+        .menu-info h4 { font-size: 13px; font-weight: 700; }
+        .menu-info p { font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+        /* ── BOTTOM NAV ── */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 10px 8px 24px;
+            display: flex; justify-content: space-around;
+            z-index: 100;
+            border-radius: 22px 22px 0 0;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            cursor: pointer; padding: 4px 14px;
+            border-radius: 12px; transition: all .2s;
+            text-decoration: none;
+        }
+        .nav-item i { font-size: 18px; }
+        .nav-item span { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .3px; }
+        .nav-item.inactive { color: var(--muted); }
+        .nav-item.active { color: var(--cyan); }
+
+        /* ── BOTTOM SHEET MODAL ── */
+        .sheet-overlay {
+            display: none; position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,.6);
+            backdrop-filter: blur(2px);
+        }
+        .sheet-overlay.open { display: block; }
+
+        /* ── Mobile: bottom sheet ── */
+        .sheet {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 201;
+            background: var(--card);
+            border-radius: 22px 22px 0 0;
+            border-top: 1px solid var(--border);
+            padding: 0 0 40px 0;
+            transform: translateY(100%);
+            transition: transform .3s cubic-bezier(.4,0,.2,1);
+        }
+        .sheet-overlay.open + .sheet, .sheet.open { transform: translateY(0); }
+        @media (min-width: 768px) {
+            .sheet-overlay.open + .sheet { transform: translate(-50%, -50%) scale(1); }
+        }
+        .sheet-handle {
+            width: 36px; height: 4px; background: var(--muted2);
+            border-radius: 2px; margin: 12px auto 20px;
+        }
+
+        /* ── Desktop: centered modal ── */
+        @media (min-width: 768px) {
+            .sheet {
+                position: fixed;
+                top: 50%; left: 50%;
+                transform: translate(-50%, -50%) scale(0.96);
+                bottom: auto; right: auto;
+                width: 480px;
+                border-radius: 20px;
+                border: 1px solid var(--border);
+                padding: 0 0 28px 0;
+                box-shadow: 0 32px 80px rgba(0,0,0,.55);
+                opacity: 0;
+                visibility: hidden;
+                transition: transform .25s cubic-bezier(.4,0,.2,1), opacity .25s ease, visibility .25s;
+            }
+            .sheet.open {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+                visibility: visible;
+            }
+            .sheet-handle { display: none; }
+        }
+
+        .sheet-title {
+            font-size: 14px; font-weight: 800; padding: 0 20px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 8px;
+        }
+        @media (min-width: 768px) {
+            .sheet-title { padding: 20px 20px 16px; }
+        }
+        .sheet-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+        .sheet-actions { display: flex; gap: 8px; padding: 0 20px; margin-top: 4px; }
+        @media (min-width: 768px) {
+            .sheet-body { padding: 20px 28px; gap: 16px; }
+            .sheet-actions { padding: 0 28px; margin-top: 8px; }
+            .sheet-title { padding: 24px 28px 18px !important; font-size: 15px; }
+            .btn-sheet-cancel, .btn-sheet-save { height: 48px; font-size: 13px; border-radius: 14px; }
+        }
+        .btn-sheet-cancel {
+            flex: 1; height: 44px; border-radius: 12px;
+            background: var(--card2); border: 1px solid var(--border);
+            color: var(--muted); font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer;
+        }
+        .btn-sheet-save {
+            flex: 2; height: 44px; border-radius: 12px; border: none;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer;
+        }
+        .btn-sheet-save.cyan { background: var(--cyan); color: #000; }
+        .btn-sheet-save.yellow { background: var(--yellow); color: #000; }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 30px; padding: 10px 18px;
+            font-size: 12px; font-weight: 700;
+            display: flex; align-items: center; gap: 7px;
+            z-index: 300; white-space: nowrap;
+            opacity: 0; transition: all .25s ease;
+            box-shadow: 0 8px 32px rgba(0,0,0,.5);
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast i { color: var(--cyan); }
+        .toast.err i { color: var(--red); }
+
+        /* ═══════════════════════════════════════════════════════════════
+           RESPONSIVE DESKTOP — Prince Games Owner Panel
+           Sidebar di ≥768px, bottom nav di <768px
+        ═══════════════════════════════════════════════════════════════ */
+        @media (min-width: 768px) {
+            .bottom-nav, .bnav-item span { display: none !important; }
+            body { padding-bottom: 0 !important; display: flex; flex-direction: column; min-height: 100vh; }
+            .owner-layout { display: flex; min-height: 100vh; flex: 1; align-items: stretch; }
+            .owner-sidebar {
+                display: flex !important;
+                flex-direction: column;
+                width: 220px;
+                min-width: 220px;
+                background: #0d1117;
+                border-right: 1px solid rgba(255,255,255,0.07);
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                min-height: 100vh;
+                padding: 20px 12px 20px;
+                z-index: 50;
+                gap: 4px;
+                align-self: stretch;
+            }
+            .sidebar-logo {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 900;
+                font-size: 16px;
+                color: #ffffff;
+                letter-spacing: .5px;
+                padding: 0 8px 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+                margin-bottom: 8px;
+            }
+            .sidebar-logo .logo-icon {
+                width: 32px; height: 32px;
+                background: rgba(0,217,255,0.12);
+                border: 1px solid rgba(0,217,255,0.3);
+                border-radius: 8px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 14px; color: #00d9ff;
+            }
+            .sidebar-logo .logo-cyan { color: #00d9ff; }
+            .sidebar-nav-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--muted, #6b7a8d);
+                text-decoration: none;
+                transition: background-color 0.15s, color 0.15s;
+                cursor: pointer;
+                width: 100%;
+                box-sizing: border-box;
+                border: 1px solid transparent;
+                font-family: inherit;
+                background: transparent;
+                line-height: 1.2;
+                min-height: 40px;
+            }
+            .sidebar-nav-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .sidebar-nav-item.active { background: rgba(0,217,255,0.08) !important; color: #00d9ff !important; font-weight: 600 !important; }
+            .sidebar-nav-item i { width: 16px; text-align: center; font-size: 13px; }
+            /* Submenu */
+            .sidebar-submenu { display: flex; flex-direction: column; gap: 2px; padding-left: 26px; margin-top: 2px; }
+            .sidebar-sub-item {
+                display: flex; align-items: center; gap: 8px;
+                padding: 7px 10px; border-radius: 8px;
+                font-size: 11px; font-weight: 600; color: var(--muted, #6b7a8d);
+                text-decoration: none; transition: background-color 0.15s, color 0.15s;
+                cursor: pointer; width: 100%; box-sizing: border-box;
+                border: 1px solid transparent; font-family: inherit; background: transparent; line-height: 1.2;
+                position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            }
+            .sidebar-sub-item::before {
+                content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+                width: 6px; height: 1px; background: rgba(255,255,255,0.15);
+            }
+            .sidebar-sub-item:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
+            .sidebar-sub-item.active-unit { color: #00d9ff !important; font-weight: 600 !important; background: rgba(0,217,255,0.06) !important; }
+            .sidebar-sub-item.active-fnb  { color: #e3b341 !important; font-weight: 600 !important; background: rgba(227,179,65,0.08) !important; }
+            .sidebar-sub-item i { width: 13px; text-align: center; font-size: 11px; }
+            .sidebar-spacer { flex: 1; }
+            .sidebar-keluar {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 700;
+                color: #f78166;
+                cursor: pointer;
+                background: rgba(247,129,102,0.06);
+                border: 1px solid rgba(247,129,102,0.15);
+                font-family: inherit;
+                transition: background-color 0.15s, color 0.15s;
+                width: 100%;
+            }
+            .sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
+            .sidebar-staff-view { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-size:12px; font-weight:700; color:var(--muted, #6b7a8d); cursor:pointer; border:1px solid rgba(255,255,255,0.06); background:transparent; font-family:inherit; transition:all 0.15s; width:100%; margin-bottom:6px; text-decoration:none; box-sizing:border-box; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+            .sidebar-staff-view:hover { background:rgba(255,255,255,0.04); color:#9ca3af; }
+            /* Tab pill di atas konten disembunyikan — kontrol via sidebar */
+            .kelola-tabs { display: none !important; }
+            /* Unit & Booking — warna cyan saat aktif */
+            .sidebar-nav-item.active-unit { background: rgba(0,217,255,0.08); color: #00d9ff; }
+            /* F&B — warna kuning saat aktif */
+            .sidebar-nav-item.active-fnb { background: rgba(227,179,65,0.1); color: #e3b341; }
+            .owner-main-content { flex: 1; min-width: 0; overflow-y: scroll; padding: 28px 32px 80px 32px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+            .topbar { max-width: 100% !important; }
+            /* Widen content area on desktop */
+            .p-5 > .max-w-\[450px\],
+            .p-5 > .max-w-\[480px\],
+            .p-5 > .max-w-\[500px\] { max-width: 900px !important; }
+        }
+        @media (max-width: 767px) {
+            .owner-sidebar { display: none !important; }
+            .owner-layout { display: block; }
+            .owner-main-content { display: block; padding: 16px 16px 100px; max-width: 100%; }
+        }
+    
+        /* ══════════════════════════════════════
+           LIGHT MODE — FULL OVERRIDE
+        ══════════════════════════════════════ */
+        body.light-mode {
+            --bg: #f0f4f8;
+            --surface: #ffffff;
+            --card: #f8fafc;
+            --card2: #f1f5f9;
+            --border: rgba(0,0,0,0.08);
+            --text: #0f172a;
+            --muted: #64748b;
+            --muted2: #94a3b8;
+        }
+        body.light-mode { background: #f0f4f8 !important; color: #0f172a !important; }
+        body.light-mode html { background: #f0f4f8 !important; }
+
+        /* Sidebar */
+        body.light-mode .owner-sidebar {
+            background: #ffffff !important;
+            border-right: 1px solid rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .sidebar-logo { border-color: rgba(0,0,0,0.08) !important; color: #0f172a !important; }
+        body.light-mode .sidebar-nav-item { color: #94a3b8 !important; }
+        body.light-mode .sidebar-nav-item:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
+        body.light-mode .sidebar-nav-item.active { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
+        body.light-mode .sidebar-sub-item { color: #64748b !important; }
+        body.light-mode .sidebar-sub-item:hover { background: rgba(2,132,199,0.06) !important; color: #0284c7 !important; }
+        body.light-mode .sidebar-sub-item.active-unit { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; }
+        body.light-mode .sidebar-sub-item.active-fnb  { background: rgba(227,179,65,0.08) !important; color: #ca8a04 !important; }
+        body.light-mode .sidebar-sub-item::before { background: rgba(0,0,0,0.15); }
+        body.light-mode .sidebar-staff-view { color: #94a3b8 !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .sidebar-staff-view:hover { background: rgba(0,0,0,0.04) !important; color: #475569 !important; }
+        body.light-mode .sidebar-keluar { background: rgba(239,68,68,0.07) !important; border-color: rgba(239,68,68,0.15) !important; }
+
+        /* Layout & wrappers */
+        body.light-mode .owner-main-content { background: #f0f4f8 !important; }
+        body.light-mode .scroll-area { background: #f0f4f8 !important; }
+        body.light-mode .p-5 { background: #f0f4f8 !important; }
+
+        /* Cards / sections */
+        body.light-mode .section-card,
+        body.light-mode .section,
+        body.light-mode .glass-card,
+        body.light-mode .kpi-card,
+        body.light-mode .card,
+        body.light-mode .stat-card,
+        body.light-mode [class*="glass"],
+        body.light-mode [class*="card"] {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            color: #0f172a !important;
+        }
+
+        /* Section headers & borders */
+        body.light-mode .section-header { border-color: rgba(0,0,0,0.07) !important; }
+        @media (min-width: 768px) {
+            .section-card { border-radius: 14px !important; }
+            .section { margin-left: 0; margin-right: 0; }
+        }
+        body.light-mode .type-row { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode .type-row:last-child { border-color: transparent !important; }
+        body.light-mode .menu-row { border-color: rgba(0,0,0,0.06) !important; }
+
+        /* Text */
+        body.light-mode h1, body.light-mode h2, body.light-mode h3 { color: #0f172a !important; }
+        body.light-mode .page-title h1 { color: #0f172a !important; }
+        body.light-mode .page-title p { color: #64748b !important; }
+
+        /* ── KELOLA TABS ── */
+        .kelola-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+        .kelola-tab {
+            flex: 1; padding: 10px 14px; border-radius: 11px; font-size: 12px; font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif; cursor: pointer; text-align: center;
+            border: 1px solid var(--border); background: transparent; color: var(--muted);
+            transition: all .2s;
+        }
+        .kelola-tab.active { background: rgba(0,217,255,0.12); border-color: rgba(0,217,255,0.4); color: #00d9ff; }
+        #kelola-tab-fnb.active { background: rgba(227,179,65,0.12); border-color: rgba(227,179,65,0.4); color: var(--yellow); }
+        .kelola-tab-content { display: none; }
+        .kelola-tab-content.active { display: block; }
+        body.light-mode .kelola-tab { border-color: rgba(0,0,0,0.1); }
+        body.light-mode .type-name, body.light-mode .type-info h3 { color: #0f172a !important; }
+        body.light-mode .type-info p, body.light-mode .menu-info p { color: #64748b !important; }
+        body.light-mode .unit-name { color: #0f172a !important; }
+        body.light-mode .menu-name { color: #0f172a !important; }
+        body.light-mode .menu-price { color: #64748b !important; }
+        body.light-mode .sec-title { color: #0f172a !important; }
+
+        /* Unit cards */
+        body.light-mode .unit-card {
+            background: #f8fafc !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .unit-card:hover { background: #f1f5f9 !important; }
+
+        /* Inputs / forms */
+        body.light-mode .form-input,
+        body.light-mode input[type="text"],
+        body.light-mode input[type="number"],
+        body.light-mode input[type="date"],
+        body.light-mode select,
+        body.light-mode textarea {
+            background: #f8fafc !important;
+            border-color: rgba(0,0,0,0.12) !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .form-field label { color: #64748b !important; }
+
+        /* Buttons */
+        body.light-mode .btn-icon { 
+            background: #f1f5f9 !important; 
+            border-color: rgba(0,0,0,0.08) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .add-trigger { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode .filter-btn { 
+            background: #f1f5f9 !important; 
+            border-color: rgba(0,0,0,0.1) !important;
+            color: #64748b !important;
+        }
+        body.light-mode .filter-btn.active { background: #00d9ff !important; color: #000 !important; }
+
+        /* Tables */
+        body.light-mode table, body.light-mode th, body.light-mode td { color: #0f172a !important; }
+        body.light-mode th { color: #64748b !important; }
+        body.light-mode tr { border-color: rgba(0,0,0,0.06) !important; }
+        body.light-mode .table-header { color: #94a3b8 !important; }
+        body.light-mode .table-cell { color: #0f172a !important; border-color: rgba(0,0,0,0.05) !important; }
+
+        /* Bottom nav */
+        body.light-mode .bottom-nav {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .bnav-item.inactive, body.light-mode .nav-item.inactive { color: #cbd5e1 !important; }
+
+        /* Topbar */
+        body.light-mode .topbar { background: #ffffff !important; border-color: rgba(0,0,0,0.08) !important; }
+        body.light-mode .nav-btn { background: #f1f5f9 !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
+        body.light-mode .btn-theme-toggle { background: #f1f5f9 !important; border-color: rgba(0,0,0,0.1) !important; color: #64748b !important; }
+        body.light-mode .role-badge { background: rgba(0,217,255,0.1) !important; color: #0ea5e9 !important; }
+
+        /* Misc */
+        body.light-mode .empty-box p { color: #94a3b8 !important; }
+        body.light-mode .loading-pulse { color: #94a3b8 !important; }
+        body.light-mode input[type="date"] { color-scheme: light; }
+        body.light-mode [class*="text-gray"] { color: #64748b !important; }
+        body.light-mode [class*="text-white"] { color: #0f172a !important; }
+        body.light-mode [class*="bg-white/"] { background: rgba(0,0,0,0.04) !important; }
+        body.light-mode [class*="border-white/"] { border-color: rgba(0,0,0,0.08) !important; }
+
+        
+        @media (max-width: 767px) {
+            /* Prevent horizontal overflow on mobile */
+            .owner-main-content > *,
+            .owner-main-content .glass-card,
+            .owner-main-content [class*="card"],
+            .owner-main-content .section {
+                max-width: 100% !important;
+                overflow-x: hidden;
+            }
+            table { font-size: 10px !important; }
+            .table-cell { padding: 8px 6px !important; font-size: 10px !important; }
+            .table-header { padding: 8px 6px !important; }
+            /* Grid cols max 2 on mobile */
+            .grid-cols-3 { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+
+        /* ── HIDE SCROLLBAR ── */
+        .owner-main-content::-webkit-scrollbar { display: none; }
+        .owner-main-content { -ms-overflow-style: none; scrollbar-width: none; }
+        </style>
+    <script>
+        (function(){
+            if(localStorage.getItem('pg_theme')==='light')
+                document.documentElement.classList.add('light-mode-pre');
+        })();
+    </script>
+</head>
+<body>
+<div class="owner-layout">
+    <aside class="owner-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
+            PRINCE <span class="logo-cyan">GAMES</span>
+        </div>
+            <a href="../owner/dashboard-owner.html" class="sidebar-nav-item"><i class="fas fa-th-large"></i> Beranda</a>
+            <a href="../owner/manage-owner.html" class="sidebar-nav-item active" id="sidebar-kelola-link"><i class="fas fa-tools"></i> Kelola</a>
+            <div class="sidebar-submenu">
+                <button class="sidebar-sub-item active-unit" id="sidebar-kelola-tab-unit" onclick="switchKelolaTab('unit')">
+                    <i class="fas fa-gamepad"></i> Unit & Booking
+                </button>
+                <button class="sidebar-sub-item" id="sidebar-kelola-tab-fnb" onclick="switchKelolaTab('fnb')">
+                    <i class="fas fa-utensils"></i> F&B
+                </button>
+            </div>
+            <a href="../owner/history-owner.html" class="sidebar-nav-item"><i class="fas fa-history"></i> Riwayat</a>
+            <a href="../owner/export-owner.html" class="sidebar-nav-item"><i class="fas fa-file-export"></i> Laporan</a>
+        <div class="sidebar-spacer"></div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 8px;border-radius:4px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;text-transform:uppercase;margin-bottom:8px;display:inline-block">OWNER</div>
+        <button class="sidebar-staff-view" onclick="goToStaffView()">
+            <i class="fas fa-users-gear"></i> Staff View
+        </button>
+        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left">
+            <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
+        </button>
+        <button class="sidebar-keluar" onclick="doLogout()">
+            <i class="fas fa-right-from-bracket"></i> Keluar
+        </button>
+    </aside>
+<div class="owner-main-content">
+
+
+<!-- SCROLL CONTENT -->
+<div class="scroll-area">
+    <div class="page-title">
+        <h1><i class="fas fa-tools"></i> Manajemen</h1>
+        <p>Kelola tipe konsol, unit, dan menu F&B</p>
+    </div>
+
+    <!-- ── TAB SWITCHER ── -->
+    <div class="kelola-tabs">
+        <button class="kelola-tab active" id="kelola-tab-unit" onclick="switchKelolaTab('unit')">
+            <i class="fas fa-gamepad"></i> Unit & Booking
+        </button>
+        <button class="kelola-tab" id="kelola-tab-fnb" onclick="switchKelolaTab('fnb')">
+            <i class="fas fa-utensils"></i> F&B
+        </button>
+    </div>
+    <script>
+        function switchKelolaTab(tab){
+            document.getElementById('tab-unit').classList.toggle('active', tab==='unit');
+            document.getElementById('tab-fnb').classList.toggle('active', tab==='fnb');
+            document.getElementById('kelola-tab-unit').classList.toggle('active', tab==='unit');
+            document.getElementById('kelola-tab-fnb').classList.toggle('active', tab==='fnb');
+            // Sidebar: update class
+            const btnUnit = document.getElementById('sidebar-kelola-tab-unit');
+            const btnFnb  = document.getElementById('sidebar-kelola-tab-fnb');
+            btnUnit.classList.toggle('active-unit', tab === 'unit');
+            btnFnb.classList.toggle('active-fnb',   tab === 'fnb');
+            btnUnit.style.background = ''; btnUnit.style.color = '';
+            btnFnb.style.background  = ''; btnFnb.style.color  = '';
+            // Reset scroll position to prevent layout jump on tab switch
+            const mainContent = document.querySelector('.owner-main-content');
+            if (mainContent) mainContent.scrollTop = 0;
+        }
+        // Auto switch tab berdasarkan hash URL (#unit / #fnb)
+        (function() {
+            const hash = window.location.hash;
+            if (hash === '#fnb') switchKelolaTab('fnb');
+        })();
+    </script>
+
+    <div id="tab-unit" class="kelola-tab-content active">
+
+    <!-- ── TIPE KONSOL ── -->
+    <div class="section">
+        <div class="section-card">
+            <div class="section-header">
+                <div class="sec-icon cyan"><i class="fas fa-gamepad"></i></div>
+                <h2>Tipe Konsol</h2>
+            </div>
+            <div id="type-list"></div>
+            <div class="add-trigger cyan" onclick="toggleForm('form-type')">
+                <i class="fas fa-plus"></i> Tambah Tipe
+            </div>
+            <div class="add-form" id="form-type">
+                <div class="form-row">
+                    <div class="form-field" style="max-width:80px;">
+                        <label>ID</label>
+                        <input type="text" id="new-type-id" placeholder="PS6" class="form-input">
+                    </div>
+                    <div class="form-field">
+                        <label>Nama</label>
+                        <input type="text" id="new-type-name" placeholder="PlayStation 6" class="form-input">
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label>Tarif / jam (Rp)</label>
+                    <input type="number" id="new-type-rate" placeholder="20000" class="form-input">
+                </div>
+                <button class="btn-add cyan" onclick="addType()"><i class="fas fa-plus"></i> Simpan Tipe</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── UNIT FISIK ── -->
+    <div class="section">
+        <div class="section-card">
+            <div class="section-header">
+                <div class="sec-icon cyan"><i class="fas fa-desktop"></i></div>
+                <h2>Unit Fisik</h2>
+            </div>
+            <div id="unit-grid" class="unit-grid"></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+              <div class="add-trigger cyan" style="flex:1;min-width:120px;" onclick="toggleForm('form-unit')">
+                <i class="fas fa-plus"></i> Tambah Manual
+              </div>
+              <a href="init-units.html" style="flex:1;min-width:140px;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px;border-radius:11px;background:rgba(0,217,255,.06);border:1px dashed rgba(0,217,255,.3);color:#00d9ff;font-size:12px;font-weight:700;text-decoration:none;">
+                <i class="fas fa-database"></i> Masukan 16 Unit langsung
+              </a>
+            </div>
+            <div class="add-form" id="form-unit">
+                <div class="form-field">
+                    <label>Tipe Konsol</label>
+                    <select id="new-unit-type" class="form-input" onchange="autoFillUnitId()">
+                        <option value="">— Pilih tipe —</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>ID Unit</label>
+                    <input type="text" id="new-unit-id" placeholder="Pilih tipe dulu..." class="form-input" style="text-transform:uppercase;">
+                </div>
+                <button class="btn-add cyan" onclick="addUnit()"><i class="fas fa-plus"></i> Simpan Unit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── UNIT RENTAL BAWA PULANG ── -->
+    <div class="section">
+        <div class="section-card">
+            <div class="section-header">
+                <div class="sec-icon" style="background:rgba(168,85,247,0.15);color:#a855f7"><i class="fas fa-house"></i></div>
+                <h2 style="color:#a855f7">Unit Rental Bawa Pulang</h2>
+            </div>
+            <p style="font-size:11px;color:#6b7280;margin-bottom:14px;">Unit khusus untuk disewa dibawa pulang. Terpisah dari unit bermain di tempat.</p>
+            <div id="rental-unit-summary" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"></div>
+            <div id="rental-unit-grid" class="unit-grid"></div>
+            <div class="add-trigger" style="background:rgba(168,85,247,0.08);border:1px dashed rgba(168,85,247,0.4);color:#a855f7;" onclick="toggleForm('form-rental-unit')">
+                <i class="fas fa-plus"></i> Tambah Unit Rental
+            </div>
+            <div class="add-form" id="form-rental-unit">
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Tipe Konsol</label>
+                        <select id="ru-type" class="form-input" onchange="autoFillRentalUnitId()">
+                            <option value="">— Pilih tipe —</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>ID Unit</label>
+                        <input type="text" id="ru-id" placeholder="Pilih tipe dulu..." class="form-input" style="text-transform:uppercase;">
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label>Nama / Label (opsional)</label>
+                    <input type="text" id="ru-label" placeholder="Contoh: PS4 Rental Hitam" class="form-input">
+                </div>
+                <button class="btn-add" style="background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.4);color:#a855f7;" onclick="addRentalUnit()">
+                    <i class="fas fa-plus"></i> Simpan Unit Rental
+                </button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <div id="tab-fnb" class="kelola-tab-content">
+
+    <!-- ── MENU F&B ── -->
+    <div class="section">
+        <div class="section-card">
+            <div class="section-header">
+                <div class="sec-icon yellow"><i class="fas fa-utensils"></i></div>
+                <h2 style="color:var(--yellow)">Menu F&B</h2>
+            </div>
+            <div id="menu-list"></div>
+            <div class="add-trigger yellow" onclick="toggleForm('form-menu')">
+                <i class="fas fa-plus"></i> Tambah Menu
+            </div>
+            <div class="add-form" id="form-menu">
+                <div class="form-row">
+                    <div class="form-field" style="flex:1">
+                        <label>Nama Menu</label>
+                        <input type="text" id="new-menu-name" placeholder="Nama makanan" class="form-input">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Kategori</label>
+                        <select id="new-menu-category" class="form-input" onchange="autoIconByCategory('new')">
+                            <option>Food</option>
+                            <option>Drink</option>
+                            <option>Snack</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Harga (Rp)</label>
+                        <input type="number" id="new-menu-price" placeholder="15000" class="form-input">
+                    </div>
+                </div>
+                <button class="btn-add yellow" onclick="addMenu()"><i class="fas fa-plus"></i> Simpan Menu</button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+    <a href="../owner/dashboard-owner.html" class="nav-item inactive">
+        <i class="fas fa-th-large"></i>
+        <span>Beranda</span>
+    </a>
+    <div class="nav-item active">
+        <i class="fas fa-tools"></i>
+        <span>Kelola</span>
+    </div>
+    <a href="../owner/history-owner.html" class="nav-item inactive">
+        <i class="fas fa-history"></i>
+        <span>Riwayat</span>
+    </a>
+    <a href="../owner/export-owner.html" class="nav-item inactive">
+        <i class="fas fa-file-export"></i>
+        <span>Laporan</span>
+    </a>
+</nav>
+
+<!-- EDIT TYPE SHEET -->
+<div class="sheet-overlay" id="ov-type" onclick="closeSheet('type')"></div>
+<div class="sheet" id="sh-type">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title"><i class="fas fa-pen" style="color:var(--cyan);font-size:12px;"></i> Edit Tipe Konsol</div>
+    <div class="sheet-body">
+        <input type="hidden" id="edit-type-idx">
+        <div class="form-field"><label>ID (tidak bisa diubah)</label><input type="text" id="edit-type-id-v" class="form-input" readonly style="opacity:.4;"></div>
+        <div class="form-field"><label>Nama</label><input type="text" id="edit-type-name-v" class="form-input"></div>
+        <div class="form-field"><label>Tarif / jam (Rp)</label><input type="number" id="edit-type-rate-v" class="form-input"></div>
+    </div>
+    <div class="sheet-actions">
+        <button class="btn-sheet-cancel" onclick="closeSheet('type')">Batal</button>
+        <button class="btn-sheet-save cyan" onclick="saveEditType()">Simpan</button>
+    </div>
+</div>
+
+<!-- EDIT MENU SHEET -->
+<div class="sheet-overlay" id="ov-menu" onclick="closeSheet('menu')"></div>
+<div class="sheet" id="sh-menu">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title"><i class="fas fa-pen" style="color:var(--yellow);font-size:12px;"></i> Edit Menu</div>
+    <div class="sheet-body">
+        <input type="hidden" id="edit-menu-idx">
+        <div class="form-row">
+            <div class="form-field"><label>Nama Menu</label><input type="text" id="edit-menu-name-v" class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-field"><label>Kategori</label>
+                <select id="edit-menu-cat-v" class="form-input" onchange="autoIconByCategory('edit')">
+                    <option>Food</option><option>Drink</option><option>Snack</option>
+                </select>
+            </div>
+            <div class="form-field"><label>Harga (Rp)</label><input type="number" id="edit-menu-price-v" class="form-input"></div>
+        </div>
+    </div>
+    <div class="sheet-actions">
+        <button class="btn-sheet-cancel" onclick="closeSheet('menu')">Batal</button>
+        <button class="btn-sheet-save yellow" onclick="saveEditMenu()">Simpan</button>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+    getFirestore, collection, doc,
+    onSnapshot, setDoc, deleteDoc, updateDoc, addDoc, getDoc, getDocs,
+    query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAqa9FTlNuVXGHnINFN1qz8-aoGTrn-0g4",
+    authDomain: "prince-games-f170a.firebaseapp.com",
+    projectId: "prince-games-f170a",
+    storageBucket: "prince-games-f170a.firebasestorage.app",
+    messagingSenderId: "245728198046",
+    appId: "1:245728198046:web:b6136e05459f23a96677f5"
+};
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── AUTH CHECK ──
+onAuthStateChanged(auth, user => {
+    if (!user) window.location.href = '../auth/login-owner.html';
+});
+
+// ── STATE ──
+let liveTypes = [];   // dari Firestore real-time
+let liveUnits = [];   // dari Firestore real-time
+let liveRentalUnits = []; // Unit rental bawa pulang
+
+// ── REAL-TIME TYPES DARI FIREBASE ──
+onSnapshot(
+    query(collection(db, 'types'), orderBy('createdAt', 'asc')),
+    async snap => {
+        liveTypes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // Seed default types jika belum ada
+        if (liveTypes.length === 0) {
+            const defaults = [
+                { id: 'PS3', name: 'PlayStation 3', rate: 5000 },
+                { id: 'PS4', name: 'PlayStation 4', rate: 10000 },
+                { id: 'PS5', name: 'PlayStation 5', rate: 15000 },
+            ];
+            for (const t of defaults) {
+                await setDoc(doc(db, 'types', t.id), { ...t, createdAt: new Date().toISOString() });
+            }
+            return; // onSnapshot akan dipanggil ulang setelah seed
+        }
+
+        renderTypes();
+        // Update select tipe di form tambah unit
+        const sel = document.getElementById('new-unit-type');
+        if (sel) {
+            sel.innerHTML = '<option value="">— Pilih tipe —</option>' +
+                liveTypes.map(t => `<option value="${t.id}">${t.id} — ${t.name} (Rp ${(t.rate||0).toLocaleString('id-ID')}/jam)</option>`).join('');
+        }
+        // Update select tipe di form rental unit juga
+        const selRu = document.getElementById('ru-type');
+        if (selRu) {
+            selRu.innerHTML = '<option value="">— Pilih tipe —</option>' +
+                liveTypes.map(t => `<option value="${t.id}">${t.id} — ${t.name}</option>`).join('');
+        }
+    },
+    err => console.error('types snapshot error:', err)
+);
+
+// ── REAL-TIME UNITS DARI FIREBASE ──
+onSnapshot(
+    query(collection(db, 'units'), orderBy('__name__')),
+    snap => {
+        liveUnits = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderTypes();
+        renderUnits();
+    },
+    err => console.error('units snapshot error:', err)
+);
+
+// ── REAL-TIME RENTAL UNITS ──
+onSnapshot(
+    query(collection(db, 'rentalUnits'), orderBy('__name__')),
+    snap => {
+        liveRentalUnits = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderRentalUnits();
+    },
+    err => console.error('rentalUnits snapshot error:', err)
+);
+
+// ── RENDER TIPE ──
+function renderTypes() {
+    const list = document.getElementById('type-list');
+    if (!liveTypes.length) {
+        list.innerHTML = `<div style="padding:16px;text-align:center;color:#6b7280;font-size:12px;">Belum ada tipe konsol.</div>`;
+        return;
+    }
+    list.innerHTML = liveTypes.map((t) => {
+        const tid = (t.id || '').toUpperCase();
+        const bc = tid === 'PS5' ? 'badge-ps5' : tid === 'PS4' ? 'badge-ps4' : tid === 'PS3' ? 'badge-ps3' : 'badge-ps5';
+        const count = liveUnits.filter(u => (u.type||'').toUpperCase() === tid).length;
+        return `<div class="type-row">
+            <div class="type-badge ${bc}">${t.id}</div>
+            <div class="type-info">
+                <h4>${t.name}</h4>
+                <p>${count} unit · Rp ${(t.rate||0).toLocaleString('id-ID')}/jam</p>
+            </div>
+            <div class="row-actions">
+                <button class="btn-icon edit" onclick="window._openEditType('${t.id}')"><i class="fas fa-pen"></i></button>
+                <button class="btn-icon del" onclick="window._delType('${t.id}','${t.name}',${count})"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ── RENDER UNITS (dari Firebase) ──
+function renderUnits() {
+    const g = document.getElementById('unit-grid');
+    if (!liveUnits.length) {
+        g.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:#6b7280;font-size:12px;">
+            Belum ada unit. <a href="init-units.html" style="color:#00d9ff;">Jalankan init-units</a> atau tambah manual.
+        </div>`;
+        return;
+    }
+    g.innerHTML = liveUnits.map((u) => {
+        const s = u.status || '';
+        const sc = s === 'Tersedia' ? 's-available'
+                 : (s === 'Digunakan' || s === 'Dipakai') ? 's-inuse'
+                 : 's-perawatan';
+        const sl = s === 'Tersedia' ? 'Tersedia'
+                 : (s === 'Digunakan' || s === 'Dipakai') ? 'Dipakai'
+                 : 'Perawatan';
+
+        // Tentukan badge berdasarkan tipe atau ID unit
+        const typeRaw = (u.type || u.id || '').toUpperCase();
+        const badgeCls = typeRaw.includes('PS5') ? 'badge-ps5'
+                       : typeRaw.includes('PS4') ? 'badge-ps4'
+                       : typeRaw.includes('PS3') ? 'badge-ps3'
+                       : 'badge-other';
+        const badgeLabel = typeRaw.includes('PS5') ? 'PS5'
+                         : typeRaw.includes('PS4') ? 'PS4'
+                         : typeRaw.includes('PS3') ? 'PS3'
+                         : (u.type || 'PS').toUpperCase().slice(0,4);
+
+        return `<div class="unit-chip">
+            <button class="unit-del" onclick="window._delUnit('${u.id}')"><i class="fas fa-times"></i></button>
+            <div class="unit-chip-badge ${badgeCls}">${badgeLabel}</div>
+            <span class="unit-chip-name">${u.id}</span>
+            <span class="unit-chip-status ${sc}">${sl}</span>
+        </div>`;
+    }).join('');
+}
+
+// ── RENDER MENU (dari Firebase) ──
+let liveMenus = [];
+
+onSnapshot(
+    query(collection(db, 'menus'), orderBy('createdAt', 'asc')),
+    snap => {
+        liveMenus = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderMenu();
+    },
+    err => console.error('menus snapshot error:', err)
+);
+
+function renderMenu() {
+    const list = document.getElementById('menu-list');
+    if (!liveMenus.length) {
+        list.innerHTML = `<div style="text-align:center;padding:20px;color:#6b7280;font-size:12px;">Belum ada menu. Tambahkan menu pertama Anda.</div>`;
+        return;
+    }
+    list.innerHTML = liveMenus.map((m) => `<div class="menu-row">
+        <div class="menu-emoji">${CATEGORY_ICON[m.category] || '🍽️'}</div>
+        <div class="menu-info">
+            <h4>${m.name}</h4>
+            <p>${m.category} · Rp ${(m.price||0).toLocaleString('id-ID')}</p>
+        </div>
+        <div class="row-actions">
+            <button class="btn-icon edit" onclick="window._openEditMenu('${m.id}')"><i class="fas fa-pen"></i></button>
+            <button class="btn-icon del" onclick="window._delMenu('${m.id}','${m.name}')"><i class="fas fa-trash-alt"></i></button>
+        </div>
+    </div>`).join('');
+}
+
+// ── TOGGLE FORM ──
+window.toggleForm = id => document.getElementById(id).classList.toggle('open');
+
+// ── ADD TYPE → FIREBASE ──
+window.addType = async () => {
+    const id   = document.getElementById('new-type-id').value.trim().toUpperCase();
+    const name = document.getElementById('new-type-name').value.trim();
+    const rate = parseInt(document.getElementById('new-type-rate').value);
+    if (!id || !name || !rate) return toast('Lengkapi semua field tipe!', true);
+    if (liveTypes.find(t => t.id === id)) return toast('ID tipe sudah ada!', true);
+    try {
+        await setDoc(doc(db, 'types', id), {
+            id, name, rate,
+            createdAt: new Date().toISOString()
+        });
+        document.getElementById('new-type-id').value = '';
+        document.getElementById('new-type-name').value = '';
+        document.getElementById('new-type-rate').value = '';
+        toggleForm('form-type');
+        toast(`Tipe ${id} ditambahkan!`);
+    } catch (e) {
+        toast('Gagal: ' + e.message, true);
+    }
+};
+
+// ── DELETE TYPE → FIREBASE ──
+window._delType = async (id, name, unitCount) => {
+    if (unitCount > 0) {
+        const confirm = await Swal.fire({
+            icon: 'warning',
+            title: `Hapus tipe ${id}?`,
+            html: `Masih ada <strong>${unitCount} unit</strong> bertipe ${id}.<br>Hapus semua unit tersebut terlebih dahulu sebelum menghapus tipe ini.`,
+            background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff',
+            confirmButtonColor: '#ef4444',
+            confirmButtonText: 'Mengerti',
+            showCancelButton: false
+        });
+        return;
+    }
+    const result = await Swal.fire({
+        title: `Hapus tipe ${id}?`,
+        text: `Tipe "${name}" akan dihapus dari Firebase secara permanen.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#374151',
+        confirmButtonText: 'Ya, Hapus',
+        background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff'
+    });
+    if (!result.isConfirmed) return;
+    try {
+        await deleteDoc(doc(db, 'types', id));
+        toast(`Tipe ${id} dihapus.`);
+    } catch (e) {
+        toast('Gagal hapus: ' + e.message, true);
+    }
+};
+
+// ── EDIT TYPE → FIREBASE ──
+window._openEditType = (id) => {
+    const t = liveTypes.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('edit-type-idx').value = id;
+    document.getElementById('edit-type-id-v').value = t.id;
+    document.getElementById('edit-type-name-v').value = t.name;
+    document.getElementById('edit-type-rate-v').value = t.rate;
+    openSheet('type');
+};
+window.saveEditType = async () => {
+    const id   = document.getElementById('edit-type-idx').value;
+    const name = document.getElementById('edit-type-name-v').value.trim();
+    const rate = parseInt(document.getElementById('edit-type-rate-v').value);
+    if (!name || !rate) return toast('Lengkapi nama & tarif!', true);
+    try {
+        await updateDoc(doc(db, 'types', id), { name, rate });
+        closeSheet('type');
+        toast(`Tipe ${id} diperbarui!`);
+    } catch (e) {
+        toast('Gagal update: ' + e.message, true);
+    }
+};
+
+// ── RENDER RENTAL UNITS ──
+function renderRentalUnits() {
+    const g = document.getElementById('rental-unit-grid');
+    const summary = document.getElementById('rental-unit-summary');
+    if (!g) return;
+
+    // Summary per tipe
+    if (summary) {
+        const byType = {};
+        liveRentalUnits.forEach(u => {
+            const t = (u.type || 'Unknown').toUpperCase();
+            if (!byType[t]) byType[t] = { total: 0, tersedia: 0 };
+            byType[t].total++;
+            if (u.status === 'Tersedia') byType[t].tersedia++;
+        });
+        summary.innerHTML = Object.entries(byType).map(([t, v]) => {
+            const bc = t === 'PS5' ? 'rgba(168,85,247,0.2)' : t === 'PS4' ? 'rgba(0,217,255,0.12)' : 'rgba(74,222,128,0.12)';
+            const cc = t === 'PS5' ? '#a855f7' : t === 'PS4' ? '#00d9ff' : '#4ade80';
+            return `<div style="background:${bc};border:1px solid ${cc}30;border-radius:10px;padding:8px 14px;font-size:11px;font-weight:700;color:${cc}">
+                ${t}: ${v.tersedia}/${v.total} Tersedia
+            </div>`;
+        }).join('') || '';
+    }
+
+    if (!liveRentalUnits.length) {
+        g.innerHTML = `<div style="padding:16px;text-align:center;color:#6b7280;font-size:12px;grid-column:1/-1;">
+            Belum ada unit rental. Tambah unit agar pelanggan bisa booking bawa pulang.
+        </div>`;
+        return;
+    }
+
+    const statusColor = { 'Tersedia': '#4ade80', 'Dipinjam': '#f59e0b', 'Rusak': '#ef4444' };
+    g.innerHTML = liveRentalUnits.map(u => {
+        const sc = statusColor[u.status] || '#6b7280';
+        const t  = (u.type || '').toUpperCase();
+        const bc = t === 'PS5' ? 'badge-ps5' : t === 'PS4' ? 'badge-ps4' : 'badge-ps3';
+        const label = u.label || u.id;
+        const borrower = u.borrower ? `<span style="font-size:9px;color:#f59e0b;display:block">📦 ${u.borrower}</span>` : '';
+        return `<div class="unit-chip">
+            <button class="unit-del" onclick="window._delRentalUnit('${u.id}')"><i class="fas fa-times"></i></button>
+            <div class="unit-chip-badge ${bc}">${u.type || '?'}</div>
+            <span class="unit-chip-name">${label}</span>
+            ${borrower}
+            <span class="unit-chip-status" style="color:${sc}">${u.status || '—'}</span>
+        </div>`;
+    }).join('');
+}
+
+window.autoFillRentalUnitId = () => {
+    const type = document.getElementById('ru-type').value;
+    if (!type) return;
+    const existing = liveRentalUnits.filter(u => (u.type || '').toUpperCase() === type.toUpperCase());
+    const nextNum  = String(existing.length + 1).padStart(2, '0');
+    const suggested = `R-${type}-${nextNum}`;
+    const input = document.getElementById('ru-id');
+    input.placeholder = suggested;
+    input.value = suggested;
+};
+
+window.addRentalUnit = async () => {
+    const id    = document.getElementById('ru-id').value.trim().toUpperCase();
+    const type  = document.getElementById('ru-type').value;
+    const label = document.getElementById('ru-label').value.trim();
+    if (!type) return toast('Pilih tipe konsol terlebih dahulu!', true);
+    if (!id)   return toast('ID unit wajib diisi!', true);
+    if (liveRentalUnits.find(u => u.id === id)) return toast(`Unit "${id}" sudah ada!`, true);
+    const rate = liveTypes.find(t => t.id === type)?.rate || 5000;
+    try {
+        await setDoc(doc(db, 'rentalUnits', id), {
+            type,
+            label: label || id,
+            status: 'Tersedia',
+            rate,
+            borrower: null,
+            borrowerId: null,
+            rentalId: null,
+            createdAt: new Date().toISOString()
+        });
+        document.getElementById('ru-id').value = '';
+        document.getElementById('ru-type').value = '';
+        document.getElementById('ru-label').value = '';
+        toggleForm('form-rental-unit');
+        toast(`Unit rental ${id} ditambahkan!`);
+    } catch (e) {
+        toast('Gagal: ' + e.message, true);
+    }
+};
+
+window._delRentalUnit = async (id) => {
+    const u = liveRentalUnits.find(x => x.id === id);
+    if (!u) return;
+    if (u.status === 'Dipinjam') return toast('Unit sedang dipinjam, tidak bisa dihapus!', true);
+    const result = await Swal.fire({
+        title: `Hapus ${id}?`,
+        text: 'Unit rental akan dihapus secara permanen.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#374151',
+        confirmButtonText: 'Ya, Hapus',
+        background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff'
+    });
+    if (!result.isConfirmed) return;
+    try {
+        await deleteDoc(doc(db, 'rentalUnits', id));
+        toast(`Unit rental ${id} dihapus.`);
+    } catch (e) {
+        toast('Gagal hapus: ' + e.message, true);
+    }
+};
+
+// ── ADD UNIT → FIREBASE ──
+window.autoFillUnitId = () => {
+    const type = document.getElementById('new-unit-type').value;
+    if (!type) return;
+    const existing = liveUnits.filter(u => (u.type||'').toUpperCase() === type.toUpperCase());
+    const nextNum  = String(existing.length + 1).padStart(2, '0');
+    const suggested = `${type}-${nextNum}`;
+    const input = document.getElementById('new-unit-id');
+    input.placeholder = suggested;
+    input.value = suggested;
+};
+
+window.addUnit = async () => {
+    const id   = document.getElementById('new-unit-id').value.trim().toUpperCase();
+    const type = document.getElementById('new-unit-type').value;
+    if (!type) return toast('Pilih tipe konsol terlebih dahulu!', true);
+    if (!id)   return toast('ID unit wajib diisi!', true);
+    if (liveUnits.find(u => u.id === id)) return toast(`Unit "${id}" sudah ada!`, true);
+    const rate = liveTypes.find(t => t.id === type)?.rate || 5000;
+    try {
+        await setDoc(doc(db, 'units', id), {
+            type,
+            status: 'Tersedia',
+            price: rate,
+            customerName: null,
+            startTime: null,
+            endTime: null,
+            price_total: 0,
+            createdAt: new Date().toISOString()
+        });
+        document.getElementById('new-unit-id').value = '';
+        document.getElementById('new-unit-type').value = '';
+        toggleForm('form-unit');
+        toast(`Unit ${id} ditambahkan!`);
+    } catch (e) {
+        toast('Gagal: ' + e.message, true);
+    }
+};
+
+// ── DELETE UNIT → FIREBASE ──
+window._delUnit = async (id) => {
+    const u = liveUnits.find(x => x.id === id);
+    if (!u) return;
+    if (u.status === 'Digunakan' || u.status === 'Dipakai') {
+        return toast('Unit sedang dipakai, tidak bisa dihapus!', true);
+    }
+    const result = await Swal.fire({
+        title: `Hapus ${id}?`,
+        text: 'Unit akan dihapus dari Firebase secara permanen.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#374151',
+        confirmButtonText: 'Ya, Hapus',
+        background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff'
+    });
+    if (!result.isConfirmed) return;
+    try {
+        await deleteDoc(doc(db, 'units', id));
+        toast(`Unit ${id} dihapus.`);
+    } catch (e) {
+        toast('Gagal hapus: ' + e.message, true);
+    }
+};
+
+// ── RESET STATUS UNIT → TERSEDIA ──
+window.resetUnitStatus = async (id) => {
+    try {
+        await updateDoc(doc(db, 'units', id), {
+            status: 'Tersedia',
+            customerName: null,
+            startTime: null,
+            endTime: null,
+            price_total: 0
+        });
+        toast(`${id} direset ke Tersedia.`);
+    } catch (e) {
+        toast('Gagal reset: ' + e.message, true);
+    }
+};
+
+// ── ADD MENU → FIREBASE ──
+window.addMenu = async () => {
+    const name     = document.getElementById('new-menu-name').value.trim();
+    const category = document.getElementById('new-menu-category').value;
+    const price    = parseInt(document.getElementById('new-menu-price').value);
+    const emoji    = CATEGORY_ICON[category] || '🍽️';
+    if (!name || !price) return toast('Lengkapi nama & harga!', true);
+    try {
+        await addDoc(collection(db, 'menus'), {
+            emoji, name, category, price,
+            createdAt: new Date().toISOString()
+        });
+        document.getElementById('new-menu-name').value = '';
+        document.getElementById('new-menu-price').value = '';
+        toggleForm('form-menu');
+        toast('Menu ditambahkan!');
+    } catch (e) {
+        toast('Gagal: ' + e.message, true);
+    }
+};
+
+// ── DELETE MENU → FIREBASE ──
+window._delMenu = async (id, name) => {
+    const result = await Swal.fire({
+        title: `Hapus ${name}?`,
+        text: 'Menu akan dihapus dari Firebase secara permanen.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#374151',
+        confirmButtonText: 'Ya, Hapus',
+        background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff'
+    });
+    if (!result.isConfirmed) return;
+    try {
+        await deleteDoc(doc(db, 'menus', id));
+        toast('Menu dihapus.');
+    } catch (e) {
+        toast('Gagal hapus: ' + e.message, true);
+    }
+};
+
+// ── EDIT MENU → FIREBASE ──
+window._openEditMenu = (id) => {
+    const m = liveMenus.find(x => x.id === id);
+    if (!m) return;
+    document.getElementById('edit-menu-idx').value = id;
+    document.getElementById('edit-menu-name-v').value = m.name;
+    document.getElementById('edit-menu-cat-v').value = m.category;
+    document.getElementById('edit-menu-price-v').value = m.price;
+    openSheet('menu');
+};
+window.saveEditMenu = async () => {
+    const id = document.getElementById('edit-menu-idx').value;
+    const name     = document.getElementById('edit-menu-name-v').value.trim();
+    const category = document.getElementById('edit-menu-cat-v').value;
+    const price    = parseInt(document.getElementById('edit-menu-price-v').value);
+    const emoji    = CATEGORY_ICON[category] || '🍽️';
+    if (!name || !price) return toast('Lengkapi nama & harga!', true);
+    try {
+        await updateDoc(doc(db, 'menus', id), { emoji, name, category, price });
+        closeSheet('menu');
+        toast('Menu diperbarui!');
+    } catch (e) {
+        toast('Gagal update: ' + e.message, true);
+    }
+};
+
+// ── SHEET ──
+window.openSheet  = name => { document.getElementById('ov-'+name).classList.add('open'); document.getElementById('sh-'+name).classList.add('open'); };
+window.closeSheet = name => { document.getElementById('ov-'+name).classList.remove('open'); document.getElementById('sh-'+name).classList.remove('open'); };
+
+// ── TOAST ──
+let toastT;
+function toast(msg, isErr = false) {
+    const el = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    el.className = 'toast' + (isErr ? ' err' : '');
+    el.querySelector('i').className = isErr ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+    setTimeout(() => el.classList.add('show'), 10);
+    clearTimeout(toastT);
+    toastT = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ── INIT ──
+renderMenu();
+
+    window.doLogout = async () => {
+        const { signOut } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+        const result = await Swal.fire({
+            title: 'Keluar?', text: 'Sesi Anda akan berakhir.',
+            icon: 'warning', showCancelButton: true,
+            confirmButtonColor: '#00d9ff', cancelButtonColor: '#ef4444',
+            confirmButtonText: 'Ya, Keluar', cancelButtonText: 'Batal',
+            background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff'
+        });
+        if (result.isConfirmed) { await signOut(auth); window.location.href = '../auth/login-owner.html'; }
+    };
+
+    window.goToStaffView = async () => {
+        const result = await Swal.fire({
+            title: '👔 Masuk sebagai Staff?',
+            html: `Anda akan diarahkan ke <b>Dashboard Staff</b>.<br><span style="font-size:12px;color:#9ca3af">Aksi ini tidak akan keluar dari akun Owner.</span>`,
+            icon: 'question', showCancelButton: true,
+            confirmButtonColor: '#bc8cff', cancelButtonColor: '#374151',
+            confirmButtonText: '<i class="fas fa-users-gear"></i> Ya, buka Staff View',
+            cancelButtonText: 'Batal', background: document.body.classList.contains('light-mode') ? '#fff' : '#11171f', color: document.body.classList.contains('light-mode') ? '#1a202c' : '#fff'
+        });
+        if (result.isConfirmed) {
+            sessionStorage.setItem('owner_viewing_staff', '1');
+            window.location.href = '../staff/dashboard-staff.html';
+        }
+    };
+
+    (function initTheme() {
+        const saved = localStorage.getItem('pg_theme') || 'dark';
+        if (saved === 'light') {
+            document.body.classList.add('light-mode');
+            document.documentElement.classList.remove('light-mode-pre');
+            ['theme-icon','theme-icon-sidebar'].forEach(id => {
+                const icon = document.getElementById(id);
+                if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+            });
+        } else {
+            document.documentElement.classList.remove('light-mode-pre');
+        }
+    })();
+
+    window.toggleTheme = function() {
+        const isLight = document.body.classList.toggle('light-mode');
+        localStorage.setItem('pg_theme', isLight ? 'light' : 'dark');
+        ['theme-icon','theme-icon-sidebar'].forEach(id => {
+            const icon = document.getElementById(id);
+            if (icon) {
+                icon.classList.toggle('fa-sun',  !isLight);
+                icon.classList.toggle('fa-moon',  isLight);
+            }
+        });
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true, position: 'top', icon: 'success',
+                title: isLight ? '☀️ Mode Terang aktif' : '🌙 Mode Gelap aktif',
+                showConfirmButton: false, timer: 1500,
+                background: isLight ? '#fff' : '#11171f',
+                color:      isLight ? '#1a202c' : '#fff'
+            });
+        }
+    };
+
+// ═══════════════════════════════════════
+// IKON KATEGORI F&B — otomatis per kategori
+// ═══════════════════════════════════════
+const CATEGORY_ICON = {
+    'Food':  '🍽️',
+    'Drink': '🥤',
+    'Snack': '🍿',
+};
+
+</script>
+</div></div>
+</body>
+</html>

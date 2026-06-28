@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Prince Games – Pilih Sesi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --cyan:#00d9ff;--cyan-dim:rgba(0,217,255,0.15);
+            --bg:#070d14;--card:#0d1520;--border:rgba(255,255,255,0.08);
+            --text:#e8edf5;--muted:#5a6a80;
+        }
+        html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden}
+        body{
+            min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;
+            background:
+                radial-gradient(ellipse 100% 60% at 0% 0%,rgba(0,200,220,0.28) 0%,transparent 55%),
+                radial-gradient(ellipse 80% 60% at 100% 100%,rgba(180,0,180,0.18) 0%,transparent 55%),
+                #070d14;
+        }
+
+        .wrap{width:100%;max-width:420px}
+
+        /* Logo */
+        .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;letter-spacing:-.3px;margin-bottom:32px;justify-content:center}
+        .logo-icon{width:32px;height:32px;background:var(--cyan);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#000}
+        .logo span{color:var(--cyan)}
+
+        /* Header */
+        .header{text-align:center;margin-bottom:32px}
+        .header h1{font-size:26px;font-weight:800;letter-spacing:-.8px;line-height:1.2}
+        .header h1 span{color:var(--cyan)}
+        .header p{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
+
+        /* Tanggal chip */
+        .date-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(0,217,255,0.06);border:1px solid rgba(0,217,255,0.15);border-radius:20px;padding:5px 14px;font-size:11px;color:var(--cyan);font-weight:700;margin-bottom:24px;letter-spacing:.3px}
+
+        /* Shift cards */
+        .shift-grid{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
+
+        .shift-card{
+            position:relative;overflow:hidden;
+            background:var(--card);border:1.5px solid var(--border);
+            border-radius:20px;padding:22px 20px;
+            cursor:pointer;transition:all .22s ease;
+            display:flex;align-items:center;gap:18px;
+        }
+        .shift-card::before{
+            content:'';position:absolute;top:0;left:0;right:0;height:1px;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);
+        }
+        .shift-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,0.18);box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+        .shift-card.selected{border-color:var(--cyan);box-shadow:0 0 0 1px rgba(0,217,255,0.3),0 8px 32px rgba(0,217,255,0.12)}
+        .shift-card.selected::before{background:linear-gradient(90deg,transparent,rgba(0,217,255,0.4),transparent)}
+
+        /* Shift icon */
+        .shift-icon{
+            width:52px;height:52px;border-radius:14px;flex-shrink:0;
+            display:flex;align-items:center;justify-content:center;font-size:22px;
+            transition:all .22s;
+        }
+        .shift-1 .shift-icon{background:rgba(255,193,7,0.1);border:1px solid rgba(255,193,7,0.2)}
+        .shift-2 .shift-icon{background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2)}
+        .shift-card.selected.shift-1 .shift-icon{background:rgba(255,193,7,0.18);border-color:rgba(255,193,7,0.4)}
+        .shift-card.selected.shift-2 .shift-icon{background:rgba(99,102,241,0.18);border-color:rgba(99,102,241,0.4)}
+
+        /* Shift info */
+        .shift-info{flex:1;min-width:0}
+        .shift-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+        .shift-name{font-size:17px;font-weight:800;letter-spacing:-.4px;margin-bottom:5px}
+        .shift-1 .shift-name{color:#ffd54f}
+        .shift-2 .shift-name{color:#818cf8}
+        .shift-card.selected .shift-name{filter:brightness(1.15)}
+        .shift-time{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600}
+        .shift-time i{font-size:10px}
+
+        /* Badge check */
+        .shift-check{
+            width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);
+            display:flex;align-items:center;justify-content:center;
+            flex-shrink:0;transition:all .22s;font-size:10px;color:transparent;
+        }
+        .shift-card.selected .shift-check{background:var(--cyan);border-color:var(--cyan);color:#000}
+
+        /* Durasi pill */
+        .shift-dur{font-size:10px;font-weight:700;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:3px 9px;color:var(--muted);margin-top:8px;display:inline-block}
+
+        /* Active indicator */
+        .shift-active-now{
+            display:inline-flex;align-items:center;gap:5px;
+            font-size:10px;font-weight:700;color:#4ade80;
+            background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);
+            border-radius:8px;padding:3px 9px;margin-top:8px;
+        }
+        .shift-active-now .dot{width:6px;height:6px;background:#4ade80;border-radius:50%;animation:blink 1.4s infinite}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+        /* Tombol masuk */
+        .btn-masuk{
+            width:100%;padding:16px;border-radius:14px;
+            background:var(--cyan);color:#000;
+            font-size:14px;font-weight:800;letter-spacing:-.2px;
+            border:none;cursor:pointer;transition:all .2s;
+            display:flex;align-items:center;justify-content:center;gap:8px;
+            font-family:'Space Grotesk',sans-serif;
+        }
+        .btn-masuk:hover{background:#00c8ee;transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,217,255,0.25)}
+        .btn-masuk:active{transform:scale(0.98)}
+        .btn-masuk:disabled{background:rgba(255,255,255,0.06);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none}
+
+        /* Footer */
+        .footer-note{text-align:center;font-size:11px;color:var(--muted);margin-top:16px}
+
+        /* ===== LIGHT MODE ===== */
+        body.light-mode{
+            --bg:#f0f4f8;--card:#ffffff;--border:rgba(0,0,0,0.08);--text:#1a2332;--muted:#7a8a9a;
+            background:
+                radial-gradient(ellipse 100% 60% at 0% 0%,rgba(0,180,200,0.15) 0%,transparent 55%),
+                radial-gradient(ellipse 80% 60% at 100% 100%,rgba(150,0,150,0.10) 0%,transparent 55%),
+                #f0f4f8 !important;
+            color:#1a2332 !important;
+        }
+        body.light-mode .shift-card{background:#fff !important;box-shadow:0 2px 12px rgba(0,0,0,0.07)}
+        body.light-mode .shift-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.12) !important}
+        body.light-mode .shift-dur{background:rgba(0,0,0,0.05) !important;color:#7a8a9a !important}
+        body.light-mode .shift-time{color:#7a8a9a !important}
+        body.light-mode .shift-label{color:#7a8a9a !important}
+        body.light-mode .footer-note{color:#aab0bc !important}
+        body.light-mode .date-chip{background:rgba(0,180,200,0.08) !important}
+        body.light-mode .header p{color:#7a8a9a !important}
+    </style>
+    <link rel="stylesheet" href="../../assets/css/mobile-fix.css">
+</head>
+<body>
+<div class="wrap">
+
+    <div class="logo">
+        <div class="logo-icon">PG</div>
+        PRINCE<span>GAMES</span>
+    </div>
+
+    <div class="header">
+        <h1>Pilih <span>Sesi</span> Kerja</h1>
+        <p>Pilih sesi sesuai jadwal kamu hari ini sebelum masuk ke dashboard</p>
+    </div>
+
+    <div style="text-align:center">
+        <div class="date-chip">
+            <i class="fas fa-calendar-day"></i>
+            <span id="tanggal-hari-ini">—</span>
+        </div>
+    </div>
+
+    <div class="shift-grid">
+
+        <!-- Shift 1 -->
+        <div class="shift-card shift-1" id="card-shift1" onclick="pilihShift(1)">
+            <div class="shift-icon">☀️</div>
+            <div class="shift-info">
+                <div class="shift-label">Sesi 1</div>
+                <div class="shift-name">Pagi – Sore</div>
+                <div class="shift-time">
+                    <i class="fas fa-clock"></i>
+                    10:00 – 16:00
+                </div>
+                <div id="badge-shift1" class="shift-dur">6 jam kerja</div>
+            </div>
+            <div class="shift-check" id="check-shift1"><i class="fas fa-check"></i></div>
+        </div>
+
+        <!-- Shift 2 -->
+        <div class="shift-card shift-2" id="card-shift2" onclick="pilihShift(2)">
+            <div class="shift-icon">🌙</div>
+            <div class="shift-info">
+                <div class="shift-label">Sesi 2</div>
+                <div class="shift-name">Sore – Malam</div>
+                <div class="shift-time">
+                    <i class="fas fa-clock"></i>
+                    16:00 – 22:00
+                </div>
+                <div id="badge-shift2" class="shift-dur">6 jam kerja</div>
+            </div>
+            <div class="shift-check" id="check-shift2"><i class="fas fa-check"></i></div>
+        </div>
+
+    </div>
+
+    <button class="btn-masuk" id="btn-masuk" onclick="konfirmasiShift()" disabled>
+        <i class="fas fa-arrow-right"></i> Masuk Dashboard
+    </button>
+
+    <div class="footer-note">
+        Pilihan sesi akan tercatat untuk laporan hari ini
+    </div>
+
+</div>
+
+<script>
+    let shiftDipilih = null;
+
+    // Tampilkan tanggal hari ini
+    const hariIni = new Date();
+    const opsi = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+    document.getElementById('tanggal-hari-ini').textContent = hariIni.toLocaleDateString('id-ID', opsi);
+
+    // Deteksi shift aktif berdasarkan jam sekarang
+    const jam = hariIni.getHours();
+    const shiftAktif = (jam >= 10 && jam < 16) ? 1 : (jam >= 16 && jam < 22) ? 2 : null;
+
+    if (shiftAktif) {
+        const badge = document.getElementById('badge-shift' + shiftAktif);
+        badge.outerHTML = `<div class="shift-active-now"><span class="dot"></span> Sesi aktif sekarang</div>`;
+    }
+
+    function pilihShift(nomor) {
+        shiftDipilih = nomor;
+
+        document.getElementById('card-shift1').classList.toggle('selected', nomor === 1);
+        document.getElementById('card-shift2').classList.toggle('selected', nomor === 2);
+
+        document.getElementById('btn-masuk').disabled = false;
+    }
+
+    async function konfirmasiShift() {
+        if (!shiftDipilih) return;
+
+        const s1s = localStorage.getItem('pg_shift1_start') || '10:00';
+        const s1e = localStorage.getItem('pg_shift1_end')   || '16:00';
+        const s2s = localStorage.getItem('pg_shift2_start') || '16:00';
+        const s2e = localStorage.getItem('pg_shift2_end')   || '22:00';
+
+        const info = shiftDipilih === 1
+            ? { nama: 'Shift 1 – Pagi/Sore', jam: s1s + ' – ' + s1e, ikon: '☀️' }
+            : { nama: 'Shift 2 – Sore/Malam', jam: s2s + ' – ' + s2e, ikon: '🌙' };
+
+        // Cek apakah nama sudah tersimpan
+        let namaStaff = sessionStorage.getItem('staff_nama_display') || '';
+
+        if (!namaStaff) {
+            const { value: inputNama } = await Swal.fire({
+                title: '👤 Halo! Siapa nama kamu?',
+                html: `<p style="font-size:12px;color:#9ca3af;margin-bottom:12px">Nama ini akan ditampilkan ke owner agar bisa memantau kamu bertugas.</p>`,
+                input: 'text',
+                inputPlaceholder: 'Masukkan nama kamu...',
+                inputAttributes: { maxlength: 30, autocomplete: 'off' },
+                showCancelButton: false,
+                confirmButtonColor: '#00d9ff',
+                confirmButtonText: 'Lanjut →',
+                background: document.body.classList.contains('light-mode') ? '#ffffff' : '#0d1520',
+                color: document.body.classList.contains('light-mode') ? '#1a2332' : '#e8edf5',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                inputValidator: (value) => {
+                    if (!value || value.trim().length < 2) return 'Nama minimal 2 karakter!';
+                }
+            });
+            namaStaff = inputNama.trim();
+            sessionStorage.setItem('staff_nama_display', namaStaff);
+
+            // Simpan ke Firestore jika user sudah login
+            try {
+                const { getAuth }   = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+                const { getFirestore, doc, setDoc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+                const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+                const { firebaseConfig } = await import('../../assets/js/firebase-config.js');
+                const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db   = getFirestore(app);
+                const user = auth.currentUser;
+                if (user) {
+                    await setDoc(doc(db, 'staff', user.uid), { nama: namaStaff }, { merge: true });
+                }
+            } catch(e) { console.warn('Gagal simpan nama ke Firestore:', e); }
+        }
+
+        const { isConfirmed } = await Swal.fire({
+            title: info.ikon + ' Konfirmasi Sesi',
+            html: `Halo <b>${namaStaff}</b>!<br>Kamu akan masuk dengan<br><b>${info.nama}</b><br><span style="font-size:12px;color:#9ca3af">${info.jam}</span>`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#00d9ff',
+            cancelButtonColor: '#374151',
+            confirmButtonText: 'Ya, Masuk!',
+            cancelButtonText: 'Batal',
+            background: document.body.classList.contains('light-mode') ? '#ffffff' : '#0d1520',
+            color: document.body.classList.contains('light-mode') ? '#1a2332' : '#e8edf5'
+        });
+
+        if (isConfirmed) {
+            sessionStorage.setItem('staff_shift', shiftDipilih);
+            sessionStorage.setItem('staff_shift_nama', info.nama);
+            sessionStorage.setItem('staff_shift_jam', info.jam);
+            sessionStorage.setItem('staff_shift_tanggal', hariIni.toISOString().slice(0, 10));
+            window.location.href = '../staff/dashboard-staff.html';
+        }
+    }
+</script>
+<script>
+    // Auto-apply theme dari localStorage (disimpan di halaman login/daftar)
+    (function(){
+        if(localStorage.getItem('pg_theme') === 'light'){
+            document.body.classList.add('light-mode');
+        }
+    })();
+</script>
+</body>
+</html>
