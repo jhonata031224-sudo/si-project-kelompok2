@@ -35,13 +35,14 @@
         .btn-staff-view:hover{background:rgba(255,255,255,0.04);color:var(--text);border-color:rgba(255,255,255,0.15)}
 
         /* ── Layout ── */
-        .main{padding:28px 24px 100px;max-width:1100px;margin:0 auto}
+        .main{padding:28px 32px 100px;max-width:1400px;margin:0 auto}
         .page-header{margin-bottom:24px}
         .page-header h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
         .page-header p{font-size:13px;color:var(--muted);margin-top:3px}
 
         /* ── Charts ── */
-        .chart-section{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+        .chart-section{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px 24px;margin-bottom:20px}
+        .chart-two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
         .chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px}
         .chart-title{font-size:13px;font-weight:700}
         .chart-subtitle{font-size:10px;color:var(--muted);margin-bottom:14px}
@@ -80,7 +81,7 @@
         body.light-mode .chart-date-clear{border-color:rgba(0,0,0,0.1);color:#6b7280}
 
         /* ── KPI ── */
-        .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+        .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
         .kpi-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:16px 18px}
         .kpi-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
         .kpi-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px}
@@ -129,7 +130,7 @@
         .badge-manual{background:rgba(255,77,79,0.1);color:var(--red);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
 
         /* ── Two-col & section ── */
-        .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+        .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
         .section-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;overflow:visible}
         .section-title{font-size:13px;font-weight:700;margin-bottom:14px}
         .empty-state{font-size:12px;color:var(--muted)}
@@ -160,7 +161,10 @@
             .btn-label-hide{display:none}
             #topbar-actions{gap:6px}
             .nav-btn{padding:7px 10px}
-            #revenue-shift-grid{grid-template-columns:1fr !important}
+            #revenue-shift-grid{grid-template-columns:1fr !important;align-items:start !important}
+            /* Di mobile: lepas height fixed dan max-height tabel agar konten bebas */
+            #revenue-shift-grid .section-card{height:auto !important;display:block !important}
+            #revenue-shift-grid .table-scroll-wrap{max-height:none !important;overflow-y:visible !important}
 
             /* Hilangkan background gelap yang terlihat di antara card */
             .owner-main-content { background: var(--bg); }
@@ -349,7 +353,7 @@
                 text-overflow: ellipsis;
             }
             .sidebar-staff-view:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
-            .owner-main-content { flex: 1; min-width: 0; overflow-y: scroll; padding: 28px 40px 80px 40px; max-width: 1100px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+            .owner-main-content { flex: 1; min-width: 0; overflow-y: scroll; padding: 28px 32px 80px 32px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box; }
             .topbar { max-width: 100% !important; }
             /* Widen content area on desktop */
             .p-5 > .max-w-\[450px\],
@@ -610,7 +614,7 @@
         <div class="chart-wrap"><canvas id="chart-revenue"></canvas></div>
     </div>
 
-    <div class="chart-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+    <div class="chart-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
         <div class="chart-section" style="margin-bottom:0">
             <div class="mobile-collapse-header" onclick="toggleMobileSection(this,'bvr-body')">
                 <div>
@@ -671,9 +675,9 @@
     </div>
 
     <!-- ══ Revenue + Shift Grid ══ -->
-    <div id="revenue-shift-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;align-items:start">
+    <div id="revenue-shift-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:stretch">
     <!-- Revenue Card dengan Filter -->
-    <div class="section-card" style="margin-bottom:0;min-width:0;overflow:visible">
+    <div class="section-card" style="margin-bottom:0;min-width:0;overflow:hidden;display:flex;flex-direction:column;height:100%;box-sizing:border-box">
         <div class="revenue-header">
             <div>
                 <div class="revenue-title">Total Pendapatan Tercatat</div>
@@ -695,7 +699,7 @@
         <div class="revenue-label" id="rev-label">Memuat data...</div>
 
         <!-- Tabel riwayat pendapatan -->
-        <div class="table-scroll-wrap" style="margin-top:16px">
+        <div class="table-scroll-wrap" style="margin-top:16px;flex:1;overflow-y:auto;max-height:320px">
             <table class="income-table">
                 <thead>
                     <tr>
@@ -716,7 +720,7 @@
     </div><!-- end revenue section-card -->
 
     <!-- ══ Pendapatan Per Shift ══ -->
-    <div class="section-card" style="margin-bottom:0;min-width:0;overflow:visible" id="shift-revenue-card">
+    <div class="section-card" style="margin-bottom:0;min-width:0;overflow:hidden;display:flex;flex-direction:column;height:100%;box-sizing:border-box" id="shift-revenue-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
             <div>
                 <div class="section-title" style="margin-bottom:2px">
@@ -738,7 +742,7 @@
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
             <i class="fas fa-user-clock" style="margin-right:6px"></i>Rincian Per Staff
         </div>
-        <div class="table-scroll-wrap">
+        <div class="table-scroll-wrap" style="flex:1;overflow-y:auto;max-height:220px">
             <table class="income-table" id="staff-shift-table">
                 <thead>
                     <tr>

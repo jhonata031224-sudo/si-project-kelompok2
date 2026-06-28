@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prince Games - Staff Dashboard</title>
+    <title>Prince Games - Operasional Staff</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -551,7 +551,7 @@
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 8px;
-            color: #e6edf3;
+            color: #e6edf3 !important;
             font-size: 12px;
             font-weight: 700;
             font-family: inherit;
@@ -562,8 +562,6 @@
             max-width: 100%;
             outline: none;
             transition: border-color .2s;
-            -webkit-appearance: none;
-            appearance: none;
             box-sizing: border-box;
             cursor: pointer;
         }
@@ -971,7 +969,7 @@
             body.light-mode #staff-desktop-topbar { border-color: rgba(0,0,0,0.07) !important; }
             #staff-desktop-topbar h1 {
                 font-size: 22px; font-weight: 900; letter-spacing: -.5px;
-                color: #00d9ff; text-transform: uppercase;
+                color: #ffffff; text-transform: uppercase;
             }
 
             /* KPI strip */
@@ -1489,7 +1487,7 @@
 <!-- Desktop topbar -->
 <div id="staff-desktop-topbar" style="display:none">
     <div>
-        <h1>Dashboard Staff</h1>
+        <h1>Operasional Staff</h1>
         <p style="font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-top:3px">Data real-time dari Firebase</p>
     </div>
     <div class="topbar-right">
@@ -1637,15 +1635,13 @@
         <!-- Filter Tanggal -->
         <div class="srev-date-row">
             <div class="srev-date-wrap-inner">
-                <span class="srev-date-placeholder" id="ph-srev-from"></span>
-                <input type="date" id="srev-date-from" class="srev-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyStaffDateFilter();this.style.color='';document.getElementById('ph-srev-from').style.display='none'" title="Dari tanggal">
+                <input type="date" id="srev-date-from" class="srev-date-input" style="width:100%;box-sizing:border-box;" oninput="applyStaffDateFilter()" title="Dari tanggal">
             </div>
             <span class="srev-date-sep">—</span>
             <div class="srev-date-wrap-inner">
-                <span class="srev-date-placeholder" id="ph-srev-to"></span>
-                <input type="date" id="srev-date-to" class="srev-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyStaffDateFilter();this.style.color='';document.getElementById('ph-srev-to').style.display='none'" title="Sampai tanggal">
+                <input type="date" id="srev-date-to" class="srev-date-input" style="width:100%;box-sizing:border-box;" oninput="applyStaffDateFilter()" title="Sampai tanggal">
             </div>
-            <button class="srev-date-clear" onclick="clearStaffDateFilter();resetStaffDatePh(['ph-srev-from','ph-srev-to'],['srev-date-from','srev-date-to'])" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
+            <button class="srev-date-clear" onclick="clearStaffDateFilter()" title="Reset filter tanggal"><i class="fas fa-times"></i></button>
         </div>
 
         <!-- Riwayat singkat -->
@@ -1662,6 +1658,23 @@
         const today = String(now.getDate()).padStart(2,'0') + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + now.getFullYear();
         const ids = ['ph-srev-from','ph-srev-to','ph-screv-from','ph-screv-to','ph-scbvr-from','ph-scbvr-to','ph-scps-from','ph-scps-to'];
         ids.forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=today; });
+
+        // Isi nilai default input tanggal "Total Pendapatan Tercatat" (srev-date-from & srev-date-to)
+        // Default: 7 hari terakhir s/d hari ini — langsung visible tanpa harus klik dulu
+        const fmt = function(d) { return d.toISOString().slice(0,10); };
+        const todayDate = new Date();
+        const fromDate  = new Date(todayDate);
+        fromDate.setDate(fromDate.getDate() - 6);
+
+        var fromEl  = document.getElementById('srev-date-from');
+        var toEl    = document.getElementById('srev-date-to');
+        var fromEl2 = document.getElementById('srev-date-from2');
+        var toEl2   = document.getElementById('srev-date-to2');
+
+        if (fromEl)  fromEl.value  = fmt(fromDate);
+        if (toEl)    toEl.value    = fmt(todayDate);
+        if (fromEl2) fromEl2.value = fmt(fromDate);
+        if (toEl2)   toEl2.value   = fmt(todayDate);
     })();
     </script>
 
@@ -1680,15 +1693,13 @@
         </div>
         <div class="srev-date-row" style="margin-bottom:10px">
             <div class="srev-date-wrap-inner">
-                <span class="srev-date-placeholder" id="ph-screv-from"></span>
-                <input type="date" id="staff-chart-revenue-date-from" class="srev-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyChartDateFilter('staff-chart-revenue');this.style.color='';document.getElementById('ph-screv-from').style.display='none'" title="Dari tanggal">
+                <input type="date" id="staff-chart-revenue-date-from" class="srev-date-input" style="width:100%;box-sizing:border-box;" oninput="applyChartDateFilter('staff-chart-revenue')" title="Dari tanggal">
             </div>
             <span class="srev-date-sep">—</span>
             <div class="srev-date-wrap-inner">
-                <span class="srev-date-placeholder" id="ph-screv-to"></span>
-                <input type="date" id="staff-chart-revenue-date-to" class="srev-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyChartDateFilter('staff-chart-revenue');this.style.color='';document.getElementById('ph-screv-to').style.display='none'" title="Sampai tanggal">
+                <input type="date" id="staff-chart-revenue-date-to" class="srev-date-input" style="width:100%;box-sizing:border-box;" oninput="applyChartDateFilter('staff-chart-revenue')" title="Sampai tanggal">
             </div>
-            <button class="srev-date-clear" onclick="clearChartDateFilter('staff-chart-revenue');resetStaffDatePh(['ph-screv-from','ph-screv-to'],['staff-chart-revenue-date-from','staff-chart-revenue-date-to'])" title="Reset"><i class="fas fa-times"></i></button>
+            <button class="srev-date-clear" onclick="clearChartDateFilter('staff-chart-revenue')" title="Reset"><i class="fas fa-times"></i></button>
         </div>
         <div class="staff-chart-wrap" style="height:180px"><canvas id="staff-chart-revenue"></canvas></div>
         
@@ -1708,15 +1719,13 @@
         </div>
         <div class="srev-date-row" style="margin-bottom:10px">
             <div class="srev-date-wrap-inner">
-                <span class="srev-date-placeholder" id="ph-scbvr-from"></span>
-                <input type="date" id="staff-chart-bvr-date-from" class="srev-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyChartDateFilter('staff-chart-bvr');this.style.color='';document.getElementById('ph-scbvr-from').style.display='none'" title="Dari tanggal">
+                <input type="date" id="staff-chart-bvr-date-from" class="srev-date-input" style="width:100%;box-sizing:border-box;" oninput="applyChartDateFilter('staff-chart-bvr')" title="Dari tanggal">
             </div>
             <span class="srev-date-sep">—</span>
             <div class="srev-date-wrap-inner">
-                <span class="srev-date-placeholder" id="ph-scbvr-to"></span>
-                <input type="date" id="staff-chart-bvr-date-to" class="srev-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyChartDateFilter('staff-chart-bvr');this.style.color='';document.getElementById('ph-scbvr-to').style.display='none'" title="Sampai tanggal">
+                <input type="date" id="staff-chart-bvr-date-to" class="srev-date-input" style="width:100%;box-sizing:border-box;" oninput="applyChartDateFilter('staff-chart-bvr')" title="Sampai tanggal">
             </div>
-            <button class="srev-date-clear" onclick="clearChartDateFilter('staff-chart-bvr');resetStaffDatePh(['ph-scbvr-from','ph-scbvr-to'],['staff-chart-bvr-date-from','staff-chart-bvr-date-to'])" title="Reset"><i class="fas fa-times"></i></button>
+            <button class="srev-date-clear" onclick="clearChartDateFilter('staff-chart-bvr')" title="Reset"><i class="fas fa-times"></i></button>
         </div>
         <div class="staff-chart-wrap" style="height:150px"><canvas id="staff-chart-bvr"></canvas></div>
         <div class="staff-chart-legend">
@@ -1739,15 +1748,13 @@
         </div>
         <div class="srev-date-row" style="margin-bottom:10px">
             <div class="srev-date-wrap-inner">
-                <span class="srev-date-placeholder" id="ph-scps-from"></span>
-                <input type="date" id="staff-chart-ps-date-from" class="srev-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyChartDateFilter('staff-chart-ps');this.style.color='';document.getElementById('ph-scps-from').style.display='none'" title="Dari tanggal">
+                <input type="date" id="staff-chart-ps-date-from" class="srev-date-input" style="width:100%;box-sizing:border-box;" oninput="applyChartDateFilter('staff-chart-ps')" title="Dari tanggal">
             </div>
             <span class="srev-date-sep">—</span>
             <div class="srev-date-wrap-inner">
-                <span class="srev-date-placeholder" id="ph-scps-to"></span>
-                <input type="date" id="staff-chart-ps-date-to" class="srev-date-input" style="width:100%;box-sizing:border-box;color:transparent" oninput="applyChartDateFilter('staff-chart-ps');this.style.color='';document.getElementById('ph-scps-to').style.display='none'" title="Sampai tanggal">
+                <input type="date" id="staff-chart-ps-date-to" class="srev-date-input" style="width:100%;box-sizing:border-box;" oninput="applyChartDateFilter('staff-chart-ps')" title="Sampai tanggal">
             </div>
-            <button class="srev-date-clear" onclick="clearChartDateFilter('staff-chart-ps');resetStaffDatePh(['ph-scps-from','ph-scps-to'],['staff-chart-ps-date-from','staff-chart-ps-date-to'])" title="Reset"><i class="fas fa-times"></i></button>
+            <button class="srev-date-clear" onclick="clearChartDateFilter('staff-chart-ps')" title="Reset"><i class="fas fa-times"></i></button>
         </div>
         <div class="staff-chart-wrap" style="height:150px"><canvas id="staff-chart-ps"></canvas></div>
         <div class="staff-chart-legend">
@@ -3102,6 +3109,18 @@
         Object.entries(labels).forEach(([id, html]) => {
             const el = document.getElementById(id);
             if (el) el.innerHTML = html;
+        });
+
+        // Sync ke badge counter sidebar desktop (snav-count-*)
+        const sidebarCounts = {
+            'snav-count-semua': counts.semua,
+            'snav-count-ps5':   counts.PS5,
+            'snav-count-ps4':   counts.PS4,
+            'snav-count-ps3':   counts.PS3,
+        };
+        Object.entries(sidebarCounts).forEach(([id, val]) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
         });
     }
 
@@ -6012,10 +6031,33 @@
         }
     }
 
+    let _firstPendapatanLoad = true;
+
     onSnapshot(
         query(collection(db, 'pendapatan'), orderBy('createdAt', 'desc')),
         snap => {
             _allPendapatan = snap.docs.map(d => d.data());
+
+            // Pertama kali load: aktifkan filter tanggal default yang sudah diisi
+            if (_firstPendapatanLoad) {
+                _firstPendapatanLoad = false;
+                const fromEl = document.getElementById('srev-date-from');
+                const toEl   = document.getElementById('srev-date-to');
+                if (fromEl && fromEl.value) {
+                    _staffDateFrom = fromEl.value;
+                    _staffDateTo   = toEl ? toEl.value : null;
+                    const f2 = document.getElementById('srev-date-from2');
+                    const t2 = document.getElementById('srev-date-to2');
+                    if (f2) f2.value = fromEl.value;
+                    if (t2) t2.value = toEl ? toEl.value : '';
+                    const txt = (_staffDateFrom||'...') + ' s.d. ' + (_staffDateTo||'...');
+                    const lbl  = document.getElementById('srev-filter-label');
+                    const lbl2 = document.getElementById('srev-filter-label2');
+                    if (lbl)  lbl.textContent  = 'Filter: ' + txt;
+                    if (lbl2) lbl2.textContent = 'Filter: ' + txt;
+                }
+            }
+
             renderStaffRevenue();
             // Isi tanggal default di input saat pertama load (defer agar semua fungsi sudah siap)
             setTimeout(() => {

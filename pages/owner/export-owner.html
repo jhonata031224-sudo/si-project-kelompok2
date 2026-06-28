@@ -172,7 +172,7 @@
             .sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
             .sidebar-staff-view { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-size:12px; font-weight:500; color:var(--muted, #6b7a8d); cursor:pointer; border:1px solid rgba(255,255,255,0.06); background:transparent; font-family:inherit; transition:all 0.15s; width:100%; margin-bottom:6px; text-decoration:none; }
             .sidebar-staff-view:hover { background:rgba(255,255,255,0.04); color:var(--muted); }
-            .owner-main-content { flex: 1; min-width: 0; overflow-y: scroll; padding: 28px 40px 80px 40px; max-width: 1100px; margin: 0 auto; }
+            .owner-main-content { flex: 1; min-width: 0; overflow-y: scroll; padding: 28px 32px 80px 32px; max-width: 1400px; margin: 0 auto; }
             .topbar { display: none !important; }
             /* Widen content area on desktop */
             .p-5 { max-width: 900px !important; padding: 32px 40px !important; }
@@ -496,6 +496,8 @@
     let allSesi = [], allFnb = [], allExtend = [], allFnbOrders = [];
     let unitFilter = 'semua';
     let filteredSesi = [], filteredFnb = [];
+    const PAGE_SIZE = 10;
+    let pageSesi = 0, pageFnb = 0;
 
     // Helper: hitung durasi booking dari startTime & stopTime string "HH:MM"
     // Normalise "HH.MM" atau "HH:MM" → [jam, menit]
@@ -602,6 +604,8 @@
         });
 
         updateKPI();
+        pageSesi = 0;
+        pageFnb = 0;
         renderTabelSesi();
         renderTabelFnb();
     }
@@ -630,8 +634,12 @@
             return;
         }
 
-        const data50 = filteredSesi.slice(0, 50);
-        let rows = data50.map((d, i) => {
+        const totalPages = Math.ceil(filteredSesi.length / PAGE_SIZE);
+        if (pageSesi >= totalPages) pageSesi = totalPages - 1;
+        const start = pageSesi * PAGE_SIZE;
+        const pageData = filteredSesi.slice(start, start + PAGE_SIZE);
+
+        let rows = pageData.map((d, i) => {
             const tanggal  = d.tanggal || (d.createdAt||'').slice(0,10) || '-';
             const unitId   = d.unitId || '-';
             const durasi   = hitungDurasi(d.startTime, d.stopTime);
@@ -641,7 +649,6 @@
             const fnbLines = fnbs.flatMap(f => (f.items||[]).map(x => x.name + ' x' + x.qty));
             const fnbTotal = fnbs.reduce((s,f) => s + (f.total||0), 0);
 
-            // Badge Tambahan ringkas
             const extPayMethods = [...new Set(exts.map(e => {
                 const pm = e.payMethod;
                 if (!pm || pm === true) return 'Cash';
@@ -651,13 +658,12 @@
                 ? '<span style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.3);color:#f97316;border-radius:5px;padding:2px 8px;font-size:10px;font-weight:700;white-space:nowrap">+' + exts.length + 'x · ' + fmt(extTotal) + ' · ' + extPayMethods + '</span>'
                 : '<span style="color:#374151">—</span>';
 
-            // Badge F&B ringkas
             const fnbBadge = fnbLines.length > 0
                 ? '<span style="background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.25);color:#facc15;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;white-space:nowrap">' + fnbLines.length + ' item &nbsp;' + fmt(fnbTotal) + '</span>'
                 : '<span style="color:#374151">—</span>';
 
             return '<tr class="hover:bg-white/[0.02]" style="border-bottom:1px solid rgba(255,255,255,0.04)">' +
-                '<td class="table-cell text-gray-500 text-[10px] text-center" style="white-space:nowrap">' + (i+1) + '</td>' +
+                '<td class="table-cell text-gray-500 text-[10px] text-center" style="white-space:nowrap">' + (start+i+1) + '</td>' +
                 '<td class="table-cell text-gray-400 text-[10px] text-center" style="white-space:nowrap">' + tanggal + '</td>' +
                 '<td class="table-cell text-center" style="white-space:nowrap"><span class="font-bold text-cyan-400" style="font-size:11px">' + unitId + '</span> <span class="text-gray-600" style="font-size:9px">' + (d.unitType||'') + '</span></td>' +
                 '<td class="table-cell text-[11px] text-center">' + (d.customerName||d.namaCustomer||'-') + '</td>' +
@@ -669,7 +675,11 @@
             '</tr>';
         }).join('');
 
-        wrap.innerHTML = '<table class="w-full text-left" style="border-collapse:collapse">' +
+        const prevDisabled = pageSesi === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/10 cursor-pointer';
+        const nextDisabled = pageSesi >= totalPages - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/10 cursor-pointer';
+
+        wrap.innerHTML =
+            '<table class="w-full text-left" style="border-collapse:collapse">' +
             '<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.07)">' +
             '<th class="table-header text-center">#</th>' +
             '<th class="table-header text-center">Tanggal</th>' +
@@ -681,8 +691,19 @@
             '<th class="table-header text-center">F&B</th>' +
             '<th class="table-header text-center">Total Bayar</th>' +
             '</tr></thead><tbody>' + rows + '</tbody></table>' +
-            (filteredSesi.length > 50 ? '<p class="text-center text-[10px] text-gray-600 py-3">+' + (filteredSesi.length-50) + ' baris lainnya di ekspor</p>' : '');
+            '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid rgba(255,255,255,0.06)">' +
+                '<button onclick="prevPageSesi()" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#9ca3af;font-size:11px;font-weight:600;font-family:inherit;transition:all .2s" class="' + prevDisabled + '" ' + (pageSesi===0?'disabled':'') + '>' +
+                    '<i class="fas fa-chevron-left" style="font-size:9px"></i> Prev' +
+                '</button>' +
+                '<span style="font-size:11px;color:#6b7280">Hal <span style="color:#e5e7eb;font-weight:700">' + (pageSesi+1) + '</span> / ' + totalPages + ' &nbsp;·&nbsp; <span style="color:#e5e7eb;font-weight:700">' + filteredSesi.length + '</span> total sesi</span>' +
+                '<button onclick="nextPageSesi()" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#9ca3af;font-size:11px;font-weight:600;font-family:inherit;transition:all .2s" class="' + nextDisabled + '" ' + (pageSesi>=totalPages-1?'disabled':'') + '>' +
+                    'Next <i class="fas fa-chevron-right" style="font-size:9px"></i>' +
+                '</button>' +
+            '</div>';
     }
+
+    window.prevPageSesi = () => { if (pageSesi > 0) { pageSesi--; renderTabelSesi(); } };
+    window.nextPageSesi = () => { if (pageSesi < Math.ceil(filteredSesi.length/PAGE_SIZE)-1) { pageSesi++; renderTabelSesi(); } };
 
 
     function renderTabelFnb() {
@@ -692,7 +713,11 @@
             return;
         }
         const flat = flattenFnbRows(filteredFnb);
-        const show = flat.slice(0, 50);
+        const totalPages = Math.ceil(flat.length / PAGE_SIZE);
+        if (pageFnb >= totalPages) pageFnb = totalPages - 1;
+        const start = pageFnb * PAGE_SIZE;
+        const show = flat.slice(start, start + PAGE_SIZE);
+
         let rows = show.map((r, i) =>
             '<tr class="hover:bg-white/[0.02]">' +
             '<td class="table-cell text-gray-400 text-[10px]">' + r.tanggal + '</td>' +
@@ -701,12 +726,28 @@
             '<td class="table-cell font-medium text-yellow-400">' + fmt(r.harga) + '</td>' +
             '</tr>'
         ).join('');
-        wrap.innerHTML = '<table class="w-full text-left">' +
+
+        const prevDisabled = pageFnb === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/10 cursor-pointer';
+        const nextDisabled = pageFnb >= totalPages - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/10 cursor-pointer';
+
+        wrap.innerHTML =
+            '<table class="w-full text-left">' +
             '<thead><tr>' +
             '<th class="table-header">Tanggal</th><th class="table-header">Item</th><th class="table-header">Qty</th><th class="table-header">Total</th>' +
             '</tr></thead><tbody>' + rows + '</tbody></table>' +
-            (flat.length > 50 ? '<p class="text-center text-[10px] text-gray-600 py-3">+' + (flat.length-50) + ' baris lainnya di ekspor</p>' : '');
+            '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid rgba(255,255,255,0.06)">' +
+                '<button onclick="prevPageFnb()" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#9ca3af;font-size:11px;font-weight:600;font-family:inherit;transition:all .2s" class="' + prevDisabled + '" ' + (pageFnb===0?'disabled':'') + '>' +
+                    '<i class="fas fa-chevron-left" style="font-size:9px"></i> Prev' +
+                '</button>' +
+                '<span style="font-size:11px;color:#6b7280">Hal <span style="color:#e5e7eb;font-weight:700">' + (pageFnb+1) + '</span> / ' + totalPages + ' &nbsp;·&nbsp; <span style="color:#e5e7eb;font-weight:700">' + flat.length + '</span> total item</span>' +
+                '<button onclick="nextPageFnb()" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#9ca3af;font-size:11px;font-weight:600;font-family:inherit;transition:all .2s" class="' + nextDisabled + '" ' + (pageFnb>=totalPages-1?'disabled':'') + '>' +
+                    'Next <i class="fas fa-chevron-right" style="font-size:9px"></i>' +
+                '</button>' +
+            '</div>';
     }
+
+    window.prevPageFnb = () => { if (pageFnb > 0) { pageFnb--; renderTabelFnb(); } };
+    window.nextPageFnb = () => { if (pageFnb < Math.ceil(flattenFnbRows(filteredFnb).length/PAGE_SIZE)-1) { pageFnb++; renderTabelFnb(); } };
 
     window.switchTab = (tab) => {
         document.getElementById('tab-sesi').classList.toggle('hidden', tab !== 'sesi');
