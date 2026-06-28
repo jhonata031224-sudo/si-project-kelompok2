@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prince Games - Laporan Ekspor</title>
+    <script>
+        tailwind.config = { corePlugins: { preflight: false } }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         html.light-mode-pre body { background: #f0f4f8 !important; }
@@ -21,7 +26,6 @@
             --orange:#f78166;--purple:#bc8cff;--yellow:#e3b341;--red:#ff4d4f;
         }
 
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800');
         * { font-style: normal !important; box-sizing: border-box; }
         body { background-color: #06090f; color: white; font-family: 'Space Grotesk', sans-serif; padding-bottom: 120px; }
         .topbar { position: sticky; top: 0; z-index: 100; background: #0d1117; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
@@ -97,6 +101,8 @@
                 gap: 8px;
                 font-weight: 900;
                 font-size: 16px;
+                color: #ffffff;
+                letter-spacing: .5px;
                 padding: 0 8px 20px;
                 border-bottom: 1px solid rgba(255,255,255,0.07);
                 margin-bottom: 8px;
@@ -118,13 +124,13 @@
                 border-radius: 10px;
                 font-size: 12px;
                 font-weight: 600;
-                color: var(--muted);
+                color: var(--muted, #6b7a8d);
                 text-decoration: none;
                 transition: background-color 0.15s, color 0.15s;
                 cursor: pointer;
                 width: 100%;
                 box-sizing: border-box;
-                border: none;
+                border: 1px solid transparent;
                 font-family: inherit;
                 background: transparent;
                 line-height: 1.2;
@@ -138,11 +144,11 @@
             .sidebar-sub-item {
                 display: flex; align-items: center; gap: 8px;
                 padding: 7px 10px; border-radius: 8px;
-                font-size: 11px; font-weight: 500; color: var(--muted, #6b7a8d);
+                font-size: 11px; font-weight: 600; color: var(--muted, #6b7a8d);
                 text-decoration: none; transition: background-color 0.15s, color 0.15s;
                 cursor: pointer; width: 100%; box-sizing: border-box;
-                border: none; font-family: inherit; background: transparent; line-height: 1.2;
-                position: relative;
+                border: 1px solid transparent; font-family: inherit; background: transparent; line-height: 1.2;
+                position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             }
             .sidebar-sub-item::before {
                 content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
@@ -159,18 +165,18 @@
                 padding: 10px 12px;
                 border-radius: 10px;
                 font-size: 12px;
-                font-weight: 500;
+                font-weight: 700;
                 color: #f78166;
                 cursor: pointer;
-                border: none;
                 background: rgba(247,129,102,0.06);
                 border: 1px solid rgba(247,129,102,0.15);
                 font-family: inherit;
                 transition: background-color 0.15s, color 0.15s;
                 width: 100%;
+                line-height: 1.2;
             }
             .sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
-            .sidebar-staff-view { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-size:12px; font-weight:500; color:var(--muted, #6b7a8d); cursor:pointer; border:1px solid rgba(255,255,255,0.06); background:transparent; font-family:inherit; transition:all 0.15s; width:100%; margin-bottom:6px; text-decoration:none; }
+            .sidebar-staff-view { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-size:12px; font-weight:700; color:var(--muted, #6b7a8d); cursor:pointer; border:1px solid rgba(255,255,255,0.06); background:transparent; font-family:inherit; transition:all 0.15s; width:100%; margin-bottom:6px; text-decoration:none; box-sizing:border-box; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2; }
             .sidebar-staff-view:hover { background:rgba(255,255,255,0.04); color:var(--muted); }
             .owner-main-content { flex: 1; min-width: 0; overflow-y: scroll; padding: 28px 32px 80px 32px; max-width: 1400px; margin: 0 auto; }
             .topbar { display: none !important; }
@@ -376,11 +382,11 @@
             <a href="../owner/history-owner.html" class="sidebar-nav-item"><i class="fas fa-history"></i> Riwayat</a>
             <a href="../owner/export-owner.html" class="sidebar-nav-item active"><i class="fas fa-file-export"></i> Laporan</a>
         <div class="sidebar-spacer"></div>
-        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 8px;border-radius:4px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;text-transform:uppercase;margin-bottom:8px;display:inline-block">OWNER</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 8px;border-radius:4px;background:rgba(0,217,255,0.1);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;text-transform:uppercase;margin-bottom:8px;display:inline-block;line-height:1.2">OWNER</div>
         <button class="sidebar-staff-view" onclick="goToStaffView()">
             <i class="fas fa-users-gear"></i> Staff View
         </button>
-        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left;margin-bottom:6px">
+        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left">
             <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
         </button>
         <button class="sidebar-keluar" onclick="doLogout()">
