@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Prince Games - Manajemen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -29,14 +29,14 @@
             --green: #22c55e;
             --orange: #f97316;
             --text: #e2e8f0;
-            --muted: #4b5563;
+            --muted: #7d8590;
             --muted2: #374151;
         }
 
         html, body {
             background: var(--bg);
             color: var(--text);
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
             min-height: 100vh;
             -webkit-tap-highlight-color: transparent;
         }
@@ -167,7 +167,7 @@
         .form-input {
             background: var(--card2); border: 1px solid var(--border);
             border-radius: 10px; padding: 10px 12px;
-            color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text); font-family: 'Space Grotesk', sans-serif;
             font-size: 13px; font-weight: 600; outline: none;
             transition: border-color .2s; width: 100%; height: 40px;
             -webkit-appearance: none;
@@ -178,7 +178,7 @@
 
         .btn-add {
             width: 100%; height: 42px; border-radius: 10px; border: none;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
             cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
             transition: all .15s; active-scale: .97;
@@ -348,12 +348,12 @@
         .btn-sheet-cancel {
             flex: 1; height: 44px; border-radius: 12px;
             background: var(--card2); border: 1px solid var(--border);
-            color: var(--muted); font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--muted); font-family: 'Space Grotesk', sans-serif;
             font-size: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer;
         }
         .btn-sheet-save {
             flex: 2; height: 44px; border-radius: 12px; border: none;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer;
         }
         .btn-sheet-save.cyan { background: var(--cyan); color: #000; }
@@ -404,6 +404,8 @@
                 gap: 8px;
                 font-weight: 900;
                 font-size: 16px;
+                color: #ffffff;
+                letter-spacing: .5px;
                 padding: 0 8px 20px;
                 border-bottom: 1px solid rgba(255,255,255,0.07);
                 margin-bottom: 8px;
@@ -425,13 +427,13 @@
                 border-radius: 10px;
                 font-size: 12px;
                 font-weight: 600;
-                color: #4b5563;
+                color: var(--muted, #6b7a8d);
                 text-decoration: none;
                 transition: background-color 0.15s, color 0.15s;
                 cursor: pointer;
                 width: 100%;
                 box-sizing: border-box;
-                border: none;
+                border: 1px solid transparent;
                 font-family: inherit;
                 background: transparent;
                 line-height: 1.2;
@@ -445,11 +447,11 @@
             .sidebar-sub-item {
                 display: flex; align-items: center; gap: 8px;
                 padding: 7px 10px; border-radius: 8px;
-                font-size: 11px; font-weight: 500; color: var(--muted, #6b7a8d);
+                font-size: 11px; font-weight: 600; color: var(--muted, #6b7a8d);
                 text-decoration: none; transition: background-color 0.15s, color 0.15s;
                 cursor: pointer; width: 100%; box-sizing: border-box;
-                border: none; font-family: inherit; background: transparent; line-height: 1.2;
-                position: relative;
+                border: 1px solid transparent; font-family: inherit; background: transparent; line-height: 1.2;
+                position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             }
             .sidebar-sub-item::before {
                 content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
@@ -470,7 +472,6 @@
                 font-weight: 700;
                 color: #f78166;
                 cursor: pointer;
-                border: none;
                 background: rgba(247,129,102,0.06);
                 border: 1px solid rgba(247,129,102,0.15);
                 font-family: inherit;
@@ -478,7 +479,7 @@
                 width: 100%;
             }
             .sidebar-keluar:hover { background: rgba(247,129,102,0.14); }
-            .sidebar-staff-view { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-size:12px; font-weight:700; color:#4b5563; cursor:pointer; border:1px solid rgba(255,255,255,0.06); background:transparent; font-family:inherit; transition:all 0.15s; width:100%; margin-bottom:6px; text-decoration:none; }
+            .sidebar-staff-view { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-size:12px; font-weight:700; color:var(--muted, #6b7a8d); cursor:pointer; border:1px solid rgba(255,255,255,0.06); background:transparent; font-family:inherit; transition:all 0.15s; width:100%; margin-bottom:6px; text-decoration:none; box-sizing:border-box; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
             .sidebar-staff-view:hover { background:rgba(255,255,255,0.04); color:#9ca3af; }
             /* Tab pill di atas konten disembunyikan — kontrol via sidebar */
             .kelola-tabs { display: none !important; }
@@ -702,7 +703,7 @@
         <button class="sidebar-staff-view" onclick="goToStaffView()">
             <i class="fas fa-users-gear"></i> Staff View
         </button>
-        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left;margin-bottom:6px">
+        <button id="btn-theme-sidebar" onclick="toggleTheme()" class="sidebar-staff-view" style="cursor:pointer;text-align:left">
             <i id="theme-icon-sidebar" class="fas fa-sun" style="width:16px;text-align:center;font-size:13px"></i> Ganti Tema
         </button>
         <button class="sidebar-keluar" onclick="doLogout()">
