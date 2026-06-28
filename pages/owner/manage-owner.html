@@ -9,8 +9,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        html.light-mode-pre body { background: #f0f4f8 !important; }
-        html.light-mode-pre { background: #f0f4f8; }
+        html.light-mode-pre,
+        html.light-mode-pre body {
+            background: #f0f4f8 !important;
+            --bg: #f0f4f8 !important;
+            --surface: #ffffff !important;
+            --surface2: #f1f5f9 !important;
+            --border: rgba(0,0,0,0.08) !important;
+            --border2: rgba(0,0,0,0.06) !important;
+            --text: #0f172a !important;
+            --muted: #64748b !important;
+        }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
