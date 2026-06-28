@@ -10,6 +10,17 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        html.light-mode-pre,
+        html.light-mode-pre body {
+            background: #f0f4f8 !important;
+            --bg: #f0f4f8 !important;
+            --surface: #ffffff !important;
+            --surface2: #f1f5f9 !important;
+            --border: rgba(0,0,0,0.08) !important;
+            --border2: rgba(0,0,0,0.06) !important;
+            --text: #0f172a !important;
+            --muted: #64748b !important;
+        }
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         :root{
             --bg:#0d1117;--surface:#161b22;--surface2:#1c2128;
@@ -35,7 +46,7 @@
         .btn-staff-view:hover{background:rgba(255,255,255,0.04);color:var(--text);border-color:rgba(255,255,255,0.15)}
 
         /* ── Layout ── */
-        .main{padding:28px 32px 100px;max-width:1400px;margin:0 auto}
+        .main{padding:0;max-width:100%;margin:0}
         .page-header{margin-bottom:24px}
         .page-header h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
         .page-header p{font-size:13px;color:var(--muted);margin-top:3px}
@@ -353,7 +364,7 @@
                 text-overflow: ellipsis;
             }
             .sidebar-staff-view:hover { background: rgba(255,255,255,0.04); color: #9ca3af; }
-            .owner-main-content { flex: 1; min-width: 0; overflow-y: scroll; padding: 28px 32px 80px 32px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+            .owner-main-content { flex: 1; min-width: 0; overflow-y: scroll; padding: 28px 32px 80px 32px; margin: 0 auto; width: 100%; box-sizing: border-box; }
             .topbar { max-width: 100% !important; }
             /* Widen content area on desktop */
             .p-5 > .max-w-\[450px\],
@@ -516,6 +527,12 @@
         .owner-main-content::-webkit-scrollbar { display: none; }
         .owner-main-content { -ms-overflow-style: none; scrollbar-width: none; }
         </style>
+    <script>
+        (function(){
+            if(localStorage.getItem('pg_theme')==='light')
+                document.documentElement.classList.add('light-mode-pre');
+        })();
+    </script>
 </head>
 <body>
 <div class="owner-layout">
@@ -1923,10 +1940,13 @@
         const saved = localStorage.getItem('pg_theme') || 'dark';
         if (saved === 'light') {
             document.body.classList.add('light-mode');
+            document.documentElement.classList.remove('light-mode-pre');
             ['theme-icon','theme-icon-sidebar'].forEach(id => {
                 const icon = document.getElementById(id);
                 if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
             });
+        } else {
+            document.documentElement.classList.remove('light-mode-pre');
         }
     })();
 
